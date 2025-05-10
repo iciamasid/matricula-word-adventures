@@ -2,7 +2,7 @@
 import React from "react";
 import { useGame } from "@/context/GameContext";
 import { Progress } from "@/components/ui/progress";
-import { Trophy, Level } from "lucide-react";
+import { Trophy, BarChart } from "lucide-react";
 
 const ScoreDisplay: React.FC = () => {
   const { score, totalPoints, level, highScore } = useGame();
@@ -21,7 +21,7 @@ const ScoreDisplay: React.FC = () => {
           <span className="font-medium">Puntuación: {score}</span>
         </div>
         <div className="flex items-center">
-          <Level className="w-5 h-5 text-game-blue mr-2" />
+          <BarChart className="w-5 h-5 text-game-blue mr-2" />
           <span className="font-medium">Nivel: {level}</span>
         </div>
       </div>
