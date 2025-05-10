@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { X, Target, Award, Star, Book, Zap } from "lucide-react";
+import { X, Target, Award, Star, Book, Zap, Check } from "lucide-react";
 
 interface GameInstructionsProps {
   onClose: () => void;
@@ -20,99 +20,104 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
         initial={{ scale: 0.9, opacity: 0, y: 50 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="bg-white rounded-xl p-6 max-w-md w-full mb-4 mr-4 shadow-lg relative overflow-y-auto max-h-[80vh]"
+        className="bg-gradient-to-br from-purple-600 to-purple-800 rounded-xl p-6 max-w-md w-full mb-4 mr-4 shadow-lg relative overflow-y-auto max-h-[80vh] border-4 border-yellow-400"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+          className="absolute top-3 right-3 text-white hover:text-yellow-300"
         >
           <X className="w-6 h-6" />
         </button>
 
-        <h2 className="text-3xl kids-text mb-4 text-purple-800 flex items-center gap-2">
-          <Book className="w-7 h-7 text-purple-600" />
+        <h2 className="text-3xl kids-text mb-4 text-white flex items-center gap-2">
+          <Book className="w-7 h-7 text-yellow-300" />
           ¿Cómo jugar?
         </h2>
 
-        <div className="space-y-4">
-          <div className="bg-purple-50 p-4 rounded-lg">
-            <h3 className="text-2xl kids-text text-purple-700 mb-2 flex items-center gap-2">
-              <Target className="w-6 h-6 text-purple-600" />
+        <div className="space-y-5">
+          <motion.div 
+            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <h3 className="text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2">
+              <Target className="w-6 h-6 text-yellow-300" />
               Objetivo del juego
             </h3>
-            <p className="instruction-text kids-text">
+            <p className="instruction-text kids-text text-white">
               ¡Forma palabras usando las consonantes de la matrícula del coche!
             </p>
-          </div>
+          </motion.div>
 
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-2xl kids-text text-blue-700 mb-2 flex items-center gap-2">
-              <Award className="w-6 h-6 text-blue-600" />
-              Reglas
-            </h3>
-            <ul className="list-disc pl-6 space-y-2">
-              <li className="instruction-text kids-text">
-                Fíjate en las TRES letras de la matrícula.
-              </li>
-              <li className="instruction-text kids-text">
-                Piensa una palabra que contenga al menos una de esas letras.
-              </li>
-              <li className="instruction-text kids-text">
-                ¡Cuantas más letras de la matrícula uses, más puntos conseguirás!
-              </li>
-              <li className="instruction-text kids-text">
-                Si usas las 3 letras, ¡ganarás muchos puntos extra!
-              </li>
-              <li className="instruction-text kids-text">
-                Las palabras deben tener al menos 3 letras.
-              </li>
-            </ul>
-          </div>
-
-          <div className="bg-yellow-50 p-4 rounded-lg">
-            <h3 className="text-2xl kids-text text-yellow-700 mb-2 flex items-center gap-2">
-              <Star className="w-6 h-6 text-yellow-500" />
+          <motion.div 
+            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <h3 className="text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2">
+              <Award className="w-6 h-6 text-yellow-300" />
               Puntuación
             </h3>
-            <ul className="list-disc pl-6 space-y-2">
-              <li className="instruction-text kids-text">
-                10 puntos por cada letra de la palabra.
+            <ul className="list-none space-y-2">
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>100 puntos por usar las 3 consonantes en el mismo orden</span>
               </li>
-              <li className="instruction-text kids-text">
-                25 puntos adicionales por usar 1 consonante de la matrícula.
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>75 puntos por usar las 3 consonantes en otro orden</span>
               </li>
-              <li className="instruction-text kids-text">
-                50 puntos adicionales por usar 2 consonantes diferentes.
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>50 puntos por usar 2 consonantes en el mismo orden</span>
               </li>
-              <li className="instruction-text kids-text">
-                100 puntos adicionales por usar las 3 consonantes diferentes.
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>25 puntos por usar 2 consonantes en otro orden</span>
               </li>
-              <li className="instruction-text kids-text">
-                ¡Bonus de 200 puntos por palabras en inglés!
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>10 puntos por usar 1 consonante</span>
+              </li>
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>¡Bonus de 200 puntos por palabras en inglés!</span>
+              </li>
+              <li className="instruction-text kids-text text-red-300 flex items-start gap-2">
+                <X className="w-5 h-5 text-red-400 mt-1 flex-shrink-0" /> 
+                <span>Se restan 20 puntos si la palabra no existe en el diccionario o no contiene ninguna consonante</span>
               </li>
             </ul>
-          </div>
+          </motion.div>
 
-          <div className="bg-green-50 p-4 rounded-lg">
-            <h3 className="text-2xl kids-text text-green-700 mb-2 flex items-center gap-2">
-              <Zap className="w-6 h-6 text-green-600" />
+          <motion.div 
+            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <h3 className="text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2">
+              <Zap className="w-6 h-6 text-yellow-300" />
               Niveles y viajes
             </h3>
-            <p className="instruction-text kids-text">
-              Por cada cierta cantidad de puntos, subirás de nivel y desbloquearás un viaje a un nuevo país. 
-              ¡Explora el mundo con tus palabras!
+            <p className="instruction-text kids-text text-white">
+              Por cada 500 puntos, subirás de nivel y desbloquearás un viaje a un nuevo país. 
+              ¡Explora el mundo con tus palabras y descubre lugares increíbles!
             </p>
-          </div>
+          </motion.div>
 
-          <div className="pt-2">
+          <motion.div 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="pt-2"
+          >
             <button
               onClick={onClose}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg kids-text text-lg"
+              className="w-full bg-yellow-400 hover:bg-yellow-500 text-purple-900 py-3 px-4 rounded-lg kids-text text-xl font-bold"
             >
               ¡Entendido!
             </button>
-          </div>
+          </motion.div>
         </div>
       </motion.div>
     </motion.div>

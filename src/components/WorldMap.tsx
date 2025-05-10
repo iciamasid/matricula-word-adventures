@@ -12,19 +12,19 @@ interface WorldMapProps {
 const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries = [] }) => {
   const [zoom, setZoom] = useState(1);
   
-  // Map countries to their accurate positions
+  // Map countries to their positions on the new map image
   const getCountryPosition = (country: string) => {
     const positions: Record<string, { left: string, top: string }> = {
-      "España": { left: "47%", top: "42%" },
-      "Francia": { left: "48.5%", top: "39%" },
-      "Italia": { left: "51%", top: "41%" },
-      "Rusia": { left: "62%", top: "35%" },
-      "Japón": { left: "82%", top: "42%" },
-      "Estados Unidos": { left: "20%", top: "40%" },
-      "Argentina": { left: "30%", top: "75%" },
+      "España": { left: "43%", top: "40%" },
+      "Francia": { left: "45%", top: "38%" },
+      "Italia": { left: "48%", top: "40%" },
+      "Rusia": { left: "58%", top: "32%" },
+      "Japón": { left: "80%", top: "40%" },
+      "Estados Unidos": { left: "20%", top: "38%" },
+      "Argentina": { left: "31%", top: "70%" },
       "Méjico": { left: "17%", top: "48%" },
-      "Australia": { left: "83%", top: "75%" },
-      "Antártida": { left: "50%", top: "90%" }
+      "Australia": { left: "83%", top: "70%" },
+      "Antártida": { left: "50%", top: "88%" }
     };
     
     return positions[country] || { left: "50%", top: "50%" };
@@ -87,21 +87,21 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
           style={{ 
             scale: zoom,
             transformOrigin: "center",
-            marginLeft: "4mm" // Shift the map 4mm to the right
+            marginLeft: "4mm" // Shift the map 4mm to the right as requested
           }}
         >
-          {/* Mapa mundi como fondo */}
+          {/* Use the new map image */}
           <img 
-            src="/lovable-uploads/775e117d-bc61-4576-a77e-acba4f134785.png" 
+            src="/lovable-uploads/310987b9-7b6d-48c9-8dec-f37f4487ca8c.png" 
             alt="World Map" 
-            className="w-full h-full object-cover opacity-70"
+            className="w-full h-full object-cover"
             style={{ minWidth: "100%", minHeight: "100%" }}
           />
 
           {/* Current highlighted country */}
           {highlightCountry && (
             <motion.div 
-              className="absolute w-4 h-4 z-10" // Smaller dots (was w-6 h-6)
+              className="absolute w-3 h-3 z-10" // Smaller dots
               style={{ 
                 left: getCountryPosition(highlightCountry).left,
                 top: getCountryPosition(highlightCountry).top,
@@ -111,9 +111,9 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
               animate={{ scale: [0, 1.2, 1] }}
               transition={{ duration: 0.5 }}
             >
-              <div className="bg-white rounded-full p-0.5 shadow-lg"> {/* Smaller padding */}
-                <div className="bg-red-500 rounded-full w-3 h-3 flex items-center justify-center pulse"> {/* Smaller w-3 h-3 */}
-                  <span className="text-white text-xs font-bold">
+              <div className="bg-white rounded-full p-0.5 shadow-lg"> 
+                <div className="bg-red-500 rounded-full w-2 h-2 flex items-center justify-center pulse"> 
+                  <span className="text-white text-[8px] font-bold">
                     {WORLD_DESTINATIONS.find(dest => dest.country === highlightCountry)?.flag || "🚩"}
                   </span>
                 </div>
@@ -133,7 +133,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
                   zIndex: highlightCountry === country ? 20 : 5
                 }}
                 animate={{ 
-                  y: [0, -5, 0],
+                  y: [0, -3, 0], // Smaller animation
                   scale: highlightCountry === country ? 1.2 : 1
                 }}
                 transition={{ 
@@ -143,7 +143,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
                 whileHover={{ scale: 1.2 }}
               >
                 <motion.div 
-                  className="bg-white rounded-full p-0.5 shadow-lg" // Smaller padding
+                  className="bg-white rounded-full p-0.5 shadow-lg" 
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
@@ -151,7 +151,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
                   <img 
                     src={getCountryImage(country)} 
                     alt={country}
-                    className="w-4 h-4 rounded-full object-cover" // Smaller w-4 h-4
+                    className="w-3 h-3 rounded-full object-cover" // Even smaller markers
                   />
                 </motion.div>
               </motion.div>

@@ -87,14 +87,14 @@ const LicensePlate: React.FC = () => {
       <div className="flex justify-center items-center ml-8">
         <div className="text-center">
           <motion.span 
-            className={`text-gray-800 ${isMobile ? "text-2xl" : "text-3xl"} font-bold tracking-wider`}
+            className={`text-gray-800 ${isMobile ? "text-3xl" : "text-4xl"} font-bold tracking-wider`}
             animate={isAnimating ? { y: [0, -2, 0, 2, 0] } : {}}
             transition={{ repeat: Infinity, duration: 0.3 }}
           >
             {numbers}
           </motion.span>
           <motion.span 
-            className={`text-purple-700 ml-2 ${isMobile ? "text-2xl" : "text-3xl"} font-bold tracking-wider`}
+            className={`text-purple-700 ml-2 ${isMobile ? "text-3xl" : "text-4xl"} font-bold tracking-wider`}
             animate={isAnimating ? { y: [0, -2, 0, 2, 0] } : {}}
             transition={{ repeat: Infinity, duration: 0.3, delay: 0.1 }}
           >

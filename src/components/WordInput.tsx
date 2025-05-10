@@ -55,26 +55,7 @@ const WordInput: React.FC = () => {
 
   return (
     <div className="w-full max-w-xs relative">
-      {/* Success message - positioned at bottom center */}
-      <AnimatePresence>
-        {showSuccess && (
-          <motion.div 
-            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg z-50 flex items-center gap-2"
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.5 }}
-            transition={{ type: "spring", damping: 12 }}
-          >
-            <motion.div animate={{ rotate: [0, 15, -15, 15, 0] }} transition={{ duration: 0.5 }}>
-              <Star className="h-6 w-6 text-yellow-300" />
-            </motion.div>
-            <span className="text-2xl font-bold kids-text">{successMessage}</span>
-            <motion.div animate={{ rotate: [0, -15, 15, -15, 0] }} transition={{ duration: 0.5 }}>
-              <Star className="h-6 w-6 text-yellow-300" />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Success message will be replaced with the stylized popup similar to BonusPopup */}
       
       <div className="flex gap-2">
         <Input
@@ -83,8 +64,8 @@ const WordInput: React.FC = () => {
           value={currentWord}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="ESCRIBE UNA PALABRA CON ESAS CONSONANTES"
-          className="flex-1 text-center font-bold text-lg py-5 uppercase border-2 border-purple-400 shadow-md kids-text"
+          placeholder="ESCRIBE UNA PALABRA"
+          className="flex-1 text-center font-bold text-2xl py-6 uppercase border-2 border-purple-400 shadow-md kids-text"
           autoComplete="off"
         />
         <motion.div
@@ -93,13 +74,29 @@ const WordInput: React.FC = () => {
         >
           <Button
             onClick={handleSubmit}
-            className={`h-full bg-game-purple hover:bg-game-purple/90 text-xl ${isAnimating ? "animate-bounce" : ""}`}
+            className={`h-full bg-game-purple hover:bg-game-purple/90 text-2xl ${isAnimating ? "animate-bounce" : ""}`}
             disabled={currentWord.trim().length < 3}
             size="lg"
           >
-            <ArrowRight className="w-6 h-6" />
+            <ArrowRight className="w-7 h-7" />
           </Button>
         </motion.div>
+      </div>
+      
+      {/* Display consonants below the license plate - make them bigger */}
+      <div className="flex justify-center gap-3 mt-3">
+        {plateConsonants.split("").map((letter, index) => (
+          <motion.div
+            key={index}
+            className={`inline-flex items-center justify-center w-14 h-14 ${CONSONANT_COLORS[index % CONSONANT_COLORS.length]} text-white text-3xl font-bold rounded-md shadow-md kids-text`}
+            whileHover={{ scale: 1.1 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.2 }}
+          >
+            {letter}
+          </motion.div>
+        ))}
       </div>
     </div>
   );

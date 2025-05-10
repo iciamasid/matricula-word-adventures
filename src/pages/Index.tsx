@@ -14,6 +14,9 @@ import { Toaster } from "@/components/ui/toaster";
 import WorldMap from "@/components/WorldMap";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
+import GamePopup from "@/components/GamePopup";
+import ScorePanel from "@/components/ScorePanel";
+import TotalPointsPanel from "@/components/TotalPointsPanel";
 
 // Función para obtener la bandera según el nivel
 const getLevelFlag = (level: number) => {
@@ -36,7 +39,26 @@ const getLevelFlag = (level: number) => {
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
-  const { totalPoints, destinationInfo, level, resetGame, plateConsonants } = useGame();
+  const { totalPoints, destinationInfo, level, resetGame, plateConsonants, score } = useGame();
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [prevLevel, setPrevLevel] = useState(level);
+  
+  // Show success popup when score changes
+  useEffect(() => {
+    if (score > 0) {
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
+  }, [score]);
+  
+  // Show level up popup when level changes
+  useEffect(() => {
+    if (level > prevLevel) {
+      setShowLevelUp(true);
+      setPrevLevel(level);
+    }
+  }, [level, prevLevel]);
   
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
@@ -102,58 +124,23 @@ const GameContent = () => {
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
           <LicensePlate />
           
-          {/* Display consonants below the license plate */}
-          <div className="flex justify-center gap-3 mb-2">
-            {plateConsonants.split("").map((letter, index) => (
-              <motion.div
-                key={index}
-                className={`inline-flex items-center justify-center w-12 h-12 ${CONSONANT_COLORS[index % CONSONANT_COLORS.length]} text-white text-2xl font-bold rounded-md shadow-md kids-text`}
-                whileHover={{ scale: 1.1 }}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.2 }}
-              >
-                {letter}
-              </motion.div>
-            ))}
-          </div>
-          
           <WordInput />
           
-          {/* Separate score and level panels */}
-          <div className="w-full grid grid-cols-2 gap-4">
-            <motion.div 
-              className="rounded-lg p-3 bg-white/90 shadow-lg text-center"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <h3 className="text-xl font-bold text-purple-800 kids-text">Puntos</h3>
-              <p className="text-2xl font-bold text-purple-900 kids-text">{totalPoints}</p>
-            </motion.div>
-            
-            <motion.div 
-              className="rounded-lg p-3 bg-white/90 shadow-lg text-center"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <h3 className="text-xl font-bold text-purple-800 kids-text">Nivel {getLevelFlag(level)}</h3>
-              <p className="text-2xl font-bold text-purple-900 kids-text">{level}</p>
-            </motion.div>
-          </div>
+          {/* New Score components */}
+          <ScorePanel />
+          <TotalPointsPanel />
           
-          {/* Title for the map */}
+          {/* Title for the map - updated text */}
           <motion.h2 
-            className="text-xl font-bold text-white mt-4 mb-2 text-center kids-text reward-text"
+            className="text-2xl font-bold text-white mt-2 mb-2 text-center kids-text reward-text"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            ¿A qué países has viajado ya con tus matrículas acertadas?
+            ¿Qué países puedes visitar con estos puntos?
           </motion.h2>
           
-          {/* Mapa Mundi con países desbloqueados en un recuadro */}
+          {/* Mapa Mundi con países desbloqueados */}
           <motion.div 
             className="w-full h-[200px] rounded-lg overflow-hidden mb-2 border-4 border-white/50 shadow-lg"
             initial={{ opacity: 0, y: 20 }}
@@ -184,7 +171,26 @@ const GameContent = () => {
           </motion.div>
         </div>
         
+        {/* Error Alert using new GamePopup */}
         <ErrorAlert />
+        
+        {/* Success Popup */}
+        <GamePopup
+          open={showSuccess}
+          onClose={() => setShowSuccess(false)}
+          type="success"
+          message="¡MUY BIEN!"
+          points={score}
+        />
+        
+        {/* Level Up Popup */}
+        <GamePopup
+          open={showLevelUp}
+          onClose={() => setShowLevelUp(false)}
+          type="levelUp"
+          message="¡NIVEL DESBLOQUEADO!"
+          level={level}
+        />
         
         {showInstructions && (
           <GameInstructions onClose={() => setShowInstructions(false)} />

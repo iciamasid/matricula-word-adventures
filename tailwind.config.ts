@@ -21,6 +21,7 @@ export default {
 		extend: {
 			fontFamily: {
 				'bubblegum': ['"Bubblegum Sans"', 'cursive'],
+				'fredoka': ['"Fredoka"', 'cursive'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
