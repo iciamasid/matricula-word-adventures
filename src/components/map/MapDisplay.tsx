@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import HighlightedCountry from './HighlightedCountry';
-import UnlockedCountries from './UnlockedCountries';
+import CountryMarkers from './CountryMarkers';
 
 interface MapDisplayProps {
   zoom: number;
@@ -30,7 +29,7 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
           marginLeft: "4mm" // Shift the map 4mm to the right as requested
         }}
       >
-        {/* Use the new map image */}
+        {/* Base map image */}
         <img 
           src="/lovable-uploads/310987b9-7b6d-48c9-8dec-f37f4487ca8c.png" 
           alt="World Map" 
@@ -38,15 +37,10 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
           style={{ minWidth: "100%", minHeight: "100%" }}
         />
 
-        {/* Conditionally render highlighted country */}
-        {highlightCountry && (
-          <HighlightedCountry country={highlightCountry} />
-        )}
-
-        {/* Render unlocked countries */}
-        <UnlockedCountries 
-          countries={unlockedCountries} 
-          highlightCountry={highlightCountry} 
+        {/* Country markers component */}
+        <CountryMarkers 
+          highlightCountry={highlightCountry}
+          unlockedCountries={unlockedCountries}
         />
       </motion.div>
     </motion.div>

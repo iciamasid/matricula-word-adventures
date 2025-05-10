@@ -1,37 +1,40 @@
 
-// Map countries to their positions and images
-export const getCountryPosition = (country: string) => {
-  const positions: Record<string, { left: string, top: string }> = {
-    "España": { left: "43%", top: "40%" },
-    "Francia": { left: "45%", top: "38%" },
-    "Italia": { left: "48%", top: "40%" },
-    "Rusia": { left: "58%", top: "32%" },
-    "Japón": { left: "80%", top: "40%" },
-    "Estados Unidos": { left: "20%", top: "38%" },
-    "Argentina": { left: "31%", top: "70%" },
-    "Méjico": { left: "17%", top: "48%" },
-    "Australia": { left: "83%", top: "70%" },
-    "Antártida": { left: "50%", top: "88%" }
-  };
-  
-  return positions[country] || { left: "50%", top: "50%" };
+// Country positions on the map
+const countryPositions: Record<string, { left: string, top: string }> = {
+  "España": { left: "43%", top: "40%" },
+  "Francia": { left: "45%", top: "38%" },
+  "Italia": { left: "48%", top: "40%" },
+  "Rusia": { left: "58%", top: "32%" },
+  "Japón": { left: "80%", top: "40%" },
+  "Estados Unidos": { left: "20%", top: "38%" },
+  "Argentina": { left: "31%", top: "70%" },
+  "Méjico": { left: "17%", top: "48%" },
+  "Australia": { left: "83%", top: "70%" },
+  "Antártida": { left: "50%", top: "88%" }
 };
 
+// Country flag images
+const countryImages: Record<string, string> = {
+  "España": "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
+  "Francia": "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
+  "Italia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+  "Rusia": "/lovable-uploads/13c721ae-3f14-415a-86bb-0228c47d8425.png",
+  "Japón": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+  "Estados Unidos": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+  "Argentina": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+  "Méjico": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+  "Australia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+  "Antártida": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png"
+};
+
+// Get country position on the map
+export const getCountryPosition = (country: string) => {
+  return countryPositions[country] || { left: "50%", top: "50%" };
+};
+
+// Get country flag image
 export const getCountryImage = (country: string) => {
-  const images: Record<string, string> = {
-    "España": "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
-    "Francia": "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
-    "Italia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-    "Rusia": "/lovable-uploads/13c721ae-3f14-415a-86bb-0228c47d8425.png",
-    "Japón": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-    "Estados Unidos": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-    "Argentina": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-    "Méjico": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-    "Australia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-    "Antártida": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png"
-  };
-  
-  return images[country] || "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png";
+  return countryImages[country] || "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png";
 };
 
 // World destinations data for country flags

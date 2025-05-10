@@ -9,12 +9,18 @@ interface HighlightedCountryProps {
 }
 
 const HighlightedCountry: React.FC<HighlightedCountryProps> = ({ country }) => {
+  // Find the country's flag from the destinations data
+  const countryFlag = WORLD_DESTINATIONS.find(dest => dest.country === country)?.flag || "🚩";
+  
+  // Get the country position on the map
+  const position = getCountryPosition(country);
+  
   return (
     <motion.div 
       className="absolute w-3 h-3 z-10" 
       style={{ 
-        left: getCountryPosition(country).left,
-        top: getCountryPosition(country).top,
+        left: position.left,
+        top: position.top,
         transform: "translate(-50%, -50%)"
       }}
       initial={{ scale: 0 }}
@@ -24,7 +30,7 @@ const HighlightedCountry: React.FC<HighlightedCountryProps> = ({ country }) => {
       <div className="bg-white rounded-full p-0.5 shadow-lg"> 
         <div className="bg-red-500 rounded-full w-2 h-2 flex items-center justify-center pulse"> 
           <span className="text-white text-[8px] font-bold">
-            {WORLD_DESTINATIONS.find(dest => dest.country === country)?.flag || "🚩"}
+            {countryFlag}
           </span>
         </div>
       </div>
