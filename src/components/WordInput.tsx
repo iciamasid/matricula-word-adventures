@@ -4,8 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGame } from "@/context/GameContext";
 import { ArrowRight } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-// Array of colors for the consonant squares
+// Array of colors for the consonant squares with more distinctive colors
 const CONSONANT_COLORS = ["bg-game-blue", "bg-game-purple", "bg-game-orange"];
 
 const WordInput: React.FC = () => {
@@ -38,18 +39,28 @@ const WordInput: React.FC = () => {
 
   return (
     <div className="w-full max-w-xs">
-      <div className="text-center mb-2">
+      <div className="text-center mb-4">
         <span className="text-sm text-gray-500">
           Forma una palabra usando estas consonantes:
         </span>
-        <div className="flex justify-center gap-2 mt-1">
+        <div className="flex justify-center gap-3 mt-3">
           {plateConsonants.split("").map((letter, index) => (
-            <span 
+            <motion.div
               key={index}
-              className={`inline-flex items-center justify-center w-10 h-10 ${CONSONANT_COLORS[index]} text-white text-xl font-bold rounded-md animate-pulse-scale`}
+              className={`inline-flex items-center justify-center w-14 h-14 ${CONSONANT_COLORS[index]} text-white text-2xl font-bold rounded-md`}
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              animate={{ 
+                scale: [1, 1.05, 1],
+                transition: { 
+                  duration: 1.5, 
+                  repeat: Infinity, 
+                  repeatType: "reverse",
+                  delay: index * 0.3
+                }
+              }}
             >
               {letter}
-            </span>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -62,16 +73,22 @@ const WordInput: React.FC = () => {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder="Escribe una palabra"
-          className="flex-1 text-center font-medium"
+          className="flex-1 text-center font-medium text-lg py-5"
           autoComplete="off"
         />
-        <Button
-          onClick={handleSubmit}
-          className={isAnimating ? "animate-bounce" : ""}
-          disabled={currentWord.trim().length < 3}
+        <motion.div
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
         >
-          <ArrowRight className="w-4 h-4" />
-        </Button>
+          <Button
+            onClick={handleSubmit}
+            className={`h-full ${isAnimating ? "animate-bounce" : ""}`}
+            disabled={currentWord.trim().length < 3}
+            size="lg"
+          >
+            <ArrowRight className="w-5 h-5" />
+          </Button>
+        </motion.div>
       </div>
     </div>
   );

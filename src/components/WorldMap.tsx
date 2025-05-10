@@ -2,7 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
-import { MapPin } from "lucide-react";
+import { MapPin, Map, Sparkles } from "lucide-react";
 
 // Spanish city coordinates (approximate)
 const CITY_COORDINATES: Record<string, [number, number]> = {
@@ -40,19 +40,48 @@ const WorldMap: React.FC = () => {
   const visitedCities = getVisitedCities();
   
   return (
-    <div className="w-full max-w-xs bg-white p-4 rounded-lg shadow">
-      <h3 className="text-sm text-gray-500 mb-2">Tu viaje por España</h3>
-      <div className="relative h-48 bg-blue-50 rounded border border-gray-200 overflow-hidden">
+    <motion.div 
+      className="w-full max-w-xs bg-white p-4 rounded-lg shadow-lg border-2 border-blue-100"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <div className="flex items-center mb-2">
+        <Map className="h-5 w-5 text-game-blue mr-2" />
+        <h3 className="text-sm font-medium text-gray-700">Tu viaje por España</h3>
+      </div>
+      <div className="relative h-64 bg-blue-50 rounded-lg border border-gray-200 overflow-hidden">
         {/* Map background */}
         <div className="absolute inset-0 bg-blue-50">
           {/* Simple map of Spain outline */}
-          <svg viewBox="0 0 100 100" className="w-full h-full text-blue-100">
+          <svg viewBox="0 0 300 200" className="w-full h-full">
+            <defs>
+              <linearGradient id="water" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#ccf2ff" />
+                <stop offset="100%" stopColor="#99e6ff" />
+              </linearGradient>
+              <linearGradient id="land" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#e6f7d9" />
+                <stop offset="100%" stopColor="#c6e6b3" />
+              </linearGradient>
+            </defs>
+            
+            {/* Water background */}
+            <rect x="0" y="0" width="300" height="200" fill="url(#water)" />
+            
+            {/* Spain mainland */}
             <path 
-              d="M20,30 C25,25 35,20 45,15 C55,10 70,15 75,25 C80,35 85,45 80,55 C75,65 65,70 55,75 C45,80 35,75 25,70 C15,65 10,50 15,40 C20,30 25,25 20,30 Z" 
-              fill="currentColor" 
-              stroke="#ddd" 
-              strokeWidth="1" 
+              d="M80,60 C100,40 130,30 160,35 C190,40 210,60 220,90 C230,120 225,150 200,170 C175,190 140,185 110,170 C80,155 60,130 65,100 C70,70 80,60 80,60 Z" 
+              fill="url(#land)" 
+              stroke="#66994d" 
+              strokeWidth="2" 
             />
+            
+            {/* Balearic Islands */}
+            <ellipse cx="230" cy="100" rx="15" ry="10" fill="url(#land)" stroke="#66994d" strokeWidth="1" />
+            
+            {/* Canary Islands */}
+            <ellipse cx="60" cy="170" rx="20" ry="10" fill="url(#land)" stroke="#66994d" strokeWidth="1" />
           </svg>
         </div>
         
@@ -62,22 +91,26 @@ const WorldMap: React.FC = () => {
           if (!coords) return null;
           
           // Convert geographic coordinates to relative position in the SVG
-          const x = ((coords[1] + 10) * 3) + 30;
-          const y = (40 - coords[0]) * 1.5 + 30;
+          // Scale for Spain's approximate longitude/latitude
+          const x = ((coords[1] + 9) * 8) + 80;
+          const y = (45 - coords[0]) * 4 + 30;
           
           return (
             <React.Fragment key={city}>
               {/* Draw route line to next city */}
               {index > 0 && (
                 <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: "none" }}>
-                  <line
-                    x1={((CITY_COORDINATES[visitedCities[index-1]][1] + 10) * 3) + 30}
-                    y1={(40 - CITY_COORDINATES[visitedCities[index-1]][0]) * 1.5 + 30}
+                  <motion.line
+                    x1={((CITY_COORDINATES[visitedCities[index-1]][1] + 9) * 8) + 80}
+                    y1={(45 - CITY_COORDINATES[visitedCities[index-1]][0]) * 4 + 30}
                     x2={x}
                     y2={y}
                     stroke={index === visitedCities.length - 1 ? "#E74C3C" : "#2ECC71"}
-                    strokeWidth="2"
-                    strokeDasharray={index === visitedCities.length - 1 ? "3,3" : "none"}
+                    strokeWidth="3"
+                    strokeDasharray={index === visitedCities.length - 1 ? "5,5" : "none"}
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{ duration: 1.5, delay: 0.5 }}
                   />
                 </svg>
               )}
@@ -85,27 +118,90 @@ const WorldMap: React.FC = () => {
               {/* City marker */}
               <motion.div 
                 className="absolute" 
-                style={{ left: `${x}%`, top: `${y}%`, transform: 'translate(-50%, -50%)' }}
+                style={{ left: `${x}px`, top: `${y}px`, transform: 'translate(-50%, -50%)' }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ delay: index * 0.2, type: "spring" }}
               >
-                <MapPin 
-                  className={`w-5 h-5 ${index === visitedCities.length - 1 ? 'text-game-red animate-pulse' : 'text-game-green'}`}
-                />
-                <div className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 text-xs font-bold whitespace-nowrap">
+                {index === visitedCities.length - 1 ? (
+                  <motion.div
+                    animate={{ 
+                      scale: [1, 1.2, 1],
+                      y: [0, -5, 0]
+                    }}
+                    transition={{ 
+                      duration: 1.5, 
+                      repeat: Infinity,
+                      repeatType: "reverse" 
+                    }}
+                  >
+                    <MapPin 
+                      className="w-6 h-6 text-game-red drop-shadow-md"
+                    />
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="absolute -top-1 -right-1"
+                    >
+                      <Sparkles className="w-3 h-3 text-yellow-400" />
+                    </motion.div>
+                  </motion.div>
+                ) : (
+                  <MapPin 
+                    className="w-5 h-5 text-game-green"
+                  />
+                )}
+                <motion.div 
+                  className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-bold whitespace-nowrap bg-white px-1 rounded shadow-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: index * 0.2 + 0.3 }}
+                >
                   {city}
-                </div>
+                </motion.div>
               </motion.div>
+              
+              {/* Animated path for current location */}
+              {index === visitedCities.length - 1 && (
+                <motion.div
+                  className="absolute"
+                  style={{ left: `${x}px`, top: `${y}px`, transform: 'translate(-50%, -50%)' }}
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0, 0.8, 0]
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "loop"
+                  }}
+                >
+                  <div className="w-8 h-8 rounded-full bg-red-500/30" />
+                </motion.div>
+              )}
             </React.Fragment>
           );
         })}
       </div>
-      <div className="mt-2 text-xs text-center text-gray-600">
+      <div className="mt-2 text-xs text-center text-gray-600 font-medium">
         Próximo destino: {level < Object.keys(CITY_COORDINATES).length ? 
           Object.keys(CITY_COORDINATES)[level] : "¡España completada!"}
       </div>
-    </div>
+      <motion.div
+        className="mt-2 h-1 bg-blue-200 rounded-full overflow-hidden"
+        initial={{ width: 0 }}
+        animate={{ width: "100%" }}
+        transition={{ duration: 1 }}
+      >
+        <motion.div
+          className="h-full bg-gradient-to-r from-game-blue to-game-purple"
+          initial={{ width: "0%" }}
+          animate={{ width: `${Math.min(100, (level / Object.keys(CITY_COORDINATES).length) * 100)}%` }}
+          transition={{ duration: 1, delay: 0.5 }}
+        />
+      </motion.div>
+    </motion.div>
   );
 };
 

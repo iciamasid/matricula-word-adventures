@@ -8,28 +8,36 @@ import { motion, AnimatePresence } from "framer-motion";
 const ErrorAlert: React.FC = () => {
   const { errorMessage, clearError } = useGame();
   
-  if (!errorMessage) return null;
-  
   return (
     <AnimatePresence>
-      <motion.div 
-        className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-xs z-50"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 20 }}
-      >
-        <Alert variant="destructive" className="relative">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Error</AlertTitle>
-          <AlertDescription>{errorMessage}</AlertDescription>
-          <button 
-            onClick={clearError}
-            className="absolute top-2 right-2 text-destructive hover:text-destructive/80"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </Alert>
-      </motion.div>
+      {errorMessage && (
+        <motion.div 
+          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-xs z-50"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20, transition: { duration: 0.2 } }}
+          transition={{ type: "spring", damping: 15 }}
+        >
+          <Alert variant="destructive" className="relative border-2 border-red-500">
+            <motion.div 
+              animate={{ rotate: [0, -5, 5, -5, 5, 0] }}
+              transition={{ duration: 0.5 }}
+            >
+              <AlertTriangle className="h-5 w-5" />
+            </motion.div>
+            <AlertTitle className="text-lg">¡Error!</AlertTitle>
+            <AlertDescription className="text-base">{errorMessage}</AlertDescription>
+            <motion.button 
+              onClick={clearError}
+              className="absolute top-2 right-2 text-destructive hover:text-destructive/80"
+              whileHover={{ scale: 1.2, rotate: 90 }}
+              transition={{ duration: 0.2 }}
+            >
+              <X className="h-5 w-5" />
+            </motion.button>
+          </Alert>
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 };
