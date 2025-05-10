@@ -120,6 +120,20 @@ const GameContent = () => {
           <Info className="w-4 h-4 mr-1" /> Instrucciones
         </Button>
       </div>
+
+      {/* Newly added car image */}
+      <motion.div
+        className="w-full flex justify-center mb-4"
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <img 
+          src="/lovable-uploads/5becfffc-2c80-433a-8148-0af29615f083.png" 
+          alt="Coche de juego" 
+          className="w-48 h-48 object-contain"
+        />
+      </motion.div>
     
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
@@ -144,7 +158,7 @@ const GameContent = () => {
                   }} 
                   transition={{ duration: 3, repeat: Infinity }}
                 >
-                  <motion.div className="w-10 h-10 text-game-green">🌍</motion.div>
+                  <motion.div className="w-14 h-14 text-3xl text-game-green">🌍</motion.div>
                 </motion.div>
                 <h3 className="text-xl font-bold text-purple-800 kids-text">Puntos Totales</h3>
               </div>
@@ -180,7 +194,7 @@ const GameContent = () => {
                   }} 
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <motion.div className="w-10 h-10 text-game-purple">🏆</motion.div>
+                  <motion.div className="w-14 h-14 text-3xl text-game-purple">🏆</motion.div>
                 </motion.div>
                 <h3 className="text-xl font-bold text-purple-800 kids-text">Nivel</h3>
               </div>
