@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { GameProvider } from "@/context/GameContext";
 import CountryPageIcons from "@/components/CountryPageIcons";
 import MusicPlayer from "@/components/MusicPlayer";
+import WorldMap from "@/components/WorldMap";
 
 // Add MusicPlayer component to the CountryPage
 const CountryPageWrapper = () => {
@@ -73,6 +75,9 @@ const CountryPageContent = () => {
   };
 
   const countryData = getCountryData();
+  
+  // Create a single-country array for highlighting in the map
+  const unlockedCountries = [countryData.name];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-100 to-blue-100 p-4">
@@ -97,6 +102,14 @@ const CountryPageContent = () => {
             animate={{ scale: 1 }}
             transition={{ duration: 1 }}
           />
+          
+          {/* Add map to highlight the country */}
+          <div className="h-[150px] w-full relative overflow-hidden border-t-2 border-b-2 border-purple-100">
+            <WorldMap 
+              highlightCountry={countryData.name} 
+              unlockedCountries={unlockedCountries}
+            />
+          </div>
           
           <div className="p-6">
             <h1 className="text-3xl font-bold kids-text flex items-center">

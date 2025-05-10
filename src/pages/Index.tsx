@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -128,9 +129,76 @@ const GameContent = () => {
           <LicensePlate />
           <WordInput />
           
-          {/* Score components */}
-          <ScorePanel />
-          <TotalPointsPanel />
+          {/* Score components in a single row */}
+          <div className="w-full grid grid-cols-2 gap-4 mb-4">
+            {/* Total Points Panel */}
+            <motion.div 
+              className="rounded-lg p-4 bg-white/90 shadow-lg text-center"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <motion.div
+                  animate={{ 
+                    rotate: [0, 10, -10, 0],
+                    scale: [1, 1.1, 1]
+                  }} 
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <motion.div className="w-7 h-7 text-game-green">🌍</motion.div>
+                </motion.div>
+                <h3 className="text-xl font-bold text-purple-800 kids-text">Puntos Totales</h3>
+              </div>
+              <motion.p 
+                className="text-3xl font-bold text-purple-900 kids-text mt-1"
+                animate={{ scale: [1, 1.05, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {totalPoints}
+              </motion.p>
+              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                <motion.div 
+                  className="bg-game-green h-2 rounded-full" 
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${(totalPoints % 500) / 5}%` }}
+                  transition={{ duration: 1 }}
+                />
+              </div>
+            </motion.div>
+            
+            {/* Level Panel */}
+            <motion.div 
+              className="rounded-lg p-4 bg-white/90 shadow-lg text-center"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <motion.div
+                  animate={{ 
+                    rotate: [0, 10, -10, 0],
+                  }} 
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <motion.div className="w-7 h-7 text-game-purple">🏆</motion.div>
+                </motion.div>
+                <h3 className="text-xl font-bold text-purple-800 kids-text">Nivel</h3>
+              </div>
+              <motion.p 
+                className="text-3xl font-bold text-purple-900 kids-text mt-1"
+                animate={level > 1 ? { scale: [1, 1.2, 1] } : {}}
+                transition={{ duration: 0.5 }}
+              >
+                {level}
+              </motion.p>
+              <p className="text-sm text-purple-600 kids-text">
+                {level > 1 ? '¡Nivel desbloqueado!' : 'Primer nivel'}
+              </p>
+            </motion.div>
+          </div>
           
           {/* Title for the map - updated text */}
           <motion.h2 

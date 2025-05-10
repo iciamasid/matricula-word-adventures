@@ -62,7 +62,7 @@ const WordInput: React.FC = () => {
           value={currentWord}
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          placeholder="Escribe una palabra"
+          placeholder="Escribe aquí"
           className="flex-1 text-center font-bold text-3xl py-6 uppercase border-2 border-purple-400 shadow-md kids-text"
           autoComplete="off"
         />

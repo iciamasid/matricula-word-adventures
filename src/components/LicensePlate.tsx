@@ -104,26 +104,6 @@ const LicensePlate: React.FC = () => {
           </div>
         </div>
       </div>
-      
-      {/* Consonants display below license plate */}
-      <div className="flex justify-center gap-4 mb-2">
-        {plateConsonants.split('').map((letter, index) => (
-          <motion.div
-            key={index}
-            className={`w-12 h-12 rounded-full flex items-center justify-center ${
-              index === 0 ? "bg-game-purple" : index === 1 ? "bg-game-blue" : "bg-game-yellow"
-            } shadow-md`}
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 + index * 0.2 }}
-            whileHover={{ scale: 1.1 }}
-          >
-            <span className="text-white text-3xl font-bold kids-text">
-              {letter}
-            </span>
-          </motion.div>
-        ))}
-      </div>
     </motion.div>
   );
 };
