@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { 
   generateLicensePlate, 
@@ -132,8 +131,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [showBonusPopup, setShowBonusPopup] = useState(false);
   const [bonusPoints, setBonusPoints] = useState(0);
   
-  // Music state
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  // Music state - initialize music to true by default
+  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
   const [shouldPlayLevelUpSound, setShouldPlayLevelUpSound] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(1);
   
@@ -150,7 +149,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedTotalPoints) setTotalPoints(parseInt(savedTotalPoints));
     if (savedHighScore) setHighScore(parseInt(savedHighScore));
     if (savedGamesPlayed) setGamesPlayed(parseInt(savedGamesPlayed));
-    if (savedMusicPreference) setIsMusicPlaying(savedMusicPreference === "true");
+    if (savedMusicPreference !== null) setIsMusicPlaying(savedMusicPreference === "true");
+    // If no saved preference, keep isMusicPlaying as true (default)
     
     generateNewPlate();
   }, []);
