@@ -12,18 +12,18 @@ interface WorldMapProps {
 const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries = [] }) => {
   const [zoom, setZoom] = useState(1);
   
-  // Map countries to their positions
+  // Map countries to their accurate positions
   const getCountryPosition = (country: string) => {
     const positions: Record<string, { left: string, top: string }> = {
       "España": { left: "47%", top: "42%" },
-      "Francia": { left: "49%", top: "38%" },
-      "Italia": { left: "52%", top: "42%" },
-      "Rusia": { left: "60%", top: "33%" },
-      "Japón": { left: "80%", top: "42%" },
-      "Estados Unidos": { left: "23%", top: "40%" },
-      "Argentina": { left: "32%", top: "75%" },
-      "Méjico": { left: "19%", top: "48%" },
-      "Australia": { left: "80%", top: "70%" },
+      "Francia": { left: "48.5%", top: "39%" },
+      "Italia": { left: "51%", top: "41%" },
+      "Rusia": { left: "62%", top: "35%" },
+      "Japón": { left: "82%", top: "42%" },
+      "Estados Unidos": { left: "20%", top: "40%" },
+      "Argentina": { left: "30%", top: "75%" },
+      "Méjico": { left: "17%", top: "48%" },
+      "Australia": { left: "83%", top: "75%" },
       "Antártida": { left: "50%", top: "90%" }
     };
     
@@ -33,7 +33,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
   // Get image for each country
   const getCountryImage = (country: string) => {
     const images: Record<string, string> = {
-      "España": "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png", // Updated to a better Spanish image
+      "España": "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
       "Francia": "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
       "Italia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
       "Rusia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
@@ -100,7 +100,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
           {/* Current highlighted country */}
           {highlightCountry && (
             <motion.div 
-              className="absolute w-8 h-8 z-10"
+              className="absolute w-6 h-6 z-10"
               style={{ 
                 left: getCountryPosition(highlightCountry).left,
                 top: getCountryPosition(highlightCountry).top,
@@ -111,7 +111,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
               transition={{ duration: 0.5 }}
             >
               <div className="bg-white rounded-full p-1 shadow-lg">
-                <div className="bg-red-500 rounded-full w-6 h-6 flex items-center justify-center pulse">
+                <div className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center pulse">
                   <span className="text-white text-xs font-bold">
                     {WORLD_DESTINATIONS.find(dest => dest.country === highlightCountry)?.flag || "🚩"}
                   </span>
@@ -142,7 +142,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
                 whileHover={{ scale: 1.2 }}
               >
                 <motion.div 
-                  className="bg-white rounded-full p-1 shadow-lg"
+                  className="bg-white rounded-full p-0.5 shadow-lg"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
@@ -150,7 +150,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
                   <img 
                     src={getCountryImage(country)} 
                     alt={country}
-                    className="w-7 h-7 rounded-full object-cover"
+                    className="w-5 h-5 rounded-full object-cover"
                   />
                 </motion.div>
               </motion.div>

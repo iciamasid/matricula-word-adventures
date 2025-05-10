@@ -73,31 +73,32 @@ const GameContent = () => {
         backgroundAttachment: "fixed"
       }}
     >
-      <motion.img 
-        src="/lovable-uploads/5241c79d-2ef8-4940-9d7f-0b05d3d9a912.png"
-        alt="Matriculabra Cadabra"
-        className="w-full object-contain mb-4 px-0"
-        style={{
-          maxHeight: isMobile ? "28vh" : "30vh",
-          width: "100%",
-        }}
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      />
+      <div className="relative w-full">
+        <motion.img 
+          src="/lovable-uploads/5241c79d-2ef8-4940-9d7f-0b05d3d9a912.png"
+          alt="Matriculabra Cadabra"
+          className="w-full object-contain mb-4 px-0"
+          style={{
+            maxHeight: isMobile ? "28vh" : "30vh",
+            width: "100%",
+          }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        />
+        
+        {/* Instructions button positioned at bottom left of the image */}
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="absolute bottom-6 left-4 bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text"
+          onClick={() => setShowInstructions(true)}
+        >
+          <Info className="w-4 h-4 mr-1" /> Instrucciones
+        </Button>
+      </div>
       
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
-        <div className="absolute top-4 right-4">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text"
-            onClick={() => setShowInstructions(true)}
-          >
-            <Info className="w-4 h-4 mr-1" /> Instrucciones
-          </Button>
-        </div>
-
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
           <LicensePlate />
           

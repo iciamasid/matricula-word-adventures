@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -14,8 +13,8 @@ const countriesInfo = {
     language: "Español",
     famousFor: ["La Sagrada Familia", "Platos como la paella", "Fútbol"],
     funFact: "¡En España hay una fiesta llamada 'La Tomatina' donde la gente se lanza tomates unos a otros por diversión!",
-    image: "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-    description: "España es un país colorido con hermosas playas, mucha historia y deliciosa comida. Tiene 17 regiones diferentes, cada una con sus propias tradiciones."
+    image: "https://images.unsplash.com/photo-1561632669-7f55f7975606?q=80&w=1974&auto=format&fit=crop",
+    description: "España es un país colorido con hermosas playas, mucha historia y deliciosa comida. Tiene 17 regiones diferentes, cada una con sus propias tradiciones. La Giralda es una famosa torre en Sevilla que originalmente era un minarete."
   },
   "Francia": {
     flag: "🇫🇷",
