@@ -35,8 +35,7 @@ const getLevelFlag = (level: number) => {
 };
 
 
- image: "/lovable-uploads/coche_animado.gig", // Image of La Giralda
-   
+  
 // Componente para manejar el contenido del juego
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
