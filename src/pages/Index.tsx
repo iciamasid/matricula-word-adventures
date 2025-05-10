@@ -20,8 +20,7 @@ const Index = () => {
           backgroundRepeat: "no-repeat"
         }}
       >
-        {/* Overlay para mejorar la legibilidad del contenido */}
-        <div className="absolute inset-0 bg-white/85"></div>
+        {/* Eliminamos el overlay translúcido */}
         
         <div className="relative z-10 w-full max-w-md flex flex-col items-center">
           <motion.h1
