@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { 
   generateLicensePlate, 
@@ -94,10 +95,6 @@ interface GameContextType {
   errorMessage: string | null;
   showBonusPopup: boolean;
   bonusPoints: number;
-  isMusicPlaying: boolean;
-  setIsMusicPlaying: React.Dispatch<React.SetStateAction<boolean>>;
-  currentLevel: number;
-  shouldPlayLevelUpSound: boolean;
   
   // Actions
   generateNewPlate: () => void;
@@ -131,11 +128,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [showBonusPopup, setShowBonusPopup] = useState(false);
   const [bonusPoints, setBonusPoints] = useState(0);
   
-  // Music state - initialize music to true by default
-  const [isMusicPlaying, setIsMusicPlaying] = useState(true);
-  const [shouldPlayLevelUpSound, setShouldPlayLevelUpSound] = useState(false);
-  const [currentLevel, setCurrentLevel] = useState(1);
-  
   // Add a ref to track if this is the initial load
   const isInitialLoad = useRef(true);
   
@@ -144,35 +136,19 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedTotalPoints = localStorage.getItem("matriculabraCadabra_totalPoints");
     const savedHighScore = localStorage.getItem("matriculabraCadabra_highScore");
     const savedGamesPlayed = localStorage.getItem("matriculabraCadabra_gamesPlayed");
-    const savedMusicPreference = localStorage.getItem("matriculabraCadabra_musicPlaying");
     
     if (savedTotalPoints) setTotalPoints(parseInt(savedTotalPoints));
     if (savedHighScore) setHighScore(parseInt(savedHighScore));
     if (savedGamesPlayed) setGamesPlayed(parseInt(savedGamesPlayed));
-    if (savedMusicPreference !== null) setIsMusicPlaying(savedMusicPreference === "true");
-    // If no saved preference, keep isMusicPlaying as true (default)
     
     generateNewPlate();
   }, []);
-  
-  // Save music preference
-  useEffect(() => {
-    localStorage.setItem("matriculabraCadabra_musicPlaying", isMusicPlaying.toString());
-  }, [isMusicPlaying]);
   
   // Update level and destination when points change
   useEffect(() => {
     const newLevel = getLevel(totalPoints);
     if (newLevel !== level) {
       setLevel(newLevel);
-      setCurrentLevel(newLevel);
-      
-      // Play level up sound if it's not the initial load
-      if (!isInitialLoad.current) {
-        setShouldPlayLevelUpSound(true);
-        // Reset after a short delay
-        setTimeout(() => setShouldPlayLevelUpSound(false), 1000);
-      }
       
       // Elegir un destino basado en el nivel
       const destinationIndex = Math.min(newLevel - 1, WORLD_DESTINATIONS.length - 1);
@@ -367,10 +343,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         errorMessage,
         showBonusPopup,
         bonusPoints,
-        isMusicPlaying,
-        setIsMusicPlaying,
-        currentLevel,
-        shouldPlayLevelUpSound,
         generateNewPlate,
         setCurrentWord,
         submitWord,

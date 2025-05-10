@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -17,7 +16,6 @@ import { toast } from "@/hooks/use-toast";
 import GamePopup from "@/components/GamePopup";
 import ScorePanel from "@/components/ScorePanel";
 import TotalPointsPanel from "@/components/TotalPointsPanel";
-import MusicPlayer from "@/components/MusicPlayer";
 
 // Función para obtener la bandera según el nivel
 const getLevelFlag = (level: number) => {
@@ -96,9 +94,6 @@ const GameContent = () => {
         backgroundAttachment: "fixed"
       }}
     >
-      {/* Include MusicPlayer component */}
-      <MusicPlayer />
-      
       <div className="relative w-full">
         <motion.img 
           src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png"
@@ -131,7 +126,7 @@ const GameContent = () => {
           
           {/* Score components in a single row */}
           <div className="w-full grid grid-cols-2 gap-4 mb-4">
-            {/* Total Points Panel */}
+            {/* Total Points Panel - with updated larger icon */}
             <motion.div 
               className="rounded-lg p-4 bg-white/90 shadow-lg text-center"
               initial={{ opacity: 0, x: -20 }}
@@ -147,7 +142,7 @@ const GameContent = () => {
                   }} 
                   transition={{ duration: 3, repeat: Infinity }}
                 >
-                  <motion.div className="w-7 h-7 text-game-green">🌍</motion.div>
+                  <motion.div className="w-10 h-10 text-game-green">🌍</motion.div>
                 </motion.div>
                 <h3 className="text-xl font-bold text-purple-800 kids-text">Puntos Totales</h3>
               </div>
@@ -168,7 +163,7 @@ const GameContent = () => {
               </div>
             </motion.div>
             
-            {/* Level Panel */}
+            {/* Level Panel - with updated larger icon */}
             <motion.div 
               className="rounded-lg p-4 bg-white/90 shadow-lg text-center"
               initial={{ opacity: 0, x: 20 }}
@@ -183,7 +178,7 @@ const GameContent = () => {
                   }} 
                   transition={{ duration: 2, repeat: Infinity }}
                 >
-                  <motion.div className="w-7 h-7 text-game-purple">🏆</motion.div>
+                  <motion.div className="w-10 h-10 text-game-purple">🏆</motion.div>
                 </motion.div>
                 <h3 className="text-xl font-bold text-purple-800 kids-text">Nivel</h3>
               </div>

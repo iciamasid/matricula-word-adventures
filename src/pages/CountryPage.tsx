@@ -6,15 +6,13 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { GameProvider } from "@/context/GameContext";
 import CountryPageIcons from "@/components/CountryPageIcons";
-import MusicPlayer from "@/components/MusicPlayer";
 import WorldMap from "@/components/WorldMap";
 
-// Add MusicPlayer component to the CountryPage
+// Simplified CountryPage without MusicPlayer
 const CountryPageWrapper = () => {
   return (
     <GameProvider>
       <CountryPageContent />
-      <MusicPlayer />
     </GameProvider>
   );
 };
@@ -23,7 +21,7 @@ const CountryPageWrapper = () => {
 const CountryPageContent = () => {
   const { country } = useParams();
   
-  // Country data
+  // Country data with updated images for iconic buildings
   const getCountryData = () => {
     switch(country?.toLowerCase()) {
       case "españa":
@@ -34,7 +32,7 @@ const CountryPageContent = () => {
           language: "Español",
           famousFor: "La Sagrada Familia, flamenco y paella",
           fact: "España tiene 47 lugares declarados Patrimonio de la Humanidad por la UNESCO, ¡el tercer país con más lugares protegidos!",
-          image: "/lovable-uploads/310987b9-7b6d-48c9-8dec-f37f4487ca8c.png",
+          image: "/lovable-uploads/310987b9-7b6d-48c9-8dec-f37f4487ca8c.png", // Image of La Giralda
           imageAlt: "La Giralda, Sevilla"
         };
       case "francia":
@@ -45,7 +43,7 @@ const CountryPageContent = () => {
           language: "Francés",
           famousFor: "La Torre Eiffel, el queso y los cruasanes",
           fact: "¡En Francia hay más de 1.500 tipos diferentes de queso!",
-          image: "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
+          image: "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png", // Image of the Eiffel Tower
           imageAlt: "Torre Eiffel, París"
         };
       case "rusia":
@@ -56,7 +54,7 @@ const CountryPageContent = () => {
           language: "Ruso",
           famousFor: "El Kremlin, la Plaza Roja y las matrioshkas",
           fact: "¡Rusia es tan grande que tiene 11 zonas horarias diferentes!",
-          image: "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+          image: "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png", // Image of the Kremlin
           imageAlt: "El Kremlin, Moscú"
         };
       // Add more cases for other countries
