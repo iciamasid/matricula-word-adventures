@@ -41,7 +41,7 @@ const countriesInfo = {
     language: "Ruso",
     famousFor: ["La Plaza Roja", "El Kremlin", "Ballet clásico"],
     funFact: "¡Rusia es tan grande que abarca 11 zonas horarias diferentes! Si en un extremo es por la mañana, en el otro ya es casi de noche.",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1513326738677-b964603b9061?q=80&w=1748&auto=format&fit=crop",
     description: "Rusia es el país más grande del mundo, ¡tan grande que ocupa parte de Europa y parte de Asia! Tiene hermosos palacios, bosques enormes y mucha nieve en invierno."
   },
   "Japón": {
@@ -50,7 +50,7 @@ const countriesInfo = {
     language: "Japonés",
     famousFor: ["Anime y manga", "Sushi", "Tecnología"],
     funFact: "En Japón hay un café donde puedes jugar con gatos mientras tomas algo. ¡Se llaman 'Cat Cafés'!",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1528164344705-47542687000d?q=80&w=1784&auto=format&fit=crop",
     description: "Japón es un país con una mezcla de tradición y tecnología moderna. Tiene hermosos templos, jardines de cerezos y es donde se inventaron los videojuegos y el anime."
   },
   "Estados Unidos": {
@@ -59,7 +59,7 @@ const countriesInfo = {
     language: "Inglés",
     famousFor: ["Hollywood", "Parques de atracciones", "Hamburguesas"],
     funFact: "El Gran Cañón es tan grande que se puede ver desde el espacio. ¡Y algunos árboles en California son tan altos como un edificio de 30 pisos!",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29?q=80&w=1932&auto=format&fit=crop",
     description: "Estados Unidos es un país muy grande con muchos lugares diferentes para visitar: desde grandes ciudades como Nueva York hasta desiertos, playas y montañas."
   },
   "Argentina": {
@@ -68,7 +68,7 @@ const countriesInfo = {
     language: "Español",
     famousFor: ["Fútbol", "Tango", "Asado (barbacoa)"],
     funFact: "En Argentina están las Cataratas del Iguazú, que tienen 275 cascadas diferentes. ¡Es como tener cientos de cascadas juntas!",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1589909202802-8f4aadce1849?q=80&w=1935&auto=format&fit=crop",
     description: "Argentina es un país con enormes llanuras donde viven vaqueros llamados gauchos, montañas nevadas, y hasta glaciares de hielo azul en el sur."
   },
   "Méjico": {
@@ -77,7 +77,7 @@ const countriesInfo = {
     language: "Español",
     famousFor: ["Tacos", "Pirámides mayas", "Día de los Muertos"],
     funFact: "El chocolate fue inventado por los antiguos mayas y aztecas de México, ¡pero lo tomaban como una bebida picante, no dulce!",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1518638150340-f706e86654de?q=80&w=1967&auto=format&fit=crop",
     description: "México tiene una cultura muy colorida, con música alegre, comida deliciosa y fiestas llenas de color. También tiene pirámides antiguas que puedes visitar."
   },
   "Australia": {
@@ -86,7 +86,7 @@ const countriesInfo = {
     language: "Inglés",
     famousFor: ["Canguros y koalas", "La Gran Barrera de Coral", "La Ópera de Sídney"],
     funFact: "En Australia viven animales que no existen en ninguna otra parte del mundo, como el ornitorrinco, ¡que parece una mezcla entre pato y castor!",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be?q=80&w=2030&auto=format&fit=crop",
     description: "Australia es un país que también es un continente entero. Tiene playas increíbles, el desierto en el centro llamado 'Outback' y animales muy especiales."
   },
   "Antártida": {
@@ -95,7 +95,7 @@ const countriesInfo = {
     language: "No tiene idioma oficial",
     famousFor: ["Pingüinos", "Científicos", "Hielo y nieve"],
     funFact: "La Antártida está cubierta por una capa de hielo que tiene un promedio de 1.6 kilómetros de espesor. ¡Es el lugar más frío, ventoso y seco del planeta!",
-    image: "/placeholder.svg",
+    image: "https://images.unsplash.com/photo-1518135714426-c18f5ffb6f4d?q=80&w=1956&auto=format&fit=crop",
     description: "La Antártida es un continente helado en el extremo sur de la Tierra. No pertenece a ningún país y está lleno de pingüinos, focas y científicos que estudian el clima."
   }
 };
@@ -170,7 +170,7 @@ const CountryPage: React.FC = () => {
           <div className="p-6">
             {/* Mapa con el país destacado */}
             <div className="h-64 mb-6 rounded-lg overflow-hidden border-4 border-purple-200">
-              <WorldMap highlightCountry={country} />
+              <WorldMap highlightCountry={country} unlockedCountries={[country]} />
             </div>
             
             {/* Imagen del país */}

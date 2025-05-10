@@ -2,7 +2,7 @@
 import React from "react";
 import { useGame } from "@/context/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MapPin, Sparkles, Award, Star, CarFront } from "lucide-react";
+import { MapPin, Sparkles, Award, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -26,7 +26,7 @@ const LevelRewards: React.FC = () => {
         <CardHeader className="pb-2">
           <CardTitle className="text-2xl text-purple-800 flex items-center justify-center kids-text">
             <Sparkles className="h-6 w-6 text-yellow-500 mr-2" />
-            ¡Tu recompensa: Conoce el mundo!
+            ¡Has llegado hasta!
             <motion.div
               animate={{ rotate: [0, 10, 0, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -85,16 +85,6 @@ const LevelRewards: React.FC = () => {
           </motion.div>
           
           <div className="bg-purple-100 p-4 rounded-lg border border-purple-200">
-            <div className="flex justify-end">
-              <motion.div 
-                animate={{ x: [0, 10, 0], rotate: [0, 5, 0] }}
-                transition={{ duration: 4, repeat: Infinity }}
-                className="mb-2"
-              >
-                <CarFront size={36} className="text-purple-600" />
-              </motion.div>
-            </div>
-            
             <motion.div 
               className="flex gap-3 items-start"
               initial={{ opacity: 0, x: -10 }}

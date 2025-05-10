@@ -66,16 +66,6 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
             </motion.div>
           )}
           
-          {/* Tooltip to explain the clickable countries */}
-          <motion.div
-            className="absolute top-1 left-1 bg-white/80 px-2 py-1 rounded text-xs text-purple-900 font-bold"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-          >
-            <span className="kids-text">¡Haz clic en un país para visitarlo!</span>
-          </motion.div>
-          
           {/* Mostrar SOLO los países desbloqueados */}
           {unlockedCountries && unlockedCountries.map((country, index) => (
             <Link

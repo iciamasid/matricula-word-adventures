@@ -22,21 +22,21 @@ const GameContent = () => {
   const isMobile = useIsMobile();
   const { totalPoints, destinationInfo, level } = useGame();
   
-  // Simular países desbloqueados basados en puntos totales
+  // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
     const countries = [];
-    if (totalPoints >= 100) countries.push("España");
-    if (totalPoints >= 200) countries.push("Francia");
-    if (totalPoints >= 300) countries.push("Italia");
-    if (totalPoints >= 400) countries.push("Rusia");
-    if (totalPoints >= 500) countries.push("Japón");
-    if (totalPoints >= 600) countries.push("Estados Unidos");
-    if (totalPoints >= 700) countries.push("Argentina");
-    if (totalPoints >= 800) countries.push("Méjico");
-    if (totalPoints >= 900) countries.push("Australia");
-    if (totalPoints >= 1000) countries.push("Antártida");
+    if (level >= 1) countries.push("España");
+    if (level >= 2) countries.push("Francia");
+    if (level >= 3) countries.push("Italia");
+    if (level >= 4) countries.push("Rusia");
+    if (level >= 5) countries.push("Japón");
+    if (level >= 6) countries.push("Estados Unidos");
+    if (level >= 7) countries.push("Argentina");
+    if (level >= 8) countries.push("Méjico");
+    if (level >= 9) countries.push("Australia");
+    if (level >= 10) countries.push("Antártida");
     return countries;
-  }, [totalPoints]);
+  }, [level]);
   
   return (
     <div 
@@ -50,11 +50,10 @@ const GameContent = () => {
       <motion.img 
         src="/lovable-uploads/aa16d3eb-100f-4916-ba38-871f34a715da.png"
         alt="Matriculabra Cadabra"
-        className="w-full object-cover mb-4"
+        className="w-full object-contain mb-4"
         style={{
-          maxHeight: isMobile ? "18vh" : "auto",
+          maxHeight: isMobile ? "22vh" : "25vh",
           width: "100%",
-          objectFit: "contain",
         }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
