@@ -6,8 +6,8 @@ import { useGame } from "@/context/GameContext";
 import { ArrowRight, Check, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Array of colors for the consonant squares with more distinctive colors
-const CONSONANT_COLORS = ["bg-game-purple", "bg-game-orange", "bg-game-green"];
+// Array of colors for the consonant squares with more game-themed colors
+const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
 const SUCCESS_MESSAGES = ["¡PERFECTO!", "¡EXCELENTE!", "¡GENIAL!", "¡INCREÍBLE!"];
 
 const WordInput: React.FC = () => {
@@ -55,11 +55,11 @@ const WordInput: React.FC = () => {
 
   return (
     <div className="w-full max-w-xs relative">
-      {/* Success message - centered in the screen */}
+      {/* Success message - centered over the license plate */}
       <AnimatePresence>
         {showSuccess && (
           <motion.div 
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg z-50 flex items-center gap-2"
+            className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg z-50 flex items-center gap-2"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}
@@ -68,7 +68,7 @@ const WordInput: React.FC = () => {
             <motion.div animate={{ rotate: [0, 15, -15, 15, 0] }} transition={{ duration: 0.5 }}>
               <Star className="h-6 w-6 text-yellow-300" />
             </motion.div>
-            <span className="text-2xl font-bold">{successMessage}</span>
+            <span className="text-2xl font-bold kids-text">{successMessage}</span>
             <motion.div animate={{ rotate: [0, -15, 15, -15, 0] }} transition={{ duration: 0.5 }}>
               <Star className="h-6 w-6 text-yellow-300" />
             </motion.div>
@@ -84,7 +84,7 @@ const WordInput: React.FC = () => {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder="ESCRIBE UNA PALABRA CON ESAS CONSONANTES"
-          className="flex-1 text-center font-bold text-lg py-5 uppercase border-2 border-purple-400 shadow-md"
+          className="flex-1 text-center font-bold text-lg py-5 uppercase border-2 border-purple-400 shadow-md kids-text"
           autoComplete="off"
         />
         <motion.div

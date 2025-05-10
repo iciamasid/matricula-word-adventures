@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { X } from "lucide-react";
+import { X, Target, Award, Star, Book, Zap } from "lucide-react";
 
 interface GameInstructionsProps {
   onClose: () => void;
@@ -30,13 +30,15 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
           <X className="w-6 h-6" />
         </button>
 
-        <h2 className="text-3xl font-normal mb-4 text-purple-800 kids-text">
+        <h2 className="text-3xl kids-text mb-4 text-purple-800 flex items-center gap-2">
+          <Book className="w-7 h-7 text-purple-600" />
           ¿Cómo jugar?
         </h2>
 
         <div className="space-y-4">
-          <div>
-            <h3 className="text-2xl font-normal text-purple-700 kids-text mb-2">
+          <div className="bg-purple-50 p-4 rounded-lg">
+            <h3 className="text-2xl kids-text text-purple-700 mb-2 flex items-center gap-2">
+              <Target className="w-6 h-6 text-purple-600" />
               Objetivo del juego
             </h3>
             <p className="instruction-text kids-text">
@@ -44,8 +46,9 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             </p>
           </div>
 
-          <div>
-            <h3 className="text-2xl font-normal text-purple-700 kids-text mb-2">
+          <div className="bg-blue-50 p-4 rounded-lg">
+            <h3 className="text-2xl kids-text text-blue-700 mb-2 flex items-center gap-2">
+              <Award className="w-6 h-6 text-blue-600" />
               Reglas
             </h3>
             <ul className="list-disc pl-6 space-y-2">
@@ -67,8 +70,9 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-2xl font-normal text-purple-700 kids-text mb-2">
+          <div className="bg-yellow-50 p-4 rounded-lg">
+            <h3 className="text-2xl kids-text text-yellow-700 mb-2 flex items-center gap-2">
+              <Star className="w-6 h-6 text-yellow-500" />
               Puntuación
             </h3>
             <ul className="list-disc pl-6 space-y-2">
@@ -90,8 +94,9 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             </ul>
           </div>
 
-          <div>
-            <h3 className="text-2xl font-normal text-purple-700 kids-text mb-2">
+          <div className="bg-green-50 p-4 rounded-lg">
+            <h3 className="text-2xl kids-text text-green-700 mb-2 flex items-center gap-2">
+              <Zap className="w-6 h-6 text-green-600" />
               Niveles y viajes
             </h3>
             <p className="instruction-text kids-text">
@@ -103,7 +108,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
           <div className="pt-2">
             <button
               onClick={onClose}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg kids-text"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg kids-text text-lg"
             >
               ¡Entendido!
             </button>

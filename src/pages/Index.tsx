@@ -106,7 +106,7 @@ const GameContent = () => {
             {plateConsonants.split("").map((letter, index) => (
               <motion.div
                 key={index}
-                className="inline-flex items-center justify-center w-12 h-12 bg-white text-purple-900 text-2xl font-bold rounded-md shadow-md"
+                className={`inline-flex items-center justify-center w-12 h-12 ${CONSONANT_COLORS[index % CONSONANT_COLORS.length]} text-white text-2xl font-bold rounded-md shadow-md kids-text`}
                 whileHover={{ scale: 1.1 }}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -152,9 +152,9 @@ const GameContent = () => {
             ¿A qué países has viajado ya con tus matrículas acertadas?
           </motion.h2>
           
-          {/* Mapa Mundi con países desbloqueados */}
+          {/* Mapa Mundi con países desbloqueados en un recuadro */}
           <motion.div 
-            className="w-full h-[200px] rounded-lg overflow-hidden mb-2"
+            className="w-full h-[200px] rounded-lg overflow-hidden mb-2 border-4 border-white/50 shadow-lg"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -167,7 +167,7 @@ const GameContent = () => {
           
           <LevelRewards />
           
-          {/* Reset Game Button */}
+          {/* Reset Game Button - in purple */}
           <motion.div
             className="w-full max-w-xs mt-8"
             whileHover={{ scale: 1.03 }}
@@ -175,7 +175,7 @@ const GameContent = () => {
           >
             <Button
               onClick={handleResetGame}
-              className="w-full bg-red-600 hover:bg-red-700 text-white kids-text py-6"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white kids-text py-6"
               size="lg"
             >
               <RefreshCw className="mr-2 h-5 w-5" /> Iniciar nueva partida
@@ -193,6 +193,9 @@ const GameContent = () => {
     </div>
   );
 };
+
+// Define custom consonant colors array for use in the page
+const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
 
 const Index = () => {
   return (

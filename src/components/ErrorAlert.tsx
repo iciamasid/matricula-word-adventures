@@ -11,7 +11,7 @@ const ErrorAlert: React.FC = () => {
     <AnimatePresence>
       {errorMessage && (
         <motion.div 
-          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-xs"
+          className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-xs"
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
@@ -24,7 +24,7 @@ const ErrorAlert: React.FC = () => {
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="pr-6 font-medium text-lg text-center">{errorMessage}</div>
+            <div className="pr-6 font-medium text-lg text-center kids-text">{errorMessage}</div>
           </div>
         </motion.div>
       )}
