@@ -1,4 +1,3 @@
-
 // Generates a random license plate with 4 numbers and 3 consonants
 export function generateLicensePlate(): string {
   const numbers = Array(4)
@@ -64,8 +63,28 @@ export function calculateScore(word: string, plateConsonants: string): number {
   if (score > 0) {
     score += Math.min(50, word.length * 5);
   }
+  
+  // Bonus for English words
+  if (score > 0 && isEnglishWord(word)) {
+    score = 200;
+  }
 
   return score;
+}
+
+// Basic check if a word might be English (simplified)
+function isEnglishWord(word: string): boolean {
+  // This is a very simplified check that considers words ending in typical English suffixes
+  // or containing typical English letter combinations
+  const englishPatterns = [
+    /ing$/, /tion$/, /th/, /wh/, /ph/, /gh/, /sh/, /ght$/, /ought$/, /y$/,
+    /ew$/, /dge$/, /ck$/, /mb$/, /kn/, /wr/
+  ];
+  
+  const uppercaseWord = word.toUpperCase();
+  
+  // Check against common English patterns
+  return englishPatterns.some(pattern => pattern.test(uppercaseWord));
 }
 
 // Get game level from points
@@ -109,9 +128,7 @@ export function isValidWord(word: string, plateConsonants: string): boolean {
   return false;
 }
 
-// Word validation function - This is the main change:
-// Instead of using a limited dictionary, we'll use a more permissive approach
-// considering any word with at least 3 letters as valid for gameplay purposes
+// Word validation function
 export function wordExists(word: string): boolean {
   // First check our dictionary for common words
   const uppercaseWord = word.toUpperCase();
@@ -122,7 +139,6 @@ export function wordExists(word: string): boolean {
   }
   
   // For gameplay purposes, accept anything with 3+ letters that looks like a word
-  // This is a simplified approach but will work better for the game mechanic
   return true;
 }
 

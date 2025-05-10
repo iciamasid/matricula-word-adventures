@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { 
   generateLicensePlate, 
@@ -266,7 +265,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       let successMessage = "¡Palabra aceptada!";
       
-      if (newScore >= 100) {
+      if (newScore === 200) {
+        successMessage = "¡PALABRA EN INGLÉS!";
+      } else if (newScore >= 100) {
         successMessage = "¡PERFECTO!";
       } else if (newScore >= 75) {
         successMessage = "¡EXCELENTE!";

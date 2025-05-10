@@ -6,6 +6,7 @@ import WordInput from "@/components/WordInput";
 import ScoreDisplay from "@/components/ScoreDisplay";
 import NewGameButton from "@/components/NewGameButton";
 import ErrorAlert from "@/components/ErrorAlert";
+import LevelRewards from "@/components/LevelRewards";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
@@ -21,10 +22,8 @@ const Index = () => {
       <div 
         className="min-h-screen flex flex-col items-center relative overflow-hidden"
         style={{
-          backgroundImage: "url('/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png')",
+          background: "linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%)",
           backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
           backgroundAttachment: "fixed"
         }}
       >
@@ -55,11 +54,13 @@ const Index = () => {
           <div className="w-full max-w-md flex flex-col items-center space-y-4">
             <LicensePlate />
             
-            <NewGameButton />
-            
             <WordInput />
             
+            <NewGameButton />
+            
             <ScoreDisplay />
+            
+            <LevelRewards />
           </div>
           
           <ErrorAlert />

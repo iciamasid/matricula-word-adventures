@@ -56,22 +56,45 @@ const LicensePlate: React.FC = () => {
 
   return (
     <motion.div
-      className="license-plate py-3 px-5 rounded-md shadow-md w-full max-w-xs mx-auto mb-2"
+      className="license-plate py-3 px-5 rounded-md shadow-md w-full max-w-xs mx-auto mb-2 relative"
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
-      <div className="flex justify-center items-center">
+      {/* EU flag */}
+      <div className="absolute left-2 top-1/2 transform -translate-y-1/2 flex flex-col items-center">
+        <div className="bg-blue-600 rounded-sm flex items-center justify-center w-8 h-6 mb-1">
+          <div className="text-yellow-300 text-xs flex justify-center items-center">
+            <motion.span 
+              animate={{ 
+                rotateY: [0, 360],
+                scale: [1, 1.2, 1] 
+              }}
+              transition={{ 
+                duration: 3, 
+                repeat: Infinity, 
+                repeatDelay: 5 
+              }}
+              className="flex"
+            >
+              ★★★★★
+            </motion.span>
+          </div>
+        </div>
+        <div className="text-[8px] font-bold text-center text-gray-600">E</div>
+      </div>
+      
+      <div className="flex justify-center items-center ml-6">
         <div className="text-center flex justify-center">
           <motion.span 
-            className={`text-gray-800 ${isMobile ? "text-2xl" : "text-3xl"} font-bold tracking-widest`}
+            className={`text-gray-800 ${isMobile ? "text-xl" : "text-3xl"} font-bold tracking-widest`}
             animate={isAnimating ? { y: [0, -2, 0, 2, 0] } : {}}
             transition={{ repeat: Infinity, duration: 0.3 }}
           >
             {numbers}
           </motion.span>
           <motion.span 
-            className={`text-game-blue ml-2 ${isMobile ? "text-2xl" : "text-3xl"} font-bold tracking-widest`}
+            className={`text-game-blue ml-2 ${isMobile ? "text-xl" : "text-3xl"} font-bold tracking-widest`}
             animate={isAnimating ? { y: [0, -2, 0, 2, 0] } : {}}
             transition={{ repeat: Infinity, duration: 0.3, delay: 0.1 }}
           >
