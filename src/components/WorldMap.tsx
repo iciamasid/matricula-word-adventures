@@ -4,126 +4,166 @@ import { motion } from 'framer-motion';
 
 interface WorldMapProps {
   highlightCountry?: string;
+  unlockedCountries?: string[];
 }
 
-const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry }) => {
+const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries = [] }) => {
   return (
-    <div className="bg-purple-50 h-full w-full flex items-center justify-center p-3">
+    <div className="bg-[#9a83b9] h-full w-full flex items-center justify-center p-3">
       <motion.div 
         className="relative w-full h-full"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <svg
-          viewBox="0 0 1000 500"
-          className="w-full h-full"
-          style={{ filter: 'drop-shadow(1px 1px 3px rgba(0,0,0,0.2))' }}
-        >
-          {/* Simplified world map outlines */}
-          <g fill="#d1c2e1" stroke="#9a83b9" strokeWidth="1">
-            {/* North America */}
-            <path d="M150,120 L280,120 L330,220 L280,270 L210,290 L160,260 L130,200 Z" />
-            
-            {/* South America */}
-            <path d="M230,290 L280,290 L310,380 L270,450 L210,430 L200,340 Z" />
-            
-            {/* Europe */}
-            <path d="M450,120 L550,100 L570,170 L510,190 L480,150 Z" />
-            
-            {/* Africa */}
-            <path d="M450,200 L550,200 L580,300 L530,380 L460,350 L430,270 Z" />
-            
-            {/* Asia */}
-            <path d="M580,100 L800,120 L820,220 L750,300 L620,290 L580,200 L570,170 Z" />
-            
-            {/* Australia */}
-            <path d="M750,320 L850,330 L870,380 L820,410 L760,390 Z" />
-          </g>
+        <div className="w-full h-full relative">
+          {/* Usar la imagen del mapa mundi como fondo */}
+          <img 
+            src="/lovable-uploads/775e117d-bc61-4576-a77e-acba4f134785.png" 
+            alt="Mapa Mundi Infantil"
+            className="w-full h-full object-cover rounded-lg"
+          />
           
           {/* Highlight the selected country if provided */}
           {highlightCountry && (
-            <motion.circle
-              cx={highlightCountry === "España" ? 475 : 
-                  highlightCountry === "Francia" ? 485 : 
-                  highlightCountry === "Italia" ? 505 : 
-                  highlightCountry === "Reino Unido" ? 465 : 
-                  highlightCountry === "Estados Unidos" ? 200 : 
-                  highlightCountry === "Japón" ? 800 : 
-                  highlightCountry === "Australia" ? 800 : 
-                  highlightCountry === "Brasil" ? 270 : 
-                  highlightCountry === "Egipto" ? 510 : 
-                  highlightCountry === "China" ? 720 : 
-                  highlightCountry === "Sudáfrica" ? 510 : 
-                  highlightCountry === "Kenia" ? 530 : 500}
-              cy={highlightCountry === "España" ? 150 : 
-                  highlightCountry === "Francia" ? 140 : 
-                  highlightCountry === "Italia" ? 155 : 
-                  highlightCountry === "Reino Unido" ? 120 : 
-                  highlightCountry === "Estados Unidos" ? 170 : 
-                  highlightCountry === "Japón" ? 180 : 
-                  highlightCountry === "Australia" ? 360 : 
-                  highlightCountry === "Brasil" ? 350 : 
-                  highlightCountry === "Egipto" ? 230 : 
-                  highlightCountry === "China" ? 180 : 
-                  highlightCountry === "Sudáfrica" ? 350 : 
-                  highlightCountry === "Kenia" ? 280 : 250}
-              r="20"
-              fill="#ff5c8d"
-              stroke="#fff"
-              strokeWidth="2"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ 
-                scale: [0.8, 1.2, 1],
-                opacity: 1
+            <motion.div
+              className="absolute"
+              style={{
+                left: highlightCountry === "España" ? "47.5%" : 
+                    highlightCountry === "Francia" ? "48.5%" : 
+                    highlightCountry === "Italia" ? "50.5%" : 
+                    highlightCountry === "Reino Unido" ? "46.5%" : 
+                    highlightCountry === "Estados Unidos" ? "20%" : 
+                    highlightCountry === "Japón" ? "80%" : 
+                    highlightCountry === "Australia" ? "80%" : 
+                    highlightCountry === "Brasil" ? "27%" : 
+                    highlightCountry === "Egipto" ? "51%" : 
+                    highlightCountry === "China" ? "72%" : 
+                    highlightCountry === "Sudáfrica" ? "51%" : 
+                    highlightCountry === "Kenia" ? "53%" : "50%",
+                top: highlightCountry === "España" ? "30%" : 
+                    highlightCountry === "Francia" ? "28%" : 
+                    highlightCountry === "Italia" ? "31%" : 
+                    highlightCountry === "Reino Unido" ? "24%" : 
+                    highlightCountry === "Estados Unidos" ? "34%" : 
+                    highlightCountry === "Japón" ? "36%" : 
+                    highlightCountry === "Australia" ? "72%" : 
+                    highlightCountry === "Brasil" ? "70%" : 
+                    highlightCountry === "Egipto" ? "46%" : 
+                    highlightCountry === "China" ? "36%" : 
+                    highlightCountry === "Sudáfrica" ? "70%" : 
+                    highlightCountry === "Kenia" ? "56%" : "50%",
               }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
-            />
+            >
+              <motion.div
+                className="w-16 h-16 rounded-full bg-purple-500/70 border-4 border-white"
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ 
+                  scale: [0.8, 1.2, 1],
+                  opacity: 1
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  repeatType: "reverse"
+                }}
+              />
+            </motion.div>
           )}
           
-          {/* Country Labels */}
+          {/* Mostrar los países desbloqueados */}
+          {unlockedCountries && unlockedCountries.map((country, index) => (
+            country !== highlightCountry && (
+              <motion.div
+                key={country}
+                className="absolute"
+                style={{
+                  left: country === "España" ? "47.5%" : 
+                      country === "Francia" ? "48.5%" : 
+                      country === "Italia" ? "50.5%" : 
+                      country === "Reino Unido" ? "46.5%" : 
+                      country === "Estados Unidos" ? "20%" : 
+                      country === "Japón" ? "80%" : 
+                      country === "Australia" ? "80%" : 
+                      country === "Brasil" ? "27%" : 
+                      country === "Egipto" ? "51%" : 
+                      country === "China" ? "72%" : 
+                      country === "Sudáfrica" ? "51%" : 
+                      country === "Kenia" ? "53%" : "50%",
+                  top: country === "España" ? "30%" : 
+                      country === "Francia" ? "28%" : 
+                      country === "Italia" ? "31%" : 
+                      country === "Reino Unido" ? "24%" : 
+                      country === "Estados Unidos" ? "34%" : 
+                      country === "Japón" ? "36%" : 
+                      country === "Australia" ? "72%" : 
+                      country === "Brasil" ? "70%" : 
+                      country === "Egipto" ? "46%" : 
+                      country === "China" ? "36%" : 
+                      country === "Sudáfrica" ? "70%" : 
+                      country === "Kenia" ? "56%" : "50%",
+                }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 + index * 0.1 }}
+              >
+                <motion.div
+                  className="w-8 h-8 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center"
+                  animate={{ 
+                    scale: [1, 1.1, 1],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    delay: index * 0.2
+                  }}
+                >
+                  <span className="text-sm font-bold">⭐</span>
+                </motion.div>
+              </motion.div>
+            )
+          ))}
+          
+          {/* Etiqueta del país destacado */}
           {highlightCountry && (
-            <motion.text
-              x={highlightCountry === "España" ? 475 : 
-                 highlightCountry === "Francia" ? 485 : 
-                 highlightCountry === "Italia" ? 505 : 
-                 highlightCountry === "Reino Unido" ? 465 : 
-                 highlightCountry === "Estados Unidos" ? 200 : 
-                 highlightCountry === "Japón" ? 800 : 
-                 highlightCountry === "Australia" ? 800 : 
-                 highlightCountry === "Brasil" ? 270 : 
-                 highlightCountry === "Egipto" ? 510 : 
-                 highlightCountry === "China" ? 720 : 
-                 highlightCountry === "Sudáfrica" ? 510 : 
-                 highlightCountry === "Kenia" ? 530 : 500}
-              y={highlightCountry === "España" ? 130 : 
-                 highlightCountry === "Francia" ? 120 : 
-                 highlightCountry === "Italia" ? 135 : 
-                 highlightCountry === "Reino Unido" ? 100 : 
-                 highlightCountry === "Estados Unidos" ? 150 : 
-                 highlightCountry === "Japón" ? 160 : 
-                 highlightCountry === "Australia" ? 340 : 
-                 highlightCountry === "Brasil" ? 330 : 
-                 highlightCountry === "Egipto" ? 210 : 
-                 highlightCountry === "China" ? 160 : 
-                 highlightCountry === "Sudáfrica" ? 330 : 
-                 highlightCountry === "Kenia" ? 260 : 230}
-              fontSize="12"
-              fontWeight="bold"
-              textAnchor="middle"
-              fill="#5c0099"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+            <motion.div
+              className="absolute bg-white/90 px-3 py-1 rounded-lg shadow-lg"
+              style={{
+                left: highlightCountry === "España" ? "47.5%" : 
+                    highlightCountry === "Francia" ? "48.5%" : 
+                    highlightCountry === "Italia" ? "50.5%" : 
+                    highlightCountry === "Reino Unido" ? "46.5%" : 
+                    highlightCountry === "Estados Unidos" ? "20%" : 
+                    highlightCountry === "Japón" ? "80%" : 
+                    highlightCountry === "Australia" ? "80%" : 
+                    highlightCountry === "Brasil" ? "27%" : 
+                    highlightCountry === "Egipto" ? "51%" : 
+                    highlightCountry === "China" ? "72%" : 
+                    highlightCountry === "Sudáfrica" ? "51%" : 
+                    highlightCountry === "Kenia" ? "53%" : "50%",
+                top: highlightCountry === "España" ? "22%" : 
+                    highlightCountry === "Francia" ? "20%" : 
+                    highlightCountry === "Italia" ? "23%" : 
+                    highlightCountry === "Reino Unido" ? "16%" : 
+                    highlightCountry === "Estados Unidos" ? "26%" : 
+                    highlightCountry === "Japón" ? "28%" : 
+                    highlightCountry === "Australia" ? "64%" : 
+                    highlightCountry === "Brasil" ? "62%" : 
+                    highlightCountry === "Egipto" ? "38%" : 
+                    highlightCountry === "China" ? "28%" : 
+                    highlightCountry === "Sudáfrica" ? "62%" : 
+                    highlightCountry === "Kenia" ? "48%" : "42%",
+                transform: "translate(-50%, -50%)"
+              }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              {highlightCountry}
-            </motion.text>
+              <span className="text-purple-800 font-bold">{highlightCountry}</span>
+            </motion.div>
           )}
-        </svg>
+        </div>
       </motion.div>
     </div>
   );

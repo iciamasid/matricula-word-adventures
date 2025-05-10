@@ -24,15 +24,15 @@ const LevelRewards: React.FC = () => {
     >
       <Card className="shadow-lg border-2 border-purple-300 bg-purple-50">
         <CardHeader className="pb-2">
-          <CardTitle className="text-lg text-purple-800 flex items-center justify-center">
-            <Sparkles className="h-5 w-5 text-yellow-500 mr-2" />
-            Tu recompensa: ¡Conoce el mundo!
+          <CardTitle className="text-xl text-purple-800 flex items-center justify-center kids-text">
+            <Sparkles className="h-6 w-6 text-yellow-500 mr-2" />
+            ¡Tu recompensa: Conoce el mundo!
             <motion.div
               animate={{ rotate: [0, 10, 0, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
               className="ml-2"
             >
-              <Star className="h-5 w-5 text-yellow-500" />
+              <Star className="h-6 w-6 text-yellow-500" />
             </motion.div>
           </CardTitle>
         </CardHeader>
@@ -49,14 +49,14 @@ const LevelRewards: React.FC = () => {
               }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <MapPin className="h-6 w-6 text-purple-700" />
+              <MapPin className="h-7 w-7 text-purple-700" />
             </motion.div>
             <div>
               <div className="flex items-center gap-2">
                 <AnimatePresence mode="wait">
                   <motion.p 
                     key={destination}
-                    className="text-2xl font-bold text-purple-900"
+                    className="text-3xl font-bold text-purple-900 kids-text"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
@@ -66,7 +66,7 @@ const LevelRewards: React.FC = () => {
                   </motion.p>
                 </AnimatePresence>
                 <motion.span 
-                  className="text-4xl"
+                  className="text-5xl"
                   animate={{ 
                     scale: [1, 1.2, 1],
                     rotate: [0, 10, -10, 0]
@@ -80,7 +80,7 @@ const LevelRewards: React.FC = () => {
                   {destinationInfo.flag}
                 </motion.span>
               </div>
-              <p className="text-md text-purple-700 font-medium">{destinationInfo.country}</p>
+              <p className="text-xl text-purple-700 font-medium kids-text">{destinationInfo.country}</p>
             </div>
           </motion.div>
           
@@ -91,7 +91,7 @@ const LevelRewards: React.FC = () => {
                 transition={{ duration: 4, repeat: Infinity }}
                 className="mb-2"
               >
-                <CarFront size={32} className="text-purple-600" />
+                <CarFront size={36} className="text-purple-600" />
               </motion.div>
             </div>
             
@@ -104,24 +104,24 @@ const LevelRewards: React.FC = () => {
               <motion.div
                 animate={{ rotate: [0, 10, 0, -10, 0], scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="flex-shrink-0 mt-1 text-2xl"
+                className="flex-shrink-0 mt-1 text-3xl"
               >
                 {"🌟"}
               </motion.div>
-              <p className="text-md text-purple-800 leading-relaxed">{destinationInfo.fact}</p>
+              <p className="text-lg text-purple-800 leading-relaxed kids-text reward-text">{destinationInfo.fact}</p>
             </motion.div>
             
             {destinationInfo.city && (
               <motion.div
-                className="mt-3 flex flex-col items-center"
+                className="mt-4 flex flex-col items-center"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.8 }}
               >
                 <div className="flex items-center mb-3">
-                  <Award className="text-yellow-500 h-8 w-8 mr-2" />
+                  <Award className="text-yellow-500 h-10 w-10 mr-2" />
                   <motion.p 
-                    className="text-center text-purple-900 font-medium text-md"
+                    className="text-center text-purple-900 font-medium text-xl kids-text"
                     animate={{ 
                       color: ['#6b46c1', '#b794f4', '#6b46c1']
                     }}
@@ -133,7 +133,7 @@ const LevelRewards: React.FC = () => {
                 
                 <Button 
                   onClick={handleExploreCountry}
-                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-lg px-6 py-3 kids-text"
                 >
                   Conoce {destinationInfo.country} {destinationInfo.flag}
                 </Button>
