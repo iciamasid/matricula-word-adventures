@@ -1,12 +1,24 @@
-
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import { ArrowLeft } from "lucide-react";
+import { GameProvider } from "@/context/GameContext";
 import CountryPageIcons from "@/components/CountryPageIcons";
+import MusicPlayer from "@/components/MusicPlayer";
 
-const CountryPage = () => {
+// Add MusicPlayer component to the CountryPage
+const CountryPageWrapper = () => {
+  return (
+    <GameProvider>
+      <CountryPageContent />
+      <MusicPlayer />
+    </GameProvider>
+  );
+};
+
+// Main country page content
+const CountryPageContent = () => {
   const { country } = useParams();
   
   // Country data
@@ -116,4 +128,4 @@ const CountryPage = () => {
   );
 };
 
-export default CountryPage;
+export default CountryPageWrapper;

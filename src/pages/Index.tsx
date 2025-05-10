@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -17,6 +16,7 @@ import { toast } from "@/hooks/use-toast";
 import GamePopup from "@/components/GamePopup";
 import ScorePanel from "@/components/ScorePanel";
 import TotalPointsPanel from "@/components/TotalPointsPanel";
+import MusicPlayer from "@/components/MusicPlayer";
 
 // Función para obtener la bandera según el nivel
 const getLevelFlag = (level: number) => {
@@ -95,6 +95,9 @@ const GameContent = () => {
         backgroundAttachment: "fixed"
       }}
     >
+      {/* Include MusicPlayer component */}
+      <MusicPlayer />
+      
       <div className="relative w-full">
         <motion.img 
           src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png"
