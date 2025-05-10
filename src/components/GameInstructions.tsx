@@ -1,0 +1,101 @@
+
+import React from "react";
+import { motion } from "framer-motion";
+import { X, Check, Info, Star } from "lucide-react";
+
+interface GameInstructionsProps {
+  onClose: () => void;
+}
+
+const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
+  return (
+    <motion.div
+      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6"
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        transition={{ type: "spring", bounce: 0.3 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold flex items-center">
+            <Info className="w-5 h-5 mr-2 text-game-blue" />
+            Instrucciones del Juego
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <p className="font-medium">
+            ¡Bienvenido/a a Matriculabra Cadabra! El juego de palabras con matrículas.
+          </p>
+
+          <div className="space-y-2">
+            <h3 className="font-medium text-gray-800">Cómo jugar:</h3>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span>Observa las <strong>consonantes</strong> de la matrícula y forma palabras en español usando al menos una de ellas.</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span>Cuantas más consonantes de la matrícula uses, ¡más puntos conseguirás!</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span>Puedes presionar "Nueva matrícula" para cambiar a otra combinación si te quedas atascado.</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span>Acumula puntos para subir de nivel y desbloquear nuevos destinos.</span>
+              </li>
+              <li className="flex items-start">
+                <Star className="w-4 h-4 text-game-yellow fill-game-yellow mt-0.5 mr-2 flex-shrink-0" />
+                <span><strong>¡BONUS!</strong> Si consigues una matrícula con "666", ¡ganarás automáticamente 1000 puntos extra!</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="font-medium text-gray-800">Puntuación:</h3>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span>1 consonante de la matrícula: puntos base</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span>2 consonantes: puntos multiplicados</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span>3 consonantes: ¡puntuación máxima!</span>
+              </li>
+            </ul>
+          </div>
+
+          <button
+            onClick={onClose}
+            className="bg-game-blue hover:bg-game-blue/90 text-white font-medium py-2 px-4 rounded w-full mt-2"
+          >
+            ¡Entendido!
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
+
+export default GameInstructions;

@@ -77,14 +77,11 @@ const WordInput: React.FC = () => {
       </AnimatePresence>
 
       <div className="text-center mb-4">
-        <span className="text-sm text-gray-500">
-          Forma una palabra usando estas consonantes:
-        </span>
-        <div className="flex justify-center gap-3 mt-3">
+        <div className="flex justify-center gap-3 mb-4">
           {plateConsonants.split("").map((letter, index) => (
             <motion.div
               key={index}
-              className={`inline-flex items-center justify-center w-16 h-16 ${CONSONANT_COLORS[index]} text-white text-3xl font-bold rounded-md`}
+              className={`inline-flex items-center justify-center w-20 h-20 ${CONSONANT_COLORS[index]} text-white text-4xl font-bold rounded-md shadow-lg`}
               whileHover={{ scale: 1.1, rotate: 5 }}
               animate={{ 
                 scale: [1, 1.05, 1],
