@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+
+import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { 
   generateLicensePlate, 
   getConsonantsFromPlate, 
@@ -124,6 +125,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [showBonusPopup, setShowBonusPopup] = useState(false);
   const [bonusPoints, setBonusPoints] = useState(0);
   
+  // Add a ref to track if this is the initial load
+  const isInitialLoad = useRef(true);
+  
   // Initialize the game
   useEffect(() => {
     const savedTotalPoints = localStorage.getItem("matriculabraCadabra_totalPoints");
@@ -149,11 +153,17 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setDestinationInfo(newDestinationInfo);
       setDestination(newDestinationInfo.city);
       
-      toast({
-        title: "¡Nivel nuevo!",
-        description: `Has alcanzado el nivel ${newLevel}. ¡Ahora viajas a ${newDestinationInfo.city}, ${newDestinationInfo.country} ${newDestinationInfo.flag}!`,
-      });
+      // Only show level-up toast if it's not the initial load
+      if (!isInitialLoad.current) {
+        toast({
+          title: "¡Nivel nuevo!",
+          description: `Has alcanzado el nivel ${newLevel}. ¡Ahora viajas a ${newDestinationInfo.city}, ${newDestinationInfo.country} ${newDestinationInfo.flag}!`,
+        });
+      }
     }
+    
+    // After first render, set initialLoad to false
+    isInitialLoad.current = false;
     
     // Save to localStorage
     localStorage.setItem("matriculabraCadabra_totalPoints", totalPoints.toString());

@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { MapPin } from 'lucide-react';
 
 interface WorldMapProps {
   highlightCountry?: string;
@@ -27,7 +29,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
   };
   
   return (
-    <div className="bg-[#9a83b9] h-full w-full flex items-center justify-center p-3">
+    <div className="bg-[#9a83b9] h-full w-full flex items-center justify-center p-3 relative">
       <motion.div 
         className="relative w-full h-full"
         initial={{ opacity: 0, scale: 0.9 }}
@@ -42,8 +44,8 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
             className="w-full h-full object-cover rounded-lg"
           />
           
-          {/* Highlight the selected country if provided */}
-          {highlightCountry && (
+          {/* Highlight the selected country if provided AND it's unlocked */}
+          {highlightCountry && unlockedCountries.includes(highlightCountry) && (
             <motion.div
               className="absolute"
               style={getCountryPosition(highlightCountry)}
@@ -64,51 +66,56 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
             </motion.div>
           )}
           
-          {/* Mostrar los países desbloqueados */}
-          {unlockedCountries && unlockedCountries.map((country, index) => (
-            country !== highlightCountry && (
-              <motion.div
-                key={country}
-                className="absolute"
-                style={getCountryPosition(country)}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 + index * 0.1 }}
-              >
-                <motion.div
-                  className="w-8 h-8 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center"
-                  animate={{ 
-                    scale: [1, 1.1, 1],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                    delay: index * 0.2
-                  }}
-                >
-                  <span className="text-sm font-bold">⭐</span>
-                </motion.div>
-              </motion.div>
-            )
-          ))}
+          {/* Tooltip to explain the clickable countries */}
+          <motion.div
+            className="absolute top-1 left-1 bg-white/80 px-2 py-1 rounded text-xs text-purple-900 font-bold"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            <span className="kids-text">¡Haz clic en un país para visitarlo!</span>
+          </motion.div>
           
-          {/* Etiqueta del país destacado */}
-          {highlightCountry && (
-            <motion.div
-              className="absolute bg-white/90 px-3 py-1 rounded-lg shadow-lg"
-              style={{
-                left: getCountryPosition(highlightCountry).left,
-                top: `calc(${getCountryPosition(highlightCountry).top} - 8%)`,
-                transform: "translate(-50%, -50%)"
-              }}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+          {/* Mostrar SOLO los países desbloqueados */}
+          {unlockedCountries && unlockedCountries.map((country, index) => (
+            <Link
+              to={`/country/${country}`}
+              key={country}
+              className="absolute"
+              style={getCountryPosition(country)}
             >
-              <span className="text-purple-800 font-bold">{highlightCountry}</span>
-            </motion.div>
-          )}
+              <motion.div
+                className="w-8 h-8 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center cursor-pointer"
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  delay: index * 0.2
+                }}
+                whileHover={{ scale: 1.3 }}
+              >
+                <span className="text-sm font-bold">⭐</span>
+              </motion.div>
+              
+              {/* Etiqueta del país */}
+              <motion.div
+                className="absolute bg-white/90 px-3 py-1 rounded-lg shadow-lg whitespace-nowrap"
+                style={{
+                  top: "110%",
+                  left: "50%",
+                  transform: "translateX(-50%)"
+                }}
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + index * 0.1 }}
+              >
+                <span className="text-purple-800 font-bold kids-text">{country}</span>
+              </motion.div>
+            </Link>
+          ))}
         </div>
       </motion.div>
     </div>

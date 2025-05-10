@@ -9,17 +9,18 @@ import ErrorAlert from "@/components/ErrorAlert";
 import LevelRewards from "@/components/LevelRewards";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Info } from "lucide-react";
+import { Info, MapPin } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
 import WorldMap from "@/components/WorldMap";
+import { Link } from "react-router-dom";
 
 // Componente para manejar el contenido del juego
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
-  const { totalPoints, destinationInfo } = useGame();
+  const { totalPoints, destinationInfo, level } = useGame();
   
   // Simular países desbloqueados basados en puntos totales
   const unlockedCountries = React.useMemo(() => {
@@ -49,11 +50,11 @@ const GameContent = () => {
       <motion.img 
         src="/lovable-uploads/aa16d3eb-100f-4916-ba38-871f34a715da.png"
         alt="Matriculabra Cadabra"
-        className="w-full object-cover mb-4 header-image"
+        className="w-full object-cover mb-4"
         style={{
-          maxHeight: isMobile ? "22vh" : "auto",
-          objectFit: "cover",
-          objectPosition: "center"
+          maxHeight: isMobile ? "18vh" : "auto",
+          width: "100%",
+          objectFit: "contain",
         }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -77,9 +78,40 @@ const GameContent = () => {
           
           <WordInput />
           
-          <ScoreDisplay />
+          {/* Separate score and level panels */}
+          <div className="w-full grid grid-cols-2 gap-4">
+            <motion.div 
+              className="rounded-lg p-3 bg-white/90 shadow-lg text-center"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <h3 className="text-xl font-bold text-purple-800 kids-text">Puntos</h3>
+              <p className="text-2xl font-bold text-purple-900 kids-text">{totalPoints}</p>
+            </motion.div>
+            
+            <motion.div 
+              className="rounded-lg p-3 bg-white/90 shadow-lg text-center"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <h3 className="text-xl font-bold text-purple-800 kids-text">Nivel</h3>
+              <p className="text-2xl font-bold text-purple-900 kids-text">{level}</p>
+            </motion.div>
+          </div>
           
           <NewGameButton />
+          
+          {/* Title for the map */}
+          <motion.h2 
+            className="text-xl font-bold text-white mt-4 mb-2 text-center kids-text reward-text"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            ¿A qué países has viajado ya con tus matrículas acertadas?
+          </motion.h2>
           
           {/* Mapa Mundi con países desbloqueados */}
           <motion.div 

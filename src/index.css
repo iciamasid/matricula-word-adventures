@@ -214,14 +214,16 @@
 }
 
 .reward-text {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
+  line-height: 1.2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* Ajustes para la imagen inicial */
 .header-image {
-  max-height: 25vh;
+  max-height: 20vh;
   width: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* Estilos para alertas centradas */
@@ -232,3 +234,14 @@
   transform: translate(-50%, -50%);
   z-index: 50;
 }
+
+/* Estilo para país desbloqueado en el mapa */
+.unlocked-country {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.unlocked-country:hover {
+  transform: scale(1.2);
+}
+
