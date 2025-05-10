@@ -133,6 +133,11 @@ const GameContent = () => {
           alt="Coche de juego" 
           className="w-48 h-48 object-contain"
         />
+        <img 
+          src="/lovable-uploads/coche_animado.gif" 
+          alt="Coche de juego" 
+          className="w-48 h-48 object-contain"
+        />
       </motion.div>
     
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
