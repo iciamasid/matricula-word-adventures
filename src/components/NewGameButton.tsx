@@ -23,7 +23,7 @@ const NewGameButton: React.FC = () => {
     >
       <Button
         onClick={handleClick}
-        className={`px-4 py-4 bg-game-blue hover:bg-game-blue/90 w-full ${isAnimating ? "animate-bounce" : ""}`}
+        className={`px-4 py-4 bg-purple-600 hover:bg-purple-700 w-full ${isAnimating ? "animate-bounce" : ""}`}
       >
         <Plus className="mr-2 h-4 w-4" /> Nueva matrícula
       </Button>

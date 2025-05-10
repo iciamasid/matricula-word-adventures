@@ -7,7 +7,7 @@ import { ArrowRight, Check, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Array of colors for the consonant squares with more distinctive colors
-const CONSONANT_COLORS = ["bg-game-blue", "bg-game-purple", "bg-game-orange"];
+const CONSONANT_COLORS = ["bg-game-purple", "bg-game-orange", "bg-game-green"];
 const SUCCESS_MESSAGES = ["¡PERFECTO!", "¡EXCELENTE!", "¡GENIAL!", "¡INCREÍBLE!"];
 
 const WordInput: React.FC = () => {
@@ -55,14 +55,14 @@ const WordInput: React.FC = () => {
 
   return (
     <div className="w-full max-w-xs relative">
-      {/* Success message */}
+      {/* Success message - centered in the screen */}
       <AnimatePresence>
         {showSuccess && (
           <motion.div 
-            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg z-50 flex items-center gap-2"
-            initial={{ opacity: 0, scale: 0.5, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.5, y: -20 }}
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg z-50 flex items-center gap-2"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
             transition={{ type: "spring", damping: 12 }}
           >
             <motion.div animate={{ rotate: [0, 15, -15, 15, 0] }} transition={{ duration: 0.5 }}>
@@ -83,7 +83,7 @@ const WordInput: React.FC = () => {
         transition={{ delay: 0.5 }}
       >
         <motion.h2
-          className="text-lg font-bold mb-4 text-white bg-game-blue/80 py-2 px-4 rounded-md shadow-lg inline-block"
+          className="text-base font-bold mb-4 text-white bg-purple-600/80 py-2 px-4 rounded-md shadow-lg inline-block"
           animate={{
             scale: [1, 1.05, 1],
             transition: { duration: 2, repeat: Infinity }
@@ -122,7 +122,7 @@ const WordInput: React.FC = () => {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder="Escribe una palabra"
-          className="flex-1 text-center font-bold text-lg py-5 uppercase border-2 border-game-blue shadow-md"
+          className="flex-1 text-center font-bold text-lg py-5 uppercase border-2 border-purple-400 shadow-md"
           autoComplete="off"
         />
         <motion.div

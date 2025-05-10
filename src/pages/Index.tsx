@@ -23,7 +23,7 @@ const Index = () => {
       <div 
         className="min-h-screen flex flex-col items-center relative overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)",
+          backgroundColor: "rgb(154, 131, 185)",
           backgroundSize: "cover",
           backgroundAttachment: "fixed"
         }}
@@ -59,9 +59,9 @@ const Index = () => {
             
             <WordInput />
             
-            <NewGameButton />
-            
             <ScoreDisplay />
+            
+            <NewGameButton />
             
             <LevelRewards />
           </div>

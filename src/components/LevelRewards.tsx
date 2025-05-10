@@ -4,9 +4,16 @@ import { useGame } from "@/context/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Sparkles, Award, Star, CarFront } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const LevelRewards: React.FC = () => {
   const { destination, destinationInfo } = useGame();
+  const navigate = useNavigate();
+  
+  const handleExploreCountry = () => {
+    navigate(`/country/${destinationInfo.country}`);
+  };
   
   return (
     <motion.div 
@@ -15,7 +22,7 @@ const LevelRewards: React.FC = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
-      <Card className="shadow-lg border-2 border-purple-200 bg-purple-50">
+      <Card className="shadow-lg border-2 border-purple-300 bg-purple-50">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg text-purple-800 flex items-center justify-center">
             <Sparkles className="h-5 w-5 text-yellow-500 mr-2" />
@@ -59,7 +66,7 @@ const LevelRewards: React.FC = () => {
                   </motion.p>
                 </AnimatePresence>
                 <motion.span 
-                  className="text-3xl"
+                  className="text-4xl"
                   animate={{ 
                     scale: [1, 1.2, 1],
                     rotate: [0, 10, -10, 0]
@@ -106,21 +113,30 @@ const LevelRewards: React.FC = () => {
             
             {destinationInfo.city && (
               <motion.div
-                className="mt-3 flex justify-center"
+                className="mt-3 flex flex-col items-center"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.8 }}
               >
-                <Award className="text-yellow-500 h-8 w-8" />
-                <motion.p 
-                  className="text-center text-purple-900 font-medium text-md ml-2"
-                  animate={{ 
-                    color: ['#6b46c1', '#b794f4', '#6b46c1']
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
+                <div className="flex items-center mb-3">
+                  <Award className="text-yellow-500 h-8 w-8 mr-2" />
+                  <motion.p 
+                    className="text-center text-purple-900 font-medium text-md"
+                    animate={{ 
+                      color: ['#6b46c1', '#b794f4', '#6b46c1']
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  >
+                    ¡Has desbloqueado {destinationInfo.city}!
+                  </motion.p>
+                </div>
+                
+                <Button 
+                  onClick={handleExploreCountry}
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold"
                 >
-                  ¡Has desbloqueado {destinationInfo.city}!
-                </motion.p>
+                  Conoce {destinationInfo.country} {destinationInfo.flag}
+                </Button>
               </motion.div>
             )}
           </div>
