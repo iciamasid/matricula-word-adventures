@@ -7,7 +7,7 @@ import ErrorAlert from "@/components/ErrorAlert";
 import LevelRewards from "@/components/LevelRewards";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Flag, Info, Refresh } from "lucide-react";
+import { Flag, Info, RefreshCw } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -166,7 +166,7 @@ const GameContent = () => {
               className="w-full bg-red-600 hover:bg-red-700 text-white kids-text py-6"
               size="lg"
             >
-              <Refresh className="mr-2 h-5 w-5" /> Iniciar nueva partida
+              <RefreshCw className="mr-2 h-5 w-5" /> Iniciar nueva partida
             </Button>
           </motion.div>
         </div>
