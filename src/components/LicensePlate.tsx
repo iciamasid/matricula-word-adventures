@@ -13,20 +13,17 @@ const LicensePlate: React.FC = () => {
 
   return (
     <motion.div
-      className="license-plate py-4 px-6 rounded-md shadow-md w-full max-w-xs mb-6"
+      className="license-plate py-4 px-6 rounded-md shadow-md w-full max-w-xs mb-2"
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
       <div className="flex justify-center items-center">
-        <div className="bg-blue-600 px-1 py-1 rounded-sm text-white text-xs font-bold">
-          E
-        </div>
-        <div className="text-center flex-1 flex justify-center">
-          <span className={`text-gray-800 ${isMobile ? "text-4xl" : "text-5xl"} font-bold tracking-widest`}>
+        <div className="text-center flex justify-center">
+          <span className={`text-gray-800 ${isMobile ? "text-3xl" : "text-4xl"} font-bold tracking-widest`}>
             {numbers}
           </span>
-          <span className={`text-game-blue ml-2 ${isMobile ? "text-4xl" : "text-5xl"} font-bold tracking-widest`}>
+          <span className={`text-game-blue ml-2 ${isMobile ? "text-3xl" : "text-4xl"} font-bold tracking-widest`}>
             {letters}
           </span>
         </div>

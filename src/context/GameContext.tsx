@@ -47,6 +47,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [highScore, setHighScore] = useState(0);
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [bonusCounter, setBonusCounter] = useState(0);
   
   // Initialize the game
   useEffect(() => {
@@ -92,7 +93,22 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Generate a new license plate
   const generateNewPlate = () => {
-    const newPlate = generateLicensePlate();
+    let newPlate = "";
+    // Increase bonus counter with each game
+    const newBonusCounter = bonusCounter + 1;
+    setBonusCounter(newBonusCounter);
+    
+    // Check if it's time for a bonus (666) plate - every 5-10 games
+    if (newBonusCounter >= 5 && newBonusCounter <= 10) {
+      // Generate a plate with "666" in it
+      newPlate = "6660" + generateRandomConsonants();
+      // Reset the counter
+      setBonusCounter(0);
+    } else {
+      // Generate a normal plate
+      newPlate = generateLicensePlate();
+    }
+    
     setLicensePlate(newPlate);
     setPlateConsonants(getConsonantsFromPlate(newPlate));
     setCurrentWord("");
@@ -110,6 +126,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         variant: "destructive",
       });
     }
+  };
+  
+  // Generate random consonants for 666 bonus plates
+  const generateRandomConsonants = () => {
+    const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
+    return Array(3)
+      .fill("")
+      .map(() => consonants.charAt(Math.floor(Math.random() * consonants.length)))
+      .join("");
   };
   
   const clearError = () => {

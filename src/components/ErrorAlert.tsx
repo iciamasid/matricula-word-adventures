@@ -24,7 +24,7 @@ const ErrorAlert: React.FC = () => {
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="pr-6">{errorMessage}</div>
+            <div className="pr-6 font-medium">{errorMessage}</div>
           </div>
         </motion.div>
       )}

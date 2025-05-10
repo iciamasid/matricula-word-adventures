@@ -1,3 +1,4 @@
+
 // Generates a random license plate with 4 numbers and 3 consonants
 export function generateLicensePlate(): string {
   const numbers = Array(4)
@@ -50,13 +51,13 @@ export function calculateScore(word: string, plateConsonants: string): number {
 
   // Calculate score based on found consonants and order
   if (foundConsonants === 3) {
-    score = inOrder ? 100 : 75;
+    score = inOrder ? 100 : 75;  // 3 consonantes en orden: 100 puntos; no ordenadas: 75 puntos
   } else if (foundConsonants === 2) {
-    score = 50;
+    score = inOrder ? 50 : 25;   // 2 consonantes en orden: 50 puntos; no ordenadas: 25 puntos
   } else if (foundConsonants === 1) {
-    score = 25;
+    score = 10;                  // 1 consonante: 10 puntos
   } else if (foundConsonants === 0) {
-    score = -20; // Penalty for no consonants found
+    score = -20;                 // Palabra incorrecta: -20 puntos
   }
 
   // Bonus for longer words

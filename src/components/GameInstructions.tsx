@@ -17,7 +17,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
       onClick={onClose}
     >
       <motion.div
-        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6"
+        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -73,15 +73,31 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             <ul className="space-y-2 text-sm">
               <li className="flex items-start">
                 <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span>1 consonante de la matrícula: puntos base</span>
+                <span><strong>3 consonantes en orden:</strong> 100 puntos</span>
               </li>
               <li className="flex items-start">
                 <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span>2 consonantes: puntos multiplicados</span>
+                <span><strong>3 consonantes no ordenadas:</strong> 75 puntos</span>
               </li>
               <li className="flex items-start">
                 <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span>3 consonantes: ¡puntuación máxima!</span>
+                <span><strong>2 consonantes en orden:</strong> 50 puntos</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span><strong>2 consonantes no ordenadas:</strong> 25 puntos</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span><strong>1 consonante:</strong> 10 puntos</span>
+              </li>
+              <li className="flex items-start">
+                <X className="w-4 h-4 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+                <span><strong>Palabra incorrecta:</strong> -20 puntos</span>
+              </li>
+              <li className="flex items-start">
+                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
+                <span>Palabras más largas reciben puntos extra.</span>
               </li>
             </ul>
           </div>

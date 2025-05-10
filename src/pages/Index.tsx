@@ -20,9 +20,9 @@ const Index = () => {
   return (
     <GameProvider>
       <div 
-        className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden"
+        className="min-h-screen flex flex-col items-center relative overflow-hidden"
         style={{
-          backgroundImage: "url('/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png')",
+          backgroundImage: "url('/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat"
@@ -31,13 +31,13 @@ const Index = () => {
         <motion.img 
           src="/lovable-uploads/aa16d3eb-100f-4916-ba38-871f34a715da.png"
           alt="Matriculabra Cadabra"
-          className="w-full mb-4"
+          className="w-full object-cover mb-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         />
         
-        <div className="w-full max-w-md flex flex-col items-center justify-center mt-16 sm:mt-8">
+        <div className="w-full max-w-md flex flex-col items-center justify-center mt-16 sm:mt-8 px-4">
           <div className="absolute top-4 right-4">
             <Button 
               variant="outline" 
@@ -55,7 +55,7 @@ const Index = () => {
             <NewGameButton />
             
             <motion.div
-              className="bg-white/90 py-3 px-4 rounded-lg shadow-lg text-center font-medium text-lg"
+              className="bg-white/90 py-3 px-4 rounded-lg shadow-lg text-center font-bold text-xl w-full"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}

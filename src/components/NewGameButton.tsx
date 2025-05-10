@@ -17,7 +17,7 @@ const NewGameButton: React.FC = () => {
   
   return (
     <motion.div 
-      className="text-center space-y-2 bg-white p-3 rounded-lg shadow-lg w-full max-w-xs"
+      className="text-center space-y-2 bg-white p-3 rounded-lg shadow-lg w-full max-w-xs mb-2"
       whileHover={{ scale: 1.03 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
