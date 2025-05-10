@@ -7,42 +7,35 @@ import { getCountryPosition, getCountryImage } from '@/utils/mapData';
 interface CountryMarkerProps {
   country: string;
   index: number;
-  isHighlighted: boolean;
+  isHighlighted?: boolean;
 }
 
 const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlighted }) => {
+  // Get country information
+  const position = getCountryPosition(country);
+  const image = getCountryImage(country);
+  
   return (
-    <Link to={`/country/${country}`} className="block">
+    <Link to={`/country/${country}`}>
       <motion.div 
-        className="absolute unlocked-country"
+        className={`absolute w-1.5 h-1.5 z-10 ${isHighlighted ? 'z-20' : ''}`} 
         style={{ 
-          left: getCountryPosition(country).left,
-          top: getCountryPosition(country).top,
-          transform: "translate(-50%, -50%)",
-          zIndex: isHighlighted ? 20 : 5
+          left: position.left,
+          top: position.top,
+          transform: "translate(-50%, -50%)"
         }}
-        animate={{ 
-          y: [0, -3, 0], 
-          scale: isHighlighted ? 1.2 : 1
-        }}
-        transition={{ 
-          y: { duration: 2, repeat: Infinity, repeatType: "reverse" },
-          scale: { duration: 0.3 }
-        }}
-        whileHover={{ scale: 1.2 }}
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, delay: index * 0.1 }}
+        whileHover={{ scale: 1.3, zIndex: 30 }}
       >
-        <motion.div 
-          className="bg-white rounded-full p-0.5 shadow-lg" 
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: index * 0.1 }}
-        >
-          <img 
-            src={getCountryImage(country)} 
-            alt={country}
-            className="w-2 h-2 rounded-full object-cover" 
-          />
-        </motion.div>
+        <div className="bg-white rounded-full p-px shadow-lg">
+          {isHighlighted ? (
+            <div className="bg-red-500 rounded-full w-1.5 h-1.5 pulse" />
+          ) : (
+            <div className="bg-blue-500 rounded-full w-1.5 h-1.5" />
+          )}
+        </div>
       </motion.div>
     </Link>
   );

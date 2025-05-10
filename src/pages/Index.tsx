@@ -1,4 +1,5 @@
-imgimport React, { useState, useEffect } from "react";
+
+import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
 import WordInput from "@/components/WordInput";
@@ -33,7 +34,6 @@ const getLevelFlag = (level: number) => {
     default: return "🇪🇸";
   }
 };
-
 
   
 // Componente para manejar el contenido del juego
@@ -120,21 +120,6 @@ const GameContent = () => {
           <Info className="w-4 h-4 mr-1" /> Instrucciones
         </Button>
       </div>
-
-      {/* Newly added car image */}
-      <motion.div
-        className="w-full flex justify-center mb-4"
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-       
-       // <img 
-        //  src="/lovable-uploads/vólido.gif" 
-        //  alt="Coche de juego" 
-        //  className="w-48 h-48 object-contain"
-      //  />
-      </motion.div>
     
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
@@ -237,7 +222,60 @@ const GameContent = () => {
             </div>
           </motion.div>
           
-          <LevelRewards />
+          {/* Simplified Level Rewards - Removed country description and only shows "Has llegado hasta" and button */}
+          <motion.div 
+            className="w-full bg-white/90 rounded-lg p-5 shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="text-center mb-4">
+              <h2 className="text-2xl font-bold text-purple-800 kids-text flex items-center justify-center">
+                <motion.span
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  ✨
+                </motion.span>
+                <span className="mx-2">Has llegado hasta</span>
+                <motion.span
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 1 }}
+                >
+                  ✨
+                </motion.span>
+              </h2>
+              
+              <div className="flex items-center justify-center gap-2 my-4">
+                <motion.p
+                  className="text-4xl font-bold text-purple-900 kids-text"
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {destinationInfo.city}
+                </motion.p>
+                <motion.span
+                  className="text-5xl"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {destinationInfo.flag}
+                </motion.span>
+              </div>
+              
+              <p className="text-xl text-purple-700 font-medium mb-4 kids-text">
+                {destinationInfo.country}
+              </p>
+              
+              <Link to={`/country/${destinationInfo.country}`}>
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-6 py-3 kids-text"
+                >
+                  Conoce {destinationInfo.country} {destinationInfo.flag}
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
           
           {/* Reset Game Button - in purple */}
           <motion.div
