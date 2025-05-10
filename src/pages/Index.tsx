@@ -120,7 +120,7 @@ const GameContent = () => {
           <Info className="w-4 h-4 mr-1" /> Instrucciones
         </Button>
       </div>
-      
+       image: "/lovable-uploads/coche_animado.gig", // Image of La Giralda
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
           <LicensePlate />
