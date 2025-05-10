@@ -14,7 +14,7 @@ const ScoreDisplay: React.FC = () => {
   const progress = (pointsInThisLevel / (levelPoints - previousLevelPoints)) * 100;
   
   return (
-    <div className="w-full max-w-xs space-y-3">
+    <div className="w-full max-w-xs space-y-3 bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow">
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <Trophy className="w-5 h-5 text-game-yellow mr-2" />

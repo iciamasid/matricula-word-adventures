@@ -11,35 +11,48 @@ import { motion } from "framer-motion";
 const Index = () => {
   return (
     <GameProvider>
-      <div className="min-h-screen flex flex-col items-center px-4 py-8 bg-gradient-to-b from-blue-50 to-blue-100">
-        <motion.h1
-          className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-game-blue to-game-purple"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          Matriculabra Cadabra
-        </motion.h1>
+      <div 
+        className="min-h-screen flex flex-col items-center px-4 py-8 relative"
+        style={{
+          backgroundImage: "url('/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat"
+        }}
+      >
+        {/* Overlay para mejorar la legibilidad del contenido */}
+        <div className="absolute inset-0 bg-white/70 backdrop-blur-sm"></div>
         
-        <motion.p 
-          className="text-gray-600 mb-8 text-center"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          ¡Forma palabras con las consonantes de la matrícula!
-        </motion.p>
-        
-        <div className="w-full max-w-md flex flex-col items-center space-y-6">
-          <LicensePlate />
+        <div className="relative z-10 w-full max-w-md flex flex-col items-center">
+          <motion.h1
+            className="text-3xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-game-blue to-game-purple"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            Matriculabra Cadabra
+          </motion.h1>
           
-          <WordInput />
+          <motion.p 
+            className="text-gray-600 mb-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            ¡Forma palabras con las consonantes de la matrícula!
+          </motion.p>
           
-          <ScoreDisplay />
-          
-          <LevelRewards />
-          
-          <NewGameButton />
+          <div className="w-full max-w-md flex flex-col items-center space-y-6">
+            <LicensePlate />
+            
+            <WordInput />
+            
+            <ScoreDisplay />
+            
+            <LevelRewards />
+            
+            <NewGameButton />
+          </div>
         </div>
       </div>
     </GameProvider>
