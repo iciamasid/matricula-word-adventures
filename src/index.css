@@ -1,6 +1,7 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -97,12 +98,12 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     touch-action: manipulation;
-    font-family: 'Comic Neue', 'Bubblegum Sans', cursive;
+    font-family: 'Baloo 2', 'Comic Neue', 'Bubblegum Sans', cursive;
   }
 }
 
 .license-plate {
-  font-family: 'Comic Neue', 'Bubblegum Sans', cursive;
+  font-family: 'Baloo 2', 'Comic Neue', 'Bubblegum Sans', cursive;
   letter-spacing: 0.05em;
   background: linear-gradient(to bottom, #FFFFFF 0%, #e2d1c3 100%);
   border: 2px solid #666;
@@ -139,26 +140,17 @@
   transform: rotateY(180deg);
 }
 
-.car {
-  position: relative;
-  transition: transform 1s ease-in-out;
+/* New letter colors for the license plate */
+.letter-color-1 {
+  color: #E74C3C; /* Red */
 }
 
-.wheel {
-  transition: transform 0.5s linear;
+.letter-color-2 {
+  color: #3498DB; /* Blue */
 }
 
-.driving .wheel {
-  animation: rotate 0.5s infinite linear;
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.letter-color-3 {
+  color: #2ECC71; /* Green */
 }
 
 @keyframes float {
@@ -209,7 +201,7 @@
 
 /* Estilos para niños */
 .kids-text {
-  font-family: 'Comic Neue', 'Bubblegum Sans', cursive;
+  font-family: 'Baloo 2', 'Comic Neue', 'Bubblegum Sans', cursive;
   font-weight: bold;
   letter-spacing: 0.5px;
 }
@@ -245,3 +237,10 @@
 .unlocked-country:hover {
   transform: scale(1.2);
 }
+
+/* Make instruction text larger */
+.instruction-text {
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+

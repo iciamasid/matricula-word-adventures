@@ -32,7 +32,7 @@ const countriesInfo = {
     language: "Italiano",
     famousFor: ["Pizza y pasta", "El Coliseo", "Arte renacentista"],
     funFact: "¡Los italianos inventaron el helado! Y tienen más de 100 sabores diferentes.",
-    image: "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
+    image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?q=80&w=1786&auto=format&fit=crop",
     description: "Italia tiene forma de bota y es famosa por su comida deliciosa como la pizza y el helado. También tiene muchos monumentos históricos antiguos."
   },
   "Rusia": {

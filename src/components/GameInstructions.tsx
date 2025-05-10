@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { X, Check, Info, Star } from "lucide-react";
+import { X } from "lucide-react";
 
 interface GameInstructionsProps {
   onClose: () => void;
@@ -10,104 +10,104 @@ interface GameInstructionsProps {
 const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
   return (
     <motion.div
-      className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      className="fixed inset-0 flex items-center justify-center z-50 bg-black/70 p-4"
       onClick={onClose}
     >
       <motion.div
-        className="bg-white rounded-lg shadow-lg w-full max-w-md p-6 max-h-[90vh] overflow-y-auto"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", bounce: 0.3 }}
+        transition={{ duration: 0.3 }}
+        className="bg-white rounded-xl p-6 max-w-md w-full mx-auto shadow-lg relative overflow-y-auto max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold flex items-center kids-text">
-            <Info className="w-5 h-5 mr-2 text-game-blue" />
-            Instrucciones del Juego
-          </h2>
-          <button
-            onClick={onClose}
-            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        <button
+          onClick={onClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+        >
+          <X className="w-6 h-6" />
+        </button>
+
+        <h2 className="text-3xl font-bold mb-4 text-purple-800 kids-text">
+          ¿Cómo jugar?
+        </h2>
 
         <div className="space-y-4">
-          <p className="font-medium text-lg kids-text">
-            ¡Bienvenido/a a Matriculabra Cadabra! El juego de palabras con matrículas.
-          </p>
+          <div>
+            <h3 className="text-2xl font-bold text-purple-700 kids-text mb-2">
+              Objetivo del juego
+            </h3>
+            <p className="instruction-text kids-text">
+              ¡Forma palabras usando las consonantes de la matrícula del coche!
+            </p>
+          </div>
 
-          <div className="space-y-2">
-            <h3 className="font-medium text-gray-800 text-lg kids-text">Cómo jugar:</h3>
-            <ul className="space-y-2">
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text">Observa las <strong>consonantes</strong> de la matrícula y forma palabras en español usando al menos una de ellas.</span>
+          <div>
+            <h3 className="text-2xl font-bold text-purple-700 kids-text mb-2">
+              Reglas
+            </h3>
+            <ul className="list-disc pl-6 space-y-2">
+              <li className="instruction-text kids-text">
+                Fíjate en las TRES letras de la matrícula.
               </li>
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text">Cuantas más consonantes de la matrícula uses, ¡más puntos conseguirás!</span>
+              <li className="instruction-text kids-text">
+                Piensa una palabra que contenga al menos una de esas letras.
               </li>
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text">Puedes presionar "Nueva matrícula" para cambiar a otra combinación si te quedas atascado.</span>
+              <li className="instruction-text kids-text">
+                ¡Cuantas más letras de la matrícula uses, más puntos conseguirás!
               </li>
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text">Acumula puntos para subir de nivel y desbloquear nuevos destinos.</span>
+              <li className="instruction-text kids-text">
+                Si usas las 3 letras, ¡ganarás muchos puntos extra!
               </li>
-              <li className="flex items-start">
-                <Star className="w-4 h-4 text-game-yellow fill-game-yellow mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text"><strong>¡BONUS!</strong> Si consigues una matrícula con "666", ¡ganarás automáticamente 1000 puntos extra!</span>
+              <li className="instruction-text kids-text">
+                Las palabras deben tener al menos 3 letras.
               </li>
             </ul>
           </div>
 
-          <div className="space-y-2">
-            <h3 className="font-medium text-gray-800 text-lg kids-text">Puntuación:</h3>
-            <ul className="space-y-2">
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text"><strong>3 consonantes en orden:</strong> 100 puntos</span>
+          <div>
+            <h3 className="text-2xl font-bold text-purple-700 kids-text mb-2">
+              Puntuación
+            </h3>
+            <ul className="list-disc pl-6 space-y-2">
+              <li className="instruction-text kids-text">
+                10 puntos por cada letra de la palabra.
               </li>
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text"><strong>3 consonantes no ordenadas:</strong> 75 puntos</span>
+              <li className="instruction-text kids-text">
+                25 puntos adicionales por usar 1 consonante de la matrícula.
               </li>
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text"><strong>2 consonantes en orden:</strong> 50 puntos</span>
+              <li className="instruction-text kids-text">
+                50 puntos adicionales por usar 2 consonantes diferentes.
               </li>
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text"><strong>2 consonantes no ordenadas:</strong> 25 puntos</span>
+              <li className="instruction-text kids-text">
+                100 puntos adicionales por usar las 3 consonantes diferentes.
               </li>
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text"><strong>1 consonante:</strong> 10 puntos</span>
-              </li>
-              <li className="flex items-start">
-                <X className="w-4 h-4 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text"><strong>Palabra incorrecta:</strong> -20 puntos</span>
-              </li>
-              <li className="flex items-start">
-                <Check className="w-4 h-4 text-game-green mt-0.5 mr-2 flex-shrink-0" />
-                <span className="text-base kids-text">Palabras más largas reciben puntos extra.</span>
+              <li className="instruction-text kids-text">
+                ¡Bonus de 200 puntos por palabras en inglés!
               </li>
             </ul>
           </div>
 
-          <button
-            onClick={onClose}
-            className="bg-game-blue hover:bg-game-blue/90 text-white font-medium py-2 px-4 rounded w-full mt-2 text-lg kids-text"
-          >
-            ¡Entendido!
-          </button>
+          <div>
+            <h3 className="text-2xl font-bold text-purple-700 kids-text mb-2">
+              Niveles y viajes
+            </h3>
+            <p className="instruction-text kids-text">
+              Por cada cierta cantidad de puntos, subirás de nivel y desbloquearás un viaje a un nuevo país. 
+              ¡Explora el mundo con tus palabras!
+            </p>
+          </div>
+
+          <div className="pt-2">
+            <button
+              onClick={onClose}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg kids-text"
+            >
+              ¡Entendido!
+            </button>
+          </div>
         </div>
       </motion.div>
     </motion.div>

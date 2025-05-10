@@ -101,6 +101,7 @@ interface GameContextType {
   shuffleConsonants: () => string;
   clearError: () => void;
   closeBonusPopup: () => void;
+  resetGame: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -178,6 +179,24 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return () => clearTimeout(timer);
     }
   }, [errorMessage]);
+  
+  // Reset the entire game
+  const resetGame = () => {
+    setTotalPoints(0);
+    setLevel(1);
+    setDestination("Madrid");
+    setDestinationInfo(WORLD_DESTINATIONS[0]);
+    setGamesPlayed(0);
+    setHighScore(0);
+    
+    // Clear localStorage
+    localStorage.removeItem("matriculabraCadabra_totalPoints");
+    localStorage.removeItem("matriculabraCadabra_highScore");
+    localStorage.removeItem("matriculabraCadabra_gamesPlayed");
+    
+    // Generate a new plate
+    generateNewPlate();
+  };
   
   // Generate a new license plate
   const generateNewPlate = () => {
@@ -323,7 +342,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         submitWord,
         shuffleConsonants,
         clearError,
-        closeBonusPopup
+        closeBonusPopup,
+        resetGame
       }}
     >
       {children}

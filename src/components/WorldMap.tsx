@@ -2,7 +2,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
 
 interface WorldMapProps {
   highlightCountry?: string;
@@ -29,7 +28,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
   };
   
   return (
-    <div className="bg-[#9a83b9] h-full w-full flex items-center justify-center p-3 relative">
+    <div className="bg-[#9a83b9] h-full w-full flex items-center justify-center p-3 relative rounded-lg border-4 border-white/50">
       <motion.div 
         className="relative w-full h-full"
         initial={{ opacity: 0, scale: 0.9 }}
