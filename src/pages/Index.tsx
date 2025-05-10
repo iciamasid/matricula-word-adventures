@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+imgimport React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
 import WordInput from "@/components/WordInput";
@@ -130,7 +130,7 @@ const GameContent = () => {
       >
        
         <img 
-          src="/lovable-uploads/coche_animado.gif" 
+          src="/lovable-uploads/vólido.gif" 
           alt="Coche de juego" 
           className="w-48 h-48 object-contain"
         />
