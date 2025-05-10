@@ -21,7 +21,7 @@ const Index = () => {
         }}
       >
         {/* Overlay para mejorar la legibilidad del contenido */}
-        <div className="absolute inset-0 bg-white/70 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-white/85"></div>
         
         <div className="relative z-10 w-full max-w-md flex flex-col items-center">
           <motion.h1

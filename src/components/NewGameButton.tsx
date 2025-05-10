@@ -15,7 +15,7 @@ const NewGameButton: React.FC = () => {
   };
   
   return (
-    <div className="text-center space-y-2 bg-white/80 p-4 rounded-lg shadow backdrop-blur-sm">
+    <div className="text-center space-y-2 bg-white p-4 rounded-lg shadow">
       <Button
         onClick={handleClick}
         className={`px-6 py-6 bg-game-blue hover:bg-game-blue/90 ${isAnimating ? "animate-bounce" : ""}`}
