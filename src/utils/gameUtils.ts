@@ -30,6 +30,7 @@ export function calculateScore(word: string, plateConsonants: string): number {
   let foundConsonants = 0;
   let inOrder = true;
   let lastIndex = -1;
+  const foundIndices: number[] = [];
 
   // Check each consonant from the plate
   for (let i = 0; i < plateConsonants.length; i++) {
@@ -38,6 +39,7 @@ export function calculateScore(word: string, plateConsonants: string): number {
     
     if (index !== -1) {
       foundConsonants++;
+      foundIndices.push(index);
       
       // Check if consonants appear in order
       if (lastIndex !== -1 && index <= lastIndex) {
@@ -49,15 +51,19 @@ export function calculateScore(word: string, plateConsonants: string): number {
 
   // Calculate score based on found consonants and order
   if (foundConsonants === 3) {
-    score = inOrder ? 100 : 50;
+    score = inOrder ? 100 : 75;
   } else if (foundConsonants === 2) {
-    score = 25;
+    score = 50;
   } else if (foundConsonants === 1) {
-    score = 10;
+    score = 25;
+  } else if (foundConsonants === 0) {
+    score = -20; // Penalty for no consonants found
   }
 
   // Bonus for longer words
-  score += Math.min(50, word.length * 5);
+  if (score > 0) {
+    score += Math.min(50, word.length * 5);
+  }
 
   return score;
 }
@@ -65,22 +71,6 @@ export function calculateScore(word: string, plateConsonants: string): number {
 // Get game level from points
 export function getLevel(points: number): number {
   return Math.floor(points / 500) + 1;
-}
-
-// Get car model based on level
-export function getCarModel(level: number): string {
-  const cars = [
-    "Compact",
-    "Sedan",
-    "SUV",
-    "Sports Car",
-    "Luxury Sedan",
-    "Super Car",
-    "Hypercar"
-  ];
-  
-  const index = Math.min(cars.length - 1, Math.floor((level - 1) / 3));
-  return cars[index];
 }
 
 // Get destination based on level
@@ -106,16 +96,40 @@ export function getDestination(level: number): string {
   return destinations[index];
 }
 
-// Check if a word is potentially valid (contains the required consonants)
+// Check if a word is potentially valid (contains at least one required consonant)
 export function isValidWord(word: string, plateConsonants: string): boolean {
   const uppercaseWord = word.toUpperCase();
-  let foundConsonants = 0;
   
   for (const consonant of plateConsonants) {
     if (uppercaseWord.includes(consonant)) {
-      foundConsonants++;
+      return true;
     }
   }
   
-  return foundConsonants > 0;
+  return false;
+}
+
+// Dummy Spanish word dictionary for validation
+// In a real app, this would be replaced with an API call or a more comprehensive dictionary
+const SPANISH_WORDS = new Set([
+  "CASA", "PERRO", "GATO", "MESA", "SILLA", "LIBRO", "PAPEL", "PLUMA", "CARRO",
+  "MUNDO", "TIEMPO", "COLOR", "COMIDA", "AGUA", "TIERRA", "FUEGO", "AIRE", "VIDA",
+  "AMOR", "ODIO", "FELIZ", "TRISTE", "GRANDE", "PEQUEÑO", "ALTO", "BAJO", "BUENO",
+  "MALO", "NEGRO", "BLANCO", "ROJO", "VERDE", "AZUL", "AMARILLO", "SOL", "LUNA",
+  "ESTRELLA", "CIELO", "MAR", "RIO", "MONTAÑA", "BOSQUE", "ARBOL", "FLOR", "FRUTA",
+  "CAMINO", "CALLE", "CIUDAD", "PAIS", "MUNDO", "HOMBRE", "MUJER", "NIÑO", "NIÑA",
+  "MANO", "PIE", "CABEZA", "OJO", "NARIZ", "BOCA", "OREJA", "PELO", "DIENTE", "BARCO",
+  "TREN", "AVION", "MOTO", "CAMION", "CASA", "PUERTA", "VENTANA", "TECHO", "PARED",
+  "PISO", "COCINA", "BAÑO", "COMEDOR", "DORMITORIO", "FRIO", "CALOR", "NIEVE", "LLUVIA",
+  "VIENTO", "NUBE", "DIA", "NOCHE", "MAÑANA", "TARDE", "HORA", "MINUTO", "SEGUNDO",
+  "SEMANA", "MES", "AÑO", "SIGLO", "TRABAJO", "ESCUELA", "UNIVERSIDAD", "TIENDA",
+  "HOSPITAL", "BANCO", "CARTA", "TELEFONO", "TELEVISION", "COMPUTADORA", "INTERNET",
+  "MUSICA", "PELICULA", "DEPORTE", "FUTBOL", "BALONCESTO", "TENIS", "NATACION", "FAMILIA",
+  "AMIGO", "VECINO", "JEFE", "COMPAÑERO", "PROFESOR", "ESTUDIANTE", "MEDICO", "PACIENTE",
+  "POLICIA", "LADRON", "JUEZ", "ABOGADO", "COCINERO", "CAMARERO"
+]);
+
+// Check if a word exists in our dictionary
+export function wordExists(word: string): boolean {
+  return SPANISH_WORDS.has(word.toUpperCase());
 }

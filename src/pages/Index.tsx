@@ -6,6 +6,7 @@ import WordInput from "@/components/WordInput";
 import ScoreDisplay from "@/components/ScoreDisplay";
 import LevelRewards from "@/components/LevelRewards";
 import NewGameButton from "@/components/NewGameButton";
+import ErrorAlert from "@/components/ErrorAlert";
 import { motion } from "framer-motion";
 
 const Index = () => {
@@ -52,6 +53,8 @@ const Index = () => {
             
             <NewGameButton />
           </div>
+          
+          <ErrorAlert />
         </div>
       </div>
     </GameProvider>

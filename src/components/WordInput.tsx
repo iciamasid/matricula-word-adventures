@@ -5,6 +5,9 @@ import { Input } from "@/components/ui/input";
 import { useGame } from "@/context/GameContext";
 import { ArrowRight } from "lucide-react";
 
+// Array of colors for the consonant squares
+const CONSONANT_COLORS = ["bg-game-blue", "bg-game-purple", "bg-game-orange"];
+
 const WordInput: React.FC = () => {
   const { currentWord, setCurrentWord, submitWord, plateConsonants } = useGame();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -43,7 +46,7 @@ const WordInput: React.FC = () => {
           {plateConsonants.split("").map((letter, index) => (
             <span 
               key={index}
-              className="inline-flex items-center justify-center w-8 h-8 bg-game-blue text-white font-bold rounded-md animate-pulse-scale"
+              className={`inline-flex items-center justify-center w-10 h-10 ${CONSONANT_COLORS[index]} text-white text-xl font-bold rounded-md animate-pulse-scale`}
             >
               {letter}
             </span>
