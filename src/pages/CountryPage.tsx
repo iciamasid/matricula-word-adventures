@@ -32,8 +32,8 @@ const CountryPageContent = () => {
           language: "Español",
           famousFor: "La Sagrada Familia, flamenco y paella",
           fact: "España tiene 47 lugares declarados Patrimonio de la Humanidad por la UNESCO, ¡el tercer país con más lugares protegidos!",
-          image: "/lovable-uploads/310987b9-7b6d-48c9-8dec-f37f4487ca8c.png", // Image of La Giralda
-          imageAlt: "La Giralda, Sevilla"
+          image: "/lovable-uploads/madrid.jpg", // Image of La Giralda
+          imageAlt: "El oso y el madroño, Madrid"
         };
       case "francia":
         return {
