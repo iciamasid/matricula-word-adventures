@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Info } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
   const [showInstructions, setShowInstructions] = useState(false);
@@ -22,7 +23,7 @@ const Index = () => {
       <div 
         className="min-h-screen flex flex-col items-center relative overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, #8BC6EC 0%, #9599E2 100%)",
+          background: "linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%)",
           backgroundSize: "cover",
           backgroundAttachment: "fixed"
         }}
@@ -32,7 +33,9 @@ const Index = () => {
           alt="Matriculabra Cadabra"
           className="w-full object-cover mb-4"
           style={{
-            maxHeight: isMobile ? "25vh" : "auto"
+            maxHeight: isMobile ? "25vh" : "auto",
+            objectFit: "cover",
+            objectPosition: "center"
           }}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -44,7 +47,7 @@ const Index = () => {
             <Button 
               variant="outline" 
               size="sm" 
-              className="bg-white/90 hover:bg-white"
+              className="bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300"
               onClick={() => setShowInstructions(true)}
             >
               <Info className="w-4 h-4 mr-1" /> Instrucciones
@@ -69,6 +72,7 @@ const Index = () => {
             <GameInstructions onClose={() => setShowInstructions(false)} />
           )}
         </div>
+        <Toaster />
       </div>
     </GameProvider>
   );

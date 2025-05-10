@@ -61,8 +61,8 @@ const LicensePlate: React.FC = () => {
       animate={{ scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
-      {/* EU flag */}
-      <div className="absolute left-2 top-1/2 transform -translate-y-1/2 flex flex-col items-center">
+      {/* EU flag - centered */}
+      <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex flex-col items-center">
         <div className="bg-blue-600 rounded-sm flex items-center justify-center w-8 h-6 mb-1">
           <div className="text-yellow-300 text-xs flex justify-center items-center">
             <motion.span 
@@ -84,17 +84,17 @@ const LicensePlate: React.FC = () => {
         <div className="text-[8px] font-bold text-center text-gray-600">E</div>
       </div>
       
-      <div className="flex justify-center items-center ml-6">
+      <div className="flex justify-center items-center ml-10">
         <div className="text-center flex justify-center">
           <motion.span 
-            className={`text-gray-800 ${isMobile ? "text-xl" : "text-3xl"} font-bold tracking-widest`}
+            className={`text-gray-800 ${isMobile ? "text-xl" : "text-2xl"} font-bold tracking-wider`}
             animate={isAnimating ? { y: [0, -2, 0, 2, 0] } : {}}
             transition={{ repeat: Infinity, duration: 0.3 }}
           >
             {numbers}
           </motion.span>
           <motion.span 
-            className={`text-game-blue ml-2 ${isMobile ? "text-xl" : "text-3xl"} font-bold tracking-widest`}
+            className={`text-purple-700 ml-2 ${isMobile ? "text-xl" : "text-2xl"} font-bold tracking-wider`}
             animate={isAnimating ? { y: [0, -2, 0, 2, 0] } : {}}
             transition={{ repeat: Infinity, duration: 0.3, delay: 0.1 }}
           >

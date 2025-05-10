@@ -1,0 +1,176 @@
+
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Award, Gift, Star } from "lucide-react";
+
+interface BonusPopupProps {
+  open: boolean;
+  onClose: () => void;
+  points: number;
+}
+
+const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
+  const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
+  
+  // Generate random stars for background animation
+  useEffect(() => {
+    if (open) {
+      const newStars = Array.from({ length: 50 }, () => ({
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 3 + 1,
+        delay: Math.random() * 3
+      }));
+      setStars(newStars);
+      
+      // Auto-close after 5 seconds
+      const timer = setTimeout(() => {
+        onClose();
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [open, onClose]);
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <AlertDialog open={open}>
+          <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="relative w-full max-w-lg mx-auto"
+            >
+              {/* Background with stars animation */}
+              <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                {stars.map((star, index) => (
+                  <motion.div
+                    key={index}
+                    className="absolute rounded-full bg-yellow-300"
+                    style={{ 
+                      left: `${star.x}%`,
+                      top: `${star.y}%`,
+                      width: `${star.size}px`,
+                      height: `${star.size}px`
+                    }}
+                    animate={{ 
+                      opacity: [0, 1, 0],
+                      scale: [0, 1, 0]
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      delay: star.delay,
+                      repeat: Infinity,
+                      repeatDelay: 3
+                    }}
+                  />
+                ))}
+              </div>
+              
+              {/* Main bonus content */}
+              <div className="bg-gradient-to-br from-purple-700 via-purple-600 to-purple-800 p-8 rounded-2xl border-4 border-yellow-400 shadow-[0_0_30px_rgba(168,85,247,0.7)] relative z-10">
+                <div className="text-center">
+                  <motion.div 
+                    animate={{ scale: [1, 1.2, 1], rotate: [0, 5, 0, -5, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="flex justify-center items-center mb-4"
+                  >
+                    <div className="bg-yellow-500 p-2 rounded-full">
+                      <Gift className="w-12 h-12 text-purple-900" />
+                    </div>
+                  </motion.div>
+                  
+                  <motion.h2 
+                    className="text-4xl font-bold mb-2 text-white"
+                    animate={{ scale: [1, 1.1, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    ¡NÚMERO DE LA SUERTE!
+                  </motion.h2>
+                  
+                  <div className="flex justify-center items-center my-4">
+                    <motion.div
+                      animate={{ 
+                        rotateY: [0, 360],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{ duration: 4, repeat: Infinity }}
+                      className="text-5xl font-bold text-red-500 mx-2"
+                    >
+                      6
+                    </motion.div>
+                    <motion.div
+                      animate={{ 
+                        rotateY: [0, 360],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{ duration: 4, delay: 0.3, repeat: Infinity }}
+                      className="text-5xl font-bold text-red-500 mx-2"
+                    >
+                      6
+                    </motion.div>
+                    <motion.div
+                      animate={{ 
+                        rotateY: [0, 360],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{ duration: 4, delay: 0.6, repeat: Infinity }}
+                      className="text-5xl font-bold text-red-500 mx-2"
+                    >
+                      6
+                    </motion.div>
+                  </div>
+                  
+                  <motion.h3 
+                    className="text-3xl font-bold mb-6 text-yellow-300"
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    ¡BONUS DE {points} PUNTOS!
+                  </motion.h3>
+                  
+                  <div className="flex justify-center space-x-2 mb-4">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <motion.div
+                        key={i}
+                        animate={{ 
+                          rotate: [0, 360],
+                          scale: [1, 1.5, 1]
+                        }}
+                        transition={{ 
+                          duration: 2,
+                          delay: i * 0.3,
+                          repeat: Infinity
+                        }}
+                      >
+                        <Star className="h-8 w-8 text-yellow-300" />
+                      </motion.div>
+                    ))}
+                  </div>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                    onClick={onClose}
+                    className="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold py-3 px-8 rounded-full shadow-lg mt-4 flex items-center mx-auto"
+                  >
+                    <Award className="mr-2" />
+                    ¡Fantástico!
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+    </AnimatePresence>
+  );
+};
+
+export default BonusPopup;

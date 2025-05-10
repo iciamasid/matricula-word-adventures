@@ -8,6 +8,7 @@ import {
 } from "../utils/gameUtils";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import BonusPopup from "@/components/BonusPopup";
 
 // Ciudades del mundo con datos interesantes para niños
 const WORLD_DESTINATIONS = [
@@ -15,73 +16,73 @@ const WORLD_DESTINATIONS = [
     city: "Madrid",
     country: "España",
     flag: "🇪🇸",
-    fact: "¡En Madrid está el museo del Prado con obras de arte increíbles!"
+    fact: "¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo."
   },
   {
     city: "París",
     country: "Francia",
     flag: "🇫🇷",
-    fact: "¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos!"
+    fact: "¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!"
   },
   {
     city: "Roma",
     country: "Italia",
     flag: "🇮🇹",
-    fact: "En Roma puedes visitar el Coliseo, ¡donde luchaban los gladiadores hace 2000 años!"
+    fact: "En Roma puedes visitar el Coliseo, ¡donde luchaban los gladiadores hace 2000 años! Podía albergar a más de 50.000 personas."
   },
   {
     city: "Londres",
     country: "Reino Unido",
     flag: "🇬🇧",
-    fact: "¡El Big Ben es en realidad el nombre de la campana, no de la torre del reloj!"
+    fact: "¡El Big Ben es en realidad el nombre de la campana, no de la torre del reloj! La torre se llama Elizabeth Tower."
   },
   {
     city: "Nueva York",
     country: "Estados Unidos",
     flag: "🇺🇸",
-    fact: "¡La Estatua de la Libertad fue un regalo de Francia a Estados Unidos!"
+    fact: "¡La Estatua de la Libertad fue un regalo de Francia a Estados Unidos! Mide 93 metros y su corona tiene 7 picos que representan los 7 continentes."
   },
   {
     city: "Tokio",
     country: "Japón",
     flag: "🇯🇵",
-    fact: "¡En Tokio hay máquinas expendedoras que venden casi de todo: desde juguetes hasta paraguas!"
+    fact: "¡En Tokio hay máquinas expendedoras que venden casi de todo: desde juguetes hasta paraguas! Hay más de 5 millones de máquinas en Japón."
   },
   {
     city: "Sídney",
     country: "Australia",
     flag: "🇦🇺",
-    fact: "La Ópera de Sídney parece barcos con velas desplegadas en el puerto."
+    fact: "La Ópera de Sídney parece barcos con velas desplegadas en el puerto. ¡Tardaron 14 años en construirla!"
   },
   {
     city: "Río de Janeiro",
     country: "Brasil",
     flag: "🇧🇷",
-    fact: "La estatua del Cristo Redentor tiene los brazos abiertos como dando un gran abrazo a la ciudad."
+    fact: "La estatua del Cristo Redentor tiene los brazos abiertos como dando un gran abrazo a la ciudad. ¡Mide 30 metros de alto!"
   },
   {
     city: "El Cairo",
     country: "Egipto",
     flag: "🇪🇬",
-    fact: "¡Las pirámides de Egipto tienen más de 4500 años y son una de las Siete Maravillas del Mundo!"
+    fact: "¡Las pirámides de Egipto tienen más de 4500 años y son una de las Siete Maravillas del Mundo! La Gran Pirámide está hecha con más de 2 millones de bloques de piedra."
   },
   {
     city: "Pekín",
     country: "China",
     flag: "🇨🇳",
-    fact: "La Gran Muralla China es tan larga que podría dar la vuelta a España ¡más de 6 veces!"
+    fact: "La Gran Muralla China es tan larga que podría dar la vuelta a España ¡más de 6 veces! Es visible incluso desde el espacio."
   },
   {
     city: "Ciudad del Cabo",
     country: "Sudáfrica",
     flag: "🇿🇦",
-    fact: "¡Desde aquí puedes ver pingüinos en la playa! Sí, ¡pingüinos de verdad en África!"
+    fact: "¡Desde aquí puedes ver pingüinos en la playa! Sí, ¡pingüinos de verdad en África! En la playa Boulders hay una colonia de más de 3000 pingüinos."
   },
   {
     city: "Nairobi",
     country: "Kenia",
     flag: "🇰🇪",
-    fact: "¡Hay un parque nacional dentro de la ciudad donde puedes ver jirafas y leones!"
+    fact: "¡Hay un parque nacional dentro de la ciudad donde puedes ver jirafas y leones! Es el único parque nacional del mundo dentro de una capital."
   }
 ];
 
@@ -102,6 +103,8 @@ interface GameContextType {
   highScore: number;
   gamesPlayed: number;
   errorMessage: string | null;
+  showBonusPopup: boolean;
+  bonusPoints: number;
   
   // Actions
   generateNewPlate: () => void;
@@ -109,6 +112,7 @@ interface GameContextType {
   submitWord: () => void;
   shuffleConsonants: () => string;
   clearError: () => void;
+  closeBonusPopup: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -129,6 +133,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [bonusCounter, setBonusCounter] = useState(0);
+  const [showBonusPopup, setShowBonusPopup] = useState(false);
+  const [bonusPoints, setBonusPoints] = useState(0);
   
   // Initialize the game
   useEffect(() => {
@@ -204,13 +210,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (newPlate.substring(0, 4).includes("666")) {
       const bonusPoints = 1000;
       setTotalPoints(prev => prev + bonusPoints);
-      
-      toast({
-        title: "¡NÚMERO DE LA SUERTE!",
-        description: `¡Has conseguido el 666! Bonus de ${bonusPoints} puntos.`,
-        variant: "destructive",
-      });
+      setBonusPoints(bonusPoints);
+      setShowBonusPopup(true);
     }
+  };
+  
+  const closeBonusPopup = () => {
+    setShowBonusPopup(false);
   };
   
   // Generate random consonants for 666 bonus plates
@@ -313,14 +319,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         highScore,
         gamesPlayed,
         errorMessage,
+        showBonusPopup,
+        bonusPoints,
         generateNewPlate,
         setCurrentWord,
         submitWord,
         shuffleConsonants,
-        clearError
+        clearError,
+        closeBonusPopup
       }}
     >
       {children}
+      {showBonusPopup && <BonusPopup open={showBonusPopup} onClose={closeBonusPopup} points={bonusPoints} />}
     </GameContext.Provider>
   );
 };

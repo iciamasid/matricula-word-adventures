@@ -102,7 +102,9 @@
   letter-spacing: 0.05em;
   background: linear-gradient(to bottom, #FFFFFF 0%, #e2d1c3 100%);
   border: 2px solid #666;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
 }
 
 .letter-tile {
@@ -155,6 +157,24 @@
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
 /* Progress animation */
 @keyframes progress-fill {
   0% { width: 0%; }
@@ -163,4 +183,22 @@
 
 .progress-animation {
   animation: progress-fill 0.5s ease-out forwards;
+}
+
+/* Custom animations */
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Custom Gradients for the game */
+.purple-gradient {
+  background: linear-gradient(135deg, #8B5CF6 0%, #6366F1 100%);
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #F59E0B 0%, #FBBF24 100%);
 }
