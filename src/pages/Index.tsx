@@ -74,7 +74,7 @@ const GameContent = () => {
       }}
     >
       <motion.img 
-        src="/lovable-uploads/aa16d3eb-100f-4916-ba38-871f34a715da.png"
+        src="/lovable-uploads/13c721ae-3f14-415a-86bb-0228c47d8425.png"
         alt="Matriculabra Cadabra"
         className="w-full object-contain mb-4 px-0"
         style={{

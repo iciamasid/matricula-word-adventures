@@ -55,11 +55,11 @@ const WordInput: React.FC = () => {
 
   return (
     <div className="w-full max-w-xs relative">
-      {/* Success message - centered over the license plate */}
+      {/* Success message - positioned at bottom center */}
       <AnimatePresence>
         {showSuccess && (
           <motion.div 
-            className="fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg z-50 flex items-center gap-2"
+            className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg z-50 flex items-center gap-2"
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}

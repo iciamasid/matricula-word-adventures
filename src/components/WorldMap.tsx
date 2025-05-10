@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { ZoomIn, ZoomOut, Map } from 'lucide-react';
 
 interface WorldMapProps {
   highlightCountry?: string;
@@ -9,6 +10,8 @@ interface WorldMapProps {
 }
 
 const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries = [] }) => {
+  const [zoom, setZoom] = useState(1);
+  
   // Map countries to their positions
   const getCountryPosition = (country: string) => {
     const positions: Record<string, { left: string, top: string }> = {
@@ -26,16 +29,48 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
     
     return positions[country] || { left: "50%", top: "50%" };
   };
+
+  const handleZoomIn = () => {
+    if (zoom < 2) setZoom(prev => prev + 0.25);
+  };
+
+  const handleZoomOut = () => {
+    if (zoom > 0.5) setZoom(prev => prev - 0.25);
+  };
   
   return (
     <div className="bg-[#9a83b9] h-full w-full flex items-center justify-center p-3 relative rounded-lg border-4 border-white/50">
+      {/* Zoom controls */}
+      <div className="absolute top-2 right-2 z-10 flex gap-1">
+        <button 
+          onClick={handleZoomIn}
+          className="bg-white/80 hover:bg-white p-1 rounded-md shadow-sm"
+          aria-label="Zoom in"
+        >
+          <ZoomIn className="w-5 h-5 text-purple-800" />
+        </button>
+        <button 
+          onClick={handleZoomOut}
+          className="bg-white/80 hover:bg-white p-1 rounded-md shadow-sm"
+          aria-label="Zoom out"
+        >
+          <ZoomOut className="w-5 h-5 text-purple-800" />
+        </button>
+      </div>
+      
       <motion.div 
-        className="relative w-full h-full"
+        className="relative w-full h-full overflow-hidden"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="w-full h-full relative">
+        <motion.div 
+          className="w-full h-full relative"
+          style={{ 
+            scale: zoom,
+            transformOrigin: "center"
+          }}
+        >
           {/* Usar la imagen del mapa mundi como fondo */}
           <img 
             src="/lovable-uploads/775e117d-bc61-4576-a77e-acba4f134785.png" 
@@ -105,7 +140,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
               </motion.div>
             </Link>
           ))}
-        </div>
+        </motion.div>
       </motion.div>
     </div>
   );
