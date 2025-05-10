@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
-import { CircleDollarSign } from "lucide-react";
+import { Globe } from "lucide-react";
 
 const TotalPointsPanel: React.FC = () => {
   const { totalPoints } = useGame();
@@ -23,7 +23,7 @@ const TotalPointsPanel: React.FC = () => {
           }} 
           transition={{ duration: 3, repeat: Infinity }}
         >
-          <CircleDollarSign className="w-8 h-8 text-game-green" />
+          <Globe className="w-8 h-8 text-game-green" />
         </motion.div>
         <h3 className="text-2xl font-bold text-purple-800 kids-text">Puntos Totales</h3>
       </div>

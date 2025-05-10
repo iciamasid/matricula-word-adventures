@@ -17,6 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import GamePopup from "@/components/GamePopup";
 import ScorePanel from "@/components/ScorePanel";
 import TotalPointsPanel from "@/components/TotalPointsPanel";
+import PlayerNameInput from "@/components/PlayerNameInput";
 
 // Función para obtener la bandera según el nivel
 const getLevelFlag = (level: number) => {
@@ -39,7 +40,7 @@ const getLevelFlag = (level: number) => {
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
-  const { totalPoints, destinationInfo, level, resetGame, plateConsonants, score } = useGame();
+  const { totalPoints, destinationInfo, level, resetGame, plateConsonants, score, previousScore, setPlayerName } = useGame();
   const [showSuccess, setShowSuccess] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [prevLevel, setPrevLevel] = useState(level);
@@ -86,6 +87,14 @@ const GameContent = () => {
     }
   };
   
+  const handleSavePlayerName = (name: string) => {
+    setPlayerName(name);
+    toast({
+      title: "¡Bienvenido/a!",
+      description: `Hola ${name}, ¡a jugar con las matrículas!`
+    });
+  };
+  
   return (
     <div 
       className="min-h-screen flex flex-col items-center relative overflow-hidden"
@@ -122,11 +131,13 @@ const GameContent = () => {
       
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
-          <LicensePlate />
+          {/* Player name input at the top */}
+          <PlayerNameInput onSave={handleSavePlayerName} />
           
+          <LicensePlate />
           <WordInput />
           
-          {/* New Score components */}
+          {/* Score components */}
           <ScorePanel />
           <TotalPointsPanel />
           
@@ -140,17 +151,19 @@ const GameContent = () => {
             ¿Qué países puedes visitar con estos puntos?
           </motion.h2>
           
-          {/* Mapa Mundi con países desbloqueados */}
+          {/* Mapa Mundi con países desbloqueados - shifted 4mm to the right for mobile */}
           <motion.div 
-            className="w-full h-[200px] rounded-lg overflow-hidden mb-2 border-4 border-white/50 shadow-lg"
+            className="w-full h-[200px] rounded-lg overflow-hidden mb-2 border-4 border-white/50 shadow-lg relative"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <WorldMap 
-              highlightCountry={destinationInfo.country} 
-              unlockedCountries={unlockedCountries}
-            />
+            <div className={`absolute inset-0 ${isMobile ? 'ml-4' : ''}`}>
+              <WorldMap 
+                highlightCountry={destinationInfo.country} 
+                unlockedCountries={unlockedCountries}
+              />
+            </div>
           </motion.div>
           
           <LevelRewards />
@@ -171,7 +184,7 @@ const GameContent = () => {
           </motion.div>
         </div>
         
-        {/* Error Alert using new GamePopup */}
+        {/* Error Alert using GamePopup */}
         <ErrorAlert />
         
         {/* Success Popup */}

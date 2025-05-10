@@ -167,7 +167,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
                   {level && type === "levelUp" && (
                     <div className="mb-4">
                       <motion.div
-                        className="text-3xl font-bold text-yellow-300 kids-text"
+                        className="text-4xl font-bold text-yellow-300 kids-text"
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 1, repeat: Infinity }}
                       >

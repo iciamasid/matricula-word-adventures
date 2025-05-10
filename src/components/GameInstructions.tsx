@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { X, Target, Award, Star, Book, Zap, Check } from "lucide-react";
+import { X, Target, Award, Star, Book, Zap, Check, Globe } from "lucide-react";
 
 interface GameInstructionsProps {
   onClose: () => void;
@@ -84,9 +84,13 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
                 <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
                 <span>¡Bonus de 200 puntos por palabras en inglés!</span>
               </li>
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>¡Bonus de 500 puntos si los números de la matrícula son 6666!</span>
+              </li>
               <li className="instruction-text kids-text text-red-300 flex items-start gap-2">
                 <X className="w-5 h-5 text-red-400 mt-1 flex-shrink-0" /> 
-                <span>Se restan 20 puntos si la palabra no existe en el diccionario o no contiene ninguna consonante</span>
+                <span>Se restan 20 puntos si la palabra no existe o no contiene ninguna consonante</span>
               </li>
             </ul>
           </motion.div>
@@ -97,7 +101,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             transition={{ type: "spring", stiffness: 300 }}
           >
             <h3 className="text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2">
-              <Zap className="w-6 h-6 text-yellow-300" />
+              <Globe className="w-6 h-6 text-yellow-300" />
               Niveles y viajes
             </h3>
             <p className="instruction-text kids-text text-white">
