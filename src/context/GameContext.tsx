@@ -5,11 +5,86 @@ import {
   getConsonantsFromPlate, 
   calculateScore, 
   getLevel, 
-  getDestination,
   wordExists
 } from "../utils/gameUtils";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+
+// Ciudades del mundo con datos interesantes para niños
+const WORLD_DESTINATIONS = [
+  {
+    city: "Madrid",
+    country: "España",
+    flag: "🇪🇸",
+    fact: "¡En Madrid está el museo del Prado con obras de arte increíbles!"
+  },
+  {
+    city: "París",
+    country: "Francia",
+    flag: "🇫🇷",
+    fact: "¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos!"
+  },
+  {
+    city: "Roma",
+    country: "Italia",
+    flag: "🇮🇹",
+    fact: "En Roma puedes visitar el Coliseo, ¡donde luchaban los gladiadores hace 2000 años!"
+  },
+  {
+    city: "Londres",
+    country: "Reino Unido",
+    flag: "🇬🇧",
+    fact: "¡El Big Ben es en realidad el nombre de la campana, no de la torre del reloj!"
+  },
+  {
+    city: "Nueva York",
+    country: "Estados Unidos",
+    flag: "🇺🇸",
+    fact: "¡La Estatua de la Libertad fue un regalo de Francia a Estados Unidos!"
+  },
+  {
+    city: "Tokio",
+    country: "Japón",
+    flag: "🇯🇵",
+    fact: "¡En Tokio hay máquinas expendedoras que venden casi de todo: desde juguetes hasta paraguas!"
+  },
+  {
+    city: "Sídney",
+    country: "Australia",
+    flag: "🇦🇺",
+    fact: "La Ópera de Sídney parece barcos con velas desplegadas en el puerto."
+  },
+  {
+    city: "Río de Janeiro",
+    country: "Brasil",
+    flag: "🇧🇷",
+    fact: "La estatua del Cristo Redentor tiene los brazos abiertos como dando un gran abrazo a la ciudad."
+  },
+  {
+    city: "El Cairo",
+    country: "Egipto",
+    flag: "🇪🇬",
+    fact: "¡Las pirámides de Egipto tienen más de 4500 años y son una de las Siete Maravillas del Mundo!"
+  },
+  {
+    city: "Pekín",
+    country: "China",
+    flag: "🇨🇳",
+    fact: "La Gran Muralla China es tan larga que podría dar la vuelta a España ¡más de 6 veces!"
+  },
+  {
+    city: "Ciudad del Cabo",
+    country: "Sudáfrica",
+    flag: "🇿🇦",
+    fact: "¡Desde aquí puedes ver pingüinos en la playa! Sí, ¡pingüinos de verdad en África!"
+  },
+  {
+    city: "Nairobi",
+    country: "Kenia",
+    flag: "🇰🇪",
+    fact: "¡Hay un parque nacional dentro de la ciudad donde puedes ver jirafas y leones!"
+  }
+];
 
 interface GameContextType {
   licensePlate: string;
@@ -19,6 +94,12 @@ interface GameContextType {
   totalPoints: number;
   level: number;
   destination: string;
+  destinationInfo: {
+    city: string;
+    country: string;
+    flag: string;
+    fact: string;
+  };
   highScore: number;
   gamesPlayed: number;
   errorMessage: string | null;
@@ -44,6 +125,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [totalPoints, setTotalPoints] = useState(0);
   const [level, setLevel] = useState(1);
   const [destination, setDestination] = useState("Madrid");
+  const [destinationInfo, setDestinationInfo] = useState(WORLD_DESTINATIONS[0]);
   const [highScore, setHighScore] = useState(0);
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -67,12 +149,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newLevel = getLevel(totalPoints);
     if (newLevel !== level) {
       setLevel(newLevel);
-      const newDestination = getDestination(newLevel);
-      setDestination(newDestination);
+      
+      // Elegir un destino al azar basado en el nivel
+      const destinationIndex = (newLevel - 1) % WORLD_DESTINATIONS.length;
+      const newDestinationInfo = WORLD_DESTINATIONS[destinationIndex];
+      setDestinationInfo(newDestinationInfo);
+      setDestination(newDestinationInfo.city);
       
       toast({
         title: "¡Nivel nuevo!",
-        description: `Has alcanzado el nivel ${newLevel}. ¡Ahora viajas a ${newDestination}!`,
+        description: `Has alcanzado el nivel ${newLevel}. ¡Ahora viajas a ${newDestinationInfo.city}, ${newDestinationInfo.country} ${newDestinationInfo.flag}!`,
       });
     }
     
@@ -222,6 +308,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         totalPoints,
         level,
         destination,
+        destinationInfo,
         highScore,
         gamesPlayed,
         errorMessage,

@@ -38,7 +38,7 @@ const WordInput: React.FC = () => {
   }, [score]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentWord(e.target.value);
+    setCurrentWord(e.target.value.toUpperCase());
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -59,7 +59,7 @@ const WordInput: React.FC = () => {
       <AnimatePresence>
         {showSuccess && (
           <motion.div 
-            className="absolute -top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg z-50 flex items-center gap-2"
+            className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-green-500 text-white py-3 px-6 rounded-lg shadow-lg z-50 flex items-center gap-2"
             initial={{ opacity: 0, scale: 0.5, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.5, y: -20 }}
@@ -68,7 +68,7 @@ const WordInput: React.FC = () => {
             <motion.div animate={{ rotate: [0, 15, -15, 15, 0] }} transition={{ duration: 0.5 }}>
               <Star className="h-6 w-6 text-yellow-300" />
             </motion.div>
-            <span className="text-xl font-bold">{successMessage}</span>
+            <span className="text-2xl font-bold">{successMessage}</span>
             <motion.div animate={{ rotate: [0, -15, 15, -15, 0] }} transition={{ duration: 0.5 }}>
               <Star className="h-6 w-6 text-yellow-300" />
             </motion.div>
@@ -76,7 +76,22 @@ const WordInput: React.FC = () => {
         )}
       </AnimatePresence>
 
-      <div className="text-center mb-4">
+      <motion.div 
+        className="text-center mb-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <motion.h2
+          className="text-xl font-bold mb-4 text-white bg-game-blue/80 py-2 px-4 rounded-md shadow-lg inline-block"
+          animate={{
+            scale: [1, 1.05, 1],
+            transition: { duration: 2, repeat: Infinity }
+          }}
+        >
+          FORMA UNA PALABRA CON ESTAS CONSONANTES:
+        </motion.h2>
+        
         <div className="flex justify-center gap-3 mb-4">
           {plateConsonants.split("").map((letter, index) => (
             <motion.div
@@ -97,7 +112,7 @@ const WordInput: React.FC = () => {
             </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
       
       <div className="flex gap-2">
         <Input
@@ -107,7 +122,7 @@ const WordInput: React.FC = () => {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           placeholder="Escribe una palabra"
-          className="flex-1 text-center font-medium text-lg py-5"
+          className="flex-1 text-center font-bold text-xl py-6 uppercase border-2 border-game-blue shadow-md"
           autoComplete="off"
         />
         <motion.div
@@ -116,11 +131,11 @@ const WordInput: React.FC = () => {
         >
           <Button
             onClick={handleSubmit}
-            className={`h-full ${isAnimating ? "animate-bounce" : ""}`}
+            className={`h-full bg-game-purple hover:bg-game-purple/90 text-xl ${isAnimating ? "animate-bounce" : ""}`}
             disabled={currentWord.trim().length < 3}
             size="lg"
           >
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-6 h-6" />
           </Button>
         </motion.div>
       </div>

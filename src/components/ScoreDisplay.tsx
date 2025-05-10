@@ -39,14 +39,14 @@ const ScoreDisplay: React.FC = () => {
               transition={{ duration: 1.5, repeat: score > 0 ? 2 : 0 }}
               className="relative"
             >
-              <Trophy className="w-8 h-8 text-game-yellow" />
+              <Trophy className="w-10 h-10 text-game-yellow" />
               {score > 50 && (
                 <motion.div 
                   className="absolute -top-2 -right-2"
                   animate={{ scale: [0.5, 1.2, 1] }}
                   transition={{ duration: 0.5, repeat: 3, repeatType: "reverse" }}
                 >
-                  <Star className="w-4 h-4 text-game-orange fill-game-orange" />
+                  <Star className="w-5 h-5 text-game-orange fill-game-orange" />
                 </motion.div>
               )}
             </motion.div>
@@ -54,7 +54,7 @@ const ScoreDisplay: React.FC = () => {
               className="ml-2"
             >
               <motion.span 
-                className="font-bold text-3xl"
+                className="font-bold text-4xl"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.2 }}
@@ -62,20 +62,20 @@ const ScoreDisplay: React.FC = () => {
                 {score}
               </motion.span>
               <motion.div 
-                className="text-xs text-gray-500"
+                className="text-sm text-gray-500"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                puntos
+                puntos esta ronda
               </motion.div>
             </motion.div>
           </div>
           <div className="flex flex-col items-end">
             <div className="flex items-center">
-              <BarChart className="w-6 h-6 text-game-blue mr-2" />
+              <BarChart className="w-7 h-7 text-game-blue mr-2" />
               <motion.span 
-                className="font-medium text-xl"
+                className="font-medium text-2xl"
                 animate={level > 1 ? { 
                   scale: [1, 1.2, 1],
                   color: ['#33C3F0', '#9B59B6', '#33C3F0']
@@ -86,7 +86,7 @@ const ScoreDisplay: React.FC = () => {
               </motion.span>
             </div>
             <motion.span 
-              className="text-xs text-game-green font-medium"
+              className="text-sm text-game-green font-medium"
               animate={{ opacity: [0.7, 1, 0.7] }}
               transition={{ duration: 2, repeat: Infinity }}
             >
@@ -97,8 +97,19 @@ const ScoreDisplay: React.FC = () => {
       </AnimatePresence>
       
       <div className="space-y-3">
-        <div className="flex justify-between text-sm text-gray-700">
-          <span>Progreso del nivel</span>
+        <div className="flex justify-between text-lg font-medium">
+          <div className="flex items-center">
+            <Trophy className="w-6 h-6 text-game-blue mr-2" />
+            <motion.span 
+              className="text-xl font-bold"
+              animate={{ 
+                scale: [1, 1.05, 1],
+                transition: { duration: 2, repeat: Infinity }
+              }}
+            >
+              TOTAL: {totalPoints} PUNTOS
+            </motion.span>
+          </div>
           <span className="font-medium">{Math.floor(progress)}%</span>
         </div>
         <motion.div
@@ -107,7 +118,7 @@ const ScoreDisplay: React.FC = () => {
           transition={{ duration: 0.5 }}
           className="relative"
         >
-          <Progress value={progress} className="h-4" />
+          <Progress value={progress} className="h-5" />
           <motion.div 
             className="absolute top-0 right-0 h-full w-2 bg-game-green rounded-full"
             animate={{ 
@@ -126,17 +137,23 @@ const ScoreDisplay: React.FC = () => {
             animate={{ opacity: [0.7, 1, 0.7] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <motion.span className="text-sm">
-              Total: {totalPoints} puntos
-            </motion.span>
+            {level > 1 && (
+              <motion.span 
+                className="text-sm bg-game-green text-white px-2 py-1 rounded-full"
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                ¡Progresando!
+              </motion.span>
+            )}
           </motion.div>
           <motion.div
             whileHover={{ scale: 1.1 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
             className="flex items-center"
           >
-            <Star className="w-4 h-4 text-game-yellow fill-game-yellow mr-1" />
-            <span className="font-bold text-sm">
+            <Star className="w-5 h-5 text-game-yellow fill-game-yellow mr-1" />
+            <span className="font-bold text-lg">
               Récord: {highScore}
             </span>
           </motion.div>
