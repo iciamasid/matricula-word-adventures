@@ -95,7 +95,6 @@ interface GameContextType {
   errorMessage: string | null;
   showBonusPopup: boolean;
   bonusPoints: number;
-  playerName: string;
   
   // Actions
   generateNewPlate: () => void;
@@ -105,7 +104,6 @@ interface GameContextType {
   clearError: () => void;
   closeBonusPopup: () => void;
   resetGame: () => void;
-  setPlayerName: (name: string) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -129,7 +127,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [bonusCounter, setBonusCounter] = useState(0);
   const [showBonusPopup, setShowBonusPopup] = useState(false);
   const [bonusPoints, setBonusPoints] = useState(0);
-  const [playerName, setPlayerName] = useState("");
   
   // Add a ref to track if this is the initial load
   const isInitialLoad = useRef(true);
@@ -139,12 +136,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedTotalPoints = localStorage.getItem("matriculabraCadabra_totalPoints");
     const savedHighScore = localStorage.getItem("matriculabraCadabra_highScore");
     const savedGamesPlayed = localStorage.getItem("matriculabraCadabra_gamesPlayed");
-    const savedPlayerName = localStorage.getItem("matriculabraCadabra_playerName");
     
     if (savedTotalPoints) setTotalPoints(parseInt(savedTotalPoints));
     if (savedHighScore) setHighScore(parseInt(savedHighScore));
     if (savedGamesPlayed) setGamesPlayed(parseInt(savedGamesPlayed));
-    if (savedPlayerName) setPlayerName(savedPlayerName);
     
     generateNewPlate();
   }, []);
@@ -173,11 +168,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // After first render, set initialLoad to false
     isInitialLoad.current = false;
     
-    // Save to localStorage if we have a player name
-    if (playerName) {
-      localStorage.setItem("matriculabraCadabra_totalPoints", totalPoints.toString());
-    }
-  }, [totalPoints, level, toast, playerName]);
+    // Save to localStorage
+    localStorage.setItem("matriculabraCadabra_totalPoints", totalPoints.toString());
+  }, [totalPoints, level, toast]);
   
   // Clear error after 5 seconds
   useEffect(() => {
@@ -200,7 +193,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setHighScore(0);
     setPreviousScore(0);
     
-    // Clear localStorage except for player name
+    // Clear localStorage
     localStorage.removeItem("matriculabraCadabra_totalPoints");
     localStorage.removeItem("matriculabraCadabra_highScore");
     localStorage.removeItem("matriculabraCadabra_gamesPlayed");
@@ -289,17 +282,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Update high score if needed
       if (newScore > highScore) {
         setHighScore(newScore);
-        if (playerName) {
-          localStorage.setItem("matriculabraCadabra_highScore", newScore.toString());
-        }
+        localStorage.setItem("matriculabraCadabra_highScore", newScore.toString());
       }
       
       // Increment games played
       const newGamesPlayed = gamesPlayed + 1;
       setGamesPlayed(newGamesPlayed);
-      if (playerName) {
-        localStorage.setItem("matriculabraCadabra_gamesPlayed", newGamesPlayed.toString());
-      }
+      localStorage.setItem("matriculabraCadabra_gamesPlayed", newGamesPlayed.toString());
       
       let successMessage = "¡Palabra aceptada!";
       
@@ -354,15 +343,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         errorMessage,
         showBonusPopup,
         bonusPoints,
-        playerName,
         generateNewPlate,
         setCurrentWord,
         submitWord,
         shuffleConsonants,
         clearError,
         closeBonusPopup,
-        resetGame,
-        setPlayerName
+        resetGame
       }}
     >
       {children}

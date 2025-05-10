@@ -17,7 +17,6 @@ import { toast } from "@/hooks/use-toast";
 import GamePopup from "@/components/GamePopup";
 import ScorePanel from "@/components/ScorePanel";
 import TotalPointsPanel from "@/components/TotalPointsPanel";
-import PlayerNameInput from "@/components/PlayerNameInput";
 
 // Función para obtener la bandera según el nivel
 const getLevelFlag = (level: number) => {
@@ -40,7 +39,7 @@ const getLevelFlag = (level: number) => {
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
-  const { totalPoints, destinationInfo, level, resetGame, plateConsonants, score, previousScore, setPlayerName } = useGame();
+  const { totalPoints, destinationInfo, level, resetGame, plateConsonants, score, previousScore } = useGame();
   const [showSuccess, setShowSuccess] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [prevLevel, setPrevLevel] = useState(level);
@@ -87,26 +86,18 @@ const GameContent = () => {
     }
   };
   
-  const handleSavePlayerName = (name: string) => {
-    setPlayerName(name);
-    toast({
-      title: "¡Bienvenido/a!",
-      description: `Hola ${name}, ¡a jugar con las matrículas!`
-    });
-  };
-  
   return (
     <div 
       className="min-h-screen flex flex-col items-center relative overflow-hidden"
       style={{
-        backgroundColor: "rgb(190, 181, 210)",
+        backgroundColor: "#bba7ca", // Updated background color
         backgroundSize: "cover",
         backgroundAttachment: "fixed"
       }}
     >
       <div className="relative w-full">
         <motion.img 
-          src="/lovable-uploads/5241c79d-2ef8-4940-9d7f-0b05d3d9a912.png"
+          src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png"
           alt="Matriculabra Cadabra"
           className="w-full object-contain mb-4 px-0"
           style={{
@@ -131,9 +122,6 @@ const GameContent = () => {
       
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
-          {/* Player name input at the top */}
-          <PlayerNameInput onSave={handleSavePlayerName} />
-          
           <LicensePlate />
           <WordInput />
           
