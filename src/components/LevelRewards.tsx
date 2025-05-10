@@ -17,14 +17,14 @@ const LevelRewards: React.FC = () => {
   
   return (
     <motion.div 
-      className="w-full max-w-md mt-4"
+      className="w-full max-w-md mt-2"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
       <Card className="shadow-lg border-2 border-purple-300 bg-purple-50">
         <CardHeader className="pb-2">
-          <CardTitle className="text-xl text-purple-800 flex items-center justify-center kids-text">
+          <CardTitle className="text-2xl text-purple-800 flex items-center justify-center kids-text">
             <Sparkles className="h-6 w-6 text-yellow-500 mr-2" />
             ¡Tu recompensa: Conoce el mundo!
             <motion.div
@@ -80,7 +80,7 @@ const LevelRewards: React.FC = () => {
                   {destinationInfo.flag}
                 </motion.span>
               </div>
-              <p className="text-xl text-purple-700 font-medium kids-text">{destinationInfo.country}</p>
+              <p className="text-2xl text-purple-700 font-medium kids-text">{destinationInfo.country}</p>
             </div>
           </motion.div>
           
@@ -108,7 +108,7 @@ const LevelRewards: React.FC = () => {
               >
                 {"🌟"}
               </motion.div>
-              <p className="text-lg text-purple-800 leading-relaxed kids-text reward-text">{destinationInfo.fact}</p>
+              <p className="text-xl text-purple-800 leading-relaxed kids-text reward-text">{destinationInfo.fact}</p>
             </motion.div>
             
             {destinationInfo.city && (

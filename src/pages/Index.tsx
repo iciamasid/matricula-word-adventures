@@ -27,15 +27,13 @@ const GameContent = () => {
     if (totalPoints >= 100) countries.push("España");
     if (totalPoints >= 200) countries.push("Francia");
     if (totalPoints >= 300) countries.push("Italia");
-    if (totalPoints >= 400) countries.push("Reino Unido");
-    if (totalPoints >= 500) countries.push("Estados Unidos");
-    if (totalPoints >= 600) countries.push("Japón");
-    if (totalPoints >= 700) countries.push("Australia");
-    if (totalPoints >= 800) countries.push("Brasil");
-    if (totalPoints >= 900) countries.push("Egipto");
-    if (totalPoints >= 1000) countries.push("China");
-    if (totalPoints >= 1100) countries.push("Sudáfrica");
-    if (totalPoints >= 1200) countries.push("Kenia");
+    if (totalPoints >= 400) countries.push("Rusia");
+    if (totalPoints >= 500) countries.push("Japón");
+    if (totalPoints >= 600) countries.push("Estados Unidos");
+    if (totalPoints >= 700) countries.push("Argentina");
+    if (totalPoints >= 800) countries.push("Méjico");
+    if (totalPoints >= 900) countries.push("Australia");
+    if (totalPoints >= 1000) countries.push("Antártida");
     return countries;
   }, [totalPoints]);
   
@@ -53,9 +51,9 @@ const GameContent = () => {
         alt="Matriculabra Cadabra"
         className="w-full object-cover mb-4 header-image"
         style={{
-          maxHeight: isMobile ? "18vh" : "auto",
+          maxHeight: isMobile ? "22vh" : "auto",
           objectFit: "cover",
-          objectPosition: "center bottom"
+          objectPosition: "center"
         }}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -75,9 +73,17 @@ const GameContent = () => {
         </div>
 
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
+          <LicensePlate />
+          
+          <WordInput />
+          
+          <ScoreDisplay />
+          
+          <NewGameButton />
+          
           {/* Mapa Mundi con países desbloqueados */}
           <motion.div 
-            className="w-full h-[180px] rounded-lg overflow-hidden mb-4"
+            className="w-full h-[180px] rounded-lg overflow-hidden mb-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -87,14 +93,6 @@ const GameContent = () => {
               unlockedCountries={unlockedCountries}
             />
           </motion.div>
-          
-          <LicensePlate />
-          
-          <WordInput />
-          
-          <ScoreDisplay />
-          
-          <NewGameButton />
           
           <LevelRewards />
         </div>

@@ -1,305 +1,233 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, MapPin, Flag, Info } from "lucide-react";
-import { motion } from "framer-motion";
-import WorldMap from "@/components/WorldMap";
+import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
+import { ChevronLeft } from 'lucide-react';
+import WorldMap from '@/components/WorldMap';
 
-// Extended country info for kids
-const countryDetails: Record<string, {
-  facts: string[];
-  imageUrl: string;
-  funFact: string;
-  childFriendlyDescription: string;
-  color: string;
-}> = {
+// Información de países para niños
+const countriesInfo = {
   "España": {
-    facts: [
-      "España tiene 17 regiones autónomas, ¡cada una con sus propias tradiciones!",
-      "La comida más famosa de España es la paella, un plato de arroz con azafrán.",
-      "El fútbol es muy popular en España. ¡Real Madrid y FC Barcelona son equipos muy famosos!"
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1543783207-ec64e4d95325",
-    funFact: "¡En España existe una fiesta llamada 'La Tomatina' donde la gente se lanza tomates!",
-    childFriendlyDescription: "España es un país colorido y alegre con playas, montañas y ciudades llenas de historia. A los españoles les encanta la música, el baile y pasar tiempo con sus amigos y familia.",
-    color: "bg-red-500"
+    flag: "🇪🇸",
+    capital: "Madrid",
+    language: "Español",
+    famousFor: ["La Sagrada Familia", "Platos como la paella", "Fútbol"],
+    funFact: "¡En España hay una fiesta llamada 'La Tomatina' donde la gente se lanza tomates unos a otros por diversión!",
+    image: "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+    description: "España es un país colorido con hermosas playas, mucha historia y deliciosa comida. Tiene 17 regiones diferentes, cada una con sus propias tradiciones."
   },
   "Francia": {
-    facts: [
-      "La Torre Eiffel fue construida para la Exposición Universal de 1889.",
-      "En Francia se habla francés, ¡y dicen 'Bonjour!' para saludar!",
-      "Francia es famosa por sus deliciosos croissants, baguettes y quesos."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34",
-    funFact: "¡En Francia tienen más de 400 tipos diferentes de queso!",
-    childFriendlyDescription: "Francia es un país elegante con hermosos monumentos, arte y comida deliciosa. Los franceses disfrutan de largas comidas con familiares y amigos.",
-    color: "bg-blue-600"
+    flag: "🇫🇷",
+    capital: "París",
+    language: "Francés",
+    famousFor: ["La Torre Eiffel", "Quesos y pasteles", "Arte"],
+    funFact: "La Torre Eiffel fue construida para una exposición y se suponía que sería temporal, ¡pero gustó tanto que la dejaron!",
+    image: "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
+    description: "Francia es conocida por su deliciosa comida, su arte y la Torre Eiffel. París, su capital, es llamada la 'Ciudad del Amor'."
   },
   "Italia": {
-    facts: [
-      "Italia tiene forma de bota en el mapa.",
-      "Los italianos inventaron la pizza, la pasta y el helado.",
-      "En Roma está el Coliseo, un estadio gigante de hace 2000 años."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1523906834658-6e24ef2386f9",
-    funFact: "¡En Italia la gente habla con las manos! Tienen más de 250 gestos que usan todos los días.",
-    childFriendlyDescription: "Italia es un país lleno de historia, arte y la comida más rica del mundo. A los italianos les encanta hablar alto, reír y pasar tiempo en familia.",
-    color: "bg-green-600"
+    flag: "🇮🇹",
+    capital: "Roma",
+    language: "Italiano",
+    famousFor: ["Pizza y pasta", "El Coliseo", "Arte renacentista"],
+    funFact: "¡Los italianos inventaron el helado! Y tienen más de 100 sabores diferentes.",
+    image: "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
+    description: "Italia tiene forma de bota y es famosa por su comida deliciosa como la pizza y el helado. También tiene muchos monumentos históricos antiguos."
   },
-  "Reino Unido": {
-    facts: [
-      "En el Reino Unido está el Big Ben, un reloj gigante muy famoso.",
-      "Los ingleses toman el té con leche por las tardes.",
-      "En Londres, los autobuses son rojos y de dos pisos."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad",
-    funFact: "¡La familia real británica tiene una colección de más de 10.000 obras de arte!",
-    childFriendlyDescription: "Reino Unido es un país con castillos, parques verdes y mucha historia. A los británicos les encanta la educación, los buenos modales y hacer fila ordenadamente.",
-    color: "bg-blue-900"
-  },
-  "Estados Unidos": {
-    facts: [
-      "Estados Unidos tiene 50 estados y la capital es Washington DC.",
-      "La Estatua de la Libertad fue un regalo de Francia.",
-      "El Gran Cañón es tan grande que se puede ver desde el espacio."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1501594907352-04cda38ebc29",
-    funFact: "¡En Estados Unidos inventaron los parques de atracciones, las hamburguesas y los pantalones vaqueros!",
-    childFriendlyDescription: "Estados Unidos es un país enorme con desiertos, montañas, bosques y grandes ciudades. Es conocido por sus películas de Hollywood, la música y el entretenimiento.",
-    color: "bg-blue-800"
+  "Rusia": {
+    flag: "🇷🇺",
+    capital: "Moscú",
+    language: "Ruso",
+    famousFor: ["La Plaza Roja", "El Kremlin", "Ballet clásico"],
+    funFact: "¡Rusia es tan grande que abarca 11 zonas horarias diferentes! Si en un extremo es por la mañana, en el otro ya es casi de noche.",
+    image: "/placeholder.svg",
+    description: "Rusia es el país más grande del mundo, ¡tan grande que ocupa parte de Europa y parte de Asia! Tiene hermosos palacios, bosques enormes y mucha nieve en invierno."
   },
   "Japón": {
-    facts: [
-      "En Japón la gente se saluda haciendo una reverencia.",
-      "Los japoneses comen con palillos en lugar de tenedor.",
-      "Japón tiene más de 5 millones de máquinas expendedoras."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1528164344705-47542687000d",
-    funFact: "¡En Japón hay una isla llena de conejos amistosos que puedes visitar!",
-    childFriendlyDescription: "Japón es un país fascinante donde la tecnología moderna convive con tradiciones antiguas. Los japoneses adoran los dibujos animados (anime) y los videojuegos.",
-    color: "bg-red-600"
+    flag: "🇯🇵",
+    capital: "Tokio",
+    language: "Japonés",
+    famousFor: ["Anime y manga", "Sushi", "Tecnología"],
+    funFact: "En Japón hay un café donde puedes jugar con gatos mientras tomas algo. ¡Se llaman 'Cat Cafés'!",
+    image: "/placeholder.svg",
+    description: "Japón es un país con una mezcla de tradición y tecnología moderna. Tiene hermosos templos, jardines de cerezos y es donde se inventaron los videojuegos y el anime."
+  },
+  "Estados Unidos": {
+    flag: "🇺🇸",
+    capital: "Washington D.C.",
+    language: "Inglés",
+    famousFor: ["Hollywood", "Parques de atracciones", "Hamburguesas"],
+    funFact: "El Gran Cañón es tan grande que se puede ver desde el espacio. ¡Y algunos árboles en California son tan altos como un edificio de 30 pisos!",
+    image: "/placeholder.svg",
+    description: "Estados Unidos es un país muy grande con muchos lugares diferentes para visitar: desde grandes ciudades como Nueva York hasta desiertos, playas y montañas."
+  },
+  "Argentina": {
+    flag: "🇦🇷",
+    capital: "Buenos Aires",
+    language: "Español",
+    famousFor: ["Fútbol", "Tango", "Asado (barbacoa)"],
+    funFact: "En Argentina están las Cataratas del Iguazú, que tienen 275 cascadas diferentes. ¡Es como tener cientos de cascadas juntas!",
+    image: "/placeholder.svg",
+    description: "Argentina es un país con enormes llanuras donde viven vaqueros llamados gauchos, montañas nevadas, y hasta glaciares de hielo azul en el sur."
+  },
+  "Méjico": {
+    flag: "🇲🇽",
+    capital: "Ciudad de México",
+    language: "Español",
+    famousFor: ["Tacos", "Pirámides mayas", "Día de los Muertos"],
+    funFact: "El chocolate fue inventado por los antiguos mayas y aztecas de México, ¡pero lo tomaban como una bebida picante, no dulce!",
+    image: "/placeholder.svg",
+    description: "México tiene una cultura muy colorida, con música alegre, comida deliciosa y fiestas llenas de color. También tiene pirámides antiguas que puedes visitar."
   },
   "Australia": {
-    facts: [
-      "En Australia viven canguros, koalas y ornitorrincos.",
-      "La Gran Barrera de Coral es el ser vivo más grande del planeta.",
-      "Australia es el único país que ocupa un continente entero."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1523482580672-f109ba8cb9be",
-    funFact: "¡En Australia hay una playa con 7 kilómetros de arena tan blanca que parece nieve!",
-    childFriendlyDescription: "Australia es un país lleno de animales únicos, playas increíbles y mucha naturaleza. Los australianos son muy amigables y les encanta la vida al aire libre.",
-    color: "bg-blue-700"
+    flag: "🇦🇺",
+    capital: "Canberra",
+    language: "Inglés",
+    famousFor: ["Canguros y koalas", "La Gran Barrera de Coral", "La Ópera de Sídney"],
+    funFact: "En Australia viven animales que no existen en ninguna otra parte del mundo, como el ornitorrinco, ¡que parece una mezcla entre pato y castor!",
+    image: "/placeholder.svg",
+    description: "Australia es un país que también es un continente entero. Tiene playas increíbles, el desierto en el centro llamado 'Outback' y animales muy especiales."
   },
-  "Brasil": {
-    facts: [
-      "Brasil tiene la selva amazónica, el pulmón del planeta.",
-      "El Carnaval de Río es una de las fiestas más grandes del mundo.",
-      "El fútbol es el deporte más popular en Brasil."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1483729558449-99ef09a8c325",
-    funFact: "¡En Brasil hay un río tan ancho que desde una orilla no puedes ver la otra!",
-    childFriendlyDescription: "Brasil es un país colorido, alegre y musical. Es famoso por sus playas, sus bailes y su naturaleza impresionante.",
-    color: "bg-green-700"
-  },
-  "Egipto": {
-    facts: [
-      "Las pirámides de Egipto tienen más de 4500 años.",
-      "Los antiguos egipcios inventaron el papel, la escritura y el calendario.",
-      "El río Nilo es el más largo del mundo."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1568322445389-f7e0c1d7fd60",
-    funFact: "¡Los antiguos egipcios creían que los gatos eran mágicos y sagrados!",
-    childFriendlyDescription: "Egipto es un país de misterio y aventura, con pirámides, momias y tesoros antiguos. Su historia es tan antigua que parece mágica.",
-    color: "bg-yellow-600"
-  },
-  "China": {
-    facts: [
-      "La Gran Muralla China es la única construcción humana visible desde el espacio.",
-      "En China se inventaron el papel, la brújula, la pólvora y la imprenta.",
-      "El Año Nuevo chino es la fiesta más importante del país."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1547981609-4b6a0451243f",
-    funFact: "¡En China hay restaurantes donde robots te sirven la comida!",
-    childFriendlyDescription: "China es un país enorme con una historia de más de 5000 años. Es famoso por sus dragones, pandas, artes marciales y comida deliciosa.",
-    color: "bg-red-700"
-  },
-  "Sudáfrica": {
-    facts: [
-      "Sudáfrica tiene 11 idiomas oficiales.",
-      "En Sudáfrica viven los 5 grandes animales: león, leopardo, rinoceronte, elefante y búfalo.",
-      "La flor nacional es la protea, que parece una estrella de colores."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1516026672322-bc52d61a55d5",
-    funFact: "¡En Sudáfrica hay una carretera que cambia de color cuando hace frío para avisar a los conductores de posible hielo!",
-    childFriendlyDescription: "Sudáfrica es un país con impresionantes paisajes, animales salvajes y playas hermosas. Es conocido como la nación arcoíris por la diversidad de su gente.",
-    color: "bg-green-800"
-  },
-  "Kenia": {
-    facts: [
-      "En Kenia está el Parque Nacional Maasai Mara, famoso por la migración de ñus.",
-      "El monte Kilimanjaro, la montaña más alta de África, está en la frontera con Tanzania.",
-      "Los masái son una tribu famosa por sus saltos altos y coloridas vestimentas."
-    ],
-    imageUrl: "https://images.unsplash.com/photo-1489493887525-1f0313400bb7",
-    funFact: "¡En Kenia hay un santuario donde puedes adoptar elefantes bebés huérfanos!",
-    childFriendlyDescription: "Kenia es un país de safaris, donde puedes ver leones, jirafas y elefantes en libertad. Su naturaleza salvaje es impresionante y hermosa.",
-    color: "bg-red-800"
+  "Antártida": {
+    flag: "🇦🇶",
+    capital: "No tiene capital (no es un país oficial)",
+    language: "No tiene idioma oficial",
+    famousFor: ["Pingüinos", "Científicos", "Hielo y nieve"],
+    funFact: "La Antártida está cubierta por una capa de hielo que tiene un promedio de 1.6 kilómetros de espesor. ¡Es el lugar más frío, ventoso y seco del planeta!",
+    image: "/placeholder.svg",
+    description: "La Antártida es un continente helado en el extremo sur de la Tierra. No pertenece a ningún país y está lleno de pingüinos, focas y científicos que estudian el clima."
   }
 };
 
-// Default content for countries without specific data
-const defaultCountryInfo = {
-  facts: [
-    "¡Este país tiene su propia cultura, historia y tradiciones!",
-    "Cada país tiene comida, música y costumbres únicas.",
-    "¡Explorar nuevos países nos ayuda a entender mejor nuestro mundo!"
-  ],
-  imageUrl: "https://images.unsplash.com/photo-1526778548025-fa2f459cd5ce",
-  funFact: "¡Hay 195 países en el mundo, cada uno con su propio conjunto único de maravillas!",
-  childFriendlyDescription: "Este país es un lugar fascinante esperando a ser explorado. ¡Cada país tiene sus propias sorpresas y tesoros!",
-  color: "bg-purple-600"
-};
-
 const CountryPage: React.FC = () => {
-  const { country } = useParams<{ country: string }>();
+  const { country = "" } = useParams<{ country: string }>();
   const navigate = useNavigate();
+  const countryInfo = countriesInfo[country as keyof typeof countriesInfo];
   
-  const countryInfo = countryDetails[country || ""] || defaultCountryInfo;
-  const countryName = country || "País Desconocido";
+  // Scroll to top when the page loads
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [country]);
+  
+  if (!countryInfo) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4" style={{ backgroundColor: "rgb(154, 131, 185)" }}>
+        <div className="bg-white p-8 rounded-lg shadow-lg max-w-md">
+          <h1 className="text-3xl font-bold mb-4 text-red-600 kids-text">¡País no encontrado!</h1>
+          <p className="mb-6 text-lg kids-text">Lo sentimos, no tenemos información sobre este país.</p>
+          <Button onClick={() => navigate('/')} className="kids-text">
+            <ChevronLeft className="mr-2 h-4 w-4" />
+            Volver al juego
+          </Button>
+        </div>
+      </div>
+    );
+  }
   
   return (
-    <div 
-      className="min-h-screen py-6 flex flex-col items-center overflow-y-auto"
-      style={{
-        backgroundColor: "rgb(154, 131, 185)",
-        backgroundSize: "cover"
-      }}
+    <motion.div 
+      className="min-h-screen"
+      style={{ backgroundColor: "rgb(154, 131, 185)" }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
     >
-      <motion.div 
-        className="container max-w-2xl px-4"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
+      <div className="max-w-4xl mx-auto p-4">
         <Button 
           onClick={() => navigate('/')} 
           variant="outline" 
-          className="mb-6 bg-white hover:bg-gray-100"
+          className="mb-4 bg-white hover:bg-gray-100 kids-text"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" /> Volver al juego
+          <ChevronLeft className="mr-2 h-4 w-4" />
+          Volver al juego
         </Button>
         
-        <Card className="mb-6 border-2 border-purple-300 overflow-hidden">
-          <div className={`${countryInfo.color} h-3`}></div>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center">
-                <Flag className="h-6 w-6 mr-2 text-purple-700" />
-                <span className="text-2xl">Descubre {countryName}</span>
-              </div>
-              <motion.span
-                className="text-4xl"
-                animate={{
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 10, 0, -10, 0]
-                }}
-                transition={{ duration: 3, repeat: Infinity }}
-              >
-                {country === "España" ? "🇪🇸" : 
-                 country === "Francia" ? "🇫🇷" :
-                 country === "Italia" ? "🇮🇹" :
-                 country === "Reino Unido" ? "🇬🇧" :
-                 country === "Estados Unidos" ? "🇺🇸" :
-                 country === "Japón" ? "🇯🇵" :
-                 country === "Australia" ? "🇦🇺" :
-                 country === "Brasil" ? "🇧🇷" :
-                 country === "Egipto" ? "🇪🇬" :
-                 country === "China" ? "🇨🇳" :
-                 country === "Sudáfrica" ? "🇿🇦" :
-                 country === "Kenia" ? "🇰🇪" : "🌎"}
-              </motion.span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-6 aspect-video relative overflow-hidden rounded-md">
-              <img 
-                src={`${countryInfo.imageUrl}?auto=format&fit=crop&w=700&h=400&q=80`}
-                alt={countryName} 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                <p className="text-white text-lg font-bold drop-shadow-md">
-                  {countryName}
-                </p>
-              </div>
+        <motion.div
+          className="bg-white rounded-lg shadow-lg overflow-hidden"
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Header con bandera y nombre del país */}
+          <div className="bg-gradient-to-r from-purple-600 to-blue-500 p-6 flex items-center">
+            <motion.span 
+              className="text-6xl mr-4"
+              animate={{ 
+                rotate: [0, 5, 0, -5, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ duration: 5, repeat: Infinity }}
+            >
+              {countryInfo.flag}
+            </motion.span>
+            <div>
+              <h1 className="text-4xl font-bold text-white kids-text">{country}</h1>
+              <p className="text-xl text-white/90 kids-text">Capital: {countryInfo.capital}</p>
+            </div>
+          </div>
+          
+          <div className="p-6">
+            {/* Mapa con el país destacado */}
+            <div className="h-64 mb-6 rounded-lg overflow-hidden border-4 border-purple-200">
+              <WorldMap highlightCountry={country} />
             </div>
             
-            <motion.p
-              className="text-lg mb-6 text-purple-800 font-medium"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              {countryInfo.childFriendlyDescription}
-            </motion.p>
-            
+            {/* Imagen del país */}
             <div className="mb-6">
-              <h3 className="text-xl font-bold mb-3 text-purple-900 flex items-center">
-                <Info className="h-5 w-5 mr-2 text-purple-700" /> 
-                Datos curiosos:
-              </h3>
-              
-              {countryInfo.facts.map((fact, index) => (
-                <motion.div 
-                  key={index}
-                  className="flex items-start mb-3"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                >
-                  <span className="text-2xl mr-2">🌟</span>
-                  <p className="text-lg">{fact}</p>
-                </motion.div>
-              ))}
+              <img 
+                src={countryInfo.image} 
+                alt={`Imagen de ${country}`}
+                className="w-full h-64 object-cover rounded-lg shadow-md"
+              />
             </div>
             
-            <motion.div
-              className="bg-purple-100 p-4 rounded-lg border border-purple-300 mb-6"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5 }}
+            {/* Descripción del país */}
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold mb-2 text-purple-800 kids-text">Sobre {country}</h2>
+              <p className="text-xl text-gray-700 kids-text">{countryInfo.description}</p>
+            </div>
+            
+            {/* Datos curiosos */}
+            <motion.div 
+              className="bg-yellow-50 p-5 rounded-lg border-2 border-yellow-200 mb-6"
+              whileHover={{ scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 300 }}
             >
-              <h3 className="flex items-center text-lg font-bold mb-2 text-purple-900">
-                <motion.span
-                  className="text-2xl mr-2"
-                  animate={{ rotate: [0, 10, -10, 10, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  ✨
-                </motion.span>
-                ¡Dato divertido!
-              </h3>
-              <p className="text-lg text-purple-800">{countryInfo.funFact}</p>
+              <h3 className="text-2xl font-bold mb-2 text-yellow-800 kids-text">¡Dato curioso!</h3>
+              <p className="text-xl text-yellow-800 kids-text">{countryInfo.funFact}</p>
             </motion.div>
             
-            <div className="h-[300px] rounded-lg overflow-hidden border-2 border-purple-300 mb-4">
-              <WorldMap highlightCountry={countryName} />
+            {/* Información básica */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div className="bg-blue-50 p-4 rounded-lg border-2 border-blue-200">
+                <h3 className="text-2xl font-bold mb-2 text-blue-800 kids-text">Idioma</h3>
+                <p className="text-xl text-blue-800 kids-text">{countryInfo.language}</p>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg border-2 border-green-200">
+                <h3 className="text-2xl font-bold mb-2 text-green-800 kids-text">Famoso por</h3>
+                <ul className="list-disc pl-5">
+                  {countryInfo.famousFor.map((item, index) => (
+                    <li key={index} className="text-xl text-green-800 kids-text">{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
             
-            <div className="text-center mt-6">
+            {/* Botón para volver al juego */}
+            <div className="flex justify-center mt-8">
               <Button 
                 onClick={() => navigate('/')} 
-                className="bg-purple-600 hover:bg-purple-700 text-white font-bold px-6 py-3"
+                size="lg"
+                className="bg-purple-600 hover:bg-purple-700 text-xl px-8 py-6 kids-text"
               >
-                <ArrowLeft className="mr-2 h-5 w-5" /> Volver al juego
+                ¡Volver a jugar!
               </Button>
             </div>
-          </CardContent>
-        </Card>
-      </motion.div>
-    </div>
+          </div>
+        </motion.div>
+      </div>
+    </motion.div>
   );
 };
 

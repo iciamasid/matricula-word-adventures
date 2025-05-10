@@ -1,5 +1,5 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -96,12 +96,12 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
     touch-action: manipulation;
-    font-family: 'Comic Neue', cursive;
+    font-family: 'Bubblegum Sans', cursive;
   }
 }
 
 .license-plate {
-  font-family: "Comic Neue", cursive;
+  font-family: "Bubblegum Sans", cursive;
   letter-spacing: 0.05em;
   background: linear-gradient(to bottom, #FFFFFF 0%, #e2d1c3 100%);
   border: 2px solid #666;
@@ -208,18 +208,20 @@
 
 /* Estilos para niños */
 .kids-text {
-  font-family: 'Comic Neue', cursive;
+  font-family: 'Bubblegum Sans', cursive;
   font-weight: bold;
   letter-spacing: 0.5px;
 }
 
 .reward-text {
-  font-size: 1.25rem;
+  font-size: 1.5rem;
 }
 
 /* Ajustes para la imagen inicial */
 .header-image {
-  max-height: 20vh;
+  max-height: 25vh;
+  width: 100%;
+  object-fit: cover;
 }
 
 /* Estilos para alertas centradas */
@@ -230,4 +232,3 @@
   transform: translate(-50%, -50%);
   z-index: 50;
 }
-

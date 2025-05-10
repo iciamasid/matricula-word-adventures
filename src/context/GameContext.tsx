@@ -31,16 +31,10 @@ const WORLD_DESTINATIONS = [
     fact: "En Roma puedes visitar el Coliseo, ¡donde luchaban los gladiadores hace 2000 años! Podía albergar a más de 50.000 personas."
   },
   {
-    city: "Londres",
-    country: "Reino Unido",
-    flag: "🇬🇧",
-    fact: "¡El Big Ben es en realidad el nombre de la campana, no de la torre del reloj! La torre se llama Elizabeth Tower."
-  },
-  {
-    city: "Nueva York",
-    country: "Estados Unidos",
-    flag: "🇺🇸",
-    fact: "¡La Estatua de la Libertad fue un regalo de Francia a Estados Unidos! Mide 93 metros y su corona tiene 7 picos que representan los 7 continentes."
+    city: "Moscú",
+    country: "Rusia",
+    flag: "🇷🇺",
+    fact: "¡La Plaza Roja de Moscú es tan grande que caben 6 campos de fútbol! A su lado está el Kremlin, una fortaleza con murallas de color rojo."
   },
   {
     city: "Tokio",
@@ -49,40 +43,34 @@ const WORLD_DESTINATIONS = [
     fact: "¡En Tokio hay máquinas expendedoras que venden casi de todo: desde juguetes hasta paraguas! Hay más de 5 millones de máquinas en Japón."
   },
   {
+    city: "Nueva York",
+    country: "Estados Unidos",
+    flag: "🇺🇸",
+    fact: "¡La Estatua de la Libertad fue un regalo de Francia a Estados Unidos! Mide 93 metros y su corona tiene 7 picos que representan los 7 continentes."
+  },
+  {
+    city: "Buenos Aires",
+    country: "Argentina",
+    flag: "🇦🇷",
+    fact: "¡En Buenos Aires hay una librería en un antiguo teatro! Es tan bonita que la llaman 'la librería más bella del mundo'."
+  },
+  {
+    city: "Ciudad de México",
+    country: "Méjico",
+    flag: "🇲🇽",
+    fact: "Los antiguos aztecas construyeron Ciudad de México sobre un lago. ¡Todavía hay partes de la ciudad que se hunden un poco cada año!"
+  },
+  {
     city: "Sídney",
     country: "Australia",
     flag: "🇦🇺",
     fact: "La Ópera de Sídney parece barcos con velas desplegadas en el puerto. ¡Tardaron 14 años en construirla!"
   },
   {
-    city: "Río de Janeiro",
-    country: "Brasil",
-    flag: "🇧🇷",
-    fact: "La estatua del Cristo Redentor tiene los brazos abiertos como dando un gran abrazo a la ciudad. ¡Mide 30 metros de alto!"
-  },
-  {
-    city: "El Cairo",
-    country: "Egipto",
-    flag: "🇪🇬",
-    fact: "¡Las pirámides de Egipto tienen más de 4500 años y son una de las Siete Maravillas del Mundo! La Gran Pirámide está hecha con más de 2 millones de bloques de piedra."
-  },
-  {
-    city: "Pekín",
-    country: "China",
-    flag: "🇨🇳",
-    fact: "La Gran Muralla China es tan larga que podría dar la vuelta a España ¡más de 6 veces! Es visible incluso desde el espacio."
-  },
-  {
-    city: "Ciudad del Cabo",
-    country: "Sudáfrica",
-    flag: "🇿🇦",
-    fact: "¡Desde aquí puedes ver pingüinos en la playa! Sí, ¡pingüinos de verdad en África! En la playa Boulders hay una colonia de más de 3000 pingüinos."
-  },
-  {
-    city: "Nairobi",
-    country: "Kenia",
-    flag: "🇰🇪",
-    fact: "¡Hay un parque nacional dentro de la ciudad donde puedes ver jirafas y leones! Es el único parque nacional del mundo dentro de una capital."
+    city: "Base Marambio",
+    country: "Antártida",
+    flag: "🇦🇶",
+    fact: "¡En la Antártida hace tanto frío que el hielo puede tener 4 kilómetros de grosor! Es el lugar más frío de la Tierra, ¡puede llegar a -89ºC!"
   }
 ];
 
@@ -155,8 +143,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (newLevel !== level) {
       setLevel(newLevel);
       
-      // Elegir un destino al azar basado en el nivel
-      const destinationIndex = (newLevel - 1) % WORLD_DESTINATIONS.length;
+      // Elegir un destino basado en el nivel
+      const destinationIndex = Math.min(newLevel - 1, WORLD_DESTINATIONS.length - 1);
       const newDestinationInfo = WORLD_DESTINATIONS[destinationIndex];
       setDestinationInfo(newDestinationInfo);
       setDestination(newDestinationInfo.city);
