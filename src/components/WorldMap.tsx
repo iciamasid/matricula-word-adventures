@@ -15,19 +15,37 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
   // Map countries to their positions
   const getCountryPosition = (country: string) => {
     const positions: Record<string, { left: string, top: string }> = {
-      "España": { left: "47.5%", top: "30%" },
-      "Francia": { left: "48.5%", top: "28%" },
-      "Italia": { left: "50.5%", top: "31%" },
-      "Rusia": { left: "60%", top: "22%" },
-      "Japón": { left: "80%", top: "36%" },
-      "Estados Unidos": { left: "20%", top: "34%" },
-      "Argentina": { left: "30%", top: "75%" },
-      "Méjico": { left: "18%", top: "45%" },
-      "Australia": { left: "80%", top: "72%" },
-      "Antártida": { left: "50%", top: "90%" },
+      "España": { left: "47%", top: "42%" },
+      "Francia": { left: "49%", top: "38%" },
+      "Italia": { left: "52%", top: "42%" },
+      "Rusia": { left: "60%", top: "33%" },
+      "Japón": { left: "80%", top: "42%" },
+      "Estados Unidos": { left: "23%", top: "40%" },
+      "Argentina": { left: "32%", top: "75%" },
+      "Méjico": { left: "19%", top: "48%" },
+      "Australia": { left: "80%", top: "70%" },
+      "Antártida": { left: "50%", top: "90%" }
     };
     
     return positions[country] || { left: "50%", top: "50%" };
+  };
+
+  // Get image for each country
+  const getCountryImage = (country: string) => {
+    const images: Record<string, string> = {
+      "España": "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png", // Updated to a better Spanish image
+      "Francia": "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
+      "Italia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+      "Rusia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+      "Japón": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+      "Estados Unidos": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+      "Argentina": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+      "Méjico": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+      "Australia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+      "Antártida": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png"
+    };
+    
+    return images[country] || "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png";
   };
 
   const handleZoomIn = () => {
@@ -74,69 +92,67 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
           {/* Usar la imagen del mapa mundi como fondo */}
           <img 
             src="/lovable-uploads/775e117d-bc61-4576-a77e-acba4f134785.png" 
-            alt="Mapa Mundi Infantil"
-            className="w-full h-full object-cover rounded-lg"
+            alt="World Map" 
+            className="w-full h-full object-cover opacity-70"
+            style={{ minWidth: "100%", minHeight: "100%" }}
           />
-          
-          {/* Highlight the selected country if provided AND it's unlocked */}
-          {highlightCountry && unlockedCountries.includes(highlightCountry) && (
-            <motion.div
-              className="absolute"
-              style={getCountryPosition(highlightCountry)}
+
+          {/* Current highlighted country */}
+          {highlightCountry && (
+            <motion.div 
+              className="absolute w-8 h-8 z-10"
+              style={{ 
+                left: getCountryPosition(highlightCountry).left,
+                top: getCountryPosition(highlightCountry).top,
+                transform: "translate(-50%, -50%)"
+              }}
+              initial={{ scale: 0 }}
+              animate={{ scale: [0, 1.2, 1] }}
+              transition={{ duration: 0.5 }}
             >
-              <motion.div
-                className="w-16 h-16 rounded-full bg-purple-500/70 border-4 border-white"
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ 
-                  scale: [0.8, 1.2, 1],
-                  opacity: 1
-                }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }}
-              />
+              <div className="bg-white rounded-full p-1 shadow-lg">
+                <div className="bg-red-500 rounded-full w-6 h-6 flex items-center justify-center pulse">
+                  <span className="text-white text-xs font-bold">
+                    {WORLD_DESTINATIONS.find(dest => dest.country === highlightCountry)?.flag || "🚩"}
+                  </span>
+                </div>
+              </div>
             </motion.div>
           )}
-          
-          {/* Mostrar SOLO los países desbloqueados */}
-          {unlockedCountries && unlockedCountries.map((country, index) => (
-            <Link
-              to={`/country/${country}`}
-              key={country}
-              className="absolute"
-              style={getCountryPosition(country)}
-            >
-              <motion.div
-                className="w-8 h-8 rounded-full bg-yellow-400 border-2 border-white flex items-center justify-center cursor-pointer"
+
+          {/* Unlocked countries */}
+          {unlockedCountries.map((country, index) => (
+            <Link to={`/country/${country}`} key={country} className="block">
+              <motion.div 
+                className="absolute unlocked-country"
+                style={{ 
+                  left: getCountryPosition(country).left,
+                  top: getCountryPosition(country).top,
+                  transform: "translate(-50%, -50%)",
+                  zIndex: highlightCountry === country ? 20 : 5
+                }}
                 animate={{ 
-                  scale: [1, 1.1, 1],
+                  y: [0, -5, 0],
+                  scale: highlightCountry === country ? 1.2 : 1
                 }}
-                transition={{
-                  duration: 2,
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  delay: index * 0.2
+                transition={{ 
+                  y: { duration: 2, repeat: Infinity, repeatType: "reverse" },
+                  scale: { duration: 0.3 }
                 }}
-                whileHover={{ scale: 1.3 }}
+                whileHover={{ scale: 1.2 }}
               >
-                <span className="text-sm font-bold">⭐</span>
-              </motion.div>
-              
-              {/* Etiqueta del país */}
-              <motion.div
-                className="absolute bg-white/90 px-3 py-1 rounded-lg shadow-lg whitespace-nowrap"
-                style={{
-                  top: "110%",
-                  left: "50%",
-                  transform: "translateX(-50%)"
-                }}
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + index * 0.1 }}
-              >
-                <span className="text-purple-800 font-bold kids-text">{country}</span>
+                <motion.div 
+                  className="bg-white rounded-full p-1 shadow-lg"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <img 
+                    src={getCountryImage(country)} 
+                    alt={country}
+                    className="w-7 h-7 rounded-full object-cover"
+                  />
+                </motion.div>
               </motion.div>
             </Link>
           ))}
@@ -145,5 +161,69 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
     </div>
   );
 };
+
+// Add the destinations array so we can access the flags
+const WORLD_DESTINATIONS = [
+  {
+    city: "Madrid",
+    country: "España",
+    flag: "🇪🇸",
+    fact: "¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo."
+  },
+  {
+    city: "París",
+    country: "Francia",
+    flag: "🇫🇷",
+    fact: "¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!"
+  },
+  {
+    city: "Roma",
+    country: "Italia",
+    flag: "🇮🇹",
+    fact: "En Roma puedes visitar el Coliseo, ¡donde luchaban los gladiadores hace 2000 años! Podía albergar a más de 50.000 personas."
+  },
+  {
+    city: "Moscú",
+    country: "Rusia",
+    flag: "🇷🇺",
+    fact: "¡La Plaza Roja de Moscú es tan grande que caben 6 campos de fútbol! A su lado está el Kremlin, una fortaleza con murallas de color rojo."
+  },
+  {
+    city: "Tokio",
+    country: "Japón",
+    flag: "🇯🇵",
+    fact: "¡En Tokio hay máquinas expendedoras que venden casi de todo: desde juguetes hasta paraguas! Hay más de 5 millones de máquinas en Japón."
+  },
+  {
+    city: "Nueva York",
+    country: "Estados Unidos",
+    flag: "🇺🇸",
+    fact: "¡La Estatua de la Libertad fue un regalo de Francia a Estados Unidos! Mide 93 metros y su corona tiene 7 picos que representan los 7 continentes."
+  },
+  {
+    city: "Buenos Aires",
+    country: "Argentina",
+    flag: "🇦🇷",
+    fact: "¡En Buenos Aires hay una librería en un antiguo teatro! Es tan bonita que la llaman 'la librería más bella del mundo'."
+  },
+  {
+    city: "Ciudad de México",
+    country: "Méjico",
+    flag: "🇲🇽",
+    fact: "Los antiguos aztecas construyeron Ciudad de México sobre un lago. ¡Todavía hay partes de la ciudad que se hunden un poco cada año!"
+  },
+  {
+    city: "Sídney",
+    country: "Australia",
+    flag: "🇦🇺",
+    fact: "La Ópera de Sídney parece barcos con velas desplegadas en el puerto. ¡Tardaron 14 años en construirla!"
+  },
+  {
+    city: "Base Marambio",
+    country: "Antártida",
+    flag: "🇦🇶",
+    fact: "¡En la Antártida hace tanto frío que el hielo puede tener 4 kilómetros de grosor! Es el lugar más frío de la Tierra, ¡puede llegar a -89ºC!"
+  }
+];
 
 export default WorldMap;

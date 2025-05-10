@@ -68,13 +68,13 @@ const GameContent = () => {
     <div 
       className="min-h-screen flex flex-col items-center relative overflow-hidden"
       style={{
-        backgroundColor: "rgb(154, 131, 185)",
+        backgroundColor: "rgb(190, 181, 210)",
         backgroundSize: "cover",
         backgroundAttachment: "fixed"
       }}
     >
       <motion.img 
-        src="/lovable-uploads/13c721ae-3f14-415a-86bb-0228c47d8425.png"
+        src="/lovable-uploads/5241c79d-2ef8-4940-9d7f-0b05d3d9a912.png"
         alt="Matriculabra Cadabra"
         className="w-full object-contain mb-4 px-0"
         style={{
