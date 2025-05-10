@@ -36,7 +36,7 @@ const getLevelFlag = (level: number) => {
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
-  const { totalPoints, destinationInfo, level, resetGame } = useGame();
+  const { totalPoints, destinationInfo, level, resetGame, plateConsonants } = useGame();
   
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
@@ -101,9 +101,21 @@ const GameContent = () => {
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
           <LicensePlate />
           
-          <p className="text-white text-lg font-bold mb-2 kids-text">
-            Forma una palabra con estas consonantes
-          </p>
+          {/* Display consonants below the license plate */}
+          <div className="flex justify-center gap-3 mb-2">
+            {plateConsonants.split("").map((letter, index) => (
+              <motion.div
+                key={index}
+                className="inline-flex items-center justify-center w-12 h-12 bg-white text-purple-900 text-2xl font-bold rounded-md shadow-md"
+                whileHover={{ scale: 1.1 }}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.2 }}
+              >
+                {letter}
+              </motion.div>
+            ))}
+          </div>
           
           <WordInput />
           

@@ -30,13 +30,13 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
           <X className="w-6 h-6" />
         </button>
 
-        <h2 className="text-3xl font-bold mb-4 text-purple-800 kids-text">
+        <h2 className="text-3xl font-normal mb-4 text-purple-800 kids-text">
           ¿Cómo jugar?
         </h2>
 
         <div className="space-y-4">
           <div>
-            <h3 className="text-2xl font-bold text-purple-700 kids-text mb-2">
+            <h3 className="text-2xl font-normal text-purple-700 kids-text mb-2">
               Objetivo del juego
             </h3>
             <p className="instruction-text kids-text">
@@ -45,7 +45,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
           </div>
 
           <div>
-            <h3 className="text-2xl font-bold text-purple-700 kids-text mb-2">
+            <h3 className="text-2xl font-normal text-purple-700 kids-text mb-2">
               Reglas
             </h3>
             <ul className="list-disc pl-6 space-y-2">
@@ -68,7 +68,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
           </div>
 
           <div>
-            <h3 className="text-2xl font-bold text-purple-700 kids-text mb-2">
+            <h3 className="text-2xl font-normal text-purple-700 kids-text mb-2">
               Puntuación
             </h3>
             <ul className="list-disc pl-6 space-y-2">
@@ -91,7 +91,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
           </div>
 
           <div>
-            <h3 className="text-2xl font-bold text-purple-700 kids-text mb-2">
+            <h3 className="text-2xl font-normal text-purple-700 kids-text mb-2">
               Niveles y viajes
             </h3>
             <p className="instruction-text kids-text">
