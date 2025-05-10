@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
 import { Plus, Star } from "lucide-react";
+import { motion } from "framer-motion";
 
 const NewGameButton: React.FC = () => {
   const { generateNewPlate, gamesPlayed } = useGame();
@@ -15,10 +16,14 @@ const NewGameButton: React.FC = () => {
   };
   
   return (
-    <div className="text-center space-y-2 bg-white p-4 rounded-lg shadow">
+    <motion.div 
+      className="text-center space-y-2 bg-white p-4 rounded-lg shadow-lg w-full max-w-xs"
+      whileHover={{ scale: 1.03 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
       <Button
         onClick={handleClick}
-        className={`px-6 py-6 bg-game-blue hover:bg-game-blue/90 ${isAnimating ? "animate-bounce" : ""}`}
+        className={`px-6 py-6 bg-game-blue hover:bg-game-blue/90 w-full ${isAnimating ? "animate-bounce" : ""}`}
       >
         <Plus className="mr-2 h-4 w-4" /> Nueva matrícula
       </Button>
@@ -27,7 +32,7 @@ const NewGameButton: React.FC = () => {
         <Star className="w-3 h-3 mr-1 text-game-yellow" />
         <span>{gamesPlayed} partidas jugadas</span>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

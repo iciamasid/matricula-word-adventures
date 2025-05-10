@@ -9,7 +9,7 @@ import {
   wordExists
 } from "../utils/gameUtils";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { motion } from "framer-motion";
 
 interface GameContextType {
   licensePlate: string;
@@ -98,6 +98,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentWord("");
     setScore(0);
     setErrorMessage(null);
+    
+    // Check if plate contains "666" and award bonus points
+    if (newPlate.substring(0, 4).includes("666")) {
+      const bonusPoints = 1000;
+      setTotalPoints(prev => prev + bonusPoints);
+      
+      toast({
+        title: "¡NÚMERO DE LA SUERTE!",
+        description: `¡Has conseguido el 666! Bonus de ${bonusPoints} puntos.`,
+        variant: "destructive",
+      });
+    }
   };
   
   const clearError = () => {
@@ -141,8 +153,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setGamesPlayed(newGamesPlayed);
       localStorage.setItem("matriculabraCadabra_gamesPlayed", newGamesPlayed.toString());
       
+      let successMessage = "¡Palabra aceptada!";
+      
+      if (newScore >= 100) {
+        successMessage = "¡PERFECTO!";
+      } else if (newScore >= 75) {
+        successMessage = "¡EXCELENTE!";
+      } else if (newScore >= 50) {
+        successMessage = "¡MUY BIEN!";
+      }
+      
       toast({
-        title: "¡Palabra aceptada!",
+        title: successMessage,
         description: `Has ganado ${newScore} puntos.`,
       });
       

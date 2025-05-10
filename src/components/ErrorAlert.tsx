@@ -18,7 +18,7 @@ const ErrorAlert: React.FC = () => {
           exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
           transition={{ type: "spring", damping: 15 }}
         >
-          <Alert variant="destructive" className="relative border-2 border-red-500">
+          <Alert variant="destructive" className="relative border-2 border-red-500 bg-white shadow-lg">
             <motion.div 
               animate={{ rotate: [0, -5, 5, -5, 5, 0] }}
               transition={{ duration: 0.5 }}

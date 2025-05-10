@@ -16,17 +16,15 @@ const LicensePlate: React.FC = () => {
       animate={{ scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 20 }}
     >
-      <div className="flex justify-between items-center">
+      <div className="flex justify-center items-center">
         <div className="bg-blue-600 px-2 py-1 rounded-sm text-white text-sm font-bold">
           E
         </div>
-        <div className="text-center text-5xl font-bold tracking-widest flex-1">
+        <div className="text-center text-6xl font-bold tracking-widest flex-1 flex justify-center">
           <span className="text-gray-800">{numbers}</span>
           <span className="text-game-blue ml-3">{letters}</span>
         </div>
-        <div className="bg-blue-600 rounded-full w-8 h-8 flex items-center justify-center">
-          <span className="text-white text-xs">EU</span>
-        </div>
+        {/* EU icon removed */}
       </div>
     </motion.div>
   );
