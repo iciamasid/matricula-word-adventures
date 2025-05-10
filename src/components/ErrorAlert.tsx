@@ -12,10 +12,10 @@ const ErrorAlert: React.FC = () => {
     <AnimatePresence>
       {errorMessage && (
         <motion.div 
-          className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-xs z-50"
-          initial={{ opacity: 0, y: 50 }}
+          className="absolute top-20 left-1/2 transform -translate-x-1/2 w-full max-w-xs z-50"
+          initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20, transition: { duration: 0.2 } }}
+          exit={{ opacity: 0, y: -20, transition: { duration: 0.2 } }}
           transition={{ type: "spring", damping: 15 }}
         >
           <Alert variant="destructive" className="relative border-2 border-red-500">
