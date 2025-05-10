@@ -87,11 +87,11 @@ const GameContent = () => {
           transition={{ duration: 0.5 }}
         />
         
-        {/* Instructions button positioned at bottom left of the image */}
+        {/* Instructions button positioned at bottom right of the image */}
         <Button 
           variant="outline" 
           size="sm" 
-          className="absolute bottom-6 left-4 bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text"
+          className="absolute bottom-6 right-4 bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text"
           onClick={() => setShowInstructions(true)}
         >
           <Info className="w-4 h-4 mr-1" /> Instrucciones

@@ -98,7 +98,7 @@ const LevelRewards: React.FC = () => {
               >
                 {"🌟"}
               </motion.div>
-              <p className="text-xl text-purple-800 leading-relaxed kids-text reward-text">{destinationInfo.fact}</p>
+              <p className="text-2xl text-purple-800 leading-relaxed kids-text reward-text">{destinationInfo.fact}</p>
             </motion.div>
             
             {destinationInfo.city && (
@@ -111,7 +111,7 @@ const LevelRewards: React.FC = () => {
                 <div className="flex items-center mb-3">
                   <Award className="text-yellow-500 h-10 w-10 mr-2" />
                   <motion.p 
-                    className="text-center text-purple-900 font-medium text-xl kids-text"
+                    className="text-center text-purple-900 font-medium text-2xl kids-text"
                     animate={{ 
                       color: ['#6b46c1', '#b794f4', '#6b46c1']
                     }}
@@ -123,7 +123,7 @@ const LevelRewards: React.FC = () => {
                 
                 <Button 
                   onClick={handleExploreCountry}
-                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-lg px-6 py-3 kids-text"
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-6 py-3 kids-text"
                 >
                   Conoce {destinationInfo.country} {destinationInfo.flag}
                 </Button>

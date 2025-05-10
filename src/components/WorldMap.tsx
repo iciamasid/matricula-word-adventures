@@ -36,7 +36,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
       "España": "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
       "Francia": "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
       "Italia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-      "Rusia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+      "Rusia": "/lovable-uploads/13c721ae-3f14-415a-86bb-0228c47d8425.png",
       "Japón": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
       "Estados Unidos": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
       "Argentina": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
@@ -86,10 +86,11 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
           className="w-full h-full relative"
           style={{ 
             scale: zoom,
-            transformOrigin: "center"
+            transformOrigin: "center",
+            marginLeft: "4mm" // Shift the map 4mm to the right
           }}
         >
-          {/* Usar la imagen del mapa mundi como fondo */}
+          {/* Mapa mundi como fondo */}
           <img 
             src="/lovable-uploads/775e117d-bc61-4576-a77e-acba4f134785.png" 
             alt="World Map" 
@@ -100,7 +101,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
           {/* Current highlighted country */}
           {highlightCountry && (
             <motion.div 
-              className="absolute w-6 h-6 z-10"
+              className="absolute w-4 h-4 z-10" // Smaller dots (was w-6 h-6)
               style={{ 
                 left: getCountryPosition(highlightCountry).left,
                 top: getCountryPosition(highlightCountry).top,
@@ -110,8 +111,8 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
               animate={{ scale: [0, 1.2, 1] }}
               transition={{ duration: 0.5 }}
             >
-              <div className="bg-white rounded-full p-1 shadow-lg">
-                <div className="bg-red-500 rounded-full w-4 h-4 flex items-center justify-center pulse">
+              <div className="bg-white rounded-full p-0.5 shadow-lg"> {/* Smaller padding */}
+                <div className="bg-red-500 rounded-full w-3 h-3 flex items-center justify-center pulse"> {/* Smaller w-3 h-3 */}
                   <span className="text-white text-xs font-bold">
                     {WORLD_DESTINATIONS.find(dest => dest.country === highlightCountry)?.flag || "🚩"}
                   </span>
@@ -142,7 +143,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
                 whileHover={{ scale: 1.2 }}
               >
                 <motion.div 
-                  className="bg-white rounded-full p-0.5 shadow-lg"
+                  className="bg-white rounded-full p-0.5 shadow-lg" // Smaller padding
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: index * 0.1 }}
@@ -150,7 +151,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
                   <img 
                     src={getCountryImage(country)} 
                     alt={country}
-                    className="w-5 h-5 rounded-full object-cover"
+                    className="w-4 h-4 rounded-full object-cover" // Smaller w-4 h-4
                   />
                 </motion.div>
               </motion.div>

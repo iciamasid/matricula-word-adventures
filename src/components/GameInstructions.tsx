@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { X, Target, Award, Star, Book, Zap } from "lucide-react";
@@ -12,14 +13,14 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 flex items-end justify-start z-50 bg-black/70 p-4"
+      className="fixed inset-0 flex items-end justify-end z-50 bg-black/70 p-4" 
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 50 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="bg-white rounded-xl p-6 max-w-md w-full mb-4 ml-4 shadow-lg relative overflow-y-auto max-h-[80vh]"
+        className="bg-white rounded-xl p-6 max-w-md w-full mb-4 mr-4 shadow-lg relative overflow-y-auto max-h-[80vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <button
