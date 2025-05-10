@@ -128,11 +128,7 @@ const GameContent = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <img 
-          src="/lovable-uploads/5becfffc-2c80-433a-8148-0af29615f083.png" 
-          alt="Coche de juego" 
-          className="w-48 h-48 object-contain"
-        />
+       
         <img 
           src="/lovable-uploads/coche_animado.gif" 
           alt="Coche de juego" 
