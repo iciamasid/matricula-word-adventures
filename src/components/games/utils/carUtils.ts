@@ -1,4 +1,3 @@
-
 import { Canvas, Circle, Rect, Image as FabricImage } from 'fabric';
 
 // Create a simple car object using Fabric.js shapes
@@ -96,35 +95,34 @@ export const createCarFromImage = (
       return;
     }
     
-    // Fix the function call by correctly ordering parameters and options
-    // The correct format is: FabricImage.fromURL(url, callback, options)
-    FabricImage.fromURL(
-      '/lovable-uploads/coche animado.gif', 
-      (img) => {
+    // The correct format for FabricImage.fromURL in fabric.js v6 is:
+    // FabricImage.fromURL(url: string, options?: LoadImageOptions)
+    FabricImage.fromURL('/lovable-uploads/coche animado.gif', {
+      left,
+      top,
+      originX: 'center',
+      originY: 'center',
+      scaleX: scale,
+      scaleY: scale,
+      selectable: false,
+      evented: false,
+      crossOrigin: 'anonymous',
+      onError: () => {
+        console.error('Failed to load car image');
+        reject(new Error('Failed to load car image'));
+      },
+      onComplete: (img) => {
         if (!img) {
           console.error('Failed to load car image');
           reject(new Error('Failed to load car image'));
           return;
         }
         
-        // Configure the image
-        img.set({
-          left,
-          top,
-          originX: 'center',
-          originY: 'center',
-          scaleX: scale,
-          scaleY: scale,
-          selectable: false,
-          evented: false,
-          zIndex: 100
-        });
-        
+        img.set({ zIndex: 100 });
         console.log('Car image loaded successfully');
         resolve(img);
-      }, 
-      { crossOrigin: 'anonymous' }
-    );
+      }
+    });
   });
 };
 
