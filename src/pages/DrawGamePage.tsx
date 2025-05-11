@@ -1,13 +1,20 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
+import ErrorAlert from "@/components/ErrorAlert";
 
 const DrawGamePage: React.FC = () => {
+  // Log when component mounts to help with debugging
+  useEffect(() => {
+    console.log("DrawGamePage mounted");
+    return () => console.log("DrawGamePage unmounted");
+  }, []);
+
   return (
     <div 
       className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden"
@@ -36,7 +43,7 @@ const DrawGamePage: React.FC = () => {
           <div className="w-[100px]"></div> {/* Empty div for layout balance */}
         </div>
         
-        {/* Game Instructions */}
+        {/* Game Instructions - Updated with clearer instructions */}
         <motion.div 
           className="bg-white/90 rounded-lg p-5 w-full shadow-lg"
           initial={{ y: 20 }}
@@ -45,11 +52,16 @@ const DrawGamePage: React.FC = () => {
         >
           <h2 className="text-2xl font-bold text-purple-800 kids-text mb-3">¿Cómo jugar?</h2>
           <ol className="list-decimal list-inside space-y-2 text-purple-900 kids-text">
-            <li>Haz clic en <span className="font-bold">Dibujar Camino</span> para activar el modo dibujo</li>
-            <li>Dibuja un camino con tu dedo o el ratón en la zona de dibujo</li>
-            <li>Pulsa el botón de <span className="font-bold">Jugar</span></li>
+            <li>Primero, haz clic en el botón <span className="font-bold bg-green-100 px-2 py-1 rounded">Dibujar Camino</span></li>
+            <li>Luego, mantén presionado y mueve tu dedo o ratón para dibujar un camino</li>
+            <li>Cuando termines de dibujar, pulsa el botón <span className="font-bold bg-cyan-100 px-2 py-1 rounded">Jugar</span></li>
             <li>¡Mira cómo el cochecito sigue tu camino!</li>
           </ol>
+          <div className="mt-3 bg-yellow-100 p-2 rounded-md">
+            <p className="text-amber-700 text-sm font-medium">
+              Importante: Dibuja líneas continuas y no muy rápido para mejores resultados.
+            </p>
+          </div>
         </motion.div>
         
         {/* Game Component */}
@@ -78,6 +90,7 @@ const DrawGamePage: React.FC = () => {
       </motion.div>
       
       <Toaster />
+      <ErrorAlert />
     </div>
   );
 };
