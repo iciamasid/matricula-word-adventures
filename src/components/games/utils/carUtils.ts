@@ -96,29 +96,35 @@ export const createCarFromImage = (
       return;
     }
     
-    FabricImage.fromURL('/lovable-uploads/coche animado.gif', (img) => {
-      if (!img) {
-        console.error('Failed to load car image');
-        reject(new Error('Failed to load car image'));
-        return;
-      }
-      
-      // Configure the image
-      img.set({
-        left,
-        top,
-        originX: 'center',
-        originY: 'center',
-        scaleX: scale,
-        scaleY: scale,
-        selectable: false,
-        evented: false,
-        zIndex: 100
-      });
-      
-      console.log('Car image loaded successfully');
-      resolve(img);
-    }, { crossOrigin: 'anonymous' });
+    // Fix the function call by correctly ordering parameters and options
+    // The correct format is: FabricImage.fromURL(url, callback, options)
+    FabricImage.fromURL(
+      '/lovable-uploads/coche animado.gif', 
+      (img) => {
+        if (!img) {
+          console.error('Failed to load car image');
+          reject(new Error('Failed to load car image'));
+          return;
+        }
+        
+        // Configure the image
+        img.set({
+          left,
+          top,
+          originX: 'center',
+          originY: 'center',
+          scaleX: scale,
+          scaleY: scale,
+          selectable: false,
+          evented: false,
+          zIndex: 100
+        });
+        
+        console.log('Car image loaded successfully');
+        resolve(img);
+      }, 
+      { crossOrigin: 'anonymous' }
+    );
   });
 };
 
