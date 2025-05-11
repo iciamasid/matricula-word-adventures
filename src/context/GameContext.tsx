@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { 
   generateLicensePlate, 
@@ -10,6 +9,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import BonusPopup from "@/components/BonusPopup";
+import AgeBonusPopup from "@/components/AgeBonusPopup";
 
 // Ciudades del mundo con datos interesantes para niños - Updated with Spain as level 0
 const WORLD_DESTINATIONS = [
@@ -113,6 +113,9 @@ interface GameContextType {
   errorMessage: string | null;
   showBonusPopup: boolean;
   bonusPoints: number;
+  playerName: string;
+  playerAge: number;
+  showAgeBonusPopup: boolean;
   
   // Actions
   generateNewPlate: () => void;
@@ -121,7 +124,10 @@ interface GameContextType {
   shuffleConsonants: () => string;
   clearError: () => void;
   closeBonusPopup: () => void;
+  closeAgeBonusPopup: () => void;
   resetGame: () => void;
+  setPlayerName: (name: string) => void;
+  setPlayerAge: (age: number) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -147,6 +153,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [showBonusPopup, setShowBonusPopup] = useState(false);
   const [bonusPoints, setBonusPoints] = useState(0);
   const [lastLevel, setLastLevel] = useState(0); // Track the last level to detect level changes
+  const [playerName, setPlayerName] = useState("");
+  const [playerAge, setPlayerAge] = useState(0);
+  const [ageCounter, setAgeCounter] = useState(0);
+  const [showAgeBonusPopup, setShowAgeBonusPopup] = useState(false);
   
   // Add a ref to track if this is the initial load
   const isInitialLoad = useRef(true);
@@ -162,6 +172,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedHighScore) setHighScore(parseInt(savedHighScore));
     if (savedGamesPlayed) setGamesPlayed(parseInt(savedGamesPlayed));
     if (savedLevel) setLevel(parseInt(savedLevel));
+    
+    // Load player name and age
+    const savedName = localStorage.getItem("matriculabraCadabra_playerName");
+    const savedAge = localStorage.getItem("matriculabraCadabra_playerAge");
+    
+    if (savedName) setPlayerName(savedName);
+    if (savedAge) setPlayerAge(parseInt(savedAge));
     
     generateNewPlate();
   }, []);
@@ -230,7 +247,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setPreviousScore(0);
     setLastLevel(0);
     
-    // Clear localStorage
+    // Clear localStorage except player name and age
     localStorage.removeItem("matriculabraCadabra_totalPoints");
     localStorage.removeItem("matriculabraCadabra_highScore");
     localStorage.removeItem("matriculabraCadabra_gamesPlayed");
@@ -247,12 +264,30 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newBonusCounter = bonusCounter + 1;
     setBonusCounter(newBonusCounter);
     
+    // Increase age counter for age bonus opportunities
+    const newAgeCounter = ageCounter + 1;
+    setAgeCounter(newAgeCounter);
+    
     // Check if it's time for a bonus (6666) plate - every 5-10 games
     if (newBonusCounter >= 5 && newBonusCounter <= 10) {
       // Generate a plate with "6666" in it
       newPlate = "6666" + generateRandomConsonants();
       // Reset the counter
       setBonusCounter(0);
+    }
+    // Check if it's time for an age bonus - every 8-10 games
+    else if (playerAge > 0 && newAgeCounter >= 8 && newAgeCounter <= 10) {
+      // Generate a plate with player's age in it
+      const ageString = playerAge.toString().padStart(2, '0');
+      const extraDigits = 4 - ageString.length;
+      const randomDigits = Array(extraDigits)
+        .fill(0)
+        .map(() => Math.floor(Math.random() * 10))
+        .join("");
+      
+      newPlate = ageString + randomDigits + generateRandomConsonants();
+      // Reset the age counter
+      setAgeCounter(0);
     } else {
       // Generate a normal plate
       newPlate = generateLicensePlate();
@@ -273,10 +308,32 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setBonusPoints(bonusPointsValue);
       setShowBonusPopup(true);
     }
+    
+    // Check if plate contains player's age and award bonus points
+    if (playerAge > 0) {
+      const ageString = playerAge.toString();
+      const plateNumbers = newPlate.substring(0, 4);
+      
+      if (plateNumbers.includes(ageString)) {
+        const ageBonusPoints = 20;
+        setTotalPoints(prev => prev + ageBonusPoints);
+        setBonusPoints(ageBonusPoints);
+        setShowAgeBonusPopup(true);
+        
+        toast({
+          title: "¡Bonus de edad!",
+          description: `¡Tu matrícula contiene tu edad! +${ageBonusPoints} puntos.`,
+        });
+      }
+    }
   };
   
   const closeBonusPopup = () => {
     setShowBonusPopup(false);
+  };
+  
+  const closeAgeBonusPopup = () => {
+    setShowAgeBonusPopup(false);
   };
   
   // Generate random consonants for 6666 bonus plates
@@ -383,17 +440,24 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         errorMessage,
         showBonusPopup,
         bonusPoints,
+        playerName,
+        playerAge,
+        showAgeBonusPopup,
         generateNewPlate,
         setCurrentWord,
         submitWord,
         shuffleConsonants,
         clearError,
         closeBonusPopup,
-        resetGame
+        closeAgeBonusPopup,
+        resetGame,
+        setPlayerName: (name: string) => setPlayerName(name),
+        setPlayerAge: (age: number) => setPlayerAge(age)
       }}
     >
       {children}
       {showBonusPopup && <BonusPopup open={showBonusPopup} onClose={closeBonusPopup} points={bonusPoints} />}
+      {showAgeBonusPopup && <AgeBonusPopup open={showAgeBonusPopup} onClose={closeAgeBonusPopup} points={bonusPoints} age={playerAge} />}
     </GameContext.Provider>
   );
 };

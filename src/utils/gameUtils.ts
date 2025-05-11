@@ -151,9 +151,13 @@ export function wordExists(word: string): boolean {
   const commonEndings = ["AR", "ER", "IR", "ADO", "IDO", "ADA", "IDA", "MENTE", "CIÓN", "DAD", "TAD", "AL", "EZ"];
   const hasCommonEnding = commonEndings.some(ending => uppercaseWord.endsWith(ending));
   
+  // Common Spanish prefixes
+  const commonPrefixes = ["DES", "RE", "IN", "CON", "SUB", "SUPER", "PRE", "POST"];
+  const hasCommonPrefix = commonPrefixes.some(prefix => uppercaseWord.startsWith(prefix));
+  
   // Accept words that have vowels and look like Spanish structure
-  // or have common Spanish word endings
-  return hasVowel && (hasCommonEnding || word.length >= 4);
+  // or have common Spanish word endings or prefixes
+  return hasVowel && (hasCommonEnding || hasCommonPrefix || word.length >= 4);
 }
 
 // Keep the existing SPANISH_WORDS set for reference
@@ -197,5 +201,6 @@ const SPANISH_WORDS = new Set([
   "TIGRE", "ELEFANTE", "JIRAFA", "CEBRA", "MONO", "CABALLO", "VACA", "CERDO", "GALLINA",
   "POLLO", "OVEJA", "CABRA", "CONEJO", "RATON", "ARDILLA", "SERPIENTE", "LAGARTO",
   "TORTUGA", "COCODRILO", "PEZ", "TIBURON", "BALLENA", "DELFIN", "AGUILA", "PALOMA",
-  "PINGUINO", "PULPO", "CALAMAR", "ARAÑA", "MOSCA", "ABEJA", "MARIPOSA", "HORMIGA"
+  "PINGUINO", "PULPO", "CALAMAR", "ARAÑA", "MOSCA", "ABEJA", "MARIPOSA", "HORMIGA",
+  "verano", "loro"
 ]);

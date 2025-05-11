@@ -14,6 +14,7 @@ import { toast } from "@/hooks/use-toast";
 import GamePopup from "@/components/GamePopup";
 import ScorePanel from "@/components/ScorePanel";
 import { Progress } from "@/components/ui/progress";
+import PlayerRegistration from "@/components/PlayerRegistration";
 
 // Función para obtener la bandera según el nivel
 const getLevelFlag = (level: number) => {
@@ -168,6 +169,9 @@ const GameContent = () => {
       </div>
     
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
+        {/* Player Registration Form */}
+        <PlayerRegistration />
+        
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
           <LicensePlate />
           <WordInput />
