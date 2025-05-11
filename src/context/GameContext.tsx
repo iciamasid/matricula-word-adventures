@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import BonusPopup from "@/components/BonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
+import CompletionBanner from "@/components/CompletionBanner";
 
 // Ciudades del mundo con datos interesantes para niños - Updated with Spain as level 0
 const WORLD_DESTINATIONS = [
@@ -117,6 +118,7 @@ interface GameContextType {
   playerAge: number;
   playerGender: "niño" | "niña" | "";
   showAgeBonusPopup: boolean;
+  showCompletionBanner: boolean;
   
   // Actions
   generateNewPlate: () => void;
@@ -126,6 +128,7 @@ interface GameContextType {
   clearError: () => void;
   closeBonusPopup: () => void;
   closeAgeBonusPopup: () => void;
+  closeCompletionBanner: () => void;
   resetGame: () => void;
   setPlayerName: (name: string) => void;
   setPlayerAge: (age: number) => void;
@@ -160,6 +163,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [playerGender, setPlayerGender] = useState<"niño" | "niña" | "">("");
   const [ageCounter, setAgeCounter] = useState(0);
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState(false);
+  const [showCompletionBanner, setShowCompletionBanner] = useState(false);
   const [isGeneratingNewPlate, setIsGeneratingNewPlate] = useState(false);
   
   // Add a ref to track if this is the initial load
@@ -219,6 +223,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       }
       
+      // Show completion banner when reaching level 10 (game completed)
+      if (newLevel === 10 && lastLevel < 10 && !isInitialLoad.current) {
+        setShowCompletionBanner(true);
+      }
+      
       // Update last level
       setLastLevel(newLevel);
     }
@@ -241,7 +250,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [errorMessage]);
 
-  // Track popup state changes to generate new plate when all popups are closed
+  // Modified: Track popup state changes to generate new plate when all popups are closed
   useEffect(() => {
     if (isGeneratingNewPlate && !showBonusPopup && !showAgeBonusPopup) {
       const timer = setTimeout(() => {
@@ -349,7 +358,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Generate a new license plate - now just sets a flag when we're ready to generate
   const generateNewPlate = () => {
     // If any popup is shown, set the flag to generate later
-    if (showBonusPopup || showAgeBonusPopup) {
+    if (showBonusPopup || showAgeBonusPopup || showCompletionBanner) {
       setIsGeneratingNewPlate(true);
       return;
     }
@@ -364,6 +373,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   const closeAgeBonusPopup = () => {
     setShowAgeBonusPopup(false);
+  };
+
+  const closeCompletionBanner = () => {
+    setShowCompletionBanner(false);
   };
   
   // Generate random consonants for 6666 bonus plates
@@ -472,6 +485,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         playerAge,
         playerGender,
         showAgeBonusPopup,
+        showCompletionBanner,
         generateNewPlate,
         setCurrentWord,
         submitWord,
@@ -479,6 +493,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         clearError,
         closeBonusPopup,
         closeAgeBonusPopup,
+        closeCompletionBanner,
         resetGame,
         setPlayerName: (name: string) => setPlayerName(name),
         setPlayerAge: (age: number) => setPlayerAge(age),
@@ -488,6 +503,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
       {showBonusPopup && <BonusPopup open={showBonusPopup} onClose={closeBonusPopup} points={bonusPoints} />}
       {showAgeBonusPopup && <AgeBonusPopup open={showAgeBonusPopup} onClose={closeAgeBonusPopup} points={bonusPoints} age={playerAge} />}
+      {showCompletionBanner && <CompletionBanner open={showCompletionBanner} onClose={closeCompletionBanner} />}
     </GameContext.Provider>
   );
 };

@@ -74,7 +74,8 @@ const GameContent = () => {
     resetGame,
     plateConsonants,
     score,
-    previousScore
+    previousScore,
+    showCompletionBanner
   } = useGame();
   const [showSuccess, setShowSuccess] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -148,6 +149,35 @@ const GameContent = () => {
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
+      {/* Special background effect when the world tour is completed */}
+      {level >= 10 && (
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
+          {[...Array(20)].map((_, i) => (
+            <motion.div 
+              key={i}
+              className="absolute rounded-full bg-yellow-300 opacity-30"
+              style={{
+                width: Math.random() * 10 + 5,
+                height: Math.random() * 10 + 5,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`
+              }}
+              animate={{
+                y: [0, -100],
+                opacity: [0.3, 0]
+              }}
+              transition={{
+                duration: Math.random() * 5 + 5,
+                repeat: Infinity,
+                repeatType: "loop",
+                delay: Math.random() * 5
+              }}
+            />
+          ))}
+        </div>
+      )}
+      
       <div className="relative w-full">
         <motion.img src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" alt="Matriculabra Cadabra" className="w-full object-contain mb-4 px-0" style={{
         maxHeight: isMobile ? "28vh" : "30vh",
@@ -188,7 +218,7 @@ const GameContent = () => {
           y: 0
         }} transition={{
           delay: 0.3
-        }} className="w-full rounded-lg p-5 shadow-lg bg-purple-200 py-[20px]">
+        }} className={`w-full rounded-lg p-5 shadow-lg py-[20px] ${level >= 10 ? 'bg-gradient-to-r from-purple-300 to-purple-200' : 'bg-purple-200'}`}>
             <div className="text-center mb-4">
               <h2 className="text-2xl font-normal text-purple-800 kids-text flex items-center justify-center">
                 <motion.span className="inline-block" animate={{
@@ -281,11 +311,24 @@ const GameContent = () => {
                   </Link>
                 </div>
               </div>
+              
+              {/* Special badge for world tour completion */}
+              {level >= 10 && (
+                <motion.div 
+                  className="mt-4 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full px-6 py-2 inline-block shadow-lg"
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ repeat: Infinity, duration: 2 }}
+                >
+                  <span className="text-lg font-bold text-amber-900 kids-text">
+                    ¡VUELTA AL MUNDO COMPLETADA! 🏆
+                  </span>
+                </motion.div>
+              )}
             </div>
           </motion.div>
           
           {/* Drawing Game Button - Directly after the origin-destination panel */}
-          <motion.div className="w-full bg-purple-200/90 rounded-lg p-4 shadow-lg" initial={{
+          <motion.div className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? 'bg-gradient-to-r from-purple-200 to-purple-300/90' : 'bg-purple-200/90'}`} initial={{
           opacity: 0,
           y: 20
         }} animate={{
@@ -321,7 +364,7 @@ const GameContent = () => {
           </motion.div>
           
           {/* Progress bar showing world tour progress */}
-          <motion.div className="w-full bg-purple-100 p-4 rounded-lg shadow-lg" initial={{
+          <motion.div className={`w-full p-4 rounded-lg shadow-lg ${level >= 10 ? 'bg-gradient-to-r from-yellow-100 to-amber-100' : 'bg-purple-100'}`} initial={{
           opacity: 0,
           y: 20
         }} animate={{
@@ -332,7 +375,7 @@ const GameContent = () => {
         }}>
             <h3 className="text-xl text-center text-purple-800 kids-text mb-3">Progreso de tu vuelta al mundo</h3>
             <div className="relative pt-4 pb-8">
-              <Progress value={level / 10 * 100} className="h-4" />
+              <Progress value={level / 10 * 100} className={`h-4 ${level >= 10 ? 'bg-amber-200' : ''}`} />
               
               {/* Country markers on progress bar */}
               <div className="absolute top-0 left-0 w-full flex justify-between px-1">
