@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Pencil1Icon, PlayIcon, Eraser, HelpCircle } from "lucide-react";
+import { PencilIcon, PlayIcon, Eraser, HelpCircle } from "lucide-react";
 
 interface DrawControlsProps {
   isPlaying: boolean;
@@ -38,7 +38,7 @@ const DrawControls: React.FC<DrawControlsProps> = ({
               : "bg-green-600 hover:bg-green-500"
           }`}
         >
-          <Pencil1Icon className="mr-2 h-6 w-6" /> 
+          <PencilIcon className="mr-2 h-6 w-6" /> 
           Dibujar
         </Button>
         
