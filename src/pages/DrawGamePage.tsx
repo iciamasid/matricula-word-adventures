@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, AlertCircle, HelpCircle, X } from "lucide-react";
+import { ArrowLeft, AlertCircle, HelpCircle, X, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
@@ -47,6 +47,7 @@ const DrawGameContent: React.FC = () => {
       variant: "destructive"
     });
   };
+  
   return <div className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
@@ -74,56 +75,75 @@ const DrawGameContent: React.FC = () => {
           </Button>
         </div>
         
-        {/* Origin and Destination Flags */}
-        <div className="w-full flex justify-between items-center px-4">
-          <motion.div className="text-center" initial={{
-          opacity: 0,
-          x: -20
-        }} animate={{
-          opacity: 1,
-          x: 0
-        }} transition={{
-          delay: 0.3
-        }}>
-            <div className="flex flex-col items-center">
-              <motion.span className="text-6xl mb-2" animate={{
-              rotate: [0, 10, -10, 0],
+        {/* Origin and Destination with route visualization */}
+        <div className="w-full bg-purple-100 rounded-lg p-4 shadow-md">
+          <div className="grid grid-cols-5 items-center">
+            {/* Origin */}
+            <div className="col-span-2 text-center">
+              <motion.div className="flex flex-col items-center" initial={{
+              opacity: 0,
+              x: -20
+            }} animate={{
+              opacity: 1,
+              x: 0
+            }} transition={{
+              delay: 0.3
+            }}>
+                <motion.span className="text-6xl mb-2" animate={{
+                rotate: [0, 10, -10, 0],
+                transition: {
+                  duration: 2,
+                  repeat: Infinity
+                }
+              }}>
+                  {originInfo.flag}
+                </motion.span>
+                <p className="text-xl font-bold text-purple-900 kids-text">{originInfo.city}</p>
+                <p className="text-lg text-purple-700 kids-text">{originInfo.country}</p>
+                <p className="text-base text-purple-600 kids-text">ORIGEN</p>
+              </motion.div>
+            </div>
+            
+            {/* Arrow */}
+            <div className="col-span-1 flex justify-center">
+              <motion.div animate={{
+              x: [0, 10, 0],
               transition: {
-                duration: 2,
+                duration: 1.5,
                 repeat: Infinity
               }
             }}>
-                {originInfo.flag}
-              </motion.span>
-              <p className="text-xl font-bold text-purple-900 kids-text">{originInfo.city}, {originInfo.country}</p>
-              <p className="text-lg text-purple-700 kids-text">Origen</p>
+                <ArrowRight className="h-12 w-12 text-purple-700" />
+              </motion.div>
             </div>
-          </motion.div>
-          
-          <motion.div className="text-center" initial={{
-          opacity: 0,
-          x: 20
-        }} animate={{
-          opacity: 1,
-          x: 0
-        }} transition={{
-          delay: 0.3
-        }}>
-            <div className="flex flex-col items-center">
-              <motion.span className="text-6xl mb-2" animate={{
-              rotate: [0, 10, -10, 0],
-              scale: [1, 1.1, 1],
-              transition: {
-                duration: 2,
-                repeat: Infinity
-              }
+            
+            {/* Destination */}
+            <div className="col-span-2 text-center">
+              <motion.div className="flex flex-col items-center" initial={{
+              opacity: 0,
+              x: 20
+            }} animate={{
+              opacity: 1,
+              x: 0
+            }} transition={{
+              delay: 0.3
             }}>
-                {destinationInfo.flag}
-              </motion.span>
-              <p className="text-xl font-bold text-purple-900 kids-text">{destinationInfo.city}, {destinationInfo.country}</p>
-              <p className="text-lg text-purple-700 kids-text">Destino</p>
+                <motion.span className="text-6xl mb-2" animate={{
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1],
+                transition: {
+                  duration: 2,
+                  repeat: Infinity
+                }
+              }}>
+                  {destinationInfo.flag}
+                </motion.span>
+                <p className="text-xl font-bold text-purple-900 kids-text">{destinationInfo.city}</p>
+                <p className="text-lg text-purple-700 kids-text">{destinationInfo.country}</p>
+                <p className="text-base text-purple-600 kids-text">DESTINO</p>
+              </motion.div>
             </div>
-          </motion.div>
+          </div>
         </div>
         
         {/* Error Display */}
@@ -255,4 +275,5 @@ const DrawGamePage: React.FC = () => {
       <DrawGameContent />
     </GameProvider>;
 };
+
 export default DrawGamePage;

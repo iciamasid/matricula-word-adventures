@@ -20,6 +20,12 @@ const WORLD_DESTINATIONS = [
     fact: "¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo."
   },
   {
+    city: "Madrid",
+    country: "España",
+    flag: "🇪🇸",
+    fact: "¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo."
+  },
+  {
     city: "París",
     country: "Francia", 
     flag: "🇫🇷",
@@ -132,7 +138,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [totalPoints, setTotalPoints] = useState(0);
   const [level, setLevel] = useState(0); // Start at level 0 now
   const [destination, setDestination] = useState("Madrid");
-  const [destinationInfo, setDestinationInfo] = useState(WORLD_DESTINATIONS[0]);
+  const [destinationInfo, setDestinationInfo] = useState(WORLD_DESTINATIONS[1]); // Level 0 destination
   const [originInfo, setOriginInfo] = useState(WORLD_DESTINATIONS[0]); // Added for origin info
   const [highScore, setHighScore] = useState(0);
   const [gamesPlayed, setGamesPlayed] = useState(0);
@@ -140,6 +146,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [bonusCounter, setBonusCounter] = useState(0);
   const [showBonusPopup, setShowBonusPopup] = useState(false);
   const [bonusPoints, setBonusPoints] = useState(0);
+  const [lastLevel, setLastLevel] = useState(0); // Track the last level to detect level changes
   
   // Add a ref to track if this is the initial load
   const isInitialLoad = useRef(true);
@@ -149,10 +156,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const savedTotalPoints = localStorage.getItem("matriculabraCadabra_totalPoints");
     const savedHighScore = localStorage.getItem("matriculabraCadabra_highScore");
     const savedGamesPlayed = localStorage.getItem("matriculabraCadabra_gamesPlayed");
+    const savedLevel = localStorage.getItem("matriculabraCadabra_level");
     
     if (savedTotalPoints) setTotalPoints(parseInt(savedTotalPoints));
     if (savedHighScore) setHighScore(parseInt(savedHighScore));
     if (savedGamesPlayed) setGamesPlayed(parseInt(savedGamesPlayed));
+    if (savedLevel) setLevel(parseInt(savedLevel));
     
     generateNewPlate();
   }, []);
@@ -160,11 +169,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Update level and destination when points change
   useEffect(() => {
     const newLevel = getLevel(totalPoints);
+    
+    // Only update destinations if level changes
     if (newLevel !== level) {
       setLevel(newLevel);
       
+      // Save level to localStorage
+      localStorage.setItem("matriculabraCadabra_level", newLevel.toString());
+      
       // Set origin based on current level
-      const originIndex = Math.min(newLevel, WORLD_DESTINATIONS.length - 1);
+      const originIndex = newLevel;
       const originDestination = WORLD_DESTINATIONS[originIndex];
       setOriginInfo(originDestination);
       
@@ -174,13 +188,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setDestinationInfo(newDestinationInfo);
       setDestination(newDestinationInfo.city);
       
-      // Only show level-up toast if it's not the initial load
-      if (!isInitialLoad.current) {
+      // Only show level-up toast if it's not the initial load and level has actually increased
+      if (!isInitialLoad.current && newLevel > lastLevel) {
         toast({
           title: "¡Nivel nuevo!",
           description: `Has alcanzado el nivel ${newLevel}. ¡Ahora viajas desde ${originDestination.city} hasta ${newDestinationInfo.city}!`,
         });
       }
+      
+      // Update last level
+      setLastLevel(newLevel);
     }
     
     // After first render, set initialLoad to false
@@ -204,17 +221,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Reset the entire game
   const resetGame = () => {
     setTotalPoints(0);
-    setLevel(1);
+    setLevel(0);
     setDestination("Madrid");
-    setDestinationInfo(WORLD_DESTINATIONS[0]);
+    setDestinationInfo(WORLD_DESTINATIONS[1]);
+    setOriginInfo(WORLD_DESTINATIONS[0]);
     setGamesPlayed(0);
     setHighScore(0);
     setPreviousScore(0);
+    setLastLevel(0);
     
     // Clear localStorage
     localStorage.removeItem("matriculabraCadabra_totalPoints");
     localStorage.removeItem("matriculabraCadabra_highScore");
     localStorage.removeItem("matriculabraCadabra_gamesPlayed");
+    localStorage.removeItem("matriculabraCadabra_level");
     
     // Generate a new plate
     generateNewPlate();

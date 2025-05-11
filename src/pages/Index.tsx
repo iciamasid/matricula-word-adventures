@@ -6,7 +6,7 @@ import WordInput from "@/components/WordInput";
 import ErrorAlert from "@/components/ErrorAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Globe, RefreshCw, Car } from "lucide-react";
+import { Globe, RefreshCw, Car, ArrowRight } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -113,6 +113,7 @@ const GameContent = () => {
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
+  
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -122,6 +123,7 @@ const GameContent = () => {
       });
     }
   };
+  
   return <div className="min-h-screen flex flex-col items-center relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
@@ -155,7 +157,7 @@ const GameContent = () => {
           {/* Score components in a single row */}
           <ScorePanel />
           
-          {/* "Has llegado hasta" panel - Updated to show origin to destination */}
+          {/* "Has llegado hasta" panel - Updated to show origin and destination with options to explore both */}
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -177,7 +179,7 @@ const GameContent = () => {
               }}>
                   <Globe className="h-7 w-7 text-blue-600" />
                 </motion.span>
-                <span className="mx-2 font-normal text-xl">Este nivel te permite conducir desde:</span>
+                <span className="mx-2 font-normal text-xl">Este nivel te permite conducir:</span>
                 <motion.span className="inline-block" animate={{
                 rotate: [0, 360],
                 transition: {
@@ -190,55 +192,73 @@ const GameContent = () => {
                 </motion.span>
               </h2>
               
-              {/* Origin */}
-              <div className="flex items-center justify-center gap-2 my-3">
-                <motion.p className="text-2xl font-normal text-purple-900 kids-text" animate={{
-                scale: [1, 1.05, 1]
-              }} transition={{
-                duration: 2,
-                repeat: Infinity
-              }}>
-                  {originInfo.city}, {originInfo.country}
-                </motion.p>
-                <motion.span className="text-4xl" animate={{
-                rotate: [0, 10, -10, 0]
-              }} transition={{
-                duration: 2,
-                repeat: Infinity
-              }}>
-                  {originInfo.flag}
-                </motion.span>
+              {/* Origin and Destination with arrows */}
+              <div className="grid grid-cols-3 items-center gap-2 my-4">
+                {/* Origin */}
+                <div className="flex flex-col items-center">
+                  <motion.span className="text-4xl mb-2" animate={{
+                  rotate: [0, 10, -10, 0]
+                }} transition={{
+                  duration: 2,
+                  repeat: Infinity
+                }}>
+                    {originInfo.flag}
+                  </motion.span>
+                  <motion.p className="text-xl font-normal text-purple-900 kids-text" animate={{
+                  scale: [1, 1.05, 1]
+                }} transition={{
+                  duration: 2,
+                  repeat: Infinity
+                }}>
+                    {originInfo.city}, {originInfo.country}
+                  </motion.p>
+                  <p className="text-sm text-purple-700 kids-text">Origen</p>
+                  <Link to={`/country/${originInfo.country}`} className="mt-2">
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 kids-text font-normal">
+                      Conoce {originInfo.country}
+                    </Button>
+                  </Link>
+                </div>
+                
+                {/* Arrow */}
+                <div className="flex justify-center">
+                  <motion.div animate={{
+                  x: [0, 10, 0]
+                }} transition={{
+                  duration: 1.5,
+                  repeat: Infinity
+                }}>
+                    <ArrowRight className="h-10 w-10 text-purple-700" />
+                  </motion.div>
+                </div>
+                
+                {/* Destination */}
+                <div className="flex flex-col items-center">
+                  <motion.span className="text-4xl mb-2" animate={{
+                  rotate: [0, 10, -10, 0],
+                  scale: [1, 1.1, 1]
+                }} transition={{
+                  duration: 2,
+                  repeat: Infinity
+                }}>
+                    {destinationInfo.flag}
+                  </motion.span>
+                  <motion.p className="text-xl font-normal text-purple-900 kids-text" animate={{
+                  scale: [1, 1.05, 1]
+                }} transition={{
+                  duration: 2,
+                  repeat: Infinity
+                }}>
+                    {destinationInfo.city}, {destinationInfo.country}
+                  </motion.p>
+                  <p className="text-sm text-purple-700 kids-text">Destino</p>
+                  <Link to={`/country/${destinationInfo.country}`} className="mt-2">
+                    <Button className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 kids-text font-normal">
+                      Conoce {destinationInfo.country}
+                    </Button>
+                  </Link>
+                </div>
               </div>
-              
-              {/* Destination with "hasta" text */}
-              <h2 className="text-2xl font-normal text-purple-800 kids-text flex items-center justify-center my-2">
-                <span className="mx-1 font-normal">hasta</span>
-              </h2>
-              
-              <div className="flex items-center justify-center gap-2 my-3">
-                <motion.p className="text-3xl font-normal text-purple-900 kids-text" animate={{
-                scale: [1, 1.05, 1]
-              }} transition={{
-                duration: 2,
-                repeat: Infinity
-              }}>
-                  {destinationInfo.city}, {destinationInfo.country}
-                </motion.p>
-                <motion.span className="text-5xl" animate={{
-                rotate: [0, 10, -10, 0]
-              }} transition={{
-                duration: 2,
-                repeat: Infinity
-              }}>
-                  {destinationInfo.flag}
-                </motion.span>
-              </div>
-              
-              <Link to={`/country/${destinationInfo.country}`}>
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl px-6 py-3 kids-text font-normal">
-                  Conoce {destinationInfo.country} {destinationInfo.flag}
-                </Button>
-              </Link>
             </div>
           </motion.div>
           
@@ -262,6 +282,38 @@ const GameContent = () => {
                   <Car className="mr-2 h-6 w-6" /> Conducir
                 </Button>
               </Link>
+            </div>
+          </motion.div>
+          
+          {/* Progress bar showing world tour progress */}
+          <motion.div 
+            className="w-full bg-purple-100 p-4 rounded-lg shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <h3 className="text-xl text-center text-purple-800 kids-text mb-3">Progreso de tu vuelta al mundo</h3>
+            <div className="relative pt-4 pb-8">
+              <Progress value={(level / 10) * 100} className="h-4" />
+              
+              {/* Country markers on progress bar */}
+              <div className="absolute top-0 left-0 w-full flex justify-between px-1">
+                {[...Array(11)].map((_, i) => (
+                  <div key={i} className="relative flex flex-col items-center">
+                    <div className={`w-3 h-3 rounded-full ${level >= i ? 'bg-green-500' : 'bg-gray-300'}`} />
+                    {i % 2 === 0 && (
+                      <div className="absolute top-4 transform -translate-x-1/2" style={{left: '50%'}}>
+                        <span className="text-xs">{getLevelFlag(i)}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              
+              <div className="flex justify-between text-xs text-purple-700 mt-6">
+                <span>Inicio en Madrid</span>
+                <span>¡Vuelta al mundo completada!</span>
+              </div>
             </div>
           </motion.div>
           
@@ -292,5 +344,5 @@ const GameContent = () => {
       <Toaster />
     </div>;
 };
-export default Index;
 
+export default Index;
