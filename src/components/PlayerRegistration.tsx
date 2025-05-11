@@ -5,18 +5,20 @@ import PlayerNameInput from "@/components/PlayerNameInput";
 import PlayerAgeInput from "@/components/PlayerAgeInput";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { User } from "lucide-react";
+import { User, UserRound } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 const PlayerRegistration: React.FC = () => {
-  const { playerName, playerAge, setPlayerName, setPlayerAge } = useGame();
-  const [showForm, setShowForm] = useState(!playerName || !playerAge);
+  const { playerName, playerAge, playerGender, setPlayerName, setPlayerAge, setPlayerGender } = useGame();
+  const [showForm, setShowForm] = useState(!playerName || !playerAge || !playerGender);
   
   useEffect(() => {
-    // If we have both name and age, hide the form
-    if (playerName && playerAge) {
+    // If we have both name, age and gender, hide the form
+    if (playerName && playerAge && playerGender) {
       setShowForm(false);
     }
-  }, [playerName, playerAge]);
+  }, [playerName, playerAge, playerGender]);
   
   return (
     <>
@@ -36,6 +38,39 @@ const PlayerRegistration: React.FC = () => {
           <div className="space-y-4">
             <PlayerNameInput onSave={setPlayerName} initialName={playerName} />
             <PlayerAgeInput onSave={setPlayerAge} initialAge={playerAge} />
+            
+            {/* Gender Selection */}
+            <motion.div
+              className="bg-white/90 rounded-lg p-4 shadow-md"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <p className="text-lg font-medium text-purple-800 kids-text mb-2">¿Eres niño o niña?</p>
+              <RadioGroup 
+                value={playerGender || ''} 
+                onValueChange={(value) => {
+                  setPlayerGender(value as "niño" | "niña");
+                  localStorage.setItem("matriculabraCadabra_playerGender", value);
+                }}
+                className="flex gap-6"
+              >
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="niño" id="radio-niño" />
+                  <Label htmlFor="radio-niño" className="text-purple-700 kids-text flex items-center">
+                    <span className="mr-1">Niño</span> 
+                    <span className="text-xl">👦</span>
+                  </Label>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RadioGroupItem value="niña" id="radio-niña" />
+                  <Label htmlFor="radio-niña" className="text-purple-700 kids-text flex items-center">
+                    <span className="mr-1">Niña</span> 
+                    <span className="text-xl">👧</span>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </motion.div>
           </div>
         </motion.div>
       ) : (
@@ -45,7 +80,11 @@ const PlayerRegistration: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center">
-            <User className="w-5 h-5 text-purple-600 mr-2" />
+            {playerGender === "niño" ? (
+              <span className="text-xl mr-2">👦</span>
+            ) : (
+              <span className="text-xl mr-2">👧</span>
+            )}
             <span className="text-lg font-medium text-purple-800 kids-text">
               {playerName}, {playerAge} años
             </span>

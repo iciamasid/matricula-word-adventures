@@ -115,6 +115,7 @@ interface GameContextType {
   bonusPoints: number;
   playerName: string;
   playerAge: number;
+  playerGender: "niño" | "niña" | "";
   showAgeBonusPopup: boolean;
   
   // Actions
@@ -128,6 +129,7 @@ interface GameContextType {
   resetGame: () => void;
   setPlayerName: (name: string) => void;
   setPlayerAge: (age: number) => void;
+  setPlayerGender: (gender: "niño" | "niña") => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -155,8 +157,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [lastLevel, setLastLevel] = useState(0); // Track the last level to detect level changes
   const [playerName, setPlayerName] = useState("");
   const [playerAge, setPlayerAge] = useState(0);
+  const [playerGender, setPlayerGender] = useState<"niño" | "niña" | "">("");
   const [ageCounter, setAgeCounter] = useState(0);
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState(false);
+  const [isGeneratingNewPlate, setIsGeneratingNewPlate] = useState(false);
   
   // Add a ref to track if this is the initial load
   const isInitialLoad = useRef(true);
@@ -173,12 +177,14 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedGamesPlayed) setGamesPlayed(parseInt(savedGamesPlayed));
     if (savedLevel) setLevel(parseInt(savedLevel));
     
-    // Load player name and age
+    // Load player name, age and gender
     const savedName = localStorage.getItem("matriculabraCadabra_playerName");
     const savedAge = localStorage.getItem("matriculabraCadabra_playerAge");
+    const savedGender = localStorage.getItem("matriculabraCadabra_playerGender") as "niño" | "niña" | null;
     
     if (savedName) setPlayerName(savedName);
     if (savedAge) setPlayerAge(parseInt(savedAge));
+    if (savedGender) setPlayerGender(savedGender);
     
     generateNewPlate();
   }, []);
@@ -234,6 +240,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return () => clearTimeout(timer);
     }
   }, [errorMessage]);
+
+  // Track popup state changes to generate new plate when all popups are closed
+  useEffect(() => {
+    if (isGeneratingNewPlate && !showBonusPopup && !showAgeBonusPopup) {
+      const timer = setTimeout(() => {
+        doGenerateNewPlate();
+        setIsGeneratingNewPlate(false);
+      }, 500); // Small delay to ensure animations complete
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showBonusPopup, showAgeBonusPopup, isGeneratingNewPlate]);
   
   // Reset the entire game
   const resetGame = () => {
@@ -257,8 +275,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     generateNewPlate();
   };
   
-  // Generate a new license plate
-  const generateNewPlate = () => {
+  // Actual plate generation logic
+  const doGenerateNewPlate = () => {
     let newPlate = "";
     // Increase bonus counter with each game
     const newBonusCounter = bonusCounter + 1;
@@ -326,6 +344,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       }
     }
+  };
+  
+  // Generate a new license plate - now just sets a flag when we're ready to generate
+  const generateNewPlate = () => {
+    // If any popup is shown, set the flag to generate later
+    if (showBonusPopup || showAgeBonusPopup) {
+      setIsGeneratingNewPlate(true);
+      return;
+    }
+    
+    // Otherwise generate immediately
+    doGenerateNewPlate();
   };
   
   const closeBonusPopup = () => {
@@ -403,10 +433,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: `Has ganado ${newScore} puntos.`,
       });
       
-      // Generate a new plate after submission
-      setTimeout(() => {
-        generateNewPlate();
-      }, 1500);
+      // Flag that we want to generate a new plate after popups close
+      setIsGeneratingNewPlate(true);
     } else {
       setErrorMessage("La palabra debe contener al menos una consonante de la matrícula.");
     }
@@ -434,7 +462,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         level,
         destination,
         destinationInfo,
-        originInfo, // Added originInfo to the context
+        originInfo, 
         highScore,
         gamesPlayed,
         errorMessage,
@@ -442,6 +470,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         bonusPoints,
         playerName,
         playerAge,
+        playerGender,
         showAgeBonusPopup,
         generateNewPlate,
         setCurrentWord,
@@ -452,7 +481,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         closeAgeBonusPopup,
         resetGame,
         setPlayerName: (name: string) => setPlayerName(name),
-        setPlayerAge: (age: number) => setPlayerAge(age)
+        setPlayerAge: (age: number) => setPlayerAge(age),
+        setPlayerGender: (gender: "niño" | "niña") => setPlayerGender(gender)
       }}
     >
       {children}
