@@ -130,97 +130,142 @@ const DrawPathGame: React.FC = () => {
   const [pathExists, setPathExists] = useState<boolean>(false);
   const [startPointObj, setStartPointObj] = useState<Circle | null>(null);
   const [endPointObj, setEndPointObj] = useState<Circle | null>(null);
+  const [canvasReady, setCanvasReady] = useState<boolean>(false);
 
   // Initialize canvas on component mount
   useEffect(() => {
     if (!canvasRef.current || !containerRef.current) return;
-    const containerWidth = containerRef.current.clientWidth;
-    const containerHeight = 300; // Fixed height for consistency
+    
+    try {
+      const containerWidth = containerRef.current.clientWidth;
+      const containerHeight = 300; // Fixed height for consistency
 
-    // Create Fabric Canvas
-    const canvas = new FabricCanvas(canvasRef.current, {
-      width: containerWidth,
-      height: containerHeight,
-      backgroundColor: '#f9f2ff',
-      isDrawingMode: false // Start with drawing mode off until user clicks "Draw Path"
-    });
+      console.log("Initializing canvas with dimensions:", containerWidth, containerHeight);
 
-    // Configure drawing brush
-    if (canvas.freeDrawingBrush) {
+      // Create Fabric Canvas with explicit dimensions
+      const canvas = new FabricCanvas(canvasRef.current, {
+        width: containerWidth,
+        height: containerHeight,
+        backgroundColor: '#f9f2ff',
+        isDrawingMode: false // Start with drawing mode off until user clicks "Draw Path"
+      });
+
+      // Configure drawing brush
       canvas.freeDrawingBrush.color = '#9B59B6'; // Purple color matching theme
       canvas.freeDrawingBrush.width = 8;
-    }
 
-    // Add car starting point
-    const startPoint = createStartPoint(50, 50);
-    canvas.add(startPoint);
-    setStartPointObj(startPoint);
+      console.log("Canvas created, adding start point");
+      
+      // Add car starting point
+      const startPoint = createStartPoint(50, 50);
+      canvas.add(startPoint);
+      setStartPointObj(startPoint);
 
-    // Create and add car to canvas
-    const car = createCar(50, 50);
-    canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+      // Create and add car to canvas
+      const car = createCar(50, 50);
+      canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
 
-    // Set initial car position
-    setCarPosition({
-      x: 50,
-      y: 50
-    });
+      // Set initial car position
+      setCarPosition({
+        x: 50,
+        y: 50
+      });
 
-    // Store the canvas
-    setFabricCanvas(canvas);
+      // Store the canvas
+      setFabricCanvas(canvas);
+      setCanvasReady(true);
+      console.log("Canvas setup complete");
 
-    // Path drawing events
-    canvas.on('path:created', (e: any) => {
-      if (!e.path) return;
-
-      // Convert fabric path to simple points array for animation
-      const pathObject = e.path;
-      const rawPath = pathObject.path as Array<any>;
-      const points: Point[] = [];
-      rawPath.forEach(cmd => {
-        if (cmd[0] === 'M' || cmd[0] === 'L') {
-          points.push({
-            x: cmd[1],
-            y: cmd[2]
-          });
+      // Path drawing events
+      canvas.on('path:created', (e: any) => {
+        if (!e.path) {
+          console.log("Path creation event triggered but no path object found");
+          return;
         }
-      });
 
-      if (points.length > 0) {
-        // Add end point at the last position of the path
-        const lastPoint = points[points.length - 1];
-        const endPoint = createEndPoint(lastPoint.x, lastPoint.y);
-        canvas.add(endPoint);
-        setEndPointObj(endPoint);
-        setEndPosition({
-          x: lastPoint.x,
-          y: lastPoint.y
+        console.log("Path created event triggered", e.path);
+
+        // Convert fabric path to simple points array for animation
+        const pathObject = e.path;
+        const rawPath = pathObject.path as Array<any>;
+        
+        if (!rawPath || !Array.isArray(rawPath)) {
+          console.log("Invalid path data:", rawPath);
+          return;
+        }
+        
+        const points: Point[] = [];
+        rawPath.forEach(cmd => {
+          if (cmd[0] === 'M' || cmd[0] === 'L') {
+            points.push({
+              x: cmd[1],
+              y: cmd[2]
+            });
+          }
         });
-      }
 
-      // Set the path for animation
-      setPath(points);
-      setPathExists(points.length > 0);
-      setIsDrawing(false); // Deactivate drawing mode after creating a path
-      canvas.isDrawingMode = false;
-      toast({
-        title: "¡Camino dibujado!",
-        description: "Pulsa JUGAR para que el coche siga tu camino."
+        console.log("Path points extracted:", points.length);
+
+        if (points.length > 0) {
+          // Add end point at the last position of the path
+          const lastPoint = points[points.length - 1];
+          
+          // Remove existing end point if any
+          if (endPointObj && canvas) {
+            canvas.remove(endPointObj);
+          }
+          
+          const endPoint = createEndPoint(lastPoint.x, lastPoint.y);
+          canvas.add(endPoint);
+          setEndPointObj(endPoint);
+          setEndPosition({
+            x: lastPoint.x,
+            y: lastPoint.y
+          });
+          
+          console.log("End point added at:", lastPoint);
+        }
+
+        // Set the path for animation
+        setPath(points);
+        setPathExists(points.length > 0);
+        setIsDrawing(false); // Deactivate drawing mode after creating a path
+        canvas.isDrawingMode = false;
+        
+        toast({
+          title: "¡Camino dibujado!",
+          description: "Pulsa JUGAR para que el coche siga tu camino."
+        });
       });
-    });
-    return () => {
-      canvas.dispose();
-    };
+      
+      // Clean up on unmount
+      return () => {
+        console.log("Cleaning up canvas");
+        canvas.dispose();
+      };
+    } catch (error) {
+      console.error("Error initializing canvas:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo inicializar el juego. Inténtalo de nuevo.",
+        variant: "destructive"
+      });
+    }
   }, []);
 
   // Effect to handle window resize
   useEffect(() => {
     const handleResize = () => {
       if (!fabricCanvas || !containerRef.current) return;
-      const containerWidth = containerRef.current.clientWidth;
-      fabricCanvas.setWidth(containerWidth);
-      fabricCanvas.renderAll();
+      try {
+        const containerWidth = containerRef.current.clientWidth;
+        fabricCanvas.setWidth(containerWidth);
+        fabricCanvas.renderAll();
+      } catch (error) {
+        console.error("Error resizing canvas:", error);
+      }
     };
+    
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [fabricCanvas]);
@@ -235,14 +280,16 @@ const DrawPathGame: React.FC = () => {
       });
       return;
     }
+    
+    console.log("Starting animation with path points:", path.length);
+    
     setIsPlaying(true);
     setIsDrawing(false);
+    
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = false;
-    }
-
-    // Remove previous car shapes
-    if (fabricCanvas) {
+      
+      // Remove previous car shapes
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
@@ -250,6 +297,11 @@ const DrawPathGame: React.FC = () => {
           fabricCanvas.remove(obj);
         }
       }
+      
+      // Re-add the car at the starting position for the SVG animation
+      const car = createCar(50, 50);
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+      fabricCanvas.renderAll();
     }
 
     // Wait for animation to complete
@@ -266,6 +318,8 @@ const DrawPathGame: React.FC = () => {
   // Clear canvas and reset
   const handleClear = () => {
     if (!fabricCanvas) return;
+    
+    console.log("Clearing canvas");
 
     // Remove all objects except the starting point
     const objects = fabricCanvas.getObjects();
@@ -281,6 +335,7 @@ const DrawPathGame: React.FC = () => {
     // Add car back to start
     const car = createCar(50, 50);
     fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+    fabricCanvas.renderAll();
 
     // Reset states
     setPath([]);
@@ -293,21 +348,50 @@ const DrawPathGame: React.FC = () => {
     });
     setEndPointObj(null);
     fabricCanvas.isDrawingMode = false;
+    
     toast({
       title: "¡Tablero limpio!",
       description: "Dibuja un nuevo camino para el coche."
     });
   };
 
-  // Enable drawing mode
+  // Enable drawing mode with better feedback
   const handleDrawMode = () => {
-    if (!fabricCanvas) return;
-    setIsDrawing(true);
-    fabricCanvas.isDrawingMode = true;
-    toast({
-      title: "Modo dibujo activado",
-      description: "Dibuja un camino para el coche."
-    });
+    if (!fabricCanvas) {
+      console.log("Canvas not initialized yet");
+      toast({
+        title: "Error",
+        description: "El juego no está listo aún. Por favor, espera un momento.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    try {
+      console.log("Activating drawing mode");
+      setIsDrawing(true);
+      fabricCanvas.isDrawingMode = true;
+      
+      // Make sure brush is configured properly
+      if (fabricCanvas.freeDrawingBrush) {
+        fabricCanvas.freeDrawingBrush.color = '#9B59B6';
+        fabricCanvas.freeDrawingBrush.width = 8;
+      }
+      
+      fabricCanvas.renderAll();
+      
+      toast({
+        title: "Modo dibujo activado",
+        description: "Dibuja un camino para el coche con tu dedo o ratón."
+      });
+    } catch (error) {
+      console.error("Error activating drawing mode:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo activar el modo dibujo. Inténtalo de nuevo.",
+        variant: "destructive"
+      });
+    }
   };
 
   return <div className="flex flex-col w-full gap-4">
@@ -315,6 +399,13 @@ const DrawPathGame: React.FC = () => {
         <CardContent className="p-4">
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
+            
+            {/* Drawing mode indicator */}
+            {isDrawing && (
+              <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md">
+                ¡Dibuja ahora el camino!
+              </div>
+            )}
             
             {/* Animated car that follows the path */}
             {isPlaying && path.length > 0 && <motion.div className="absolute z-10 pointer-events-none" style={{
@@ -349,19 +440,43 @@ const DrawPathGame: React.FC = () => {
         </CardContent>
       </Card>
       
-      <div className="flex justify-between gap-4">
-        <Button onClick={handleDrawMode} variant="outline" disabled={isPlaying || isDrawing} className="bg-green-400 hover:bg-green-300 text-black rounded-xl font-medium text-xl px-[10px]">
-          <Route className="mr-2 h-5 w-5" /> Dibujar Camino
+      <div className="flex flex-col sm:flex-row justify-between gap-4">
+        <Button 
+          onClick={handleDrawMode} 
+          variant="outline" 
+          disabled={isPlaying || isDrawing || !canvasReady} 
+          className={`bg-green-400 hover:bg-green-300 text-black rounded-xl font-medium text-xl px-[10px] ${isDrawing ? 'ring-4 ring-green-300 animate-pulse' : ''}`}
+        >
+          <Route className="mr-2 h-5 w-5" /> 
+          {isDrawing ? 'Dibujando...' : 'Dibujar Camino'}
         </Button>
         
-        <Button onClick={handlePlay} disabled={isPlaying || !pathExists} className="flex-1 kids-text bg-cyan-500 hover:bg-cyan-400 text-gray-950 text-3xl font-normal px-[5px]">
+        <Button 
+          onClick={handlePlay} 
+          disabled={isPlaying || !pathExists || !canvasReady} 
+          className="kids-text bg-cyan-500 hover:bg-cyan-400 text-gray-950 text-3xl font-normal px-[5px]"
+        >
           <ArrowRight className="mr-2 h-5 w-5" /> Jugar
         </Button>
         
-        <Button onClick={handleClear} variant="outline" disabled={isPlaying} className="flex-1 border-red-300 hover:bg-red-100 text-red-500 kids-text font-medium text-base px-[10px]">
+        <Button 
+          onClick={handleClear} 
+          variant="outline" 
+          disabled={isPlaying || !canvasReady} 
+          className="border-red-300 hover:bg-red-100 text-red-500 kids-text font-medium text-base px-[10px]"
+        >
           <Trash2 className="mr-2 h-5 w-5" /> Borrar
         </Button>
       </div>
+      
+      {/* Canvas loading indicator */}
+      {!canvasReady && (
+        <div className="text-center p-4 bg-purple-100 rounded-lg">
+          Cargando el juego... Por favor espera.
+        </div>
+      )}
     </div>;
 };
+
 export default DrawPathGame;
+

@@ -45,7 +45,8 @@ const DrawGamePage: React.FC = () => {
         >
           <h2 className="text-2xl font-bold text-purple-800 kids-text mb-3">¿Cómo jugar?</h2>
           <ol className="list-decimal list-inside space-y-2 text-purple-900 kids-text">
-            <li>Dibuja un camino con tu dedo o el ratón</li>
+            <li>Haz clic en <span className="font-bold">Dibujar Camino</span> para activar el modo dibujo</li>
+            <li>Dibuja un camino con tu dedo o el ratón en la zona de dibujo</li>
             <li>Pulsa el botón de <span className="font-bold">Jugar</span></li>
             <li>¡Mira cómo el cochecito sigue tu camino!</li>
           </ol>
