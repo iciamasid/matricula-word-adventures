@@ -23,10 +23,12 @@ const TotalPointsPanel: React.FC = () => {
           }} 
           transition={{ duration: 3, repeat: Infinity }}
         >
-          {/* Changed from Globe to medal emoji */}
-          <div className="w-8 h-8 text-3xl text-game-green">🏅</div>
+          {/* Medal emoji with glow effect */}
+          <div className="w-8 h-8 text-3xl text-game-green relative">
+            <span className="absolute inset-0 text-3xl animate-pulse opacity-70" style={{ filter: 'blur(4px)' }}>🏅</span>
+            <span className="relative z-10">🏅</span>
+          </div>
         </motion.div>
-        <h3 className="text-2xl text-purple-800 kids-text font-normal">Puntos Totales</h3>
       </div>
       <motion.p 
         className="text-3xl text-purple-900 kids-text mt-1 font-normal"

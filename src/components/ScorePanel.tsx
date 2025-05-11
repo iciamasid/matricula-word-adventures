@@ -37,9 +37,9 @@ const ScorePanel: React.FC = () => {
           duration: 1,
           repeat: totalPoints > 0 ? 1 : 0
         }}>
-            {/* Colorful medal icon instead of emoji */}
+            {/* Colorful medal icon with animations */}
             <div className="h-14 w-14 flex items-center justify-center relative">
-              <Medal className="h-12 w-12 text-yellow-500 absolute" strokeWidth={1.5} />
+              <Medal className="h-12 w-12 text-yellow-500 absolute" strokeWidth={1.5} fill="rgba(245, 158, 11, 0.2)" />
               <motion.div
                 className="absolute inset-0"
                 animate={{
@@ -51,9 +51,9 @@ const ScorePanel: React.FC = () => {
                   duration: 2
                 }}
               >
-                <Medal className="h-12 w-12 text-yellow-400" strokeWidth={1} />
+                <Medal className="h-12 w-12 text-yellow-400" strokeWidth={1} fill="rgba(252, 211, 77, 0.3)" />
               </motion.div>
-              <Star className="h-5 w-5 text-amber-500 absolute top-4 left-4" fill="gold" />
+              <Star className="h-5 w-5 text-amber-400" fill="gold" stroke="orange" />
             </div>
           </motion.div>
           <h3 className="text-xl text-purple-800 kids-text font-normal">Puntos</h3>
@@ -79,7 +79,7 @@ const ScorePanel: React.FC = () => {
         </div>
       </motion.div>
       
-      {/* Level Panel - Updated to show "Estás en [país]" with larger flag */}
+      {/* Level Panel - Updated colorful trophy icon */}
       <motion.div className="rounded-lg p-4 bg-transparent shadow-lg text-center" initial={{
       opacity: 0,
       x: 20
@@ -104,7 +104,7 @@ const ScorePanel: React.FC = () => {
           >
             {/* Colorful trophy icon with animation */}
             <div className="h-14 w-14 flex items-center justify-center relative">
-              <Trophy className="h-12 w-12 text-amber-500" fill="rgba(245, 158, 11, 0.3)" strokeWidth={1.5} />
+              <Trophy className="h-12 w-12 text-amber-500" fill="rgba(245, 158, 11, 0.4)" strokeWidth={1.5} />
               <motion.div
                 className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center"
                 animate={{
@@ -117,7 +117,7 @@ const ScorePanel: React.FC = () => {
                   repeatType: "reverse"
                 }}
               >
-                <Star className="h-4 w-4 text-yellow-300" fill="gold" />
+                <Star className="h-4 w-4 text-yellow-300" fill="gold" stroke="orange" />
               </motion.div>
             </div>
           </motion.div>

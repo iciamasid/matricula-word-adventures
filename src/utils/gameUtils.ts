@@ -128,24 +128,32 @@ export function isValidWord(word: string, plateConsonants: string): boolean {
   return false;
 }
 
-// Word validation function - UPDATED to be stricter
+// Word validation function - UPDATED to be more permissive
 export function wordExists(word: string): boolean {
-  // First check our dictionary for common words
-  const uppercaseWord = word.toUpperCase();
-  
-  // Reject very short words
+  // First check if word length is sufficient
   if (word.length < 3) {
     return false;
   }
   
-  // Check if the word exists in our predefined dictionary
+  const uppercaseWord = word.toUpperCase();
+  
+  // Check against our dictionary first
   if (SPANISH_WORDS.has(uppercaseWord)) {
     return true;
   }
   
-  // If not in our dictionary, consider it invalid (with penalty)
-  // For demonstration purposes, this means words not in our SPANISH_WORDS set
-  return false;
+  // More permissive validation - basic Spanish word structure check
+  // Check if the word has at least one vowel
+  const spanishVowels = "AEIOUÁÉÍÓÚ";
+  const hasVowel = [...uppercaseWord].some(char => spanishVowels.includes(char));
+  
+  // Common Spanish word endings
+  const commonEndings = ["AR", "ER", "IR", "ADO", "IDO", "ADA", "IDA", "MENTE", "CIÓN", "DAD", "TAD", "AL", "EZ"];
+  const hasCommonEnding = commonEndings.some(ending => uppercaseWord.endsWith(ending));
+  
+  // Accept words that have vowels and look like Spanish structure
+  // or have common Spanish word endings
+  return hasVowel && (hasCommonEnding || word.length >= 4);
 }
 
 // Keep the existing SPANISH_WORDS set for reference
@@ -164,7 +172,7 @@ const SPANISH_WORDS = new Set([
   "HOSPITAL", "BANCO", "CARTA", "TELEFONO", "TELEVISION", "COMPUTADORA", "INTERNET",
   "MUSICA", "PELICULA", "DEPORTE", "FUTBOL", "BALONCESTO", "TENIS", "NATACION", "FAMILIA",
   "AMIGO", "VECINO", "JEFE", "COMPAÑERO", "PROFESOR", "ESTUDIANTE", "MEDICO", "PACIENTE",
-  "POLICIA", "LADRON", "JUEZ", "ABOGADO", "COCINERO", "CAMARERO",
+  "POLICIA", "LADRON", "JUEZ", "ABOGADO", "COCINERO", "CAMARERO", "VERANO", "LORO",
   // Adding many more common Spanish words
   "GUSTAR", "QUERER", "HACER", "TENER", "ESTAR", "COMER", "BEBER", "DORMIR", "HABLAR",
   "CANTAR", "BAILAR", "SALTAR", "CORRER", "CAMINAR", "JUGAR", "LEER", "ESCRIBIR", 
@@ -184,5 +192,10 @@ const SPANISH_WORDS = new Set([
   "REIR", "LLORAR", "SONREIR", "SUSPIRAR", "RESPIRAR", "TOSER", "ESTORNUDAR", "BOSTEZAR",
   "DESPERTAR", "LEVANTAR", "ACOSTAR", "SENTAR", "PARAR", "ANDAR", "MOVER", "TOCAR",
   "COGER", "SOLTAR", "TIRAR", "EMPUJAR", "CARGAR", "DESCARGAR", "FIRMAR", "BORRAR",
-  "MARCAR", "SEÑALAR", "INDICAR", "APUNTAR", "DIRIGIR", "SEGUIR", "PERSEGUIR", "ALCANZAR"
+  "MARCAR", "SEÑALAR", "INDICAR", "APUNTAR", "DIRIGIR", "SEGUIR", "PERSEGUIR", "ALCANZAR",
+  "PRIMAVERA", "OTOÑO", "INVIERNO", "PAJARO", "GATO", "PERRO", "PATO", "OSO", "LEON",
+  "TIGRE", "ELEFANTE", "JIRAFA", "CEBRA", "MONO", "CABALLO", "VACA", "CERDO", "GALLINA",
+  "POLLO", "OVEJA", "CABRA", "CONEJO", "RATON", "ARDILLA", "SERPIENTE", "LAGARTO",
+  "TORTUGA", "COCODRILO", "PEZ", "TIBURON", "BALLENA", "DELFIN", "AGUILA", "PALOMA",
+  "PINGUINO", "PULPO", "CALAMAR", "ARAÑA", "MOSCA", "ABEJA", "MARIPOSA", "HORMIGA"
 ]);

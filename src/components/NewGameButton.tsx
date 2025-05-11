@@ -23,9 +23,9 @@ const NewGameButton: React.FC = () => {
     >
       <Button
         onClick={handleClick}
-        className={`px-4 py-4 bg-purple-600 hover:bg-purple-700 w-full ${isAnimating ? "animate-bounce" : ""}`}
+        className={`px-4 py-4 bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 w-full ${isAnimating ? "animate-bounce" : ""}`}
       >
-        <Plus className="mr-2 h-4 w-4" /> Nueva matrícula
+        <Plus className="mr-2 h-4 w-4" /> Matrículas
       </Button>
       
       <div className="flex items-center justify-center text-xs text-gray-500">
