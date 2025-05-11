@@ -37,7 +37,7 @@ const DrawControls: React.FC<DrawControlsProps> = ({
         <HelpCircle className="mr-2 h-5 w-5" /> Ayuda
       </Button>
       
-      <Button onClick={onClear} variant="outline" disabled={isPlaying || !canvasReady || isInitializing} className="border-red-300 hover:bg-red-100 text-red-500 kids-text font-medium text-xl px-4 py-3 rounded-xl">
+      <Button onClick={onClear} variant="outline" disabled={isPlaying || !canvasReady || isInitializing} className="border-red-300 kids-text text-xl px-4 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-slate-50 font-normal">
         <Trash2 className="mr-2 h-5 w-5" /> Borrar
       </Button>
     </div>;
