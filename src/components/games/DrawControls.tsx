@@ -24,7 +24,7 @@ const DrawControls: React.FC<DrawControlsProps> = ({
   onHelp
 }) => {
   return <div className="flex flex-col sm:flex-row justify-between gap-4">
-      <Button onClick={onDraw} variant="outline" disabled={isPlaying || isDrawing || !canvasReady || isInitializing} className="text-slate-50 font-medium text-2xl text-center bg-violet-600 hover:bg-violet-500 px-[10px]">
+      <Button onClick={onDraw} variant="outline" disabled={isPlaying || isDrawing || !canvasReady || isInitializing} className="text-slate-50 text-2xl text-center bg-violet-600 hover:bg-violet-500 px-[10px] font-normal">
         <Route className="mr-2 h-6 w-6" /> 
         {isDrawing ? 'Dibujando...' : 'Dibujar'}
       </Button>
