@@ -329,11 +329,11 @@ const GameContent = () => {
         }}>
             <div className="text-center">
               <h2 className="text-2xl text-purple-800 kids-text mb-3 font-semibold">¡Juego del Cochecito!</h2>
-              <p className="text-purple-700 kids-text mb-4 text-xl font-medium">
+              <p className="text-purple-700 kids-text mb-4 font-normal text-base">
                 Dibuja un camino y haz que el cochecito lo siga
               </p>
               <Link to="/draw-game">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl kids-text px-6 py-3 font-medium">
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl kids-text px-6 py-3 font-normal">
                   <Car className="mr-2 h-6 w-6" /> Jugar
                 </Button>
               </Link>
