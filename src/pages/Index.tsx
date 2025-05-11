@@ -241,7 +241,7 @@ const GameContent = () => {
           y: 0
         }} transition={{
           delay: 0.2
-        }} className="mt-2 mb-2 text-center kids-text reward-text text-fuchsia-700 text-3xl font-medium py-[20px]">
+        }} className="mt-2 mb-2 text-center kids-text reward-text text-3xl font-medium py-[20px] text-purple-800">
             ¿Qué países puedes visitar con estos puntos?
           </motion.h2>
           
