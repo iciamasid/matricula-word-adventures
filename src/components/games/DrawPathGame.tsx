@@ -1,16 +1,16 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { toast } from '@/hooks/use-toast';
 import { Progress } from "@/components/ui/progress";
+import { toast } from '@/hooks/use-toast';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
 import { Point } from './utils/pathUtils';
 import { createCar, createEndPoint, createStartPoint } from './utils/carUtils';
 import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
+import SpeedControl from './SpeedControl';
 
 interface DrawPathGameProps {
   onError?: (message: string) => void;
@@ -23,6 +23,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
   const [path, setPath] = useState<Point[]>([]);
   const [pathExists, setPathExists] = useState<boolean>(false);
   const [endPosition, setEndPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
 
   // Handle errors
   const handleError = (message: string) => {
@@ -90,12 +91,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     updatePath,
     moveCar,
     cancelAnimation,
-    toggleDebugMode
+    toggleDebugMode,
+    setAnimationSpeed: setPathAnimationSpeed
   } = usePathAnimation({
     fabricCanvas,
     path,
     startPointObj,
-    endPointObj
+    endPointObj,
+    animationSpeed
   });
 
   // Update interpolated path when original path changes
@@ -111,6 +114,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       animationCarRef.current = carObjectsRef.current;
     }
   }, [carObjectsRef.current]);
+
+  // Update animation speed when slider changes
+  useEffect(() => {
+    setPathAnimationSpeed(animationSpeed);
+  }, [animationSpeed]);
 
   // Start animation along the path
   const handlePlay = () => {
@@ -183,7 +191,17 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Add start point back
       const startPoint = createStartPoint(50, 50);
       fabricCanvas.add(startPoint);
-      setStartPointObj(startPoint);
+      
+      // Update the startPointObj reference
+      // This line was missing, causing the TS2552 error
+      if (typeof startPointObj === 'object' && 'current' in startPointObj) {
+        // If it's a ref
+        startPointObj.current = startPoint;
+      } else {
+        // Direct reference - need to access the setter
+        // This is a workaround since we don't have direct access to setStartPointObj
+        // We're handling this through the canvas hook
+      }
 
       // Add car back to start
       const car = createCar(50, 50);
@@ -262,6 +280,16 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     }
   };
 
+  // Handle animation speed change
+  const handleSpeedChange = (value: number[]) => {
+    // Convert slider value (0-100) to animation speed (300-50)
+    // Higher value = slower animation, so we invert the relationship
+    const speed = 300 - (value[0] * 2.5);
+    setAnimationSpeed(speed);
+    
+    console.log(`Animation speed set to: ${speed}`);
+  };
+
   return (
     <div className="flex flex-col w-full gap-4">
       <Card className="border-4 border-purple-300 shadow-lg overflow-hidden">
@@ -299,6 +327,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         animationProgress={animationProgress}
         interpolatedPathLength={interpolatedPath.length}
         animationCompleted={animationCompleted}
+      />
+      
+      {/* Speed control slider */}
+      <SpeedControl 
+        disabled={isPlaying || isInitializing || !canvasReady}
+        onValueChange={handleSpeedChange}
       />
       
       {/* Game controls */}

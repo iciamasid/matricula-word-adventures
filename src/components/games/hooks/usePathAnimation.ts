@@ -10,13 +10,15 @@ interface UsePathAnimationProps {
   path: Point[];
   startPointObj: Circle | null;
   endPointObj: Circle | null;
+  animationSpeed?: number; // Added animation speed prop
 }
 
 export const usePathAnimation = ({
   fabricCanvas,
   path,
   startPointObj,
-  endPointObj
+  endPointObj,
+  animationSpeed = 180 // Default value if not provided
 }: UsePathAnimationProps) => {
   const [interpolatedPath, setInterpolatedPath] = useState<Point[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -31,6 +33,7 @@ export const usePathAnimation = ({
   const pathTraceRef = useRef<Path | null>(null);
   const carObjectsRef = useRef<CarObject | null>(null);
   const [debugMode, setDebugMode] = useState<boolean>(false);
+  const [currentAnimationSpeed, setCurrentAnimationSpeed] = useState<number>(animationSpeed);
 
   // Create interpolated path when original path changes
   const createInterpolatedPath = useCallback((originalPath: Point[]) => {
@@ -220,14 +223,12 @@ export const usePathAnimation = ({
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
     
-    // Higher speedFactor for slower animation
-    const speedFactor = 180; // Even slower animation (higher = slower)
-    
+    // Use the current animation speed (can be adjusted by slider)
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
       animationRef.current = requestAnimationFrame(() => moveCar(currentIndex + 1));
-    }, speedFactor);
-  }, [fabricCanvas, interpolatedPath, showPath, updatePathTrace, debugMode]);
+    }, currentAnimationSpeed);
+  }, [fabricCanvas, interpolatedPath, showPath, updatePathTrace, debugMode, currentAnimationSpeed]);
 
   // Cancel any ongoing animation
   const cancelAnimation = useCallback(() => {
@@ -250,6 +251,14 @@ export const usePathAnimation = ({
     });
   }, [debugMode]);
 
+  // Set animation speed
+  const setAnimationSpeed = useCallback((speed: number) => {
+    setCurrentAnimationSpeed(speed);
+    if (debugMode) {
+      console.log(`Animation speed updated to: ${speed}ms`);
+    }
+  }, [debugMode]);
+
   return {
     interpolatedPath,
     isPlaying,
@@ -267,6 +276,8 @@ export const usePathAnimation = ({
     updatePath,
     moveCar,
     cancelAnimation,
-    toggleDebugMode
+    toggleDebugMode,
+    setAnimationSpeed,
+    currentAnimationSpeed
   };
 };
