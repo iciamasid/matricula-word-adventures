@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas as FabricCanvas, Circle, Image, Path } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Path, Rect } from 'fabric';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,6 +11,71 @@ interface Point {
   x: number;
   y: number;
 }
+
+// Create a simple car object using Fabric.js shapes
+const createCar = (left: number, top: number, color = '#9B59B6', scale = 1) => {
+  // Car body
+  const body = new Rect({
+    left: left,
+    top: top,
+    width: 60 * scale,
+    height: 30 * scale,
+    fill: color,
+    rx: 10 * scale,
+    ry: 10 * scale,
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  // Car roof
+  const roof = new Rect({
+    left: left,
+    top: top - (15 * scale),
+    width: 40 * scale,
+    height: 20 * scale,
+    fill: '#7D3C98',
+    rx: 8 * scale,
+    ry: 8 * scale,
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  // Car wheels
+  const wheel1 = new Circle({
+    left: left - (20 * scale),
+    top: top + (15 * scale),
+    radius: 8 * scale,
+    fill: '#34495E',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  const wheel2 = new Circle({
+    left: left + (20 * scale),
+    top: top + (15 * scale),
+    radius: 8 * scale,
+    fill: '#34495E',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  // Headlight
+  const headlight = new Circle({
+    left: left + (30 * scale),
+    top: top + (5 * scale),
+    radius: 4 * scale,
+    fill: '#F1C40F',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  return { body, roof, wheel1, wheel2, headlight };
+};
 
 const DrawPathGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -54,23 +119,9 @@ const DrawPathGame: React.FC = () => {
     
     canvas.add(startPoint);
     
-    // Add car image - Fix the Image.fromURL usage to match Fabric.js v6 API
-    Image.fromURL('/lovable-uploads/coche_animado.gif', {
-      scaleX: 40/512, // Assuming original width is 512px, scale to 40px
-      scaleY: 40/512, // Assuming original height is 512px, scale to 40px
-      left: 30,
-      top: 30,
-      selectable: false,
-      originX: 'center',
-      originY: 'center',
-      onError: () => {
-        console.error('Error loading car image');
-      }
-    }).then((img) => {
-      canvas.add(img);
-    }).catch(err => {
-      console.error('Error loading image:', err);
-    });
+    // Create and add car to canvas
+    const car = createCar(50, 50);
+    canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
     
     // Set initial car position
     setCarPosition({ x: 50, y: 50 });
@@ -146,12 +197,13 @@ const DrawPathGame: React.FC = () => {
       fabricCanvas.isDrawingMode = false;
     }
     
-    // Remove previous car image
+    // Remove previous car shapes
     if (fabricCanvas) {
       const objects = fabricCanvas.getObjects();
-      for (let i = 0; i < objects.length; i++) {
-        if (objects[i] instanceof Image) {
-          fabricCanvas.remove(objects[i]);
+      for (let i = objects.length - 1; i >= 0; i--) {
+        const obj = objects[i];
+        if (obj instanceof Rect || (obj instanceof Circle && obj.radius !== 10)) {
+          fabricCanvas.remove(obj);
         }
       }
     }
@@ -173,29 +225,16 @@ const DrawPathGame: React.FC = () => {
     
     // Keep only the starting point
     const objects = fabricCanvas.getObjects();
-    for (let i = 0; i < objects.length; i++) {
-      if (!(objects[i] instanceof Circle)) {
-        fabricCanvas.remove(objects[i]);
+    for (let i = objects.length - 1; i >= 0; i--) {
+      const obj = objects[i];
+      if (!(obj instanceof Circle && obj.radius === 10)) {
+        fabricCanvas.remove(obj);
       }
     }
     
-    // Add car back to start - Fix the Image.fromURL usage to match Fabric.js v6 API
-    Image.fromURL('/lovable-uploads/coche_animado.gif', {
-      scaleX: 40/512, // Assuming original width is 512px, scale to 40px
-      scaleY: 40/512, // Assuming original height is 512px, scale to 40px
-      left: 30,
-      top: 30,
-      selectable: false,
-      originX: 'center',
-      originY: 'center',
-      onError: () => {
-        console.error('Error loading car image');
-      }
-    }).then((img) => {
-      fabricCanvas.add(img);
-    }).catch(err => {
-      console.error('Error loading image:', err);
-    });
+    // Add car back to start
+    const car = createCar(50, 50);
+    fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
     
     // Reset states
     setPath([]);
@@ -219,18 +258,17 @@ const DrawPathGame: React.FC = () => {
             
             {/* Animated car that follows the path */}
             {isPlaying && path.length > 0 && (
-              <motion.img
-                src="/lovable-uploads/coche_animado.gif"
+              <motion.div
                 className="absolute z-10 pointer-events-none"
                 style={{
-                  width: 40,
-                  height: 40,
-                  x: carPosition.x - 20,
-                  y: carPosition.y - 20
+                  width: 60,
+                  height: 30,
+                  x: carPosition.x - 30,
+                  y: carPosition.y - 15
                 }}
                 animate={{
-                  x: path.map(p => p.x - 20),
-                  y: path.map(p => p.y - 20),
+                  x: path.map(p => p.x - 30),
+                  y: path.map(p => p.y - 15),
                   rotate: path.map((p, i) => {
                     if (i === 0 || i >= path.length - 1) return 0;
                     const prev = path[i - 1];
@@ -243,7 +281,16 @@ const DrawPathGame: React.FC = () => {
                   times: path.map((_, i) => i / (path.length - 1)),
                   ease: "linear"
                 }}
-              />
+              >
+                {/* Simple car SVG for animation */}
+                <svg width="100%" height="100%" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="0" y="10" width="60" height="30" fill="#9B59B6" rx="10" ry="10" />
+                  <rect x="10" y="0" width="40" height="20" fill="#7D3C98" rx="8" ry="8" />
+                  <circle cx="15" cy="30" r="8" fill="#34495E" />
+                  <circle cx="45" cy="30" r="8" fill="#34495E" />
+                  <circle cx="55" cy="15" r="4" fill="#F1C40F" />
+                </svg>
+              </motion.div>
             )}
           </div>
         </CardContent>
