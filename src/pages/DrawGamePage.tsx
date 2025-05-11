@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -29,7 +28,7 @@ const DrawGameContent: React.FC = () => {
     return () => {
       console.log("DrawGamePage unmounted");
       sessionStorage.setItem('navigatingBack', 'true');
-    }
+    };
   }, []);
 
   // Clear error after 5 seconds
@@ -51,7 +50,6 @@ const DrawGameContent: React.FC = () => {
       variant: "destructive"
     });
   };
-  
   return <div className="min-h-screen flex flex-col items-center px-4 pt-3 pb-20 relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
@@ -81,7 +79,7 @@ const DrawGameContent: React.FC = () => {
               </Button>
             </Link>
             
-            <Button variant="outline" className="bg-green-600 hover:bg-green-500 text-white kids-text" onClick={() => setShowHelp(true)}>
+            <Button variant="outline" onClick={() => setShowHelp(true)} className="text-white kids-text bg-transparent">
               <HelpCircle className="mr-2 h-5 w-5" /> Ayuda
             </Button>
           </div>
@@ -270,5 +268,4 @@ const DrawGamePage: React.FC = () => {
       <DrawGameContent />
     </GameProvider>;
 };
-
 export default DrawGamePage;
