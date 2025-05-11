@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
@@ -30,12 +29,7 @@ const LicensePlate: React.FC = () => {
         
         {/* EU flag on the left */}
         <div className="absolute left-2 h-full flex items-center">
-          <div className="h-full w-8 bg-blue-600 rounded-l-sm flex flex-col items-center justify-center">
-            <div className="text-yellow-400 text-xs mb-1">EU</div>
-            <div className="flex justify-center">
-              {[...Array(6)].map((_, i) => <div key={i} className="text-yellow-400 text-[8px] mx-[0.5px]">★</div>)}
-            </div>
-          </div>
+          
         </div>
 
         {/* License plate content - numbers and letters with space for the EU flag */}
@@ -78,19 +72,13 @@ const LicensePlate: React.FC = () => {
       
       {/* Car image centered below the license plate */}
       <div className="flex justify-center w-full mt-2">
-        <motion.img 
-          src="/lovable-uploads/coche_portada.gif" 
-          alt="Coche caca" 
-          animate={{
-            y: [0, -3, 0]
-          }} 
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }} 
-          className="h-16 w-auto"
-        />
+        <motion.img src="/lovable-uploads/coche_portada.gif" alt="Coche caca" animate={{
+        y: [0, -3, 0]
+      }} transition={{
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut"
+      }} className="h-16 w-auto" />
       </div>
     </motion.div>;
 };
