@@ -33,7 +33,7 @@ const DrawControls: React.FC<DrawControlsProps> = ({
         <ArrowRight className="mr-2 h-6 w-6" /> Jugar
       </Button>
       
-      <Button onClick={onHelp} className="kids-text px-4 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-slate-50 font-normal text-2xl">
+      <Button onClick={onHelp} className="kids-text px-4 py-3 rounded-xl bg-green-600 hover:bg-green-500 text-slate-50 text-2xl font-normal">
         <HelpCircle className="mr-2 h-5 w-5" /> Ayuda
       </Button>
       
