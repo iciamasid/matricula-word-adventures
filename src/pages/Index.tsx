@@ -336,7 +336,7 @@ const GameContent = () => {
           scale: 1.02
         }}>
             <div className="text-center">
-              <h2 className="text-2xl text-purple-800 kids-text mb-3 font-semibold">¡Juego del Cochecito!</h2>
+              <h2 className="text-2xl text-purple-800 kids-text mb-3 font-medium">¡Juego del Cochecito!</h2>
               <p className="text-purple-700 kids-text mb-4 font-normal text-base">
                 Dibuja un camino y haz que el cochecito lo siga
               </p>
