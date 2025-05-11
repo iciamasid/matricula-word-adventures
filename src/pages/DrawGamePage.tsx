@@ -52,7 +52,7 @@ const DrawGameContent: React.FC = () => {
     });
   };
   
-  return <div className="min-h-screen flex flex-col items-center px-4 py-3 relative overflow-hidden" style={{
+  return <div className="min-h-screen flex flex-col items-center px-4 pt-3 pb-20 relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
     backgroundAttachment: "fixed"

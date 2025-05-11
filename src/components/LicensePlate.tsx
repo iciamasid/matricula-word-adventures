@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
@@ -34,7 +35,7 @@ const LicensePlate: React.FC = () => {
 
         {/* License plate content - numbers and letters with space for the EU flag */}
         <div className="flex items-center justify-center space-x-2 ml-8">
-          {/* Numbers part with slot machine effect */}
+          {/* Numbers part with slot machine effect - SLOWED DOWN to 2-3 seconds total */}
           {numbers.split('').map((number, index) => <motion.div key={`number-${index}`} className="bg-gray-200 w-9 h-12 rounded-sm flex items-center justify-center shadow-inner" initial={{
           rotateX: 180,
           opacity: 0
@@ -42,8 +43,10 @@ const LicensePlate: React.FC = () => {
           rotateX: 0,
           opacity: 1
         }} transition={{
-          delay: index * 0.1,
-          type: "spring"
+          delay: index * 0.4, // Slowed down from 0.1 to 0.4 for each digit
+          duration: 0.8, // Increased from default to 0.8 seconds per animation
+          type: "spring",
+          stiffness: 80 // Reduced stiffness for slower animation
         }}>
               <span className="text-black text-3xl kids-text font-normal">{number}</span>
             </motion.div>)}
@@ -53,7 +56,7 @@ const LicensePlate: React.FC = () => {
             <span className="text-gray-700 text-2xl kids-text font-normal">-</span>
           </div>
           
-          {/* Consonants with slot machine effect */}
+          {/* Consonants with slot machine effect - SLOWED DOWN */}
           {consonantsArray.map((consonant, index) => <motion.div key={`consonant-${index}`} className={`${CONSONANT_COLORS[index]} w-9 h-12 rounded-sm flex items-center justify-center shadow-inner`} initial={{
           rotateY: 180,
           opacity: 0
@@ -61,7 +64,10 @@ const LicensePlate: React.FC = () => {
           rotateY: 0,
           opacity: 1
         }} transition={{
-          delay: 0.4 + index * 0.2
+          delay: 1.6 + index * 0.5, // Increased delay to start after numbers + increased per-letter delay
+          duration: 0.7, // Longer duration for each letter animation
+          type: "spring",
+          stiffness: 70 // Reduced stiffness for slower animation
         }} whileHover={{
           scale: 1.1
         }}>

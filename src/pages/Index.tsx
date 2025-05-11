@@ -310,15 +310,6 @@ const GameContent = () => {
                       🚗
                     </motion.div>
                     <span>Conducir</span>
-                    <motion.div animate={{
-                    x: [0, 10, 0],
-                    opacity: [0, 1, 0]
-                  }} transition={{
-                    duration: 1.5,
-                    repeat: Infinity
-                  }} className="absolute right-3">
-                      <div className="text-2xl">✨</div>
-                    </motion.div>
                   </div>
                 </Button>
               </Link>

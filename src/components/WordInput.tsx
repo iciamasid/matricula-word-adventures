@@ -1,8 +1,9 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGame } from "@/context/GameContext";
-import { ArrowRight, Check, Star } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Array of colors for the consonant squares with more game-themed colors
@@ -36,10 +37,7 @@ const WordInput: React.FC = () => {
     submitWord();
     setTimeout(() => setIsAnimating(false), 500);
   };
-  return <div className="w-full max-w-xs relative">
-      {/* Display consonants above word input - bigger size */}
-      
-      
+  return <div className="w-full max-w-xs relative">      
       <div className="flex gap-2">
         <Input ref={inputRef} type="text" value={currentWord} onChange={handleInputChange} onKeyDown={handleKeyDown} placeholder="Escribe aquí" className="flex-1 text-center font-bold text-3xl py-6 uppercase border-2 border-purple-400 shadow-md kids-text" autoComplete="off" />
         <motion.div whileHover={{

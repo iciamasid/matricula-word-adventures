@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Trash2, PlayCircle, PencilIcon, HelpCircle } from "lucide-react";
+import { Trash2, PlayCircle, PencilIcon, HelpCircle, ArrowLeft } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface DrawControlsProps {
   isPlaying: boolean;
@@ -26,6 +27,11 @@ const DrawControls: React.FC<DrawControlsProps> = ({
   onClear,
   onHelp
 }) => {
+  // Set navigation flag when leaving
+  const handleNavigation = () => {
+    sessionStorage.setItem('navigatingBack', 'true');
+  };
+
   return (
     <div className="w-full grid grid-cols-2 gap-4 md:grid-cols-4">
       {/* Draw button */}
@@ -42,7 +48,7 @@ const DrawControls: React.FC<DrawControlsProps> = ({
         Dibujar
       </Button>
       
-      {/* Play button - Cambiado de "Jugar" a "Conducir" */}
+      {/* Play button - "Conducir" */}
       <Button
         onClick={onPlay}
         disabled={isPlaying || !pathExists || isInitializing || !canvasReady}
@@ -62,16 +68,15 @@ const DrawControls: React.FC<DrawControlsProps> = ({
         Borrar
       </Button>
       
-      {/* Help button */}
-      {onHelp && (
+      {/* Back to Home button - "Más Matrículas" */}
+      <Link to="/" className="w-full" onClick={handleNavigation}>
         <Button
-          onClick={onHelp}
-          className="bg-purple-600 hover:bg-purple-700 text-white kids-text text-lg font-normal py-6"
+          className="bg-purple-600 hover:bg-purple-700 text-white kids-text text-lg font-normal py-6 w-full"
         >
-          <HelpCircle className="w-5 h-5 mr-2" />
-          Ayuda
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          Más Matrículas
         </Button>
-      )}
+      </Link>
     </div>
   );
 };

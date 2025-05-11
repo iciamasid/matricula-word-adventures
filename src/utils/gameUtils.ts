@@ -128,7 +128,7 @@ export function isValidWord(word: string, plateConsonants: string): boolean {
   return false;
 }
 
-// Word validation function
+// Word validation function - UPDATED to be stricter
 export function wordExists(word: string): boolean {
   // First check our dictionary for common words
   const uppercaseWord = word.toUpperCase();
@@ -138,8 +138,14 @@ export function wordExists(word: string): boolean {
     return false;
   }
   
-  // For gameplay purposes, accept anything with 3+ letters that looks like a word
-  return true;
+  // Check if the word exists in our predefined dictionary
+  if (SPANISH_WORDS.has(uppercaseWord)) {
+    return true;
+  }
+  
+  // If not in our dictionary, consider it invalid (with penalty)
+  // For demonstration purposes, this means words not in our SPANISH_WORDS set
+  return false;
 }
 
 // Keep the existing SPANISH_WORDS set for reference
