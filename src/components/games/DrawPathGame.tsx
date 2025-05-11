@@ -54,17 +54,22 @@ const DrawPathGame: React.FC = () => {
     
     canvas.add(startPoint);
     
-    // Add car image
-    Image.fromURL('/lovable-uploads/coche_animado.gif', (img) => {
-      img.scaleToWidth(40);
-      img.set({
-        left: 30,
-        top: 30,
-        selectable: false,
-        originX: 'center',
-        originY: 'center'
-      });
+    // Add car image - Fix the Image.fromURL usage to match Fabric.js v6 API
+    Image.fromURL('/lovable-uploads/coche_animado.gif', {
+      scaleX: 40/512, // Assuming original width is 512px, scale to 40px
+      scaleY: 40/512, // Assuming original height is 512px, scale to 40px
+      left: 30,
+      top: 30,
+      selectable: false,
+      originX: 'center',
+      originY: 'center',
+      onError: () => {
+        console.error('Error loading car image');
+      }
+    }).then((img) => {
       canvas.add(img);
+    }).catch(err => {
+      console.error('Error loading image:', err);
     });
     
     // Set initial car position
@@ -174,17 +179,22 @@ const DrawPathGame: React.FC = () => {
       }
     }
     
-    // Add car back to start
-    Image.fromURL('/lovable-uploads/coche_animado.gif', (img) => {
-      img.scaleToWidth(40);
-      img.set({
-        left: 30,
-        top: 30,
-        selectable: false,
-        originX: 'center',
-        originY: 'center'
-      });
+    // Add car back to start - Fix the Image.fromURL usage to match Fabric.js v6 API
+    Image.fromURL('/lovable-uploads/coche_animado.gif', {
+      scaleX: 40/512, // Assuming original width is 512px, scale to 40px
+      scaleY: 40/512, // Assuming original height is 512px, scale to 40px
+      left: 30,
+      top: 30,
+      selectable: false,
+      originX: 'center',
+      originY: 'center',
+      onError: () => {
+        console.error('Error loading car image');
+      }
+    }).then((img) => {
       fabricCanvas.add(img);
+    }).catch(err => {
+      console.error('Error loading image:', err);
     });
     
     // Reset states
