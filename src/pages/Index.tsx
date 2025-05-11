@@ -150,33 +150,23 @@ const GameContent = () => {
     backgroundAttachment: "fixed"
   }}>
       {/* Special background effect when the world tour is completed */}
-      {level >= 10 && (
-        <div className="absolute inset-0 pointer-events-none">
+      {level >= 10 && <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
-          {[...Array(20)].map((_, i) => (
-            <motion.div 
-              key={i}
-              className="absolute rounded-full bg-yellow-300 opacity-30"
-              style={{
-                width: Math.random() * 10 + 5,
-                height: Math.random() * 10 + 5,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`
-              }}
-              animate={{
-                y: [0, -100],
-                opacity: [0.3, 0]
-              }}
-              transition={{
-                duration: Math.random() * 5 + 5,
-                repeat: Infinity,
-                repeatType: "loop",
-                delay: Math.random() * 5
-              }}
-            />
-          ))}
-        </div>
-      )}
+          {[...Array(20)].map((_, i) => <motion.div key={i} className="absolute rounded-full bg-yellow-300 opacity-30" style={{
+        width: Math.random() * 10 + 5,
+        height: Math.random() * 10 + 5,
+        left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`
+      }} animate={{
+        y: [0, -100],
+        opacity: [0.3, 0]
+      }} transition={{
+        duration: Math.random() * 5 + 5,
+        repeat: Infinity,
+        repeatType: "loop",
+        delay: Math.random() * 5
+      }} />)}
+        </div>}
       
       <div className="relative w-full">
         <motion.img src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" alt="Matriculabra Cadabra" className="w-full object-contain mb-4 px-0" style={{
@@ -313,17 +303,16 @@ const GameContent = () => {
               </div>
               
               {/* Special badge for world tour completion */}
-              {level >= 10 && (
-                <motion.div 
-                  className="mt-4 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full px-6 py-2 inline-block shadow-lg"
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                >
+              {level >= 10 && <motion.div className="mt-4 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full px-6 py-2 inline-block shadow-lg" animate={{
+              scale: [1, 1.05, 1]
+            }} transition={{
+              repeat: Infinity,
+              duration: 2
+            }}>
                   <span className="text-lg font-bold text-amber-900 kids-text">
                     ¡VUELTA AL MUNDO COMPLETADA! 🏆
                   </span>
-                </motion.div>
-              )}
+                </motion.div>}
             </div>
           </motion.div>
           
@@ -403,7 +392,7 @@ const GameContent = () => {
           type: "spring",
           stiffness: 400
         }}>
-            <Button onClick={handleResetGame} size="lg" className="w-full text-white kids-text text-xl font-normal py-[24px] bg-rose-600 hover:bg-rose-500">
+            <Button onClick={handleResetGame} size="lg" className="w-full text-white kids-text text-xl font-normal py-[24px] bg-cyan-700 hover:bg-cyan-600">
               <RefreshCw className="mr-2 h-5 w-5" /> Iniciar nueva partida
             </Button>
           </motion.div>
