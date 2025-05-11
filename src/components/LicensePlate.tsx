@@ -24,7 +24,7 @@ const LicensePlate: React.FC = () => {
         {/* Car image */}
         <div className="absolute -left-16 -top-12 z-10">
           <motion.img 
-            src="/lovable-uploads/coche_portada.gif" 
+            src="/lovable-uploads/placeholder.svg" 
             alt="Coche rojo" 
             className="h-24 w-auto"
             animate={{
