@@ -65,7 +65,7 @@ const DrawGamePage: React.FC = () => {
             repeat: Infinity,
             duration: 2
           }
-        }} className="kids-text text-fuchsia-900 text-4xl font-medium">
+        }} className="kids-text text-fuchsia-900 text-4xl font-normal">
             Juego del Cochecito
           </motion.h1>
           
