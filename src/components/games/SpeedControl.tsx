@@ -14,7 +14,7 @@ const SpeedControl: React.FC<SpeedControlProps> = ({
   return <div className={`bg-white/90 rounded-lg p-4 shadow-sm border border-purple-200 ${disabled ? 'opacity-60' : ''}`}>
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
-          <h3 className="text-purple-800 kids-text font-normal text-base">Velocidad de Animación</h3>
+          <h3 className="text-purple-800 kids-text font-normal text-base">Velocidad de conducción</h3>
         </div>
         
         <div className="flex items-center gap-3 pt-1">
