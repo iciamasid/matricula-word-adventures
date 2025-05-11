@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -97,7 +96,7 @@ const GameContent = () => {
     }
     // Always update the previous level
     setPrevLevel(level);
-    
+
     // Reset navigation flag
     setShowLevelUpFromNavigation(false);
   }, [level]);
@@ -134,7 +133,6 @@ const GameContent = () => {
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
-  
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -144,7 +142,6 @@ const GameContent = () => {
       });
     }
   };
-  
   return <div className="min-h-screen flex flex-col items-center relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
@@ -302,32 +299,24 @@ const GameContent = () => {
               <Link to="/draw-game" onClick={handleNavigation}>
                 <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl kids-text px-6 py-3 font-normal relative">
                   <div className="flex items-center">
-                    <motion.div
-                      animate={{
-                        x: [-5, 5, -5],
-                        y: [-3, 3, -3],
-                        rotate: [0, 5, -5, 0]
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity
-                      }}
-                      className="mr-3 text-4xl"
-                    >
+                    <motion.div animate={{
+                    x: [-5, 5, -5],
+                    y: [-3, 3, -3],
+                    rotate: [0, 5, -5, 0]
+                  }} transition={{
+                    duration: 2,
+                    repeat: Infinity
+                  }} className="mr-3 text-4xl">
                       🚗
                     </motion.div>
                     <span>Conducir</span>
-                    <motion.div
-                      animate={{ 
-                        x: [0, 10, 0],
-                        opacity: [0, 1, 0]
-                      }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity
-                      }}
-                      className="absolute right-3"
-                    >
+                    <motion.div animate={{
+                    x: [0, 10, 0],
+                    opacity: [0, 1, 0]
+                  }} transition={{
+                    duration: 1.5,
+                    repeat: Infinity
+                  }} className="absolute right-3">
                       <div className="text-2xl">✨</div>
                     </motion.div>
                   </div>
@@ -376,7 +365,7 @@ const GameContent = () => {
           type: "spring",
           stiffness: 400
         }}>
-            <Button onClick={handleResetGame} size="lg" className="w-full text-white kids-text py-6 bg-gray-600 hover:bg-gray-500 text-xl font-normal">
+            <Button onClick={handleResetGame} size="lg" className="w-full text-white kids-text text-xl font-normal py-[24px] bg-rose-600 hover:bg-rose-500">
               <RefreshCw className="mr-2 h-5 w-5" /> Iniciar nueva partida
             </Button>
           </motion.div>
