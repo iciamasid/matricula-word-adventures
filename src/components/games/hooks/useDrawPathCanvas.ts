@@ -66,7 +66,7 @@ export const useDrawPathCanvas = ({
 
       // Create and add car to canvas
       const car = createCar(50, 50);
-      canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
+      canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
       carObjectsRef.current = car;
       canvas.renderAll();
 
@@ -151,7 +151,6 @@ export const useDrawPathCanvas = ({
   return {
     fabricCanvas,
     startPointObj,
-    setStartPointObj, // Make sure this is exported from the hook
     endPointObj,
     setEndPointObj,
     isInitializing,
