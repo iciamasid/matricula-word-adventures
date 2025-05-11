@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
@@ -75,15 +76,21 @@ const LicensePlate: React.FC = () => {
         </div>
       </div>
       
-      {/* Car image repositioned below the license plate and to the left */}
-      <div className="relative">
-        <motion.img src="/lovable-uploads/coche_portada.gif" alt="Coche caca" animate={{
-        y: [0, -3, 0]
-      }} transition={{
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }} className="h-16 w-auto absolute -center-4 top-2" />
+      {/* Car image centered below the license plate */}
+      <div className="flex justify-center w-full mt-2">
+        <motion.img 
+          src="/lovable-uploads/coche_portada.gif" 
+          alt="Coche caca" 
+          animate={{
+            y: [0, -3, 0]
+          }} 
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }} 
+          className="h-16 w-auto"
+        />
       </div>
     </motion.div>;
 };

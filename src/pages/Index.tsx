@@ -226,9 +226,8 @@ const GameContent = () => {
             }}>
                 {level}
               </motion.p>
-              {level === 1 ? <p className="opacity-0">·</p> : <p className="kids-text text-xl font-normal text-purple-800">
-                  ¡Nivel desbloqueado!
-                </p>}
+              {/* Removed "¡Nivel desbloqueado!" text and replaced with empty spacing */}
+              <p className="opacity-0">·</p>
             </motion.div>
           </div>
           
