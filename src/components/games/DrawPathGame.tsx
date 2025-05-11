@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowRight, Trash2, Route } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { Progress } from "@/components/ui/progress";
 
 interface Point {
   x: number;
@@ -166,6 +167,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
   const [animationSpeed, setAnimationSpeed] = useState<number>(150); // Higher value = slower animation
   const [showPath, setShowPath] = useState<boolean>(true);
   const pathTraceRef = useRef<Path | null>(null);
+  // New state for animation progress
+  const [animationProgress, setAnimationProgress] = useState<number>(0);
 
   // Initialize canvas on component mount
   useEffect(() => {
@@ -331,7 +334,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, [fabricCanvas]);
 
-  // Create interpolated path from original path
+  // Create interpolated path from original path with improved interpolation
   useEffect(() => {
     if (!path.length) return;
     
@@ -352,8 +355,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       );
       
       // More steps for longer distances - provides consistent movement speed
-      // Use a smaller divisor to create more points and smoother animation
-      const steps = Math.max(5, Math.ceil(distance / 3));
+      // Use an even smaller divisor for more interpolation points and smoother animation
+      const steps = Math.max(8, Math.ceil(distance / 2));
       
       // Skip the first point as it's already added
       const betweenPoints = interpolatePoints(point1, point2, steps).slice(1);
@@ -365,7 +368,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     
   }, [path]);
 
-  // Draw a trace of the path that the car has traveled
+  // Draw a trace of the path that the car has traveled - improved version
   const updatePathTrace = (currentIndex: number) => {
     if (!fabricCanvas || interpolatedPath.length === 0) return;
     
@@ -400,11 +403,17 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Move the trace to the back of the stack using the canvas method
       fabricCanvas.sendObjectToBack(trace);
       
+      // Store the path trace reference
       pathTraceRef.current = trace;
+      
+      // Make sure the start point is on top of the path trace
+      if (startPointObj) {
+        fabricCanvas.bringObjectToFront(startPointObj);
+      }
     }
   };
 
-  // Move car to the next point in the interpolated path
+  // Move car to the next point in the interpolated path - improved version
   const moveCar = (currentIndex: number) => {
     if (!fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) {
       console.log("Missing required objects for animation", {
@@ -422,6 +431,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Animation is complete
       setIsPlaying(false);
       setAnimationCompleted(true);
+      setAnimationProgress(100); // Set progress to 100% when complete
       toast({
         title: "¡Muy bien!",
         description: "¡El coche ha llegado a su destino!"
@@ -467,22 +477,21 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     
     // Update progress state
     const progress = Math.round((currentIndex / interpolatedPath.length) * 100);
+    setAnimationProgress(progress);
     console.log(`Animation progress: ${progress}%, point: ${currentIndex} of ${interpolatedPath.length}`);
     
     // Update the canvas
     fabricCanvas.renderAll();
     
-    // Use a shorter animation speed for smoother animation
-    // Using requestAnimationFrame with a small delay for controlled speed
-    const nextIndex = currentIndex + 1;
-    setCurrentPathIndex(nextIndex);
+    // Update progress in the interface
+    setCurrentPathIndex(currentIndex);
     
-    // Use a lower value for animationSpeed to make animation faster
-    const speedFactor = 50; // Lower value = faster animation
+    // Use a higher value for speedFactor for slower animation to make it more visible
+    const speedFactor = 80; // Higher value = slower animation
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
-      animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
+      animationRef.current = requestAnimationFrame(() => moveCar(currentIndex + 1));
     }, speedFactor);
   };
 
@@ -675,10 +684,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
               </div>
             )}
             
-            {/* Progress indicator for animation */}
+            {/* Improved Progress indicator for animation */}
             {isPlaying && interpolatedPath.length > 0 && (
-              <div className="absolute bottom-0 left-0 right-0 bg-blue-500 text-white text-center py-1 z-20 rounded-b-md">
-                Animación en progreso: {Math.round((currentPathIndex / interpolatedPath.length) * 100)}%
+              <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
+                <div className="flex flex-col items-center gap-1 px-4">
+                  <span className="text-xs font-medium">Animación en progreso</span>
+                  <Progress value={animationProgress} className="h-2 w-full" />
+                  <span className="text-xs">{animationProgress}%</span>
+                </div>
               </div>
             )}
           </div>
