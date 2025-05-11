@@ -113,7 +113,6 @@ const GameContent = () => {
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
-  
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -123,7 +122,6 @@ const GameContent = () => {
       });
     }
   };
-  
   return <div className="min-h-screen flex flex-col items-center relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
@@ -179,7 +177,7 @@ const GameContent = () => {
               }}>
                   <Globe className="h-7 w-7 text-blue-600" />
                 </motion.span>
-                <span className="mx-2 font-normal text-xl">Este nivel te permite conducir:</span>
+                <span className="mx-2 font-normal text-xl">Este nivel te permite conducir desde:</span>
                 <motion.span className="inline-block" animate={{
                 rotate: [0, 360],
                 transition: {
@@ -286,28 +284,29 @@ const GameContent = () => {
           </motion.div>
           
           {/* Progress bar showing world tour progress */}
-          <motion.div 
-            className="w-full bg-purple-100 p-4 rounded-lg shadow-lg"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
+          <motion.div className="w-full bg-purple-100 p-4 rounded-lg shadow-lg" initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.5
+        }}>
             <h3 className="text-xl text-center text-purple-800 kids-text mb-3">Progreso de tu vuelta al mundo</h3>
             <div className="relative pt-4 pb-8">
-              <Progress value={(level / 10) * 100} className="h-4" />
+              <Progress value={level / 10 * 100} className="h-4" />
               
               {/* Country markers on progress bar */}
               <div className="absolute top-0 left-0 w-full flex justify-between px-1">
-                {[...Array(11)].map((_, i) => (
-                  <div key={i} className="relative flex flex-col items-center">
+                {[...Array(11)].map((_, i) => <div key={i} className="relative flex flex-col items-center">
                     <div className={`w-3 h-3 rounded-full ${level >= i ? 'bg-green-500' : 'bg-gray-300'}`} />
-                    {i % 2 === 0 && (
-                      <div className="absolute top-4 transform -translate-x-1/2" style={{left: '50%'}}>
+                    {i % 2 === 0 && <div className="absolute top-4 transform -translate-x-1/2" style={{
+                  left: '50%'
+                }}>
                         <span className="text-xs">{getLevelFlag(i)}</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      </div>}
+                  </div>)}
               </div>
               
               <div className="flex justify-between text-xs text-purple-700 mt-6">
@@ -344,5 +343,4 @@ const GameContent = () => {
       <Toaster />
     </div>;
 };
-
 export default Index;
