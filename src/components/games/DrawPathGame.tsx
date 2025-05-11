@@ -1,603 +1,116 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Trash2, Route } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Progress } from "@/components/ui/progress";
-
-interface Point {
-  x: number;
-  y: number;
-}
+import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
+import { usePathAnimation } from './hooks/usePathAnimation';
+import { Point } from './utils/pathUtils';
+import { createCar, createEndPoint, createStartPoint } from './utils/carUtils';
+import DrawControls from './DrawControls';
+import GameStatusIndicators from './GameStatusIndicators';
 
 interface DrawPathGameProps {
   onError?: (message: string) => void;
 }
 
-// Create a simple car object using Fabric.js shapes
-const createCar = (left: number, top: number, color = '#9B59B6', scale = 1) => {
-  // Car body
-  const body = new Rect({
-    left: left,
-    top: top,
-    width: 60 * scale,
-    height: 30 * scale,
-    fill: color,
-    rx: 10 * scale,
-    ry: 10 * scale,
-    originX: 'center',
-    originY: 'center',
-    selectable: false
-  });
-
-  // Car roof
-  const roof = new Rect({
-    left: left,
-    top: top - 15 * scale,
-    width: 40 * scale,
-    height: 20 * scale,
-    fill: '#7D3C98',
-    rx: 8 * scale,
-    ry: 8 * scale,
-    originX: 'center',
-    originY: 'center',
-    selectable: false
-  });
-
-  // Car wheels
-  const wheel1 = new Circle({
-    left: left - 20 * scale,
-    top: top + 15 * scale,
-    radius: 8 * scale,
-    fill: '#34495E',
-    originX: 'center',
-    originY: 'center',
-    selectable: false
-  });
-  const wheel2 = new Circle({
-    left: left + 20 * scale,
-    top: top + 15 * scale,
-    radius: 8 * scale,
-    fill: '#34495E',
-    originX: 'center',
-    originY: 'center',
-    selectable: false
-  });
-
-  // Headlight
-  const headlight = new Circle({
-    left: left + 30 * scale,
-    top: top + 5 * scale,
-    radius: 4 * scale,
-    fill: '#F1C40F',
-    originX: 'center',
-    originY: 'center',
-    selectable: false
-  });
-  return {
-    body,
-    roof,
-    wheel1,
-    wheel2,
-    headlight
-  };
-};
-
-// Create start and end points for the path
-const createStartPoint = (left: number, top: number) => {
-  return new Circle({
-    left,
-    top,
-    radius: 10,
-    fill: '#2ECC71', // Green color
-    stroke: '#27AE60',
-    strokeWidth: 2,
-    selectable: false
-  });
-};
-
-const createEndPoint = (left: number, top: number) => {
-  return new Circle({
-    left,
-    top,
-    radius: 10,
-    fill: '#E74C3C', // Red color
-    stroke: '#C0392B',
-    strokeWidth: 2,
-    selectable: false
-  });
-};
-
-// Enhanced interpolation function for smoother curves
-const interpolatePoints = (point1: Point, point2: Point, steps: number): Point[] => {
-  const points: Point[] = [];
-  
-  for (let i = 0; i <= steps; i++) {
-    const t = i / steps;
-    points.push({
-      x: point1.x + (point2.x - point1.x) * t,
-      y: point1.y + (point2.y - point1.y) * t
-    });
-  }
-  
-  return points;
-};
-
-// New helper function to extract points from all path commands
-const extractPointsFromPath = (pathObj: any): Point[] => {
-  if (!pathObj || !pathObj.path || !Array.isArray(pathObj.path)) {
-    console.error("Invalid path object:", pathObj);
-    return [];
-  }
-
-  const rawPath = pathObj.path;
-  const points: Point[] = [];
-  let lastControl: Point | null = null;
-  
-  try {
-    for (let i = 0; i < rawPath.length; i++) {
-      const cmd = rawPath[i];
-      
-      if (!cmd || !Array.isArray(cmd)) {
-        console.log("Skipping invalid command:", cmd);
-        continue;
-      }
-      
-      console.log("Processing command:", cmd[0]);
-      
-      // Handle different path commands
-      switch (cmd[0]) {
-        case 'M': // Move to
-        case 'L': // Line to
-          points.push({ x: cmd[1], y: cmd[2] });
-          break;
-          
-        case 'Q': // Quadratic curve
-          // Add the control point
-          points.push({ x: cmd[1], y: cmd[2] });
-          // Add several points along the curve for smoother interpolation
-          for (let t = 0.2; t <= 0.8; t += 0.2) {
-            const x = (1-t)*(1-t)*points[points.length-2].x + 2*(1-t)*t*cmd[1] + t*t*cmd[3];
-            const y = (1-t)*(1-t)*points[points.length-2].y + 2*(1-t)*t*cmd[2] + t*t*cmd[4];
-            points.push({ x, y });
-          }
-          // Add the end point
-          points.push({ x: cmd[3], y: cmd[4] });
-          break;
-          
-        case 'C': // Cubic curve
-          // Add both control points and several points along the curve
-          points.push({ x: cmd[1], y: cmd[2] }); // First control point
-          lastControl = { x: cmd[3], y: cmd[4] }; // Second control point
-          
-          // Add several points along the curve for smoother interpolation
-          for (let t = 0.2; t <= 0.8; t += 0.2) {
-            const mt = 1-t;
-            const x = mt*mt*mt*points[points.length-2].x + 
-                    3*mt*mt*t*cmd[1] + 
-                    3*mt*t*t*cmd[3] + 
-                    t*t*t*cmd[5];
-            const y = mt*mt*mt*points[points.length-2].y + 
-                    3*mt*mt*t*cmd[2] + 
-                    3*mt*t*t*cmd[4] + 
-                    t*t*t*cmd[6];
-            points.push({ x, y });
-          }
-          
-          // Add the end point
-          points.push({ x: cmd[5], y: cmd[6] });
-          break;
-          
-        case 'Z': // Close path
-          // If we have points and the first point is different from the last, close the path
-          if (points.length > 1 && 
-            (points[0].x !== points[points.length-1].x || points[0].y !== points[points.length-1].y)) {
-            points.push({ ...points[0] });
-          }
-          break;
-      }
-    }
-    
-    console.log(`Extracted ${points.length} points from path`);
-    return points;
-  } catch (error) {
-    console.error("Error extracting points from path:", error);
-    return points;
-  }
-};
-
 const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [path, setPath] = useState<Point[]>([]);
-  const [interpolatedPath, setInterpolatedPath] = useState<Point[]>([]);
-  const [carPosition, setCarPosition] = useState<{
-    x: number;
-    y: number;
-  }>({
-    x: 50,
-    y: 50
-  });
-  const [endPosition, setEndPosition] = useState<{
-    x: number;
-    y: number;
-  }>({
-    x: 0,
-    y: 0
-  });
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [pathExists, setPathExists] = useState<boolean>(false);
-  const [startPointObj, setStartPointObj] = useState<Circle | null>(null);
-  const [endPointObj, setEndPointObj] = useState<Circle | null>(null);
-  const [canvasReady, setCanvasReady] = useState<boolean>(false);
-  const [isInitializing, setIsInitializing] = useState<boolean>(true);
-  const [currentPathIndex, setCurrentPathIndex] = useState<number>(0);
-  const [animationCompleted, setAnimationCompleted] = useState<boolean>(false);
-  const animationRef = useRef<number | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const carObjectsRef = useRef<{
-    body: Rect;
-    roof: Rect;
-    wheel1: Circle;
-    wheel2: Circle;
-    headlight: Circle;
-  } | null>(null);
-  const [animationSpeed, setAnimationSpeed] = useState<number>(150); // Higher value = slower animation
-  const [showPath, setShowPath] = useState<boolean>(true);
-  const pathTraceRef = useRef<Path | null>(null);
-  // New state for animation progress
-  const [animationProgress, setAnimationProgress] = useState<number>(0);
-  // New state for debugging
-  const [debugMode, setDebugMode] = useState<boolean>(false);
-  const [lastPathObject, setLastPathObject] = useState<any>(null);
+  const [endPosition, setEndPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
-  // Initialize canvas on component mount
-  useEffect(() => {
-    if (!canvasRef.current || !containerRef.current) return;
-    
-    try {
-      setIsInitializing(true);
-      console.log("Starting canvas initialization");
-      
-      const containerWidth = containerRef.current.clientWidth;
-      const containerHeight = 300; // Fixed height for consistency
-
-      console.log("Canvas dimensions:", containerWidth, containerHeight);
-
-      // Create Fabric Canvas with explicit dimensions
-      const canvas = new FabricCanvas(canvasRef.current, {
-        width: containerWidth,
-        height: containerHeight,
-        backgroundColor: '#f9f2ff',
-        isDrawingMode: false // Start with drawing mode off until user clicks "Draw Path"
-      });
-      
-      console.log("Canvas created successfully");
-
-      // Create a pencil brush - IMPORTANT: In Fabric.js v6, we need to explicitly create a brush
-      const pencilBrush = new PencilBrush(canvas);
-      pencilBrush.color = '#9B59B6'; // Purple color matching theme
-      pencilBrush.width = 8;
-      
-      // Set the brush to the canvas
-      canvas.freeDrawingBrush = pencilBrush;
-      
-      console.log("Drawing brush configured");
-      
-      // Add car starting point
-      const startPoint = createStartPoint(50, 50);
-      canvas.add(startPoint);
-      setStartPointObj(startPoint);
-
-      // Create and add car to canvas
-      const car = createCar(50, 50);
-      canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
-      carObjectsRef.current = car;
-      canvas.renderAll();
-
-      // Set initial car position
-      setCarPosition({
-        x: 50,
-        y: 50
-      });
-
-      // Store the canvas
-      setFabricCanvas(canvas);
-      setCanvasReady(true);
-      setIsInitializing(false);
-      console.log("Canvas setup complete");
-
-      // Path drawing events
-      canvas.on('path:created', (e: any) => {
-        if (!e.path) {
-          console.log("Path creation event triggered but no path object found");
-          return;
-        }
-
-        console.log("Path created event triggered", e.path);
-        // Store the entire path object for debugging
-        setLastPathObject(e.path);
-
-        try {
-          // Use the new extraction function for better point detection
-          const points = extractPointsFromPath(e.path);
-          
-          console.log("Extracted points:", points.length);
-          console.log("First few points:", points.slice(0, 5));
-          console.log("Last few points:", points.slice(-5));
-
-          if (points.length > 0) {
-            // Add end point at the last position of the path
-            const lastPoint = points[points.length - 1];
-            
-            // Remove existing end point if any
-            if (endPointObj && canvas) {
-              canvas.remove(endPointObj);
-            }
-            
-            const endPoint = createEndPoint(lastPoint.x, lastPoint.y);
-            canvas.add(endPoint);
-            setEndPointObj(endPoint);
-            setEndPosition({
-              x: lastPoint.x,
-              y: lastPoint.y
-            });
-            
-            console.log("End point added at:", lastPoint);
-          }
-
-          // Set the path for animation
-          setPath(points);
-          setPathExists(points.length > 0);
-          setIsDrawing(false); // Deactivate drawing mode after creating a path
-          canvas.isDrawingMode = false;
-          
-          toast({
-            title: "¡Camino dibujado!",
-            description: "Pulsa JUGAR para que el coche siga tu camino."
-          });
-        } catch (error) {
-          console.error("Error processing path:", error);
-          toast({
-            title: "Error",
-            description: "Hubo un problema al procesar tu dibujo. Inténtalo de nuevo.",
-            variant: "destructive"
-          });
-        }
-      });
-      
-      // Clean up on unmount
-      return () => {
-        console.log("Cleaning up canvas");
-        if (animationRef.current) {
-          cancelAnimationFrame(animationRef.current);
-        }
-        canvas.dispose();
-      };
-    } catch (error) {
-      console.error("Error initializing canvas:", error);
-      setIsInitializing(false);
-      setCanvasReady(false);
-      toast({
-        title: "Error",
-        description: "No se pudo inicializar el juego. Inténtalo de nuevo.",
-        variant: "destructive"
-      });
-    }
-  }, []);
-
-  // Effect to handle window resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (!fabricCanvas || !containerRef.current) return;
-      try {
-        const containerWidth = containerRef.current.clientWidth;
-        fabricCanvas.setWidth(containerWidth);
-        fabricCanvas.renderAll();
-      } catch (error) {
-        console.error("Error resizing canvas:", error);
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [fabricCanvas]);
-
-  // Improved interpolation with much higher density of points
-  useEffect(() => {
-    if (!path.length) return;
-    
-    const interpolated: Point[] = [];
-    
-    // Add the first point
-    interpolated.push(path[0]);
-    
-    // Interpolate between each pair of consecutive points with higher density
-    for (let i = 0; i < path.length - 1; i++) {
-      const point1 = path[i];
-      const point2 = path[i + 1];
-      
-      // Calculate distance between points to determine number of interpolation steps
-      const distance = Math.sqrt(
-        Math.pow(point2.x - point1.x, 2) + 
-        Math.pow(point2.y - point1.y, 2)
-      );
-      
-      // More steps for longer distances - provides consistent movement speed
-      // Using a much smaller divisor for more interpolation points and smoother animation
-      const steps = Math.max(20, Math.ceil(distance / 0.5)); // Much more dense interpolation
-      
-      // Skip the first point as it's already added
-      const betweenPoints = interpolatePoints(point1, point2, steps).slice(1);
-      interpolated.push(...betweenPoints);
-    }
-    
-    console.log(`Original path: ${path.length} points, Interpolated: ${interpolated.length} points`);
-    setInterpolatedPath(interpolated);
-    
-  }, [path]);
-
-  // Improved path trace visualization - UPDATED to fix moveTo issues
-  const updatePathTrace = (currentIndex: number) => {
-    if (!fabricCanvas || interpolatedPath.length === 0) return;
-    
-    // Remove existing trace if any
-    if (pathTraceRef.current) {
-      fabricCanvas.remove(pathTraceRef.current);
-    }
-    
-    // Only draw if we have enough points
-    if (currentIndex > 1) {
-      // Create a subset of the path up to the current index
-      const pathSoFar = interpolatedPath.slice(0, currentIndex + 1);
-      
-      // Create a new path trace with thicker stroke and more visible color
-      const pathData = pathSoFar.map((point, idx) => 
-        idx === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`
-      ).join(' ');
-      
-      const trace = new Path(pathData, {
-        fill: '',
-        stroke: '#2ECC71', // Brighter green
-        strokeWidth: 6, // Thicker line
-        strokeLineCap: 'round',
-        strokeLineJoin: 'round',
-        selectable: false,
-        evented: false,
-        opacity: 0.8, // Slightly transparent
-      });
-      
-      // Add the trace to the canvas and set its z-index properly
-      // First add at the bottom z-index
-      fabricCanvas.add(trace);
-      
-      // Update z-index directly instead of using moveTo
-      trace.set('zIndex', 0);
-      
-      // Store the path trace reference
-      pathTraceRef.current = trace;
-      
-      // Make sure the start point is on top of the path trace
-      if (startPointObj) {
-        // Place start point above the trace
-        startPointObj.set('zIndex', 1);
-      }
-      
-      // Ensure car is on top
-      if (carObjectsRef.current) {
-        const car = carObjectsRef.current;
-        // Set higher z-index for car components
-        car.body.set('zIndex', 5);
-        car.roof.set('zIndex', 6);
-        car.wheel1.set('zIndex', 5);
-        car.wheel2.set('zIndex', 5);
-        car.headlight.set('zIndex', 6);
-      }
-      
-      // Re-render the canvas to apply the z-index changes
-      fabricCanvas.requestRenderAll();
+  // Handle errors
+  const handleError = (message: string) => {
+    console.error(message);
+    if (onError) {
+      onError(message);
     }
   };
 
-  // Improved car movement with better rotation
-  const moveCar = (currentIndex: number) => {
-    if (!fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) {
-      console.log("Missing required objects for animation", {
-        canvas: !!fabricCanvas,
-        pathLength: interpolatedPath.length,
-        car: !!carObjectsRef.current
-      });
-      return;
+  // Initialize canvas
+  const {
+    fabricCanvas,
+    startPointObj,
+    endPointObj,
+    setEndPointObj,
+    isInitializing,
+    canvasReady,
+    carObjectsRef
+  } = useDrawPathCanvas({
+    canvasRef,
+    containerRef,
+    onPathCreated: (points: Point[]) => {
+      if (points.length > 0) {
+        // Add end point at the last position of the path
+        const lastPoint = points[points.length - 1];
+        
+        // Remove existing end point if any
+        if (endPointObj && fabricCanvas) {
+          fabricCanvas.remove(endPointObj);
+        }
+        
+        const endPoint = createEndPoint(lastPoint.x, lastPoint.y);
+        fabricCanvas?.add(endPoint);
+        setEndPointObj(endPoint);
+        setEndPosition({
+          x: lastPoint.x,
+          y: lastPoint.y
+        });
+        
+        console.log("End point added at:", lastPoint);
+      }
+
+      // Set the path for animation
+      setPath(points);
+      setPathExists(points.length > 0);
+      setIsDrawing(false); // Deactivate drawing mode after creating a path
+      if (fabricCanvas) {
+        fabricCanvas.isDrawingMode = false;
+      }
+    },
+    onError: handleError
+  });
+
+  // Path animation
+  const {
+    interpolatedPath,
+    isPlaying,
+    setIsPlaying,
+    animationCompleted,
+    setAnimationCompleted,
+    currentPathIndex,
+    setCurrentPathIndex,
+    animationProgress,
+    carObjectsRef: animationCarRef,
+    updatePath,
+    moveCar,
+    cancelAnimation,
+    toggleDebugMode
+  } = usePathAnimation({
+    fabricCanvas,
+    path,
+    startPointObj,
+    endPointObj
+  });
+
+  // Update interpolated path when original path changes
+  useEffect(() => {
+    if (path.length) {
+      updatePath(path);
     }
-    
-    const car = carObjectsRef.current;
-    
-    // Check if animation is complete
-    if (currentIndex >= interpolatedPath.length) {
-      // Animation is complete
-      setIsPlaying(false);
-      setAnimationCompleted(true);
-      setAnimationProgress(100); // Set progress to 100% when complete
-      toast({
-        title: "¡Muy bien!",
-        description: "¡El coche ha llegado a su destino!"
-      });
-      return;
+  }, [path, updatePath]);
+
+  // Share the car ref between hooks
+  useEffect(() => {
+    if (carObjectsRef.current) {
+      animationCarRef.current = carObjectsRef.current;
     }
-    
-    // Safety check for valid currentIndex
-    if (currentIndex < 0 || !interpolatedPath[currentIndex]) {
-      console.log("Invalid current index:", currentIndex);
-      return;
-    }
-    
-    const currentPoint = interpolatedPath[currentIndex];
-    const newX = currentPoint.x;
-    const newY = currentPoint.y;
-    
-    // Calculate rotation angle if we have previous points
-    // Look ahead a few points for smoother rotation
-    if (currentIndex > 0) {
-      // Look ahead for smoother rotation (if possible)
-      const lookAheadIndex = Math.min(currentIndex + 3, interpolatedPath.length - 1);
-      const lookAheadPoint = interpolatedPath[lookAheadIndex];
-      const prevPoint = interpolatedPath[Math.max(0, currentIndex - 1)];
-      
-      // Use the look ahead point for rotation calculation if available
-      const targetX = lookAheadPoint.x;
-      const targetY = lookAheadPoint.y;
-      
-      const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
-      
-      // Set positions with calculated angle
-      car.body.set({ left: newX, top: newY, angle: angle });
-      car.roof.set({ left: newX, top: newY - 15, angle: angle });
-      car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
-      car.wheel2.set({ left: newX + 20, top: newY + 15, angle: angle });
-      car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
-    } else {
-      car.body.set({ left: newX, top: newY });
-      car.roof.set({ left: newX, top: newY - 15 });
-      car.wheel1.set({ left: newX - 20, top: newY + 15 });
-      car.wheel2.set({ left: newX + 20, top: newY + 15 });
-      car.headlight.set({ left: newX + 30, top: newY + 5 });
-    }
-    
-    // Update car position state for any UI that needs it
-    setCarPosition({ x: newX, y: newY });
-    
-    // Update the path trace to show progress
-    if (showPath) {
-      updatePathTrace(currentIndex);
-    }
-    
-    // Update progress state
-    const progress = Math.round((currentIndex / interpolatedPath.length) * 100);
-    setAnimationProgress(progress);
-    
-    // Debug info for every 100th point
-    if (debugMode && currentIndex % 100 === 0) {
-      console.log(`Animation at point: ${currentIndex} of ${interpolatedPath.length}, progress: ${progress}%, position: ${newX},${newY}`);
-    }
-    
-    // Update the canvas
-    fabricCanvas.renderAll();
-    
-    // Update progress in the interface
-    setCurrentPathIndex(currentIndex);
-    
-    // Higher speedFactor for slower animation
-    const speedFactor = 180; // Even slower animation (higher = slower)
-    
-    timeoutRef.current = setTimeout(() => {
-      // Use requestAnimationFrame to optimize animation
-      animationRef.current = requestAnimationFrame(() => moveCar(currentIndex + 1));
-    }, speedFactor);
-  };
+  }, [carObjectsRef.current]);
 
   // Start animation along the path
   const handlePlay = () => {
@@ -628,38 +141,25 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         const obj = objects[i];
         if (obj instanceof Rect || 
             (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10) ||
-            (obj instanceof Path && obj !== pathTraceRef.current)
+            (obj instanceof Path)
            ) {
           fabricCanvas.remove(obj);
         }
       }
       
-      // Remove existing path trace
-      if (pathTraceRef.current) {
-        fabricCanvas.remove(pathTraceRef.current);
-        pathTraceRef.current = null;
-      }
-      
       // Re-add the car at the starting position
       const car = createCar(path[0].x, path[0].y); // Start exactly at the first point of the path
       fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
-      carObjectsRef.current = car;
+      animationCarRef.current = car;
       fabricCanvas.renderAll();
       
       // Cancel any existing animation
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-        animationRef.current = null;
-      }
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
+      cancelAnimation();
       
       // Start the animation with a slight delay
       console.log("Starting car animation sequence");
-      timeoutRef.current = setTimeout(() => {
-        animationRef.current = requestAnimationFrame(() => moveCar(0));
+      setTimeout(() => {
+        requestAnimationFrame(() => moveCar(0));
       }, 500);
     }
   };
@@ -672,11 +172,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
 
     try {
       // Cancel any ongoing animation
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
+      cancelAnimation();
       
-      // Remove all objects except the starting point
+      // Remove all objects
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         fabricCanvas.remove(objects[i]);
@@ -690,7 +188,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Add car back to start
       const car = createCar(50, 50);
       fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
-      carObjectsRef.current = car;
+      animationCarRef.current = car;
       fabricCanvas.renderAll();
 
       // Reset states
@@ -698,10 +196,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       setPathExists(false);
       setIsPlaying(false);
       setIsDrawing(false);
-      setCarPosition({
-        x: 50,
-        y: 50
-      });
+      setEndPosition({ x: 0, y: 0 });
       setEndPointObj(null);
       setAnimationCompleted(false);
       setCurrentPathIndex(0);
@@ -767,23 +262,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     }
   };
 
-  // Update error handling in the component to use the handleError function
-  const handleError = (message: string) => {
-    console.error(message);
-    if (onError) {
-      onError(message);
-    }
-  };
-
-  // Toggle debug mode
-  const toggleDebugMode = () => {
-    setDebugMode(!debugMode);
-    toast({
-      title: debugMode ? "Modo depuración desactivado" : "Modo depuración activado",
-      description: debugMode ? "Los mensajes de depuración ya no se mostrarán" : "Se mostrarán mensajes detallados de depuración"
-    });
-  };
-
   return (
     <div className="flex flex-col w-full gap-4">
       <Card className="border-4 border-purple-300 shadow-lg overflow-hidden">
@@ -812,66 +290,28 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         </CardContent>
       </Card>
       
-      {/* Loading indicator */}
-      {isInitializing && (
-        <div className="text-center p-4 bg-purple-100 rounded-lg animate-pulse">
-          <p className="font-bold text-purple-800">Inicializando el juego...</p>
-          <p className="text-purple-600">Preparando el tablero, por favor espera.</p>
-        </div>
-      )}
+      {/* Game status indicators */}
+      <GameStatusIndicators
+        isInitializing={isInitializing}
+        canvasReady={canvasReady}
+        isDrawing={isDrawing}
+        isPlaying={isPlaying}
+        animationProgress={animationProgress}
+        interpolatedPathLength={interpolatedPath.length}
+        animationCompleted={animationCompleted}
+      />
       
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <Button 
-          onClick={handleDrawMode} 
-          variant="outline" 
-          disabled={isPlaying || isDrawing || !canvasReady || isInitializing} 
-          className={`bg-green-400 hover:bg-green-300 text-black rounded-xl font-medium text-xl px-[10px] ${isDrawing ? 'ring-4 ring-green-300 animate-pulse' : ''}`}
-        >
-          <Route className="mr-2 h-5 w-5" /> 
-          {isDrawing ? 'Dibujando...' : 'Dibujar Camino'}
-        </Button>
-        
-        <Button 
-          onClick={handlePlay} 
-          disabled={isPlaying || !pathExists || !canvasReady || isInitializing} 
-          className="kids-text bg-cyan-500 hover:bg-cyan-400 text-gray-950 text-3xl font-normal px-[5px]"
-        >
-          <ArrowRight className="mr-2 h-5 w-5" /> Jugar
-        </Button>
-        
-        <Button 
-          onClick={handleClear} 
-          variant="outline" 
-          disabled={isPlaying || !canvasReady || isInitializing} 
-          className="border-red-300 hover:bg-red-100 text-red-500 kids-text font-medium text-base px-[10px]"
-        >
-          <Trash2 className="mr-2 h-5 w-5" /> Borrar
-        </Button>
-      </div>
-      
-      {/* Canvas state indicator */}
-      {!canvasReady && !isInitializing && (
-        <div className="text-center p-4 bg-red-100 rounded-lg border border-red-300">
-          <p className="font-bold text-red-800">No se pudo cargar el juego</p>
-          <p className="text-red-600">Por favor, recarga la página e intenta de nuevo.</p>
-        </div>
-      )}
-      
-      {/* Active drawing instructions */}
-      {isDrawing && canvasReady && (
-        <div className="text-center p-4 bg-green-100 rounded-lg border-2 border-green-300 animate-pulse">
-          <p className="font-bold text-green-800">¡Modo dibujo activo!</p>
-          <p className="text-green-600">Dibuja un camino para el coche directamente en el tablero.</p>
-        </div>
-      )}
-      
-      {/* Animation completion message */}
-      {animationCompleted && (
-        <div className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300">
-          <p className="font-bold text-yellow-800">¡Felicidades!</p>
-          <p className="text-yellow-600">El coche ha llegado a su destino. Puedes dibujar un nuevo camino.</p>
-        </div>
-      )}
+      {/* Game controls */}
+      <DrawControls
+        isPlaying={isPlaying}
+        isDrawing={isDrawing}
+        pathExists={pathExists}
+        canvasReady={canvasReady}
+        isInitializing={isInitializing}
+        onDraw={handleDrawMode}
+        onPlay={handlePlay}
+        onClear={handleClear}
+      />
       
       {/* Debug button (only visible during development) */}
       {process.env.NODE_ENV !== 'production' && (
@@ -880,9 +320,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
             onClick={toggleDebugMode} 
             variant="ghost" 
             size="sm" 
-            className={`text-xs ${debugMode ? 'bg-purple-100' : ''}`}
+            className="text-xs"
           >
-            {debugMode ? 'Desactivar Depuración' : 'Activar Depuración'}
+            Toggle Debug Mode
           </Button>
         </div>
       )}
