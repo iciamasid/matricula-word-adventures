@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { motion } from 'framer-motion';
@@ -110,12 +109,28 @@ const createEndPoint = (left: number, top: number) => {
   });
 };
 
+// New helper function to interpolate between two points
+const interpolatePoints = (point1: Point, point2: Point, steps: number): Point[] => {
+  const points: Point[] = [];
+  
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    points.push({
+      x: point1.x + (point2.x - point1.x) * t,
+      y: point1.y + (point2.y - point1.y) * t
+    });
+  }
+  
+  return points;
+};
+
 const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [path, setPath] = useState<Point[]>([]);
+  const [interpolatedPath, setInterpolatedPath] = useState<Point[]>([]);
   const [carPosition, setCarPosition] = useState<{
     x: number;
     y: number;
@@ -139,6 +154,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
   const [currentPathIndex, setCurrentPathIndex] = useState<number>(0);
   const [animationCompleted, setAnimationCompleted] = useState<boolean>(false);
   const animationRef = useRef<number | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const carObjectsRef = useRef<{
     body: Rect;
     roof: Rect;
@@ -146,6 +162,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     wheel2: Circle;
     headlight: Circle;
   } | null>(null);
+  const [animationSpeed, setAnimationSpeed] = useState<number>(150); // Higher value = slower animation
+  const [showPath, setShowPath] = useState<boolean>(true);
+  const pathTraceRef = useRef<Path | null>(null);
 
   // Initialize canvas on component mount
   useEffect(() => {
@@ -311,23 +330,83 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, [fabricCanvas]);
 
-  // Clean up animation on unmount or when path changes
+  // Create interpolated path from original path
   useEffect(() => {
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
+    if (!path.length) return;
+    
+    const interpolated: Point[] = [];
+    
+    // Add the first point
+    interpolated.push(path[0]);
+    
+    // Interpolate between each pair of consecutive points
+    for (let i = 0; i < path.length - 1; i++) {
+      const point1 = path[i];
+      const point2 = path[i + 1];
+      
+      // Calculate distance between points to determine number of interpolation steps
+      const distance = Math.sqrt(
+        Math.pow(point2.x - point1.x, 2) + 
+        Math.pow(point2.y - point1.y, 2)
+      );
+      
+      // More steps for longer distances - provides consistent movement speed
+      const steps = Math.max(5, Math.ceil(distance / 5));
+      
+      // Skip the first point as it's already added
+      const betweenPoints = interpolatePoints(point1, point2, steps).slice(1);
+      interpolated.push(...betweenPoints);
+    }
+    
+    console.log(`Original path: ${path.length} points, Interpolated: ${interpolated.length} points`);
+    setInterpolatedPath(interpolated);
+    
   }, [path]);
 
-  // Move car to the next point in the path
+  // Draw a trace of the path that the car has traveled
+  const updatePathTrace = (currentIndex: number) => {
+    if (!fabricCanvas || interpolatedPath.length === 0) return;
+    
+    // Remove existing trace if any
+    if (pathTraceRef.current) {
+      fabricCanvas.remove(pathTraceRef.current);
+    }
+    
+    // Only draw if we have enough points
+    if (currentIndex > 1) {
+      // Create a subset of the path up to the current index
+      const pathSoFar = interpolatedPath.slice(0, currentIndex + 1);
+      
+      // Create a new path trace
+      const pathData = pathSoFar.map((point, idx) => 
+        idx === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`
+      ).join(' ');
+      
+      const trace = new Path(pathData, {
+        fill: '',
+        stroke: '#4CAF50',
+        strokeWidth: 5,
+        strokeLineCap: 'round',
+        strokeLineJoin: 'round',
+        selectable: false,
+        evented: false,
+      });
+      
+      fabricCanvas.add(trace);
+      fabricCanvas.sendToBack(trace);
+      pathTraceRef.current = trace;
+    }
+  };
+
+  // Move car to the next point in the interpolated path
   const moveCar = (currentIndex: number) => {
-    if (!fabricCanvas || !path.length || !carObjectsRef.current) return;
+    if (!fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) return;
     
     const car = carObjectsRef.current;
     if (!car) return;
     
-    if (currentIndex >= path.length) {
+    // Check if animation is complete
+    if (currentIndex >= interpolatedPath.length) {
       // Animation is complete
       setIsPlaying(false);
       setAnimationCompleted(true);
@@ -338,13 +417,13 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       return;
     }
     
-    const currentPoint = path[currentIndex];
+    const currentPoint = interpolatedPath[currentIndex];
     const newX = currentPoint.x;
     const newY = currentPoint.y;
     
     // Calculate rotation angle if we have previous points
     if (currentIndex > 0) {
-      const prevPoint = path[currentIndex - 1];
+      const prevPoint = interpolatedPath[currentIndex - 1];
       const angle = Math.atan2(newY - prevPoint.y, newX - prevPoint.x) * 180 / Math.PI;
       
       car.body.set({ left: newX, top: newY, angle: angle });
@@ -363,18 +442,25 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     // Update car position state for any UI that needs it
     setCarPosition({ x: newX, y: newY });
     
+    // Update the path trace to show progress
+    if (showPath) {
+      updatePathTrace(currentIndex);
+    }
+    
+    // Update progress state
+    const progress = Math.round((currentIndex / interpolatedPath.length) * 100);
+    
     // Update the canvas
     fabricCanvas.renderAll();
     
-    // Schedule next frame
+    // Schedule next frame with timeout for controlled speed
     const nextIndex = currentIndex + 1;
     setCurrentPathIndex(nextIndex);
     
-    // Add delay between movements (adjust for speed)
-    const speed = 25; // Lower is faster
-    setTimeout(() => {
+    // Use timeout for controlled animation speed
+    timeoutRef.current = setTimeout(() => {
       animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
-    }, speed);
+    }, animationSpeed);
   };
 
   // Start animation along the path
@@ -389,6 +475,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     }
     
     console.log("Starting animation with path points:", path.length);
+    console.log("Interpolated path points:", interpolatedPath.length);
     
     setIsPlaying(true);
     setIsDrawing(false);
@@ -398,13 +485,22 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = false;
       
-      // Remove previous car shapes
+      // Remove previous car shapes and path trace
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
-        if (obj instanceof Rect || (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10)) {
+        if (obj instanceof Rect || 
+            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10) ||
+            (obj instanceof Path && obj !== pathTraceRef.current)
+           ) {
           fabricCanvas.remove(obj);
         }
+      }
+      
+      // Remove existing path trace
+      if (pathTraceRef.current) {
+        fabricCanvas.remove(pathTraceRef.current);
+        pathTraceRef.current = null;
       }
       
       // Re-add the car at the starting position
@@ -417,11 +513,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
       
-      // Start the animation
-      setTimeout(() => {
+      // Start the animation with a slight delay
+      timeoutRef.current = setTimeout(() => {
         animationRef.current = requestAnimationFrame(() => moveCar(0));
-      }, 100);
+      }, 500);
     }
   };
 
@@ -550,9 +649,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
             )}
             
             {/* Progress indicator for animation */}
-            {isPlaying && path.length > 0 && (
+            {isPlaying && interpolatedPath.length > 0 && (
               <div className="absolute bottom-0 left-0 right-0 bg-blue-500 text-white text-center py-1 z-20 rounded-b-md">
-                Animación en progreso: {Math.round((currentPathIndex / path.length) * 100)}%
+                Animación en progreso: {Math.round((currentPathIndex / interpolatedPath.length) * 100)}%
               </div>
             )}
           </div>
