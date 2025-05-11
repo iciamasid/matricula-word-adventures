@@ -11,7 +11,7 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
   highlightCountry,
   unlockedCountries = []
 }) => {
-  return <motion.div className="relative w-full h-full overflow-hidden" initial={{
+  return <motion.div initial={{
     opacity: 0,
     scale: 0.9
   }} animate={{
@@ -19,7 +19,7 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
     scale: 1
   }} transition={{
     duration: 0.5
-  }}>
+  }} className="relative w-full h-full overflow-hidden py-0">
       <motion.div className="w-full h-full relative" style={{
       scale: zoom,
       transformOrigin: "center",
