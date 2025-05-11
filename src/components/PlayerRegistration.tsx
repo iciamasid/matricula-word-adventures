@@ -36,7 +36,7 @@ const PlayerRegistration: React.FC = () => {
           <h2 className="text-xl text-purple-800 kids-text mb-4 text-center font-normal">
             ¡Bienvenido a Matriculabra Cadabra!
           </h2>
-          <p className="text-purple-700 kids-text mb-4 text-center font-normal">
+          <p className="text-purple-700 kids-text mb-4 text-center font-normal text-lg">
             Por favor, dinos tu nombre y edad para comenzar a jugar.
           </p>
           <div className="space-y-4">
