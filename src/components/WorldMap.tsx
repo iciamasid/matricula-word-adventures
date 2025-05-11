@@ -1,21 +1,25 @@
-import React, { useState } from 'react';
-import ZoomControls from './map/ZoomControls';
-import MapDisplay from './map/MapDisplay';
+
+import React from 'react';
+import HighlightedCountry from './map/HighlightedCountry';
+import UnlockedCountries from './map/UnlockedCountries';
+
 interface WorldMapProps {
-  highlightCountry?: string;
-  unlockedCountries?: string[];
+  highlightCountry: string;
+  unlockedCountries: string[];
 }
-const WorldMap: React.FC<WorldMapProps> = ({
-  highlightCountry,
-  unlockedCountries = []
-}) => {
-  const [zoom, setZoom] = useState(1);
-  const handleZoomIn = () => {
-    if (zoom < 2) setZoom(prev => prev + 0.25);
-  };
-  const handleZoomOut = () => {
-    if (zoom > 0.5) setZoom(prev => prev - 0.25);
-  };
-  return;
+
+// Fixed the return type by making it explicitly return JSX.Element
+const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries }) => {
+  return (
+    <div className="relative w-full">
+      <div className="max-w-3xl mx-auto">
+        <svg viewBox="0 0 1000 500" className="w-full h-auto">
+          <UnlockedCountries countries={unlockedCountries} />
+          <HighlightedCountry country={highlightCountry} />
+        </svg>
+      </div>
+    </div>
+  );
 };
+
 export default WorldMap;

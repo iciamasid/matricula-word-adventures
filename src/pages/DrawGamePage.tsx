@@ -8,9 +8,10 @@ import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { useGame } from "@/context/GameContext";
+import { useGame, GameProvider } from "@/context/GameContext";
 
-const DrawGamePage: React.FC = () => {
+// Wrapped content component that uses useGame hook
+const DrawGameContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const { toast } = useToast();
@@ -42,27 +43,28 @@ const DrawGamePage: React.FC = () => {
     });
   };
   
-  return <div className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden" style={{
-    backgroundColor: "#bba7ca",
-    backgroundSize: "cover",
-    backgroundAttachment: "fixed"
-  }}>
-      <motion.div className="w-full max-w-3xl flex flex-col items-center gap-6" initial={{
-      opacity: 0
-    }} animate={{
-      opacity: 1
-    }} transition={{
-      duration: 0.5
+  return (
+    <div className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden" style={{
+      backgroundColor: "#bba7ca",
+      backgroundSize: "cover",
+      backgroundAttachment: "fixed"
     }}>
+      <motion.div className="w-full max-w-3xl flex flex-col items-center gap-6" initial={{
+        opacity: 0
+      }} animate={{
+        opacity: 1
+      }} transition={{
+        duration: 0.5
+      }}>
         {/* Header with Help button positioned at top right */}
         <div className="w-full flex justify-between items-center">
           <motion.h1 animate={{
-          scale: [1, 1.05, 1],
-          transition: {
-            repeat: Infinity,
-            duration: 2
-          }
-        }} className="kids-text text-fuchsia-900 text-3xl font-medium">Conduce al país destino</motion.h1>
+            scale: [1, 1.05, 1],
+            transition: {
+              repeat: Infinity,
+              duration: 2
+            }
+          }} className="kids-text text-fuchsia-900 text-3xl font-medium">Conduce al país destino</motion.h1>
           
           <Button 
             variant="outline" 
@@ -115,15 +117,15 @@ const DrawGamePage: React.FC = () => {
         
         {/* Error Display */}
         {error && <motion.div initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} exit={{
-        opacity: 0,
-        y: -20
-      }} className="w-full">
+          opacity: 0,
+          y: -20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} exit={{
+          opacity: 0,
+          y: -20
+        }} className="w-full">
             <Alert variant="destructive" className="border-red-500 bg-red-100">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
@@ -132,14 +134,14 @@ const DrawGamePage: React.FC = () => {
         
         {/* Game Component */}
         <motion.div className="w-full" initial={{
-        y: 20,
-        opacity: 0
-      }} animate={{
-        y: 0,
-        opacity: 1
-      }} transition={{
-        delay: 0.2
-      }}>
+          y: 20,
+          opacity: 0
+        }} animate={{
+          y: 0,
+          opacity: 1
+        }} transition={{
+          delay: 0.2
+        }}>
           <DrawPathGame onError={handleError} onHelp={() => setShowHelp(true)} />
         </motion.div>
         
@@ -161,22 +163,22 @@ const DrawGamePage: React.FC = () => {
       {/* Help Instructions Modal */}
       <AnimatePresence>
         {showHelp && <motion.div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" initial={{
-        opacity: 0
-      }} animate={{
-        opacity: 1
-      }} exit={{
-        opacity: 0
-      }} onClick={() => setShowHelp(false)}>
-            <motion.div className="bg-white rounded-xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto relative" initial={{
-          scale: 0.9,
-          y: 20
+          opacity: 0
         }} animate={{
-          scale: 1,
-          y: 0
+          opacity: 1
         }} exit={{
-          scale: 0.9,
-          y: 20
-        }} onClick={e => e.stopPropagation()}>
+          opacity: 0
+        }} onClick={() => setShowHelp(false)}>
+            <motion.div className="bg-white rounded-xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto relative" initial={{
+              scale: 0.9,
+              y: 20
+            }} animate={{
+              scale: 1,
+              y: 0
+            }} exit={{
+              scale: 0.9,
+              y: 20
+            }} onClick={e => e.stopPropagation()}>
               <button className="absolute top-3 right-3 text-gray-600 hover:text-gray-900" onClick={() => setShowHelp(false)}>
                 <X className="h-6 w-6" />
               </button>
@@ -230,7 +232,17 @@ const DrawGamePage: React.FC = () => {
       </AnimatePresence>
       
       <Toaster />
-    </div>;
+    </div>
+  );
+};
+
+// Main component wrapped in GameProvider
+const DrawGamePage: React.FC = () => {
+  return (
+    <GameProvider>
+      <DrawGameContent />
+    </GameProvider>
+  );
 };
 
 export default DrawGamePage;
