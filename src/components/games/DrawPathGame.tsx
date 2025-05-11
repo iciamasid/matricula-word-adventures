@@ -1,10 +1,12 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect } from 'fabric';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowRight, Trash2 } from 'lucide-react';
+import { ArrowRight, Trash2, Route } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+
 interface Point {
   x: number;
   y: number;
@@ -78,6 +80,32 @@ const createCar = (left: number, top: number, color = '#9B59B6', scale = 1) => {
     headlight
   };
 };
+
+// Create start and end points for the path
+const createStartPoint = (left: number, top: number) => {
+  return new Circle({
+    left,
+    top,
+    radius: 10,
+    fill: '#2ECC71', // Green color
+    stroke: '#27AE60',
+    strokeWidth: 2,
+    selectable: false
+  });
+};
+
+const createEndPoint = (left: number, top: number) => {
+  return new Circle({
+    left,
+    top,
+    radius: 10,
+    fill: '#E74C3C', // Red color
+    stroke: '#C0392B',
+    strokeWidth: 2,
+    selectable: false
+  });
+};
+
 const DrawPathGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -91,8 +119,17 @@ const DrawPathGame: React.FC = () => {
     x: 50,
     y: 50
   });
+  const [endPosition, setEndPosition] = useState<{
+    x: number;
+    y: number;
+  }>({
+    x: 0,
+    y: 0
+  });
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [pathExists, setPathExists] = useState<boolean>(false);
+  const [startPointObj, setStartPointObj] = useState<Circle | null>(null);
+  const [endPointObj, setEndPointObj] = useState<Circle | null>(null);
 
   // Initialize canvas on component mount
   useEffect(() => {
@@ -105,8 +142,7 @@ const DrawPathGame: React.FC = () => {
       width: containerWidth,
       height: containerHeight,
       backgroundColor: '#f9f2ff',
-      // Light purple background matching the app's theme
-      isDrawingMode: true
+      isDrawingMode: false // Start with drawing mode off until user clicks "Draw Path"
     });
 
     // Configure drawing brush
@@ -116,14 +152,9 @@ const DrawPathGame: React.FC = () => {
     }
 
     // Add car starting point
-    const startPoint = new Circle({
-      left: 50,
-      top: 50,
-      radius: 10,
-      fill: '#9B59B6',
-      selectable: false
-    });
+    const startPoint = createStartPoint(50, 50);
     canvas.add(startPoint);
+    setStartPointObj(startPoint);
 
     // Create and add car to canvas
     const car = createCar(50, 50);
@@ -155,17 +186,23 @@ const DrawPathGame: React.FC = () => {
         }
       });
 
-      // Remove all paths except the last one
-      const objects = canvas.getObjects();
-      for (let i = 0; i < objects.length; i++) {
-        if (objects[i] !== e.path && objects[i] instanceof Path) {
-          canvas.remove(objects[i]);
-        }
+      if (points.length > 0) {
+        // Add end point at the last position of the path
+        const lastPoint = points[points.length - 1];
+        const endPoint = createEndPoint(lastPoint.x, lastPoint.y);
+        canvas.add(endPoint);
+        setEndPointObj(endPoint);
+        setEndPosition({
+          x: lastPoint.x,
+          y: lastPoint.y
+        });
       }
 
       // Set the path for animation
       setPath(points);
       setPathExists(points.length > 0);
+      setIsDrawing(false); // Deactivate drawing mode after creating a path
+      canvas.isDrawingMode = false;
       toast({
         title: "¡Camino dibujado!",
         description: "Pulsa JUGAR para que el coche siga tu camino."
@@ -209,7 +246,7 @@ const DrawPathGame: React.FC = () => {
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
-        if (obj instanceof Rect || obj instanceof Circle && obj.radius !== 10) {
+        if (obj instanceof Rect || (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10)) {
           fabricCanvas.remove(obj);
         }
       }
@@ -230,14 +267,16 @@ const DrawPathGame: React.FC = () => {
   const handleClear = () => {
     if (!fabricCanvas) return;
 
-    // Keep only the starting point
+    // Remove all objects except the starting point
     const objects = fabricCanvas.getObjects();
     for (let i = objects.length - 1; i >= 0; i--) {
-      const obj = objects[i];
-      if (!(obj instanceof Circle && obj.radius === 10)) {
-        fabricCanvas.remove(obj);
-      }
+      fabricCanvas.remove(objects[i]);
     }
+
+    // Add start point back
+    const startPoint = createStartPoint(50, 50);
+    fabricCanvas.add(startPoint);
+    setStartPointObj(startPoint);
 
     // Add car back to start
     const car = createCar(50, 50);
@@ -247,17 +286,30 @@ const DrawPathGame: React.FC = () => {
     setPath([]);
     setPathExists(false);
     setIsPlaying(false);
-    setIsDrawing(true);
+    setIsDrawing(false);
     setCarPosition({
       x: 50,
       y: 50
     });
-    fabricCanvas.isDrawingMode = true;
+    setEndPointObj(null);
+    fabricCanvas.isDrawingMode = false;
     toast({
       title: "¡Tablero limpio!",
       description: "Dibuja un nuevo camino para el coche."
     });
   };
+
+  // Enable drawing mode
+  const handleDrawMode = () => {
+    if (!fabricCanvas) return;
+    setIsDrawing(true);
+    fabricCanvas.isDrawingMode = true;
+    toast({
+      title: "Modo dibujo activado",
+      description: "Dibuja un camino para el coche."
+    });
+  };
+
   return <div className="flex flex-col w-full gap-4">
       <Card className="border-4 border-purple-300 shadow-lg overflow-hidden">
         <CardContent className="p-4">
@@ -298,17 +350,8 @@ const DrawPathGame: React.FC = () => {
       </Card>
       
       <div className="flex justify-between gap-4">
-        <Button onClick={() => {
-        if (fabricCanvas) {
-          setIsDrawing(true);
-          fabricCanvas.isDrawingMode = true;
-          toast({
-            title: "Modo dibujo activado",
-            description: "Dibuja un camino para el coche."
-          });
-        }
-      }} variant="outline" disabled={isPlaying} className="bg-green-400 hover:bg-green-300 rounded-xl font-medium text-2xl px-[10px]">
-          Dibujar Camino
+        <Button onClick={handleDrawMode} variant="outline" disabled={isPlaying || isDrawing} className="bg-green-400 hover:bg-green-300 text-black rounded-xl font-medium text-xl px-[10px]">
+          <Route className="mr-2 h-5 w-5" /> Dibujar Camino
         </Button>
         
         <Button onClick={handlePlay} disabled={isPlaying || !pathExists} className="flex-1 kids-text bg-cyan-500 hover:bg-cyan-400 text-gray-950 text-3xl font-normal px-[5px]">
