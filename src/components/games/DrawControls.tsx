@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { PencilIcon, PlayIcon, Eraser, HelpCircle } from "lucide-react";
+import { Trash2, PlayCircle, PencilIcon, HelpCircle } from "lucide-react";
+
 interface DrawControlsProps {
   isPlaying: boolean;
   isDrawing: boolean;
@@ -10,8 +12,9 @@ interface DrawControlsProps {
   onDraw: () => void;
   onPlay: () => void;
   onClear: () => void;
-  onHelp: () => void;
+  onHelp?: () => void;
 }
+
 const DrawControls: React.FC<DrawControlsProps> = ({
   isPlaying,
   isDrawing,
@@ -23,23 +26,54 @@ const DrawControls: React.FC<DrawControlsProps> = ({
   onClear,
   onHelp
 }) => {
-  return <div className="w-full flex flex-col gap-3">
-      <div className="grid grid-cols-2 gap-3">
-        <Button onClick={onDraw} disabled={isPlaying || isInitializing || !canvasReady} className={`text-white px-6 py-6 text-xl kids-text ${isDrawing ? "bg-green-700 hover:bg-green-600" : "bg-green-600 hover:bg-green-500"}`}>
-          <PencilIcon className="mr-2 h-6 w-6" /> 
-          Dibujar
-        </Button>
-        
-        <Button onClick={onPlay} disabled={isPlaying || !pathExists || isInitializing || !canvasReady} className="text-white px-6 py-6 text-xl kids-text bg-game-yellow">
-          <PlayIcon className="mr-2 h-6 w-6" /> 
-          Conducir
-        </Button>
-      </div>
+  return (
+    <div className="w-full grid grid-cols-2 gap-4 md:grid-cols-4">
+      {/* Draw button */}
+      <Button
+        onClick={onDraw}
+        disabled={isPlaying || isInitializing || !canvasReady || isDrawing}
+        className={`kids-text text-white ${
+          isDrawing 
+            ? "bg-green-700 hover:bg-green-800" 
+            : "bg-green-600 hover:bg-green-700"
+        } text-lg font-normal py-6`}
+      >
+        <PencilIcon className="w-5 h-5 mr-2" />
+        Dibujar
+      </Button>
       
-      <Button onClick={onClear} disabled={isPlaying || isInitializing || !canvasReady || !pathExists && !isDrawing} className="text-white px-6 py-4 text-lg kids-text bg-red-600 hover:bg-red-500">
-        <Eraser className="mr-2 h-5 w-5" /> 
+      {/* Play button - Cambiado de "Jugar" a "Conducir" */}
+      <Button
+        onClick={onPlay}
+        disabled={isPlaying || !pathExists || isInitializing || !canvasReady}
+        className="bg-cyan-600 hover:bg-cyan-700 text-white kids-text text-lg font-normal py-6"
+      >
+        <PlayCircle className="w-5 h-5 mr-2" />
+        Conducir
+      </Button>
+      
+      {/* Clear button */}
+      <Button
+        onClick={onClear}
+        disabled={isInitializing || !canvasReady}
+        className="bg-red-600 hover:bg-red-700 text-white kids-text text-lg font-normal py-6"
+      >
+        <Trash2 className="w-5 h-5 mr-2" />
         Borrar
       </Button>
-    </div>;
+      
+      {/* Help button */}
+      {onHelp && (
+        <Button
+          onClick={onHelp}
+          className="bg-purple-600 hover:bg-purple-700 text-white kids-text text-lg font-normal py-6"
+        >
+          <HelpCircle className="w-5 h-5 mr-2" />
+          Ayuda
+        </Button>
+      )}
+    </div>
+  );
 };
+
 export default DrawControls;

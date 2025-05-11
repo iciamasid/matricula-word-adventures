@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -94,7 +95,7 @@ const DrawGameContent: React.FC = () => {
             }}>
                 {originInfo.flag}
               </motion.span>
-              <p className="text-xl font-bold text-purple-900 kids-text">{originInfo.city}</p>
+              <p className="text-xl font-bold text-purple-900 kids-text">{originInfo.city}, {originInfo.country}</p>
               <p className="text-lg text-purple-700 kids-text">Origen</p>
             </div>
           </motion.div>
@@ -119,7 +120,7 @@ const DrawGameContent: React.FC = () => {
             }}>
                 {destinationInfo.flag}
               </motion.span>
-              <p className="text-xl font-bold text-purple-900 kids-text">{destinationInfo.city}</p>
+              <p className="text-xl font-bold text-purple-900 kids-text">{destinationInfo.city}, {destinationInfo.country}</p>
               <p className="text-lg text-purple-700 kids-text">Destino</p>
             </div>
           </motion.div>
@@ -221,7 +222,7 @@ const DrawGameContent: React.FC = () => {
                 <li className="flex items-start gap-2">
                   <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">3</div>
                   <div>
-                    <span className="font-bold">Haz clic en <span className="bg-cyan-100 px-2 py-1 rounded">Jugar</span></span>
+                    <span className="font-bold">Haz clic en <span className="bg-cyan-100 px-2 py-1 rounded">Conducir</span></span>
                     <p className="text-sm text-purple-700">El coche seguirá exactamente el camino que dibujaste</p>
                   </div>
                 </li>

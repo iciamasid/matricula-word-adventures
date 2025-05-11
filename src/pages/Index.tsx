@@ -87,13 +87,15 @@ const GameContent = () => {
     }
   }, [score]);
 
-  // Show level up popup when level changes
+  // Show level up popup ONLY when level changes - Fix: track level change correctly
   useEffect(() => {
-    if (level > prevLevel) {
+    // Solo mostrar el popup cuando el nivel aumenta (no al cargar la página)
+    if (level > prevLevel && prevLevel !== 0) {
       setShowLevelUp(true);
-      setPrevLevel(level);
     }
-  }, [level, prevLevel]);
+    // Siempre actualizar el nivel previo
+    setPrevLevel(level);
+  }, [level]);
 
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
@@ -196,7 +198,7 @@ const GameContent = () => {
                 duration: 2,
                 repeat: Infinity
               }}>
-                  {originInfo.city}
+                  {originInfo.city}, {originInfo.country}
                 </motion.p>
                 <motion.span className="text-4xl" animate={{
                 rotate: [0, 10, -10, 0]
@@ -220,7 +222,7 @@ const GameContent = () => {
                 duration: 2,
                 repeat: Infinity
               }}>
-                  {destinationInfo.city}
+                  {destinationInfo.city}, {destinationInfo.country}
                 </motion.p>
                 <motion.span className="text-5xl" animate={{
                 rotate: [0, 10, -10, 0]
@@ -257,7 +259,7 @@ const GameContent = () => {
               <p className="text-purple-700 kids-text mb-4 font-normal text-xl">Dibuja un camino y conduce hasta tu país destino</p>
               <Link to="/draw-game">
                 <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl kids-text px-6 py-3 font-normal">
-                  <Car className="mr-2 h-6 w-6" /> Jugar
+                  <Car className="mr-2 h-6 w-6" /> Conducir
                 </Button>
               </Link>
             </div>
@@ -291,3 +293,4 @@ const GameContent = () => {
     </div>;
 };
 export default Index;
+

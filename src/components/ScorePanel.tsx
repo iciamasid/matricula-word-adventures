@@ -6,7 +6,8 @@ import { Award, Star, Globe } from "lucide-react";
 const ScorePanel: React.FC = () => {
   const {
     totalPoints,
-    level
+    level,
+    originInfo
   } = useGame();
   return <div className="w-full grid grid-cols-2 gap-4 mb-4">
       {/* Score Panel - Changed to Total Score */}
@@ -43,7 +44,7 @@ const ScorePanel: React.FC = () => {
         <p className="text-sm text-purple-600 kids-text font-normal">puntos totales</p>
       </motion.div>
       
-      {/* Level Panel - Updated to be transparent with global icon */}
+      {/* Level Panel - Updated to show "Estás en [país]" */}
       <motion.div className="rounded-lg p-4 bg-transparent shadow-lg text-center" initial={{
       opacity: 0,
       x: 20
@@ -73,10 +74,13 @@ const ScorePanel: React.FC = () => {
       }}>
           {level}
         </motion.p>
-        <p className="text-sm text-purple-600 kids-text font-normal">
-          {level >= 10 ? "¡Vuelta al mundo!" : "Consigue 10 para dar la vuelta al mundo"}
-        </p>
+        <div className="flex items-center justify-center gap-1 mt-1">
+          <p className="text-sm text-purple-600 kids-text font-normal">
+            Estás en {originInfo.city}, {originInfo.country} {originInfo.flag}
+          </p>
+        </div>
       </motion.div>
     </div>;
 };
 export default ScorePanel;
+
