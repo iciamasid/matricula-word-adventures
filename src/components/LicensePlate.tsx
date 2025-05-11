@@ -4,7 +4,7 @@ import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
 
 const LicensePlate: React.FC = () => {
-  const { plateConsonants, vowel, userName } = useGame();
+  const { plateConsonants } = useGame();
   const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
 
   return (
@@ -34,7 +34,8 @@ const LicensePlate: React.FC = () => {
 
         {/* License plate content */}
         <div className="flex items-center justify-center space-x-2 ml-10">
-          {plateConsonants.map((consonant, index) => (
+          {/* Convert plateConsonants string to array before using map */}
+          {plateConsonants.split('').map((consonant, index) => (
             <motion.div
               key={index}
               className={`${CONSONANT_COLORS[index]} w-12 h-12 rounded-lg flex items-center justify-center shadow-md`}
@@ -43,7 +44,7 @@ const LicensePlate: React.FC = () => {
               transition={{ delay: index * 0.2 }}
               whileHover={{ scale: 1.1 }}
             >
-              <span className="text-white text-3xl kids-text font-normal">{consonant}</span>
+              <span className="text-white text-3xl kids-text">{consonant}</span>
             </motion.div>
           ))}
           <motion.div
@@ -53,7 +54,7 @@ const LicensePlate: React.FC = () => {
             transition={{ delay: 0.6 }}
             whileHover={{ scale: 1.1 }}
           >
-            <span className="text-white text-3xl kids-text font-normal">{vowel || "?"}</span>
+            <span className="text-white text-3xl kids-text">?</span>
           </motion.div>
         </div>
       </div>
