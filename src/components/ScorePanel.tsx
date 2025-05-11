@@ -109,7 +109,7 @@ const ScorePanel: React.FC = () => {
         <div className="mt-2">
           <div className="flex justify-between text-xs text-purple-700 mb-1">
             <span className="text-sm">Inicio</span>
-            <span className="text-sm">¡Vuelta al mundo!</span>
+            <span className="text-base">¡Vuelta al mundo!</span>
           </div>
           <div className="relative">
             <Progress value={worldTourProgress} className="h-3" />
