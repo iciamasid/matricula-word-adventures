@@ -473,24 +473,24 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       
       // Add the trace to the canvas and ensure it's at the bottom
       fabricCanvas.add(trace);
-      fabricCanvas.sendToBack(trace);
+      trace.moveTo(0); // Use moveTo to send to back in Fabric.js v6
       
       // Store the path trace reference
       pathTraceRef.current = trace;
       
       // Make sure the start point is on top of the path trace
       if (startPointObj) {
-        fabricCanvas.bringToFront(startPointObj);
+        startPointObj.moveTo(fabricCanvas.getObjects().length - 1); // Move to front
       }
       
       // Ensure car is on top
       if (carObjectsRef.current) {
         const car = carObjectsRef.current;
-        fabricCanvas.bringToFront(car.body);
-        fabricCanvas.bringToFront(car.roof);
-        fabricCanvas.bringToFront(car.wheel1);
-        fabricCanvas.bringToFront(car.wheel2);
-        fabricCanvas.bringToFront(car.headlight);
+        car.body.moveTo(fabricCanvas.getObjects().length); // Move to front
+        car.roof.moveTo(fabricCanvas.getObjects().length); // Move to front
+        car.wheel1.moveTo(fabricCanvas.getObjects().length); // Move to front
+        car.wheel2.moveTo(fabricCanvas.getObjects().length); // Move to front
+        car.headlight.moveTo(fabricCanvas.getObjects().length); // Move to front
       }
     }
   };
@@ -855,29 +855,3 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
           <p className="text-green-600">Dibuja un camino para el coche directamente en el tablero.</p>
         </div>
       )}
-      
-      {/* Animation completion message */}
-      {animationCompleted && (
-        <div className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300">
-          <p className="font-bold text-yellow-800">¡Felicidades!</p>
-          <p className="text-yellow-600">El coche ha llegado a su destino. Puedes dibujar un nuevo camino.</p>
-        </div>
-      )}
-      
-      {/* Debug button (only visible during development) */}
-      {process.env.NODE_ENV !== 'production' && (
-        <div className="flex justify-end">
-          <Button 
-            onClick={toggleDebugMode} 
-            variant="ghost" 
-            size="sm" 
-            className={`text-xs ${debugMode ? 'bg-purple-100' : ''}`}
-          >
-            {debugMode ? 'Desactivar Depuración' : 'Activar Depuración'}
-          </Button>
-        </div>
-      )}
-    </div>;
-};
-
-export default DrawPathGame;
