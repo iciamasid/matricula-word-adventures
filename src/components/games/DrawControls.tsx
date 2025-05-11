@@ -29,7 +29,7 @@ const DrawControls: React.FC<DrawControlsProps> = ({
         {isDrawing ? 'Dibujando...' : 'Dibujar'}
       </Button>
       
-      <Button onClick={onPlay} disabled={isPlaying || !pathExists || !canvasReady || isInitializing} className="kids-text px-6 py-3 rounded-xl text-slate-50 bg-violet-600 hover:bg-violet-500 font-medium text-2xl">
+      <Button onClick={onPlay} disabled={isPlaying || !pathExists || !canvasReady || isInitializing} className="kids-text px-6 py-3 rounded-xl text-slate-50 bg-fuchsia-600 hover:bg-fuchsia-500 font-normal text-2xl">
         <ArrowRight className="mr-2 h-6 w-6" /> Jugar
       </Button>
       
