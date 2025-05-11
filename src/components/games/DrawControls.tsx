@@ -1,7 +1,8 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Trash2, Route } from 'lucide-react';
+import { ArrowRight, Trash2, Route, Gamepad } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface DrawControlsProps {
   isPlaying: boolean;
@@ -26,32 +27,47 @@ const DrawControls: React.FC<DrawControlsProps> = ({
 }) => {
   return (
     <div className="flex flex-col sm:flex-row justify-between gap-4">
-      <Button 
-        onClick={onDraw} 
-        variant="outline" 
-        disabled={isPlaying || isDrawing || !canvasReady || isInitializing} 
-        className={`bg-green-400 hover:bg-green-300 text-black rounded-xl font-medium text-xl px-[10px] ${isDrawing ? 'ring-4 ring-green-300 animate-pulse' : ''}`}
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <Route className="mr-2 h-5 w-5" /> 
-        {isDrawing ? 'Dibujando...' : 'Dibujar Camino'}
-      </Button>
+        <Button 
+          onClick={onDraw} 
+          variant="outline" 
+          disabled={isPlaying || isDrawing || !canvasReady || isInitializing} 
+          className={`rounded-xl bg-green-500 hover:bg-green-400 text-white border-green-600 border-2 font-bold kids-text text-xl ${isDrawing ? 'ring-4 ring-green-300 animate-pulse' : ''}`}
+        >
+          <Route className="mr-2 h-6 w-6" /> 
+          {isDrawing ? '¡Dibujando!' : 'Dibujar Camino'}
+        </Button>
+      </motion.div>
       
-      <Button 
-        onClick={onPlay} 
-        disabled={isPlaying || !pathExists || !canvasReady || isInitializing} 
-        className="kids-text bg-cyan-500 hover:bg-cyan-400 text-gray-950 text-3xl font-normal px-[5px]"
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <ArrowRight className="mr-2 h-5 w-5" /> Jugar
-      </Button>
+        <Button 
+          onClick={onPlay} 
+          disabled={isPlaying || !pathExists || !canvasReady || isInitializing} 
+          className="rounded-xl bg-cyan-500 hover:bg-cyan-400 text-white border-cyan-600 border-2 font-bold kids-text text-3xl py-6"
+        >
+          <Gamepad className="mr-2 h-7 w-7" /> ¡Jugar!
+        </Button>
+      </motion.div>
       
-      <Button 
-        onClick={onClear} 
-        variant="outline" 
-        disabled={isPlaying || !canvasReady || isInitializing} 
-        className="border-red-300 hover:bg-red-100 text-red-500 kids-text font-medium text-base px-[10px]"
+      <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <Trash2 className="mr-2 h-5 w-5" /> Borrar
-      </Button>
+        <Button 
+          onClick={onClear} 
+          variant="outline" 
+          disabled={isPlaying || !canvasReady || isInitializing} 
+          className="rounded-xl bg-red-400 hover:bg-red-300 text-white border-red-500 border-2 font-bold kids-text text-base"
+        >
+          <Trash2 className="mr-2 h-5 w-5" /> Borrar
+        </Button>
+      </motion.div>
     </div>
   );
 };
