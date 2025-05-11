@@ -251,7 +251,7 @@ const GameContent = () => {
               }}>
                   ✨
                 </motion.span>
-                <span className="mx-2 font-normal text-2xl">Has llegado hasta</span>
+                <span className="mx-2 font-normal text-2xl">Este nivel te permite conducir hasta:</span>
                 <motion.span animate={{
                 scale: [1, 1.1, 1]
               }} transition={{
@@ -304,9 +304,7 @@ const GameContent = () => {
         }} transition={{
           delay: 0.2
         }}>
-            <div className={`absolute inset-0 ${isMobile ? 'ml-4' : ''}`}>
-              <WorldMap highlightCountry={destinationInfo.country} unlockedCountries={unlockedCountries} />
-            </div>
+            
           </motion.div>
           
           {/* Drawing Game Button */}
