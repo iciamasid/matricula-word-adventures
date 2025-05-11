@@ -74,9 +74,7 @@ const DrawGameContent: React.FC = () => {
           
           <div className="flex items-center gap-2">
             <Link to="/">
-              <Button variant="outline" className="bg-purple-600 hover:bg-purple-500 text-white kids-text">
-                <ArrowLeft className="mr-2 h-5 w-5" /> Volver
-              </Button>
+              
             </Link>
             
             <Button variant="outline" onClick={() => setShowHelp(true)} className="text-white kids-text bg-transparent">
