@@ -1,4 +1,3 @@
-
 import { useRef, useState, useCallback } from 'react';
 import { Canvas as FabricCanvas, Circle, Path } from 'fabric';
 import { toast } from '@/hooks/use-toast';
@@ -11,7 +10,6 @@ interface UsePathAnimationProps {
   startPointObj: Circle | null;
   endPointObj: Circle | null;
   animationSpeed?: number;
-  offsetY?: number; // Nuevo parámetro para ajustar la posición vertical del coche
 }
 
 export const usePathAnimation = ({
@@ -19,8 +17,7 @@ export const usePathAnimation = ({
   path,
   startPointObj,
   endPointObj,
-  animationSpeed = 180,
-  offsetY = 0 // Default a 0 si no se proporciona
+  animationSpeed = 180
 }: UsePathAnimationProps) => {
   const [interpolatedPath, setInterpolatedPath] = useState<Point[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -98,9 +95,6 @@ export const usePathAnimation = ({
         opacity: 0.8, // Slightly transparent
       });
       
-      // Set a custom property to identify this as a path trace
-      trace.set('isPathTrace', true);
-      
       // Add the trace to the canvas
       fabricCanvas.add(trace);
       
@@ -123,10 +117,13 @@ export const usePathAnimation = ({
     // Ensure car is on top
     if (carObjectsRef.current) {
       const car = carObjectsRef.current;
-      // Set higher z-index for all car components
-      Object.values(car).forEach((part, index) => {
-        part.set('zIndex', 5 + index);
-      });
+      // Set higher z-index for car components
+      car.body.set('zIndex', 5);
+      car.roof.set('zIndex', 6);
+      car.wheel1.set('zIndex', 5);
+      car.wheel2.set('zIndex', 5);
+      car.wheel3.set('zIndex', 5);
+      car.headlight.set('zIndex', 6);
     }
       
     // Re-render the canvas to apply the z-index changes
@@ -167,8 +164,7 @@ export const usePathAnimation = ({
     
     const currentPoint = interpolatedPath[currentIndex];
     const newX = currentPoint.x;
-    // Aplicar el offsetY para que el coche vaya por encima de la línea
-    const newY = currentPoint.y + offsetY;
+    const newY = currentPoint.y;
     
     // Calculate rotation angle if we have previous points
     // Look ahead a few points for smoother rotation
@@ -184,34 +180,20 @@ export const usePathAnimation = ({
       
       const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
       
-      // Set positions with calculated angle for all car parts
-      Object.values(car).forEach(part => {
-        // Conservar posiciones relativas originales
-        const originalLeft = part.left || 0;
-        const originalTop = part.top || 0;
-        const relativeX = originalLeft - carPosition.x;
-        const relativeY = originalTop - carPosition.y;
-        
-        part.set({
-          left: newX + relativeX,
-          top: newY + relativeY,
-          angle: angle
-        });
-      });
+      // Set positions with calculated angle
+      car.body.set({ left: newX, top: newY, angle: angle });
+      car.roof.set({ left: newX, top: newY - 15, angle: angle });
+      car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
+      car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle }); 
+      car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle });
+      car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
     } else {
-      // Posicionar todas las partes del coche
-      Object.values(car).forEach(part => {
-        // Conservar posiciones relativas originales
-        const originalLeft = part.left || 0;
-        const originalTop = part.top || 0;
-        const relativeX = originalLeft - carPosition.x;
-        const relativeY = originalTop - carPosition.y;
-        
-        part.set({
-          left: newX + relativeX,
-          top: newY + relativeY
-        });
-      });
+      car.body.set({ left: newX, top: newY });
+      car.roof.set({ left: newX, top: newY - 15 });
+      car.wheel1.set({ left: newX - 20, top: newY + 15 });
+      car.wheel2.set({ left: newX + 0, top: newY + 15 });
+      car.wheel3.set({ left: newX + 20, top: newY + 15 });
+      car.headlight.set({ left: newX + 30, top: newY + 5 });
     }
     
     // Update car position state for any UI that needs it
@@ -245,10 +227,12 @@ export const usePathAnimation = ({
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
-      animationRef.current = requestAnimationFrame(() => moveCar(currentIndex + stepSize));
+      animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
     }, adjustedSpeed);
     
-  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed, carPosition, offsetY]);
+    // Skip points for faster animation
+    const nextIndex = currentIndex + stepSize;
+  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed]);
 
   // Cancel any ongoing animation
   const cancelAnimation = useCallback(() => {
