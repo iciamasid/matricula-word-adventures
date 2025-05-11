@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -78,6 +79,7 @@ const GameContent = () => {
   const [showSuccess, setShowSuccess] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [prevLevel, setPrevLevel] = useState(level);
+  const [showLevelUpFromNavigation, setShowLevelUpFromNavigation] = useState(false);
 
   // Show success popup when score changes
   useEffect(() => {
@@ -87,15 +89,34 @@ const GameContent = () => {
     }
   }, [score]);
 
-  // Show level up popup ONLY when level changes - Fix: track level change correctly
+  // Show level up popup ONLY when level changes and not from navigation
   useEffect(() => {
-    // Solo mostrar el popup cuando el nivel aumenta (no al cargar la página)
-    if (level > prevLevel && prevLevel !== 0) {
+    // Only show the popup when the level increases (not when loading the page or returning from navigation)
+    if (level > prevLevel && prevLevel !== 0 && !showLevelUpFromNavigation) {
       setShowLevelUp(true);
     }
-    // Siempre actualizar el nivel previo
+    // Always update the previous level
     setPrevLevel(level);
+    
+    // Reset navigation flag
+    setShowLevelUpFromNavigation(false);
   }, [level]);
+
+  // Detection of navigation return
+  useEffect(() => {
+    // Check if this is a page return/navigation
+    const isNavigatingBack = sessionStorage.getItem('navigatingBack');
+    if (isNavigatingBack === 'true') {
+      // Set flag to prevent level up popup when returning
+      setShowLevelUpFromNavigation(true);
+      sessionStorage.removeItem('navigatingBack');
+    }
+  }, []);
+
+  // Set navigation flag when leaving
+  const handleNavigation = () => {
+    sessionStorage.setItem('navigatingBack', 'true');
+  };
 
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
@@ -113,6 +134,7 @@ const GameContent = () => {
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
+  
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -122,6 +144,7 @@ const GameContent = () => {
       });
     }
   };
+  
   return <div className="min-h-screen flex flex-col items-center relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
@@ -211,8 +234,8 @@ const GameContent = () => {
                     {originInfo.city}, {originInfo.country}
                   </motion.p>
                   <p className="text-sm text-purple-700 kids-text">Origen</p>
-                  <Link to={`/country/${originInfo.country}`} className="mt-2">
-                    <Button className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 kids-text font-normal">
+                  <Link to={`/country/${originInfo.country}`} onClick={handleNavigation}>
+                    <Button className="mt-2 bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 kids-text font-normal">
                       Conoce {originInfo.country}
                     </Button>
                   </Link>
@@ -250,8 +273,8 @@ const GameContent = () => {
                     {destinationInfo.city}, {destinationInfo.country}
                   </motion.p>
                   <p className="text-sm text-purple-700 kids-text">Destino</p>
-                  <Link to={`/country/${destinationInfo.country}`} className="mt-2">
-                    <Button className="bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 kids-text font-normal">
+                  <Link to={`/country/${destinationInfo.country}`} onClick={handleNavigation}>
+                    <Button className="mt-2 bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 kids-text font-normal">
                       Conoce {destinationInfo.country}
                     </Button>
                   </Link>
@@ -275,9 +298,39 @@ const GameContent = () => {
             <div className="text-center">
               <h2 className="text-2xl text-purple-800 kids-text mb-3 font-normal">Conduce tu coche al destino</h2>
               <p className="text-purple-700 kids-text mb-4 font-normal text-xl">Dibuja un camino y conduce hasta tu país destino</p>
-              <Link to="/draw-game">
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl kids-text px-6 py-3 font-normal">
-                  <Car className="mr-2 h-6 w-6" /> Conducir
+              
+              <Link to="/draw-game" onClick={handleNavigation}>
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl kids-text px-6 py-3 font-normal relative">
+                  <div className="flex items-center">
+                    <motion.div
+                      animate={{
+                        x: [-5, 5, -5],
+                        y: [-3, 3, -3],
+                        rotate: [0, 5, -5, 0]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity
+                      }}
+                      className="mr-3 text-4xl"
+                    >
+                      🚗
+                    </motion.div>
+                    <span>Conducir</span>
+                    <motion.div
+                      animate={{ 
+                        x: [0, 10, 0],
+                        opacity: [0, 1, 0]
+                      }}
+                      transition={{
+                        duration: 1.5,
+                        repeat: Infinity
+                      }}
+                      className="absolute right-3"
+                    >
+                      <div className="text-2xl">✨</div>
+                    </motion.div>
+                  </div>
                 </Button>
               </Link>
             </div>
@@ -301,11 +354,11 @@ const GameContent = () => {
               <div className="absolute top-0 left-0 w-full flex justify-between px-1">
                 {[...Array(11)].map((_, i) => <div key={i} className="relative flex flex-col items-center">
                     <div className={`w-3 h-3 rounded-full ${level >= i ? 'bg-green-500' : 'bg-gray-300'}`} />
-                    {i % 2 === 0 && <div className="absolute top-4 transform -translate-x-1/2" style={{
+                    <div className="absolute top-4 transform -translate-x-1/2" style={{
                   left: '50%'
                 }}>
                         <span className="text-xs">{getLevelFlag(i)}</span>
-                      </div>}
+                      </div>
                   </div>)}
               </div>
               

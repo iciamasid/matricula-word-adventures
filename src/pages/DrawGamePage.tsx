@@ -25,7 +25,11 @@ const DrawGameContent: React.FC = () => {
   // Log when component mounts to help with debugging
   useEffect(() => {
     console.log("DrawGamePage mounted");
-    return () => console.log("DrawGamePage unmounted");
+    // Set session storage flag for navigation
+    return () => {
+      console.log("DrawGamePage unmounted");
+      sessionStorage.setItem('navigatingBack', 'true');
+    }
   }, []);
 
   // Clear error after 5 seconds
@@ -48,12 +52,12 @@ const DrawGameContent: React.FC = () => {
     });
   };
   
-  return <div className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden" style={{
+  return <div className="min-h-screen flex flex-col items-center px-4 py-3 relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
-      <motion.div className="w-full max-w-3xl flex flex-col items-center gap-6" initial={{
+      <motion.div className="w-full max-w-3xl flex flex-col items-center gap-4" initial={{
       opacity: 0
     }} animate={{
       opacity: 1
@@ -61,7 +65,7 @@ const DrawGameContent: React.FC = () => {
       duration: 0.5
     }}>
         {/* Header with Help button positioned at top right */}
-        <div className="w-full flex justify-between items-center">
+        <div className="w-full flex justify-between items-center mb-2">
           <motion.h1 animate={{
           scale: [1, 1.05, 1],
           transition: {
@@ -70,9 +74,17 @@ const DrawGameContent: React.FC = () => {
           }
         }} className="kids-text text-fuchsia-900 text-3xl font-medium">Conduce al país destino</motion.h1>
           
-          <Button variant="outline" className="bg-green-600 hover:bg-green-500 text-white kids-text" onClick={() => setShowHelp(true)}>
-            <HelpCircle className="mr-2 h-5 w-5" /> Ayuda
-          </Button>
+          <div className="flex items-center gap-2">
+            <Link to="/">
+              <Button variant="outline" className="bg-purple-600 hover:bg-purple-500 text-white kids-text">
+                <ArrowLeft className="mr-2 h-5 w-5" /> Volver
+              </Button>
+            </Link>
+            
+            <Button variant="outline" className="bg-green-600 hover:bg-green-500 text-white kids-text" onClick={() => setShowHelp(true)}>
+              <HelpCircle className="mr-2 h-5 w-5" /> Ayuda
+            </Button>
+          </div>
         </div>
         
         {/* Origin and Destination with route visualization */}
@@ -89,7 +101,7 @@ const DrawGameContent: React.FC = () => {
             }} transition={{
               delay: 0.3
             }}>
-                <motion.span className="text-6xl mb-2" animate={{
+                <motion.span className="text-7xl mb-2" animate={{
                 rotate: [0, 10, -10, 0],
                 transition: {
                   duration: 2,
@@ -128,7 +140,7 @@ const DrawGameContent: React.FC = () => {
             }} transition={{
               delay: 0.3
             }}>
-                <motion.span className="text-6xl mb-2" animate={{
+                <motion.span className="text-7xl mb-2" animate={{
                 rotate: [0, 10, -10, 0],
                 scale: [1, 1.1, 1],
                 transition: {
@@ -174,23 +186,6 @@ const DrawGameContent: React.FC = () => {
         delay: 0.2
       }}>
           <DrawPathGame onError={handleError} onHelp={() => setShowHelp(true)} />
-        </motion.div>
-        
-        {/* Back button moved to the bottom */}
-        <motion.div className="w-full flex justify-center mt-6 mb-8" initial={{
-        opacity: 0,
-        y: 20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        delay: 0.4
-      }}>
-          <Link to="/" className="w-full max-w-xs">
-            <Button variant="outline" className="w-full text-lg py-4 kids-text bg-purple-800 hover:bg-purple-700 text-slate-50">
-              <ArrowLeft className="mr-2 h-5 w-5" /> Volver al menú principal
-            </Button>
-          </Link>
         </motion.div>
       </motion.div>
       
