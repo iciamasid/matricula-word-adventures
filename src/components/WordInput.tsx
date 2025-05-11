@@ -38,21 +38,7 @@ const WordInput: React.FC = () => {
   };
   return <div className="w-full max-w-xs relative">
       {/* Display consonants above word input - bigger size */}
-      <div className="flex justify-center gap-3 mb-3">
-        {plateConsonants.split("").map((letter, index) => <motion.div key={index} whileHover={{
-        scale: 1.1
-      }} initial={{
-        opacity: 0,
-        y: 10
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        delay: index * 0.2
-      }} className="px-[10px] bg-fuchsia-700 my-[10px] py-[10px] mx-0 rounded">
-            {letter}
-          </motion.div>)}
-      </div>
+      
       
       <div className="flex gap-2">
         <Input ref={inputRef} type="text" value={currentWord} onChange={handleInputChange} onKeyDown={handleKeyDown} placeholder="Escribe aquí" className="flex-1 text-center font-bold text-3xl py-6 uppercase border-2 border-purple-400 shadow-md kids-text" autoComplete="off" />
