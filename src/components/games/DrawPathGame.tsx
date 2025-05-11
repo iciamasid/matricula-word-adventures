@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { motion } from 'framer-motion';
@@ -351,7 +352,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       );
       
       // More steps for longer distances - provides consistent movement speed
-      const steps = Math.max(5, Math.ceil(distance / 5));
+      // Use a smaller divisor to create more points and smoother animation
+      const steps = Math.max(5, Math.ceil(distance / 3));
       
       // Skip the first point as it's already added
       const betweenPoints = interpolatePoints(point1, point2, steps).slice(1);
@@ -404,10 +406,16 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
 
   // Move car to the next point in the interpolated path
   const moveCar = (currentIndex: number) => {
-    if (!fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) return;
+    if (!fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) {
+      console.log("Missing required objects for animation", {
+        canvas: !!fabricCanvas,
+        pathLength: interpolatedPath.length,
+        car: !!carObjectsRef.current
+      });
+      return;
+    }
     
     const car = carObjectsRef.current;
-    if (!car) return;
     
     // Check if animation is complete
     if (currentIndex >= interpolatedPath.length) {
@@ -418,6 +426,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         title: "¡Muy bien!",
         description: "¡El coche ha llegado a su destino!"
       });
+      return;
+    }
+    
+    // Safety check for valid currentIndex
+    if (currentIndex < 0 || !interpolatedPath[currentIndex]) {
+      console.log("Invalid current index:", currentIndex);
       return;
     }
     
@@ -453,18 +467,23 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     
     // Update progress state
     const progress = Math.round((currentIndex / interpolatedPath.length) * 100);
+    console.log(`Animation progress: ${progress}%, point: ${currentIndex} of ${interpolatedPath.length}`);
     
     // Update the canvas
     fabricCanvas.renderAll();
     
-    // Schedule next frame with timeout for controlled speed
+    // Use a shorter animation speed for smoother animation
+    // Using requestAnimationFrame with a small delay for controlled speed
     const nextIndex = currentIndex + 1;
     setCurrentPathIndex(nextIndex);
     
-    // Use timeout for controlled animation speed
+    // Use a lower value for animationSpeed to make animation faster
+    const speedFactor = 50; // Lower value = faster animation
+    
     timeoutRef.current = setTimeout(() => {
+      // Use requestAnimationFrame to optimize animation
       animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
-    }, animationSpeed);
+    }, speedFactor);
   };
 
   // Start animation along the path
@@ -481,6 +500,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     console.log("Starting animation with path points:", path.length);
     console.log("Interpolated path points:", interpolatedPath.length);
     
+    // Reset animation state
     setIsPlaying(true);
     setIsDrawing(false);
     setAnimationCompleted(false);
@@ -516,12 +536,15 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Cancel any existing animation
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
       }
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
       }
       
       // Start the animation with a slight delay
+      console.log("Starting car animation sequence");
       timeoutRef.current = setTimeout(() => {
         animationRef.current = requestAnimationFrame(() => moveCar(0));
       }, 500);
