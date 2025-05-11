@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button"; // Added the missing Button import
 import { toast } from '@/hooks/use-toast';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
