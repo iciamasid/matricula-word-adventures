@@ -142,7 +142,7 @@ const GameContent = () => {
         
         {/* Instructions button positioned at bottom right of the image */}
         <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className="absolute bottom-6 right-4 bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text text-base font-normal">
-          <Info className="w-4 h-4 mr-1" /> Instrucciones
+          <Info className="w-4 h-4 mr-1" /> Ayuda
         </Button>
       </div>
     
@@ -175,7 +175,7 @@ const GameContent = () => {
               }}>
                   <motion.div className="w-14 h-14 text-3xl text-game-green">🌍</motion.div>
                 </motion.div>
-                <h3 className="text-purple-800 kids-text font-medium text-xl">Puntos Totales</h3>
+                <h3 className="text-purple-800 kids-text font-medium text-xl">Puntos</h3>
               </div>
               <motion.p className="text-3xl font-bold text-purple-900 kids-text mt-1" animate={{
               scale: [1, 1.05, 1]
