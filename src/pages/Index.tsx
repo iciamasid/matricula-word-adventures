@@ -316,7 +316,7 @@ const GameContent = () => {
               </p>
               
               <Link to={`/country/${destinationInfo.country}`}>
-                <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl px-6 py-3 kids-text font-medium">
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl px-6 py-3 kids-text font-normal">
                   Conoce {destinationInfo.country} {destinationInfo.flag}
                 </Button>
               </Link>
