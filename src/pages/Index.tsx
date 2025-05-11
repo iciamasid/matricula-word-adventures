@@ -207,7 +207,7 @@ const GameContent = () => {
             delay: 0.1
           }} whileHover={{
             scale: 1.02
-          }} className="rounded-lg p-4 bg-transparent shadow-lg text-center py-[56px]">
+          }} className="rounded-lg p-4 bg-transparent shadow-lg text-center py-[5px]">
               <div className="flex items-center justify-center gap-2">
                 <motion.div animate={{
                 rotate: [0, 10, -10, 0]
