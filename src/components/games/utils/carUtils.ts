@@ -19,13 +19,13 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     stroke: '#000000',
   });
   
-  // Add shadow manually
-  body.shadow = new fabric.Shadow({
+  // Add shadow using the correct Fabric.js v6 syntax
+  body.shadow = {
     color: 'rgba(0,0,0,0.3)',
     offsetX: 0,
     offsetY: 3,
     blur: 5
-  });
+  };
 
   // Car roof
   const roof = new Rect({
@@ -179,6 +179,9 @@ export const createStartPoint = (left: number, top: number, canvas?: Canvas) => 
       originY: 'center'
     });
     
+    // Set metadata for identification
+    startMarker.set('isStartMarker', true);
+    
     // Añadir texto "Madrid"
     const text = new Text('Madrid', {
       left: left,
@@ -236,6 +239,9 @@ export const createEndPoint = (left: number, top: number, canvas?: Canvas, desti
       originY: 'center'
     });
     
+    // Set metadata for identification
+    endMarker.set('isEndMarker', true);
+    
     // Añadir texto con el nombre del destino
     const text = new Text(destinationName, {
       left: left,
@@ -289,16 +295,10 @@ export interface CarObject {
   taillight: Rect;
 }
 
-// Add fabric namespace for the Shadow object
-declare namespace fabric {
-  interface ShadowOptions {
-    color: string;
-    blur?: number;
-    offsetX?: number;
-    offsetY?: number;
-  }
-
-  class Shadow {
-    constructor(options: ShadowOptions);
-  }
+// Type definition for Shadow
+export interface ShadowOptions {
+  color: string;
+  blur?: number;
+  offsetX?: number;
+  offsetY?: number;
 }

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -200,10 +201,15 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
+        // Instead of accessing obj.data, use a safer approach with optional properties
+        const isPathTrace = obj.get('isPathTrace') === true; 
+        const isStartMarker = obj.get('isStartMarker') === true;
+        const isEndMarker = obj.get('isEndMarker') === true;
+        
         if ((obj instanceof Rect || obj instanceof Circle) && 
-            !obj.data?.isPathTrace && 
-            !obj.data?.isStartMarker && 
-            !obj.data?.isEndMarker && 
+            !isPathTrace && 
+            !isStartMarker && 
+            !isEndMarker && 
             obj.type !== 'text') {
           fabricCanvas.remove(obj);
         }

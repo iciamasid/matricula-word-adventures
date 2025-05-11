@@ -98,6 +98,9 @@ export const usePathAnimation = ({
         opacity: 0.8, // Slightly transparent
       });
       
+      // Set a custom property to identify this as a path trace
+      trace.set('isPathTrace', true);
+      
       // Add the trace to the canvas
       fabricCanvas.add(trace);
       
