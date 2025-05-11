@@ -441,7 +441,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     
   }, [path]);
 
-  // Improved path trace visualization
+  // Improved path trace visualization - UPDATED to fix moveTo issues
   const updatePathTrace = (currentIndex: number) => {
     if (!fabricCanvas || interpolatedPath.length === 0) return;
     
@@ -471,27 +471,35 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         opacity: 0.8, // Slightly transparent
       });
       
-      // Add the trace to the canvas and ensure it's at the bottom
+      // Add the trace to the canvas and set its z-index properly
+      // First add at the bottom z-index
       fabricCanvas.add(trace);
-      trace.moveTo(0); // Use moveTo to send to back in Fabric.js v6
+      
+      // Update z-index directly instead of using moveTo
+      trace.set('zIndex', 0);
       
       // Store the path trace reference
       pathTraceRef.current = trace;
       
       // Make sure the start point is on top of the path trace
       if (startPointObj) {
-        startPointObj.moveTo(fabricCanvas.getObjects().length - 1); // Move to front
+        // Place start point above the trace
+        startPointObj.set('zIndex', 1);
       }
       
       // Ensure car is on top
       if (carObjectsRef.current) {
         const car = carObjectsRef.current;
-        car.body.moveTo(fabricCanvas.getObjects().length); // Move to front
-        car.roof.moveTo(fabricCanvas.getObjects().length); // Move to front
-        car.wheel1.moveTo(fabricCanvas.getObjects().length); // Move to front
-        car.wheel2.moveTo(fabricCanvas.getObjects().length); // Move to front
-        car.headlight.moveTo(fabricCanvas.getObjects().length); // Move to front
+        // Set higher z-index for car components
+        car.body.set('zIndex', 5);
+        car.roof.set('zIndex', 6);
+        car.wheel1.set('zIndex', 5);
+        car.wheel2.set('zIndex', 5);
+        car.headlight.set('zIndex', 6);
       }
+      
+      // Re-render the canvas to apply the z-index changes
+      fabricCanvas.requestRenderAll();
     }
   };
 
