@@ -93,13 +93,14 @@ const DrawGamePage: React.FC = () => {
           <h2 className="text-2xl font-bold text-purple-800 kids-text mb-3">¿Cómo jugar?</h2>
           <ol className="list-decimal list-inside space-y-2 text-purple-900 kids-text">
             <li>Primero, haz clic en el botón <span className="font-bold bg-green-100 px-2 py-1 rounded">Dibujar Camino</span></li>
-            <li>Luego, mantén presionado y mueve tu dedo o ratón para dibujar un camino</li>
+            <li>Luego, mantén presionado y mueve tu dedo o ratón para dibujar un camino para el coche</li>
+            <li>Dibuja líneas continuas y no demasiado rápido para mejores resultados</li>
             <li>Cuando termines de dibujar, pulsa el botón <span className="font-bold bg-cyan-100 px-2 py-1 rounded">Jugar</span></li>
-            <li>¡Mira cómo el cochecito sigue tu camino!</li>
+            <li>¡Mira cómo el cochecito sigue exactamente el camino que dibujaste!</li>
           </ol>
           <div className="mt-3 bg-yellow-100 p-2 rounded-md">
             <p className="text-amber-700 text-sm font-medium">
-              Importante: Dibuja líneas continuas y no muy rápido para mejores resultados.
+              ¡El coche sigue exactamente el trazo que dibujes! La animación va despacio para que puedas ver bien cómo sigue tu camino.
             </p>
           </div>
         </motion.div>

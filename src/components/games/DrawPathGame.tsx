@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { motion } from 'framer-motion';
@@ -111,7 +110,7 @@ const createEndPoint = (left: number, top: number) => {
   });
 };
 
-// New helper function to interpolate between two points
+// Enhanced interpolation function for smoother curves
 const interpolatePoints = (point1: Point, point2: Point, steps: number): Point[] => {
   const points: Point[] = [];
   
@@ -124,6 +123,89 @@ const interpolatePoints = (point1: Point, point2: Point, steps: number): Point[]
   }
   
   return points;
+};
+
+// New helper function to extract points from all path commands
+const extractPointsFromPath = (pathObj: any): Point[] => {
+  if (!pathObj || !pathObj.path || !Array.isArray(pathObj.path)) {
+    console.error("Invalid path object:", pathObj);
+    return [];
+  }
+
+  const rawPath = pathObj.path;
+  const points: Point[] = [];
+  let lastControl: Point | null = null;
+  
+  try {
+    for (let i = 0; i < rawPath.length; i++) {
+      const cmd = rawPath[i];
+      
+      if (!cmd || !Array.isArray(cmd)) {
+        console.log("Skipping invalid command:", cmd);
+        continue;
+      }
+      
+      console.log("Processing command:", cmd[0]);
+      
+      // Handle different path commands
+      switch (cmd[0]) {
+        case 'M': // Move to
+        case 'L': // Line to
+          points.push({ x: cmd[1], y: cmd[2] });
+          break;
+          
+        case 'Q': // Quadratic curve
+          // Add the control point
+          points.push({ x: cmd[1], y: cmd[2] });
+          // Add several points along the curve for smoother interpolation
+          for (let t = 0.2; t <= 0.8; t += 0.2) {
+            const x = (1-t)*(1-t)*points[points.length-2].x + 2*(1-t)*t*cmd[1] + t*t*cmd[3];
+            const y = (1-t)*(1-t)*points[points.length-2].y + 2*(1-t)*t*cmd[2] + t*t*cmd[4];
+            points.push({ x, y });
+          }
+          // Add the end point
+          points.push({ x: cmd[3], y: cmd[4] });
+          break;
+          
+        case 'C': // Cubic curve
+          // Add both control points and several points along the curve
+          points.push({ x: cmd[1], y: cmd[2] }); // First control point
+          lastControl = { x: cmd[3], y: cmd[4] }; // Second control point
+          
+          // Add several points along the curve for smoother interpolation
+          for (let t = 0.2; t <= 0.8; t += 0.2) {
+            const mt = 1-t;
+            const x = mt*mt*mt*points[points.length-2].x + 
+                    3*mt*mt*t*cmd[1] + 
+                    3*mt*t*t*cmd[3] + 
+                    t*t*t*cmd[5];
+            const y = mt*mt*mt*points[points.length-2].y + 
+                    3*mt*mt*t*cmd[2] + 
+                    3*mt*t*t*cmd[4] + 
+                    t*t*t*cmd[6];
+            points.push({ x, y });
+          }
+          
+          // Add the end point
+          points.push({ x: cmd[5], y: cmd[6] });
+          break;
+          
+        case 'Z': // Close path
+          // If we have points and the first point is different from the last, close the path
+          if (points.length > 1 && 
+            (points[0].x !== points[points.length-1].x || points[0].y !== points[points.length-1].y)) {
+            points.push({ ...points[0] });
+          }
+          break;
+      }
+    }
+    
+    console.log(`Extracted ${points.length} points from path`);
+    return points;
+  } catch (error) {
+    console.error("Error extracting points from path:", error);
+    return points;
+  }
 };
 
 const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
@@ -169,6 +251,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
   const pathTraceRef = useRef<Path | null>(null);
   // New state for animation progress
   const [animationProgress, setAnimationProgress] = useState<number>(0);
+  // New state for debugging
+  const [debugMode, setDebugMode] = useState<boolean>(false);
+  const [lastPathObject, setLastPathObject] = useState<any>(null);
 
   // Initialize canvas on component mount
   useEffect(() => {
@@ -234,28 +319,16 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         }
 
         console.log("Path created event triggered", e.path);
+        // Store the entire path object for debugging
+        setLastPathObject(e.path);
 
         try {
-          // Convert fabric path to simple points array for animation
-          const pathObject = e.path;
-          const rawPath = pathObject.path as Array<any>;
+          // Use the new extraction function for better point detection
+          const points = extractPointsFromPath(e.path);
           
-          if (!rawPath || !Array.isArray(rawPath)) {
-            console.log("Invalid path data:", rawPath);
-            return;
-          }
-          
-          const points: Point[] = [];
-          rawPath.forEach(cmd => {
-            if (cmd[0] === 'M' || cmd[0] === 'L') {
-              points.push({
-                x: cmd[1],
-                y: cmd[2]
-              });
-            }
-          });
-
-          console.log("Path points extracted:", points.length);
+          console.log("Extracted points:", points.length);
+          console.log("First few points:", points.slice(0, 5));
+          console.log("Last few points:", points.slice(-5));
 
           if (points.length > 0) {
             // Add end point at the last position of the path
@@ -334,7 +407,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, [fabricCanvas]);
 
-  // Create interpolated path from original path with improved interpolation
+  // Improved interpolation with much higher density of points
   useEffect(() => {
     if (!path.length) return;
     
@@ -343,7 +416,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     // Add the first point
     interpolated.push(path[0]);
     
-    // Interpolate between each pair of consecutive points
+    // Interpolate between each pair of consecutive points with higher density
     for (let i = 0; i < path.length - 1; i++) {
       const point1 = path[i];
       const point2 = path[i + 1];
@@ -355,8 +428,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       );
       
       // More steps for longer distances - provides consistent movement speed
-      // Use an even smaller divisor for more interpolation points and smoother animation
-      const steps = Math.max(8, Math.ceil(distance / 2));
+      // Using a much smaller divisor for more interpolation points and smoother animation
+      const steps = Math.max(20, Math.ceil(distance / 0.5)); // Much more dense interpolation
       
       // Skip the first point as it's already added
       const betweenPoints = interpolatePoints(point1, point2, steps).slice(1);
@@ -368,7 +441,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     
   }, [path]);
 
-  // Draw a trace of the path that the car has traveled - improved version
+  // Improved path trace visualization
   const updatePathTrace = (currentIndex: number) => {
     if (!fabricCanvas || interpolatedPath.length === 0) return;
     
@@ -382,38 +455,47 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Create a subset of the path up to the current index
       const pathSoFar = interpolatedPath.slice(0, currentIndex + 1);
       
-      // Create a new path trace
+      // Create a new path trace with thicker stroke and more visible color
       const pathData = pathSoFar.map((point, idx) => 
         idx === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`
       ).join(' ');
       
       const trace = new Path(pathData, {
         fill: '',
-        stroke: '#4CAF50',
-        strokeWidth: 5,
+        stroke: '#2ECC71', // Brighter green
+        strokeWidth: 6, // Thicker line
         strokeLineCap: 'round',
         strokeLineJoin: 'round',
         selectable: false,
         evented: false,
+        opacity: 0.8, // Slightly transparent
       });
       
-      // Add the trace to the canvas
+      // Add the trace to the canvas and ensure it's at the bottom
       fabricCanvas.add(trace);
-      
-      // Move the trace to the back of the stack using the canvas method
-      fabricCanvas.sendObjectToBack(trace);
+      fabricCanvas.sendToBack(trace);
       
       // Store the path trace reference
       pathTraceRef.current = trace;
       
       // Make sure the start point is on top of the path trace
       if (startPointObj) {
-        fabricCanvas.bringObjectToFront(startPointObj);
+        fabricCanvas.bringToFront(startPointObj);
+      }
+      
+      // Ensure car is on top
+      if (carObjectsRef.current) {
+        const car = carObjectsRef.current;
+        fabricCanvas.bringToFront(car.body);
+        fabricCanvas.bringToFront(car.roof);
+        fabricCanvas.bringToFront(car.wheel1);
+        fabricCanvas.bringToFront(car.wheel2);
+        fabricCanvas.bringToFront(car.headlight);
       }
     }
   };
 
-  // Move car to the next point in the interpolated path - improved version
+  // Improved car movement with better rotation
   const moveCar = (currentIndex: number) => {
     if (!fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) {
       console.log("Missing required objects for animation", {
@@ -450,10 +532,20 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     const newY = currentPoint.y;
     
     // Calculate rotation angle if we have previous points
+    // Look ahead a few points for smoother rotation
     if (currentIndex > 0) {
-      const prevPoint = interpolatedPath[currentIndex - 1];
-      const angle = Math.atan2(newY - prevPoint.y, newX - prevPoint.x) * 180 / Math.PI;
+      // Look ahead for smoother rotation (if possible)
+      const lookAheadIndex = Math.min(currentIndex + 3, interpolatedPath.length - 1);
+      const lookAheadPoint = interpolatedPath[lookAheadIndex];
+      const prevPoint = interpolatedPath[Math.max(0, currentIndex - 1)];
       
+      // Use the look ahead point for rotation calculation if available
+      const targetX = lookAheadPoint.x;
+      const targetY = lookAheadPoint.y;
+      
+      const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
+      
+      // Set positions with calculated angle
       car.body.set({ left: newX, top: newY, angle: angle });
       car.roof.set({ left: newX, top: newY - 15, angle: angle });
       car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
@@ -478,7 +570,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     // Update progress state
     const progress = Math.round((currentIndex / interpolatedPath.length) * 100);
     setAnimationProgress(progress);
-    console.log(`Animation progress: ${progress}%, point: ${currentIndex} of ${interpolatedPath.length}`);
+    
+    // Debug info for every 100th point
+    if (debugMode && currentIndex % 100 === 0) {
+      console.log(`Animation at point: ${currentIndex} of ${interpolatedPath.length}, progress: ${progress}%, position: ${newX},${newY}`);
+    }
     
     // Update the canvas
     fabricCanvas.renderAll();
@@ -486,8 +582,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
     
-    // Use a higher value for speedFactor for slower animation to make it more visible
-    const speedFactor = 80; // Higher value = slower animation
+    // Higher speedFactor for slower animation
+    const speedFactor = 180; // Even slower animation (higher = slower)
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
@@ -537,7 +633,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       }
       
       // Re-add the car at the starting position
-      const car = createCar(50, 50);
+      const car = createCar(path[0].x, path[0].y); // Start exactly at the first point of the path
       fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
       carObjectsRef.current = car;
       fabricCanvas.renderAll();
@@ -671,6 +767,15 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     }
   };
 
+  // Toggle debug mode
+  const toggleDebugMode = () => {
+    setDebugMode(!debugMode);
+    toast({
+      title: debugMode ? "Modo depuración desactivado" : "Modo depuración activado",
+      description: debugMode ? "Los mensajes de depuración ya no se mostrarán" : "Se mostrarán mensajes detallados de depuración"
+    });
+  };
+
   return <div className="flex flex-col w-full gap-4">
       <Card className="border-4 border-purple-300 shadow-lg overflow-hidden">
         <CardContent className="p-4">
@@ -689,7 +794,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
               <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
                 <div className="flex flex-col items-center gap-1 px-4">
                   <span className="text-xs font-medium">Animación en progreso</span>
-                  <Progress value={animationProgress} className="h-2 w-full" />
+                  <Progress value={animationProgress} className="h-3 w-full" />
                   <span className="text-xs">{animationProgress}%</span>
                 </div>
               </div>
@@ -756,6 +861,20 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         <div className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300">
           <p className="font-bold text-yellow-800">¡Felicidades!</p>
           <p className="text-yellow-600">El coche ha llegado a su destino. Puedes dibujar un nuevo camino.</p>
+        </div>
+      )}
+      
+      {/* Debug button (only visible during development) */}
+      {process.env.NODE_ENV !== 'production' && (
+        <div className="flex justify-end">
+          <Button 
+            onClick={toggleDebugMode} 
+            variant="ghost" 
+            size="sm" 
+            className={`text-xs ${debugMode ? 'bg-purple-100' : ''}`}
+          >
+            {debugMode ? 'Desactivar Depuración' : 'Activar Depuración'}
+          </Button>
         </div>
       )}
     </div>;
