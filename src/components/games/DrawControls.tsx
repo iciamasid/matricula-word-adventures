@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Trash2, Route, HelpCircle, Globe } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Pencil1Icon, PlayIcon, Eraser, HelpCircle } from "lucide-react";
 
 interface DrawControlsProps {
   isPlaying: boolean;
@@ -27,32 +27,38 @@ const DrawControls: React.FC<DrawControlsProps> = ({
   onHelp
 }) => {
   return (
-    <div className="flex flex-col sm:flex-row justify-between gap-4">
-      <Button 
-        onClick={onDraw} 
-        variant="outline" 
-        disabled={isPlaying || isDrawing || !canvasReady || isInitializing} 
-        className="text-slate-50 text-2xl text-center bg-violet-600 hover:bg-violet-500 px-[10px] font-normal"
-      >
-        <Route className="mr-2 h-6 w-6" /> 
-        {isDrawing ? 'Dibujando...' : 'Dibujar'}
-      </Button>
+    <div className="w-full flex flex-col gap-3">
+      <div className="grid grid-cols-2 gap-3">
+        <Button
+          onClick={onDraw}
+          disabled={isPlaying || isInitializing || !canvasReady}
+          className={`text-white px-6 py-6 text-xl kids-text ${
+            isDrawing 
+              ? "bg-green-700 hover:bg-green-600" 
+              : "bg-green-600 hover:bg-green-500"
+          }`}
+        >
+          <Pencil1Icon className="mr-2 h-6 w-6" /> 
+          Dibujar
+        </Button>
+        
+        <Button
+          onClick={onPlay}
+          disabled={isPlaying || !pathExists || isInitializing || !canvasReady}
+          className="bg-cyan-500 hover:bg-cyan-400 text-white px-6 py-6 text-xl kids-text"
+        >
+          <PlayIcon className="mr-2 h-6 w-6" /> 
+          Conducir
+        </Button>
+      </div>
       
-      <Button 
-        onClick={onPlay} 
-        disabled={isPlaying || !pathExists || !canvasReady || isInitializing} 
-        className="kids-text px-6 py-3 rounded-xl text-slate-50 bg-fuchsia-600 hover:bg-fuchsia-500 text-2xl font-normal"
+      <Button
+        onClick={onClear}
+        disabled={isPlaying || isInitializing || !canvasReady || (!pathExists && !isDrawing)}
+        className="bg-amber-500 hover:bg-amber-400 text-white px-6 py-4 text-lg kids-text"
       >
-        <ArrowRight className="mr-2 h-6 w-6" /> Jugar
-      </Button>
-      
-      <Button 
-        onClick={onClear} 
-        variant="outline" 
-        disabled={isPlaying || !canvasReady || isInitializing} 
-        className="border-red-300 kids-text px-4 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-slate-50 text-2xl font-normal"
-      >
-        <Trash2 className="mr-2 h-5 w-5" /> Borrar
+        <Eraser className="mr-2 h-5 w-5" /> 
+        Borrar
       </Button>
     </div>
   );

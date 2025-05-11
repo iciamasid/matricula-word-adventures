@@ -1,14 +1,15 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
-import { Award, Star } from "lucide-react";
+import { Award, Star, Globe } from "lucide-react";
 const ScorePanel: React.FC = () => {
   const {
-    previousScore,
+    totalPoints,
     level
   } = useGame();
   return <div className="w-full grid grid-cols-2 gap-4 mb-4">
-      {/* Score Panel - Changed to Previous Score */}
+      {/* Score Panel - Changed to Total Score */}
       <motion.div initial={{
       opacity: 0,
       x: -20
@@ -22,27 +23,27 @@ const ScorePanel: React.FC = () => {
     }} className="rounded-lg p-4 shadow-lg text-center bg-transparent">
         <div className="flex items-center justify-center gap-2">
           <motion.div animate={{
-          rotate: previousScore > 0 ? [0, 15, -15, 0] : 0,
-          scale: previousScore > 0 ? [1, 1.2, 1] : 1
+          rotate: totalPoints > 0 ? [0, 15, -15, 0] : 0,
+          scale: totalPoints > 0 ? [1, 1.2, 1] : 1
         }} transition={{
           duration: 1,
-          repeat: previousScore > 0 ? 1 : 0
+          repeat: totalPoints > 0 ? 1 : 0
         }}>
             <Star className="w-7 h-7 text-game-yellow" />
           </motion.div>
           <h3 className="text-xl text-purple-800 kids-text font-normal">Puntos</h3>
         </div>
-        <motion.p className="text-3xl text-purple-900 kids-text mt-1 font-normal" animate={previousScore > 0 ? {
+        <motion.p className="text-3xl text-purple-900 kids-text mt-1 font-normal" animate={totalPoints > 0 ? {
         scale: [1, 1.2, 1]
       } : {}} transition={{
         duration: 0.5
       }}>
-          {previousScore}
+          {totalPoints}
         </motion.p>
-        <p className="text-sm text-purple-600 kids-text font-normal">ronda anterior</p>
+        <p className="text-sm text-purple-600 kids-text font-normal">puntos totales</p>
       </motion.div>
       
-      {/* Level Panel - Updated to be transparent */}
+      {/* Level Panel - Updated to be transparent with global icon */}
       <motion.div className="rounded-lg p-4 bg-transparent shadow-lg text-center" initial={{
       opacity: 0,
       x: 20
@@ -61,7 +62,7 @@ const ScorePanel: React.FC = () => {
           duration: 2,
           repeat: Infinity
         }}>
-            <Award className="w-7 h-7 text-game-purple" />
+            <Globe className="w-7 h-7 text-game-purple" />
           </motion.div>
           <h3 className="text-xl text-purple-800 kids-text font-normal">Nivel</h3>
         </div>
@@ -72,9 +73,9 @@ const ScorePanel: React.FC = () => {
       }}>
           {level}
         </motion.p>
-        {level === 1 ? <p className="opacity-0">·</p> : <p className="text-sm text-purple-600 kids-text font-normal">
-            ¡Nivel desbloqueado!
-          </p>}
+        <p className="text-sm text-purple-600 kids-text font-normal">
+          {level >= 10 ? "¡Vuelta al mundo!" : "Consigue 10 para dar la vuelta al mundo"}
+        </p>
       </motion.div>
     </div>;
 };

@@ -44,16 +44,16 @@ const WORLD_DESTINATIONS = [
     fact: "¡En Tokio hay máquinas expendedoras que venden casi de todo: desde juguetes hasta paraguas! Hay más de 5 millones de máquinas en Japón."
   },
   {
+    city: "Sídney",
+    country: "Australia",
+    flag: "🇦🇺",
+    fact: "La Ópera de Sídney parece barcos con velas desplegadas en el puerto. ¡Tardaron 14 años en construirla!"
+  },
+  {
     city: "Nueva York",
     country: "Estados Unidos",
     flag: "🇺🇸",
     fact: "¡La Estatua de la Libertad fue un regalo de Francia a Estados Unidos! Mide 93 metros y su corona tiene 7 picos que representan los 7 continentes."
-  },
-  {
-    city: "Buenos Aires",
-    country: "Argentina",
-    flag: "🇦🇷",
-    fact: "¡En Buenos Aires hay una librería en un antiguo teatro! Es tan bonita que la llaman 'la librería más bella del mundo'."
   },
   {
     city: "Ciudad de México",
@@ -62,16 +62,22 @@ const WORLD_DESTINATIONS = [
     fact: "Los antiguos aztecas construyeron Ciudad de México sobre un lago. ¡Todavía hay partes de la ciudad que se hunden un poco cada año!"
   },
   {
-    city: "Sídney",
-    country: "Australia",
-    flag: "🇦🇺",
-    fact: "La Ópera de Sídney parece barcos con velas desplegadas en el puerto. ¡Tardaron 14 años en construirla!"
+    city: "Lima",
+    country: "Perú",
+    flag: "🇵🇪",
+    fact: "¡Lima es conocida como la Ciudad de los Reyes y fue fundada en 1535! Tiene deliciosa comida como el ceviche y está cerca del océano Pacífico."
   },
   {
-    city: "Base Marambio",
-    country: "Antártida",
-    flag: "🇦🇶",
-    fact: "¡En la Antártida hace tanto frío que el hielo puede tener 4 kilómetros de grosor! Es el lugar más frío de la Tierra, ¡puede llegar a -89ºC!"
+    city: "Buenos Aires",
+    country: "Argentina",
+    flag: "🇦🇷",
+    fact: "¡En Buenos Aires hay una librería en un antiguo teatro! Es tan bonita que la llaman 'la librería más bella del mundo'."
+  },
+  {
+    city: "Madrid",
+    country: "España",
+    flag: "🇪🇸",
+    fact: "¡Has completado la vuelta al mundo! Madrid es la capital de España y tiene la Plaza Mayor, un lugar histórico con 400 años de antigüedad."
   }
 ];
 
@@ -157,7 +163,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (newLevel !== level) {
       setLevel(newLevel);
       
-      // Set origin as current level info
+      // Set origin based on current level
       const originIndex = Math.min(newLevel, WORLD_DESTINATIONS.length - 1);
       const originDestination = WORLD_DESTINATIONS[originIndex];
       setOriginInfo(originDestination);

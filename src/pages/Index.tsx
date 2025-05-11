@@ -1,55 +1,53 @@
+
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
 import WordInput from "@/components/WordInput";
 import ErrorAlert from "@/components/ErrorAlert";
-import LevelRewards from "@/components/LevelRewards";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Globe, RefreshCw, Car, Trophy } from "lucide-react";
+import { Globe, RefreshCw, Car } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
-import WorldMap from "@/components/WorldMap";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import GamePopup from "@/components/GamePopup";
 import ScorePanel from "@/components/ScorePanel";
-import TotalPointsPanel from "@/components/TotalPointsPanel";
 
 // Función para obtener la bandera según el nivel
 const getLevelFlag = (level: number) => {
   switch (level) {
     case 1:
-      return "🇪🇸";
-    // España
-    case 2:
       return "🇫🇷";
     // Francia
-    case 3:
+    case 2:
       return "🇮🇹";
     // Italia
-    case 4:
+    case 3:
       return "🇷🇺";
     // Rusia
-    case 5:
+    case 4:
       return "🇯🇵";
     // Japón
+    case 5:
+      return "🇦🇺";
+    // Australia
     case 6:
       return "🇺🇸";
     // Estados Unidos
     case 7:
-      return "🇦🇷";
-    // Argentina
-    case 8:
       return "🇲🇽";
     // México
+    case 8:
+      return "🇵🇪";
+    // Perú
     case 9:
-      return "🇦🇺";
-    // Australia
+      return "🇦🇷";
+    // Argentina
     case 10:
-      return "🇦🇶";
-    // Antártida
+      return "🇪🇸";
+    // España de vuelta
     default:
       return "🇪🇸";
   }
@@ -105,11 +103,12 @@ const GameContent = () => {
     if (level >= 2) countries.push("Italia");
     if (level >= 3) countries.push("Rusia");
     if (level >= 4) countries.push("Japón");
-    if (level >= 5) countries.push("Estados Unidos");
-    if (level >= 6) countries.push("Argentina");
+    if (level >= 5) countries.push("Australia");
+    if (level >= 6) countries.push("Estados Unidos");
     if (level >= 7) countries.push("Méjico");
-    if (level >= 8) countries.push("Australia");
-    if (level >= 9) countries.push("Antártida");
+    if (level >= 8) countries.push("Perú");
+    if (level >= 9) countries.push("Argentina");
+    if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
   const handleResetGame = () => {
