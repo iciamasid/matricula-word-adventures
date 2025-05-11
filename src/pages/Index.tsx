@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -14,6 +13,7 @@ import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import GamePopup from "@/components/GamePopup";
 import ScorePanel from "@/components/ScorePanel";
+import { Progress } from "@/components/ui/progress";
 
 // Función para obtener la bandera según el nivel
 const getLevelFlag = (level: number) => {
