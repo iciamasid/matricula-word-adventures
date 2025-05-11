@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Progress } from "@/components/ui/progress";
-import { Trophy, AlertCircle } from "lucide-react";
+import { Trophy, AlertCircle, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface GameStatusIndicatorsProps {
@@ -74,7 +74,15 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
           <div className="flex items-center justify-center gap-2">
-            <Trophy className="w-7 h-7 text-yellow-600" />
+            <motion.div
+              animate={{
+                rotate: [0, 360],
+                transition: { repeat: Infinity, duration: 8, ease: "linear" }
+              }}
+              className="inline-block"
+            >
+              <Globe className="w-7 h-7 text-blue-600" />
+            </motion.div>
             <p className="font-bold text-yellow-700 kids-text text-xl">¡Has llegado a la meta! 🎉</p>
           </div>
         </motion.div>

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -7,12 +8,13 @@ import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { useGame } from "@/context/GameContext";
+
 const DrawGamePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState<boolean>(false);
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+  const { originInfo, destinationInfo } = useGame();
 
   // Log when component mounts to help with debugging
   useEffect(() => {
@@ -39,6 +41,7 @@ const DrawGamePage: React.FC = () => {
       variant: "destructive"
     });
   };
+  
   return <div className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
@@ -51,14 +54,8 @@ const DrawGamePage: React.FC = () => {
     }} transition={{
       duration: 0.5
     }}>
-        {/* Header */}
+        {/* Header with Help button positioned at top right */}
         <div className="w-full flex justify-between items-center">
-          <Link to="/">
-            <Button variant="outline" className="text-slate-600 text-lg bg-yellow-400 hover:bg-yellow-300">
-              <ArrowLeft className="mr-2 h-5 w-5" /> Volver
-            </Button>
-          </Link>
-          
           <motion.h1 animate={{
           scale: [1, 1.05, 1],
           transition: {
@@ -67,7 +64,53 @@ const DrawGamePage: React.FC = () => {
           }
         }} className="kids-text text-fuchsia-900 text-3xl font-medium">Conduce al país destino</motion.h1>
           
-          <div className="w-[100px]"></div> {/* Empty div for layout balance */}
+          <Button 
+            variant="outline" 
+            className="bg-green-600 hover:bg-green-500 text-white kids-text"
+            onClick={() => setShowHelp(true)}
+          >
+            <HelpCircle className="mr-2 h-5 w-5" /> Ayuda
+          </Button>
+        </div>
+        
+        {/* Origin and Destination Flags */}
+        <div className="w-full flex justify-between items-center px-4">
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex flex-col items-center">
+              <motion.span className="text-6xl mb-2" animate={{
+                rotate: [0, 10, -10, 0],
+                transition: { duration: 2, repeat: Infinity }
+              }}>
+                {originInfo.flag}
+              </motion.span>
+              <p className="text-xl font-bold text-purple-900 kids-text">{originInfo.city}</p>
+              <p className="text-lg text-purple-700 kids-text">Origen</p>
+            </div>
+          </motion.div>
+          
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex flex-col items-center">
+              <motion.span className="text-6xl mb-2" animate={{
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1],
+                transition: { duration: 2, repeat: Infinity }
+              }}>
+                {destinationInfo.flag}
+              </motion.span>
+              <p className="text-xl font-bold text-purple-900 kids-text">{destinationInfo.city}</p>
+              <p className="text-lg text-purple-700 kids-text">Destino</p>
+            </div>
+          </motion.div>
         </div>
         
         {/* Error Display */}
@@ -98,6 +141,20 @@ const DrawGamePage: React.FC = () => {
         delay: 0.2
       }}>
           <DrawPathGame onError={handleError} onHelp={() => setShowHelp(true)} />
+        </motion.div>
+        
+        {/* Back button moved to the bottom */}
+        <motion.div 
+          className="w-full flex justify-center mt-6 mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Link to="/" className="w-full max-w-xs">
+            <Button variant="outline" className="w-full text-slate-600 text-lg bg-yellow-400 hover:bg-yellow-300 py-4 kids-text">
+              <ArrowLeft className="mr-2 h-5 w-5" /> Volver al menú principal
+            </Button>
+          </Link>
         </motion.div>
       </motion.div>
       
@@ -175,4 +232,5 @@ const DrawGamePage: React.FC = () => {
       <Toaster />
     </div>;
 };
+
 export default DrawGamePage;

@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { 
   generateLicensePlate, 
@@ -10,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import BonusPopup from "@/components/BonusPopup";
 
-// Ciudades del mundo con datos interesantes para niños
+// Ciudades del mundo con datos interesantes para niños - Updated with Spain as level 0
 const WORLD_DESTINATIONS = [
   {
     city: "Madrid",
@@ -20,7 +21,7 @@ const WORLD_DESTINATIONS = [
   },
   {
     city: "París",
-    country: "Francia",
+    country: "Francia", 
     flag: "🇫🇷",
     fact: "¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!"
   },
@@ -89,6 +90,12 @@ interface GameContextType {
     flag: string;
     fact: string;
   };
+  originInfo: {
+    city: string;
+    country: string;
+    flag: string;
+    fact: string;
+  };
   highScore: number;
   gamesPlayed: number;
   errorMessage: string | null;
@@ -117,9 +124,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [score, setScore] = useState(0);
   const [previousScore, setPreviousScore] = useState(0);
   const [totalPoints, setTotalPoints] = useState(0);
-  const [level, setLevel] = useState(1);
+  const [level, setLevel] = useState(0); // Start at level 0 now
   const [destination, setDestination] = useState("Madrid");
   const [destinationInfo, setDestinationInfo] = useState(WORLD_DESTINATIONS[0]);
+  const [originInfo, setOriginInfo] = useState(WORLD_DESTINATIONS[0]); // Added for origin info
   const [highScore, setHighScore] = useState(0);
   const [gamesPlayed, setGamesPlayed] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -149,8 +157,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (newLevel !== level) {
       setLevel(newLevel);
       
-      // Elegir un destino basado en el nivel
-      const destinationIndex = Math.min(newLevel - 1, WORLD_DESTINATIONS.length - 1);
+      // Set origin as current level info
+      const originIndex = Math.min(newLevel, WORLD_DESTINATIONS.length - 1);
+      const originDestination = WORLD_DESTINATIONS[originIndex];
+      setOriginInfo(originDestination);
+      
+      // Set destination as the next level destination
+      const destinationIndex = Math.min(newLevel + 1, WORLD_DESTINATIONS.length - 1);
       const newDestinationInfo = WORLD_DESTINATIONS[destinationIndex];
       setDestinationInfo(newDestinationInfo);
       setDestination(newDestinationInfo.city);
@@ -159,7 +172,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!isInitialLoad.current) {
         toast({
           title: "¡Nivel nuevo!",
-          description: `Has alcanzado el nivel ${newLevel}. ¡Ahora viajas a ${newDestinationInfo.city}, ${newDestinationInfo.country} ${newDestinationInfo.flag}!`,
+          description: `Has alcanzado el nivel ${newLevel}. ¡Ahora viajas desde ${originDestination.city} hasta ${newDestinationInfo.city}!`,
         });
       }
     }
@@ -338,6 +351,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         level,
         destination,
         destinationInfo,
+        originInfo, // Added originInfo to the context
         highScore,
         gamesPlayed,
         errorMessage,

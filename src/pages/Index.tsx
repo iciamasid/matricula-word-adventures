@@ -6,7 +6,7 @@ import ErrorAlert from "@/components/ErrorAlert";
 import LevelRewards from "@/components/LevelRewards";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Flag, Info, RefreshCw, Car, Trophy } from "lucide-react";
+import { Globe, RefreshCw, Car, Trophy } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -70,6 +70,7 @@ const GameContent = () => {
   const {
     totalPoints,
     destinationInfo,
+    originInfo,
     level,
     resetGame,
     plateConsonants,
@@ -99,30 +100,31 @@ const GameContent = () => {
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
     const countries = [];
-    if (level >= 1) countries.push("España");
-    if (level >= 2) countries.push("Francia");
-    if (level >= 3) countries.push("Italia");
-    if (level >= 4) countries.push("Rusia");
-    if (level >= 5) countries.push("Japón");
-    if (level >= 6) countries.push("Estados Unidos");
-    if (level >= 7) countries.push("Argentina");
-    if (level >= 8) countries.push("Méjico");
-    if (level >= 9) countries.push("Australia");
-    if (level >= 10) countries.push("Antártida");
+    if (level >= 0) countries.push("España");
+    if (level >= 1) countries.push("Francia");
+    if (level >= 2) countries.push("Italia");
+    if (level >= 3) countries.push("Rusia");
+    if (level >= 4) countries.push("Japón");
+    if (level >= 5) countries.push("Estados Unidos");
+    if (level >= 6) countries.push("Argentina");
+    if (level >= 7) countries.push("Méjico");
+    if (level >= 8) countries.push("Australia");
+    if (level >= 9) countries.push("Antártida");
     return countries;
   }, [level]);
+  
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
       toast({
         title: "¡Juego reiniciado!",
-        description: "Has vuelto al nivel 1 y todos tus puntos se han reiniciado."
+        description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
       });
     }
   };
+  
   return <div className="min-h-screen flex flex-col items-center relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
-    // Updated background color
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
@@ -142,7 +144,7 @@ const GameContent = () => {
         
         {/* Instructions button positioned at bottom right of the image */}
         <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className="absolute bottom-6 right-4 bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text text-base font-normal">
-          <Info className="w-4 h-4 mr-1" /> Ayuda
+          <Globe className="w-4 h-4 mr-1" /> Ayuda
         </Button>
       </div>
     
@@ -152,86 +154,9 @@ const GameContent = () => {
           <WordInput />
           
           {/* Score components in a single row */}
-          <div className="w-full grid grid-cols-2 gap-4 mb-4">
-            {/* Total Points Panel - with updated icon */}
-            <motion.div initial={{
-            opacity: 0,
-            x: -20
-          }} animate={{
-            opacity: 1,
-            x: 0
-          }} transition={{
-            delay: 0.1
-          }} whileHover={{
-            scale: 1.02
-          }} className="rounded-lg p-4 shadow-lg text-center py-[6px] bg-transparent">
-              <div className="flex items-center justify-center gap-2">
-                <motion.div animate={{
-                rotate: [0, 10, -10, 0],
-                scale: [1, 1.1, 1]
-              }} transition={{
-                duration: 3,
-                repeat: Infinity
-              }}>
-                  <motion.div className="w-14 h-14 text-3xl text-game-green">🏅</motion.div>
-                </motion.div>
-                <h3 className="text-purple-800 kids-text font-normal text-xl">Puntos</h3>
-              </div>
-              <motion.p className="text-3xl text-purple-900 kids-text mt-1 font-normal" animate={{
-              scale: [1, 1.05, 1]
-            }} transition={{
-              duration: 2,
-              repeat: Infinity
-            }}>
-                {totalPoints}
-              </motion.p>
-              <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                <motion.div className="bg-game-green h-2 rounded-full" initial={{
-                width: "0%"
-              }} animate={{
-                width: `${totalPoints % 500 / 5}%`
-              }} transition={{
-                duration: 1
-              }} />
-              </div>
-            </motion.div>
-            
-            {/* Level Panel - Updated to be transparent and without border */}
-            <motion.div initial={{
-            opacity: 0,
-            x: 20
-          }} animate={{
-            opacity: 1,
-            x: 0
-          }} transition={{
-            delay: 0.1
-          }} whileHover={{
-            scale: 1.02
-          }} className="rounded-lg p-4 bg-transparent shadow-lg text-center py-[5px]">
-              <div className="flex items-center justify-center gap-2">
-                <motion.div animate={{
-                rotate: [0, 10, -10, 0]
-              }} transition={{
-                duration: 2,
-                repeat: Infinity
-              }}>
-                  <motion.div className="w-14 h-14 text-3xl text-game-purple">🏆</motion.div>
-                </motion.div>
-                <h3 className="text-xl text-purple-800 kids-text font-normal">Nivel</h3>
-              </div>
-              <motion.p className="text-3xl text-purple-900 kids-text mt-1 font-normal" animate={level > 1 ? {
-              scale: [1, 1.2, 1]
-            } : {}} transition={{
-              duration: 0.5
-            }}>
-                {level}
-              </motion.p>
-              {/* Removed "¡Nivel desbloqueado!" text and replaced with empty spacing */}
-              <p className="opacity-0">·</p>
-            </motion.div>
-          </div>
+          <ScorePanel />
           
-          {/* "Has llegado hasta" panel - Moved before the map */}
+          {/* "Has llegado hasta" panel - Updated to show origin to destination */}
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -243,28 +168,52 @@ const GameContent = () => {
         }} className="w-full rounded-lg p-5 shadow-lg bg-purple-200">
             <div className="text-center mb-4">
               <h2 className="text-2xl font-normal text-purple-800 kids-text flex items-center justify-center">
-                <motion.span animate={{
-                scale: [1, 1.1, 1]
+                <motion.span className="inline-block" 
+                  animate={{
+                    rotate: [0, 360],
+                    transition: { repeat: Infinity, duration: 8, ease: "linear" }
+                  }}
+                >
+                  <Globe className="h-7 w-7 text-blue-600" />
+                </motion.span>
+                <span className="mx-2 font-normal text-xl">Este nivel te permite conducir desde:</span>
+                <motion.span className="inline-block"
+                  animate={{
+                    rotate: [0, 360],
+                    transition: { repeat: Infinity, duration: 8, ease: "linear" }
+                  }}
+                >
+                  <Globe className="h-7 w-7 text-blue-600" />
+                </motion.span>
+              </h2>
+              
+              {/* Origin */}
+              <div className="flex items-center justify-center gap-2 my-3">
+                <motion.p className="text-2xl font-normal text-purple-900 kids-text" animate={{
+                scale: [1, 1.05, 1]
               }} transition={{
                 duration: 2,
                 repeat: Infinity
               }}>
-                  ✨
-                </motion.span>
-                <span className="mx-2 font-normal text-2xl">Este nivel te permite conducir hasta:</span>
-                <motion.span animate={{
-                scale: [1, 1.1, 1]
+                  {originInfo.city}
+                </motion.p>
+                <motion.span className="text-4xl" animate={{
+                rotate: [0, 10, -10, 0]
               }} transition={{
                 duration: 2,
-                repeat: Infinity,
-                delay: 1
+                repeat: Infinity
               }}>
-                  ✨
+                  {originInfo.flag}
                 </motion.span>
+              </div>
+              
+              {/* Destination with "hasta" text */}
+              <h2 className="text-2xl font-normal text-purple-800 kids-text flex items-center justify-center my-2">
+                <span className="mx-1 font-normal">hasta</span>
               </h2>
               
-              <div className="flex items-center justify-center gap-2 my-4">
-                <motion.p className="text-4xl font-normal text-purple-900 kids-text" animate={{
+              <div className="flex items-center justify-center gap-2 my-3">
+                <motion.p className="text-3xl font-normal text-purple-900 kids-text" animate={{
                 scale: [1, 1.05, 1]
               }} transition={{
                 duration: 2,
@@ -282,10 +231,6 @@ const GameContent = () => {
                 </motion.span>
               </div>
               
-              <p className="text-purple-700 mb-4 kids-text font-normal text-4xl">
-                {destinationInfo.country}
-              </p>
-              
               <Link to={`/country/${destinationInfo.country}`}>
                 <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl px-6 py-3 kids-text font-normal">
                   Conoce {destinationInfo.country} {destinationInfo.flag}
@@ -294,20 +239,7 @@ const GameContent = () => {
             </div>
           </motion.div>
           
-          {/* Mapa Mundi con países desbloqueados - Now after "Has llegado hasta" panel */}
-          <motion.div className="w-full h-[200px] rounded-lg overflow-hidden mb-2 border-4 border-white/50 shadow-lg relative" initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.2
-        }}>
-            
-          </motion.div>
-          
-          {/* Drawing Game Button */}
+          {/* Drawing Game Button - Directly after the origin-destination panel */}
           <motion.div className="w-full bg-purple-200/90 rounded-lg p-4 shadow-lg" initial={{
           opacity: 0,
           y: 20
