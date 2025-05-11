@@ -8,10 +8,11 @@ import { toast } from '@/hooks/use-toast';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
 import { Point } from './utils/pathUtils';
-import { createCar, createEndPoint, createStartPoint } from './utils/carUtils';
+import { CarObject, createCar, createEndPoint, createStartPoint } from './utils/carUtils';
 import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
+import CarCustomizer from './CarCustomizer';
 
 interface DrawPathGameProps {
   onError?: (message: string) => void;
@@ -26,12 +27,18 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
   const [pathExists, setPathExists] = useState<boolean>(false);
   const [endPosition, setEndPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
+  const [carColor, setCarColor] = useState<string>('#E74C3C'); // Default car color
+  const [carScale, setCarScale] = useState<number>(1); // Default car scale
+  const [destinationCountry, setDestinationCountry] = useState<string>("París"); // Default destination
 
   // Handle errors
   const handleError = (message: string) => {
     console.error(message);
     if (onError) {
-      onError(message);
+      // Si es un error de borrado, lo ignoramos
+      if (!message.includes("borrar") && !message.includes("limpiar")) {
+        onError(message);
+      }
     }
   };
 
@@ -57,9 +64,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
           fabricCanvas.remove(endPointObj);
         }
         
-        const endPoint = createEndPoint(lastPoint.x, lastPoint.y);
-        fabricCanvas?.add(endPoint);
-        setEndPointObj(endPoint);
+        // Create a custom end point with destination name
+        if (fabricCanvas) {
+          createEndPoint(lastPoint.x, lastPoint.y, fabricCanvas, destinationCountry);
+        }
+        
         setEndPosition({
           x: lastPoint.x,
           y: lastPoint.y
@@ -76,10 +85,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
         fabricCanvas.isDrawingMode = false;
       }
     },
-    onError: handleError
+    onError: handleError,
+    carColor,
+    carScale
   });
 
-  // Path animation - Nota: ahora incluye clearPathTrace
+  // Path animation - ahora incluye clearPathTrace
   const {
     interpolatedPath,
     isPlaying,
@@ -101,7 +112,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     path,
     startPointObj,
     endPointObj,
-    animationSpeed
+    animationSpeed,
+    offsetY: -15 // Ajuste para que el coche vaya sobre la línea
   });
 
   // Update interpolated path when original path changes
@@ -122,6 +134,35 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
   useEffect(() => {
     setPathAnimationSpeed(animationSpeed);
   }, [animationSpeed]);
+
+  // Efecto para actualizar el coche cuando cambia el color o escala
+  useEffect(() => {
+    if (fabricCanvas && canvasReady && !isPlaying) {
+      handleClear();
+      // Re-inicializar con el nuevo color y escala
+      if (carObjectsRef.current) {
+        // Eliminar el coche actual
+        Object.values(carObjectsRef.current).forEach(part => {
+          fabricCanvas.remove(part);
+        });
+        
+        // Crear uno nuevo con los nuevos valores
+        const startPos = { x: 50, y: 50 };
+        const newCar = createCar(startPos.x, startPos.y, carColor, carScale);
+        
+        // Añadir las partes al canvas
+        Object.values(newCar).forEach(part => {
+          fabricCanvas.add(part);
+        });
+        
+        // Actualizar la referencia
+        carObjectsRef.current = newCar;
+        animationCarRef.current = newCar;
+      }
+      
+      fabricCanvas.renderAll();
+    }
+  }, [carColor, carScale]);
 
   // Start animation along the path
   const handlePlay = () => {
@@ -150,15 +191,20 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
-        if ((obj instanceof Rect) || 
-            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10)) {
-          fabricCanvas.remove(obj);
+        if ((obj instanceof Rect && obj !== startPointObj && obj !== endPointObj) || 
+            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 15)) {
+          if (obj.type !== 'text') { // No eliminar textos (Madrid, destino)
+            fabricCanvas.remove(obj);
+          }
         }
       }
       
-      // Re-add the car at the starting position
-      const car = createCar(path[0].x, path[0].y); // Start exactly at the first point of the path
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
+      // Re-add the car at the starting position with current color and scale
+      const car = createCar(path[0].x, path[0].y, carColor, carScale);
+      Object.values(car).forEach(part => {
+        fabricCanvas.add(part);
+      });
+      
       animationCarRef.current = car;
       fabricCanvas.renderAll();
       
@@ -186,19 +232,24 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       // Clear the path trace
       clearPathTrace();
       
-      // Remove all objects
-      fabricCanvas.clear();
+      // Remove all objects except origin and destination markers
+      const objects = fabricCanvas.getObjects();
+      for (let i = objects.length - 1; i >= 0; i--) {
+        fabricCanvas.remove(objects[i]);
+      }
       
       // Reset the canvas background
       fabricCanvas.backgroundColor = '#f9f2ff';
       
-      // Add start point back
-      const startPoint = createStartPoint(50, 50);
-      fabricCanvas.add(startPoint);
+      // Add start point with Madrid image
+      createStartPoint(50, 50, fabricCanvas);
       
-      // Add car back to start - ahora con color rojo
-      const car = createCar(50, 50);
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
+      // Add car back to start - ahora con el color personalizado
+      const car = createCar(50, 50, carColor, carScale);
+      Object.values(car).forEach(part => {
+        fabricCanvas.add(part);
+      });
+      
       carObjectsRef.current = car;
       animationCarRef.current = car;
       fabricCanvas.renderAll();
@@ -220,11 +271,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       });
     } catch (error) {
       console.error("Error clearing canvas:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo limpiar el tablero. Inténtalo de nuevo.",
-        variant: "destructive"
-      });
+      // No mostramos el error de borrado
     }
   };
 
@@ -284,6 +331,18 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     console.log(`Animation speed set to: ${speed}`);
   };
 
+  // Handle car color change
+  const handleColorChange = (color: string) => {
+    setCarColor(color);
+    console.log(`Car color changed to: ${color}`);
+  };
+
+  // Handle car scale change
+  const handleScaleChange = (scale: number) => {
+    setCarScale(scale);
+    console.log(`Car scale changed to: ${scale}`);
+  };
+
   // Handle help button click
   const handleHelp = () => {
     if (onHelp) {
@@ -329,6 +388,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
         interpolatedPathLength={interpolatedPath.length}
         animationCompleted={animationCompleted}
       />
+      
+      {/* Car customizer */}
+      <div className="w-full flex justify-center mb-2">
+        <CarCustomizer
+          onColorChange={handleColorChange}
+          onScaleChange={handleScaleChange}
+        />
+      </div>
       
       {/* Speed control slider */}
       <SpeedControl 

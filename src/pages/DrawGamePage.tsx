@@ -2,12 +2,13 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, AlertCircle, HelpCircle, X } from "lucide-react";
+import { ArrowLeft, AlertCircle, HelpCircle, X, CarFront, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const DrawGamePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
@@ -33,6 +34,10 @@ const DrawGamePage: React.FC = () => {
 
   // Function to handle errors from the DrawPathGame component
   const handleError = (errorMessage: string) => {
+    // No mostramos errores para la función de borrar
+    if (errorMessage.includes("borrar") || errorMessage.includes("limpiar")) {
+      return;
+    }
     setError(errorMessage);
     toast({
       title: "Error",
@@ -43,7 +48,7 @@ const DrawGamePage: React.FC = () => {
 
   return (
     <div 
-      className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden bg-cover bg-center"
       style={{
         backgroundColor: "#bba7ca",
         backgroundSize: "cover",
@@ -56,8 +61,8 @@ const DrawGamePage: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Header */}
-        <div className="w-full flex justify-between items-center">
+        {/* Header con título y botones */}
+        <div className="w-full flex justify-between items-center bg-white/50 p-3 rounded-xl shadow-md">
           <Link to="/">
             <Button variant="outline" className="bg-white/80 hover:bg-white">
               <ArrowLeft className="mr-2 h-5 w-5" /> Volver
@@ -65,7 +70,7 @@ const DrawGamePage: React.FC = () => {
           </Link>
           
           <motion.h1 
-            className="text-3xl font-bold kids-text text-white"
+            className="text-3xl font-bold kids-text text-purple-800"
             animate={{
               scale: [1, 1.05, 1],
               transition: { repeat: Infinity, duration: 2 }
@@ -74,7 +79,13 @@ const DrawGamePage: React.FC = () => {
             Juego del Cochecito
           </motion.h1>
           
-          <div className="w-[100px]"></div> {/* Empty div for layout balance */}
+          <Button 
+            variant="outline" 
+            onClick={() => setShowHelp(true)} 
+            className="kids-text bg-yellow-400 hover:bg-yellow-300 text-gray-800 text-md font-bold px-3 py-2 rounded-xl"
+          >
+            <HelpCircle className="mr-1 h-5 w-5" /> Ayuda
+          </Button>
         </div>
         
         {/* Error Display */}
@@ -164,6 +175,14 @@ const DrawGamePage: React.FC = () => {
                     <p className="text-sm text-purple-700">Más lento o más rápido según prefieras</p>
                   </div>
                 </li>
+
+                <li className="flex items-start gap-2">
+                  <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">5</div>
+                  <div>
+                    <span className="font-bold">Personaliza tu coche</span>
+                    <p className="text-sm text-purple-700">¡Cambia el color, tamaño y accesorios de tu coche!</p>
+                  </div>
+                </li>
               </ol>
               
               <div className="mt-6 pt-4 border-t border-gray-200">
@@ -178,7 +197,7 @@ const DrawGamePage: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-      
+
       <Toaster />
     </div>
   );

@@ -1,6 +1,8 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Trash2, Route, HelpCircle } from 'lucide-react';
+import { ArrowRight, Trash2, Route } from 'lucide-react';
+
 interface DrawControlsProps {
   isPlaying: boolean;
   isDrawing: boolean;
@@ -10,8 +12,8 @@ interface DrawControlsProps {
   onDraw: () => void;
   onPlay: () => void;
   onClear: () => void;
-  onHelp: () => void;
 }
+
 const DrawControls: React.FC<DrawControlsProps> = ({
   isPlaying,
   isDrawing,
@@ -20,8 +22,7 @@ const DrawControls: React.FC<DrawControlsProps> = ({
   isInitializing,
   onDraw,
   onPlay,
-  onClear,
-  onHelp
+  onClear
 }) => {
   return <div className="flex flex-col sm:flex-row justify-between gap-4">
       <Button onClick={onDraw} variant="outline" disabled={isPlaying || isDrawing || !canvasReady || isInitializing} className="text-slate-50 font-medium text-2xl text-center bg-violet-600 hover:bg-violet-500 px-[10px]">
@@ -33,13 +34,10 @@ const DrawControls: React.FC<DrawControlsProps> = ({
         <ArrowRight className="mr-2 h-6 w-6" /> Jugar
       </Button>
       
-      <Button onClick={onHelp} className="kids-text bg-yellow-400 hover:bg-yellow-300 text-gray-800 text-xl font-bold px-4 py-3 rounded-xl">
-        <HelpCircle className="mr-2 h-5 w-5" /> Ayuda
-      </Button>
-      
       <Button onClick={onClear} variant="outline" disabled={isPlaying || !canvasReady || isInitializing} className="border-red-300 hover:bg-red-100 text-red-500 kids-text font-medium text-xl px-4 py-3 rounded-xl">
         <Trash2 className="mr-2 h-5 w-5" /> Borrar
       </Button>
     </div>;
 };
+
 export default DrawControls;
