@@ -233,7 +233,7 @@ const GameContent = () => {
           </div>
           
           {/* Title for the map - updated text */}
-          <motion.h2 className="text-2xl font-bold text-white mt-2 mb-2 text-center kids-text reward-text" initial={{
+          <motion.h2 initial={{
           opacity: 0,
           y: 10
         }} animate={{
@@ -241,7 +241,7 @@ const GameContent = () => {
           y: 0
         }} transition={{
           delay: 0.2
-        }}>
+        }} className="mt-2 mb-2 text-center kids-text reward-text text-fuchsia-700 text-3xl font-medium py-[20px]">
             ¿Qué países puedes visitar con estos puntos?
           </motion.h2>
           
