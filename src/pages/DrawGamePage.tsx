@@ -1,19 +1,44 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
-import ErrorAlert from "@/components/ErrorAlert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useToast } from "@/hooks/use-toast";
 
 const DrawGamePage: React.FC = () => {
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+  
   // Log when component mounts to help with debugging
   useEffect(() => {
     console.log("DrawGamePage mounted");
     return () => console.log("DrawGamePage unmounted");
   }, []);
+
+  // Clear error after 5 seconds
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  // Function to handle errors from the DrawPathGame component
+  const handleError = (errorMessage: string) => {
+    setError(errorMessage);
+    toast({
+      title: "Error",
+      description: errorMessage,
+      variant: "destructive"
+    });
+  };
 
   return (
     <div 
@@ -43,6 +68,21 @@ const DrawGamePage: React.FC = () => {
           <div className="w-[100px]"></div> {/* Empty div for layout balance */}
         </div>
         
+        {/* Error Display */}
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="w-full"
+          >
+            <Alert variant="destructive" className="border-red-500 bg-red-100">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+        
         {/* Game Instructions - Updated with clearer instructions */}
         <motion.div 
           className="bg-white/90 rounded-lg p-5 w-full shadow-lg"
@@ -71,7 +111,7 @@ const DrawGamePage: React.FC = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.4 }}
         >
-          <DrawPathGame />
+          <DrawPathGame onError={handleError} />
         </motion.div>
         
         {/* Fun Fact */}
@@ -90,7 +130,6 @@ const DrawGamePage: React.FC = () => {
       </motion.div>
       
       <Toaster />
-      <ErrorAlert />
     </div>
   );
 };

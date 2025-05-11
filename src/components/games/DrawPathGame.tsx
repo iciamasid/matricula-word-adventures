@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { motion } from 'framer-motion';
@@ -10,6 +9,10 @@ import { toast } from '@/hooks/use-toast';
 interface Point {
   x: number;
   y: number;
+}
+
+interface DrawPathGameProps {
+  onError?: (message: string) => void;
 }
 
 // Create a simple car object using Fabric.js shapes
@@ -106,7 +109,7 @@ const createEndPoint = (left: number, top: number) => {
   });
 };
 
-const DrawPathGame: React.FC = () => {
+const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
@@ -430,6 +433,14 @@ const DrawPathGame: React.FC = () => {
         description: "No se pudo activar el modo dibujo. Inténtalo de nuevo.",
         variant: "destructive"
       });
+    }
+  };
+
+  // Update error handling in the component to use the handleError function
+  const handleError = (message: string) => {
+    console.error(message);
+    if (onError) {
+      onError(message);
     }
   };
 
