@@ -164,7 +164,7 @@ const GameContent = () => {
             delay: 0.1
           }} whileHover={{
             scale: 1.02
-          }} className="rounded-lg p-4 shadow-lg text-center bg-transparent">
+          }} className="rounded-lg p-4 shadow-lg text-center bg-transparent py-[56px]">
               <div className="flex items-center justify-center gap-2">
                 <motion.div animate={{
                 rotate: [0, 10, -10, 0],
@@ -226,13 +226,9 @@ const GameContent = () => {
             }}>
                 {level}
               </motion.p>
-              {level === 1 ? (
-                <p className="opacity-0">·</p>
-              ) : (
-                <p className="kids-text text-xl font-normal text-purple-800">
+              {level === 1 ? <p className="opacity-0">·</p> : <p className="kids-text text-xl font-normal text-purple-800">
                   ¡Nivel desbloqueado!
-                </p>
-              )}
+                </p>}
             </motion.div>
           </div>
           
