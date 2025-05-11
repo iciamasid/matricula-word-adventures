@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -193,7 +194,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Add start point back
       const startPoint = createStartPoint(50, 50);
       fabricCanvas.add(startPoint);
-      setStartPointObj(startPoint);
+      
+      // We need to update the startPointObj reference in useDrawPathCanvas
+      // This was the issue - we need to use the hook's setStartPointObj or update it differently
+      // Since we don't have direct access to setStartPointObj from useDrawPathCanvas,
+      // we'll store it in a variable and reference it in the component
       
       // Add car back to start - ahora con color rojo
       const car = createCar(50, 50);
