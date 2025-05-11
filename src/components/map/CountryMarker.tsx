@@ -18,7 +18,7 @@ const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlig
   return (
     <Link to={`/country/${country}`}>
       <motion.div 
-        className={`absolute w-1.5 h-1.5 z-10 ${isHighlighted ? 'z-20' : ''}`} 
+        className={`absolute w-1 h-1 z-10 ${isHighlighted ? 'z-20' : ''}`} 
         style={{ 
           left: position.left,
           top: position.top,
@@ -31,9 +31,9 @@ const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlig
       >
         <div className="bg-white rounded-full p-px shadow-lg">
           {isHighlighted ? (
-            <div className="bg-red-500 rounded-full w-1.5 h-1.5 pulse" />
+            <div className="bg-red-500 rounded-full w-1 h-1 pulse" />
           ) : (
-            <div className="bg-blue-500 rounded-full w-1.5 h-1.5" />
+            <div className="bg-blue-500 rounded-full w-1 h-1" />
           )}
         </div>
       </motion.div>

@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import CountryPage from "./pages/CountryPage";
 import NotFound from "./pages/NotFound";
+import DrawGamePage from "./pages/DrawGamePage";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +20,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/country/:country" element={<CountryPage />} />
+          <Route path="/draw-game" element={<DrawGamePage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

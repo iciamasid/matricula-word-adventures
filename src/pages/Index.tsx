@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -7,7 +6,7 @@ import ErrorAlert from "@/components/ErrorAlert";
 import LevelRewards from "@/components/LevelRewards";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Flag, Info, RefreshCw } from "lucide-react";
+import { Flag, Info, RefreshCw, Car } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -222,7 +221,7 @@ const GameContent = () => {
             </div>
           </motion.div>
           
-          {/* Simplified Level Rewards - Removed country description and only shows "Has llegado hasta" and button */}
+          {/* Simplified Level Rewards - Only button and destination */}
           <motion.div 
             className="w-full bg-white/90 rounded-lg p-5 shadow-lg"
             initial={{ opacity: 0, y: 20 }}
@@ -272,6 +271,29 @@ const GameContent = () => {
                   className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-6 py-3 kids-text"
                 >
                   Conoce {destinationInfo.country} {destinationInfo.flag}
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+          
+          {/* Drawing Game Button - NEW */}
+          <motion.div
+            className="w-full bg-purple-200/90 rounded-lg p-4 shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            whileHover={{ scale: 1.02 }}
+          >
+            <div className="text-center">
+              <h2 className="text-2xl font-bold text-purple-800 kids-text mb-3">¡Juego del Cochecito!</h2>
+              <p className="text-purple-700 kids-text mb-4">
+                Dibuja un camino y haz que el cochecito lo siga
+              </p>
+              <Link to="/draw-game">
+                <Button
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl kids-text px-6 py-3"
+                >
+                  <Car className="mr-2 h-6 w-6" /> Jugar
                 </Button>
               </Link>
             </div>

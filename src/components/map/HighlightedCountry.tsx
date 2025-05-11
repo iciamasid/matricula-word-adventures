@@ -17,7 +17,7 @@ const HighlightedCountry: React.FC<HighlightedCountryProps> = ({ country }) => {
   
   return (
     <motion.div 
-      className="absolute w-1.5 h-1.5 z-10" 
+      className="absolute w-1 h-1 z-10" 
       style={{ 
         left: position.left,
         top: position.top,
@@ -28,7 +28,7 @@ const HighlightedCountry: React.FC<HighlightedCountryProps> = ({ country }) => {
       transition={{ duration: 0.5 }}
     >
       <div className="bg-white rounded-full p-0.5 shadow-lg"> 
-        <div className="bg-red-500 rounded-full w-1.5 h-1.5 flex items-center justify-content pulse"> 
+        <div className="bg-red-500 rounded-full w-1 h-1 flex items-center justify-content pulse"> 
           <span className="text-white text-[3px] font-bold">
             {countryFlag}
           </span>
