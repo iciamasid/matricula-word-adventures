@@ -295,17 +295,7 @@ const GameContent = () => {
           </motion.div>
           
           {/* Mapa Mundi con países desbloqueados - Now after "Has llegado hasta" panel */}
-          <motion.div className="w-full h-[200px] rounded-lg overflow-hidden mb-2 border-4 border-white/50 shadow-lg relative" initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.2
-        }}>
-            
-          </motion.div>
+          
           
           {/* Drawing Game Button */}
           <motion.div className="w-full bg-purple-200/90 rounded-lg p-4 shadow-lg" initial={{
