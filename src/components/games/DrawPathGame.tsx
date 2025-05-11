@@ -776,7 +776,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     });
   };
 
-  return <div className="flex flex-col w-full gap-4">
+  return (
+    <div className="flex flex-col w-full gap-4">
       <Card className="border-4 border-purple-300 shadow-lg overflow-hidden">
         <CardContent className="p-4">
           <div ref={containerRef} className="w-full relative">
@@ -855,3 +856,30 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
           <p className="text-green-600">Dibuja un camino para el coche directamente en el tablero.</p>
         </div>
       )}
+      
+      {/* Animation completion message */}
+      {animationCompleted && (
+        <div className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300">
+          <p className="font-bold text-yellow-800">¡Felicidades!</p>
+          <p className="text-yellow-600">El coche ha llegado a su destino. Puedes dibujar un nuevo camino.</p>
+        </div>
+      )}
+      
+      {/* Debug button (only visible during development) */}
+      {process.env.NODE_ENV !== 'production' && (
+        <div className="flex justify-end">
+          <Button 
+            onClick={toggleDebugMode} 
+            variant="ghost" 
+            size="sm" 
+            className={`text-xs ${debugMode ? 'bg-purple-100' : ''}`}
+          >
+            {debugMode ? 'Desactivar Depuración' : 'Activar Depuración'}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DrawPathGame;
