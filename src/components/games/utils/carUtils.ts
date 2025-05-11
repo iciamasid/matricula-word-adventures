@@ -1,4 +1,5 @@
-import { Circle, Rect, Image as FabricImage } from 'fabric';
+
+import { Canvas, Circle, Rect, Image as FabricImage } from 'fabric';
 
 // Create a simple car object using Fabric.js shapes
 export const createCar = (left: number, top: number, color = '#E74C3C', scale = 1) => {
@@ -84,7 +85,7 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
 
 // Create a car from a provided image
 export const createCarFromImage = (
-  canvas: fabric.Canvas | null,
+  canvas: Canvas | null,
   left: number, 
   top: number, 
   scale = 0.5
