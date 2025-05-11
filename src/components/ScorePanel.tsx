@@ -108,7 +108,7 @@ const ScorePanel: React.FC = () => {
         {/* World Tour Progress Bar with all flags */}
         <div className="mt-2">
           <div className="flex justify-between text-xs text-purple-700 mb-1">
-            <span>Inicio</span>
+            <span className="text-sm">Inicio</span>
             <span className="text-sm">¡Vuelta al mundo!</span>
           </div>
           <div className="relative">
