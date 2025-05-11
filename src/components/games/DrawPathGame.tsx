@@ -1,5 +1,6 @@
+
 import React, { useEffect, useRef, useState } from 'react';
-import { fabric } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Image, Path } from 'fabric';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,7 +15,7 @@ interface Point {
 const DrawPathGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [fabricCanvas, setFabricCanvas] = useState<fabric.Canvas | null>(null);
+  const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
   const [path, setPath] = useState<Point[]>([]);
   const [carPosition, setCarPosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
@@ -29,7 +30,7 @@ const DrawPathGame: React.FC = () => {
     const containerHeight = 300; // Fixed height for consistency
     
     // Create Fabric Canvas
-    const canvas = new fabric.Canvas(canvasRef.current, {
+    const canvas = new FabricCanvas(canvasRef.current, {
       width: containerWidth,
       height: containerHeight,
       backgroundColor: '#f9f2ff', // Light purple background matching the app's theme
@@ -37,12 +38,13 @@ const DrawPathGame: React.FC = () => {
     });
     
     // Configure drawing brush
-    canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-    canvas.freeDrawingBrush.color = '#9B59B6'; // Purple color matching theme
-    canvas.freeDrawingBrush.width = 8;
+    if (canvas.freeDrawingBrush) {
+      canvas.freeDrawingBrush.color = '#9B59B6'; // Purple color matching theme
+      canvas.freeDrawingBrush.width = 8;
+    }
     
     // Add car starting point
-    const startPoint = new fabric.Circle({
+    const startPoint = new Circle({
       left: 50,
       top: 50,
       radius: 10,
@@ -53,7 +55,7 @@ const DrawPathGame: React.FC = () => {
     canvas.add(startPoint);
     
     // Add car image
-    fabric.Image.fromURL('/lovable-uploads/coche_animado.gif', (img) => {
+    Image.fromURL('/lovable-uploads/coche_animado.gif', (img) => {
       img.scaleToWidth(40);
       img.set({
         left: 30,
@@ -72,7 +74,7 @@ const DrawPathGame: React.FC = () => {
     setFabricCanvas(canvas);
     
     // Path drawing events
-    canvas.on('path:created', (e) => {
+    canvas.on('path:created', (e: any) => {
       if (!e.path) return;
       
       // Convert fabric path to simple points array for animation
@@ -89,7 +91,7 @@ const DrawPathGame: React.FC = () => {
       // Remove all paths except the last one
       const objects = canvas.getObjects();
       for (let i = 0; i < objects.length; i++) {
-        if (objects[i] !== e.path && objects[i] instanceof fabric.Path) {
+        if (objects[i] !== e.path && objects[i] instanceof Path) {
           canvas.remove(objects[i]);
         }
       }
@@ -143,7 +145,7 @@ const DrawPathGame: React.FC = () => {
     if (fabricCanvas) {
       const objects = fabricCanvas.getObjects();
       for (let i = 0; i < objects.length; i++) {
-        if (objects[i] instanceof fabric.Image) {
+        if (objects[i] instanceof Image) {
           fabricCanvas.remove(objects[i]);
         }
       }
@@ -167,13 +169,13 @@ const DrawPathGame: React.FC = () => {
     // Keep only the starting point
     const objects = fabricCanvas.getObjects();
     for (let i = 0; i < objects.length; i++) {
-      if (!(objects[i] instanceof fabric.Circle)) {
+      if (!(objects[i] instanceof Circle)) {
         fabricCanvas.remove(objects[i]);
       }
     }
     
     // Add car back to start
-    fabric.Image.fromURL('/lovable-uploads/coche_animado.gif', (img) => {
+    Image.fromURL('/lovable-uploads/coche_animado.gif', (img) => {
       img.scaleToWidth(40);
       img.set({
         left: 30,
