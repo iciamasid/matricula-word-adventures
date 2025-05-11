@@ -1,4 +1,5 @@
-import { Canvas, Circle, Rect, Image as FabricImage } from 'fabric';
+
+import { Circle, Rect } from 'fabric';
 
 // Create a simple car object using Fabric.js shapes
 export const createCar = (left: number, top: number, color = '#E74C3C', scale = 1) => {
@@ -82,47 +83,6 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
   };
 };
 
-// Create a car from a provided image
-export const createCarFromImage = (
-  canvas: Canvas | null,
-  left: number, 
-  top: number, 
-  scale = 0.5
-): Promise<FabricImage> => {
-  return new Promise((resolve, reject) => {
-    if (!canvas) {
-      reject(new Error('Canvas is not initialized'));
-      return;
-    }
-    
-    // The correct format for FabricImage.fromURL in fabric.js v6
-    FabricImage.fromURL('/lovable-uploads/coche animado.gif', (img) => {
-      if (!img) {
-        console.error('Failed to load car image');
-        reject(new Error('Failed to load car image'));
-        return;
-      }
-      
-      img.set({
-        left,
-        top,
-        originX: 'center',
-        originY: 'center',
-        scaleX: scale,
-        scaleY: scale,
-        selectable: false,
-        evented: false,
-        zIndex: 100
-      });
-      
-      console.log('Car image loaded successfully');
-      resolve(img);
-    }, {
-      crossOrigin: 'anonymous'
-    });
-  });
-};
-
 // Create start and end points for the path
 export const createStartPoint = (left: number, top: number) => {
   return new Circle({
@@ -156,5 +116,3 @@ export interface CarObject {
   wheel3: Circle;
   headlight: Circle;
 }
-
-export type CarImage = FabricImage;

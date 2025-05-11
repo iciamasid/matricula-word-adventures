@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react';
-import { Canvas as FabricCanvas, Circle, Path, Image as FabricImage } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Path } from 'fabric';
 import { toast } from '@/hooks/use-toast';
 import { Point, interpolatePoints } from '../utils/pathUtils';
 import { CarObject } from '../utils/carUtils';
@@ -31,14 +31,8 @@ export const usePathAnimation = ({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pathTraceRef = useRef<Path | null>(null);
   const carObjectsRef = useRef<CarObject | null>(null);
-  const carImageRef = useRef<FabricImage | null>(null);
   const [debugMode, setDebugMode] = useState<boolean>(false);
   const [currentAnimationSpeed, setCurrentAnimationSpeed] = useState<number>(animationSpeed);
-
-  // Set car image reference
-  const setCarImageRef = useCallback((carImage: FabricImage | null) => {
-    carImageRef.current = carImage;
-  }, []);
 
   // Create interpolated path when original path changes
   const createInterpolatedPath = useCallback((originalPath: Point[]) => {
@@ -79,11 +73,11 @@ export const usePathAnimation = ({
     setInterpolatedPath(interpolated);
   }, [createInterpolatedPath]);
 
-  // Path trace visualization
+  // Path trace visualization - Modificado para asegurar que el trazo permanezca visible
   const updatePathTrace = useCallback((currentIndex: number) => {
     if (!fabricCanvas || interpolatedPath.length === 0) return;
     
-    // Create the path trace if it doesn't exist
+    // Crear la traza del camino si no existe
     if (!pathTraceRef.current) {
       // Create the full path trace at once
       const pathData = interpolatedPath.map((point, idx) => 
@@ -120,12 +114,8 @@ export const usePathAnimation = ({
       }
     }
     
-    // Ensure car image is on top
-    if (carImageRef.current) {
-      carImageRef.current.set('zIndex', 10);
-    }
-    // Keep traditional car objects as fallback
-    else if (carObjectsRef.current) {
+    // Ensure car is on top
+    if (carObjectsRef.current) {
       const car = carObjectsRef.current;
       // Set higher z-index for car components
       car.body.set('zIndex', 5);
@@ -142,13 +132,16 @@ export const usePathAnimation = ({
 
   // Move car along the path
   const moveCar = useCallback((currentIndex: number) => {
-    if (!fabricCanvas || !interpolatedPath.length) {
+    if (!fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) {
       console.log("Missing required objects for animation", {
         canvas: !!fabricCanvas,
-        pathLength: interpolatedPath.length
+        pathLength: interpolatedPath.length,
+        car: !!carObjectsRef.current
       });
       return;
     }
+    
+    const car = carObjectsRef.current;
     
     // Check if animation is complete
     if (currentIndex >= interpolatedPath.length) {
@@ -173,71 +166,34 @@ export const usePathAnimation = ({
     const newX = currentPoint.x;
     const newY = currentPoint.y;
     
-    // Update car position based on image or traditional car objects
-    if (carImageRef.current) {
-      // For the car image
-      if (currentIndex > 0) {
-        // Look ahead for smoother rotation (if possible)
-        const lookAheadIndex = Math.min(currentIndex + 3, interpolatedPath.length - 1);
-        const lookAheadPoint = interpolatedPath[lookAheadIndex];
-        const prevPoint = interpolatedPath[Math.max(0, currentIndex - 1)];
-        
-        // Use the look ahead point for rotation calculation if available
-        const targetX = lookAheadPoint.x;
-        const targetY = lookAheadPoint.y;
-        
-        const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
-        
-        // Set position and rotation for the car image
-        carImageRef.current.set({ 
-          left: newX, 
-          top: newY, 
-          angle: angle,
-          zIndex: 10 // Keep car on top
-        });
-      } else {
-        carImageRef.current.set({ 
-          left: newX, 
-          top: newY,
-          zIndex: 10 // Keep car on top
-        });
-      }
-    }
-    // Fallback to traditional car objects if image is not available
-    else if (carObjectsRef.current) {
-      const car = carObjectsRef.current;
+    // Calculate rotation angle if we have previous points
+    // Look ahead a few points for smoother rotation
+    if (currentIndex > 0) {
+      // Look ahead for smoother rotation (if possible)
+      const lookAheadIndex = Math.min(currentIndex + 3, interpolatedPath.length - 1);
+      const lookAheadPoint = interpolatedPath[lookAheadIndex];
+      const prevPoint = interpolatedPath[Math.max(0, currentIndex - 1)];
       
-      // Calculate rotation angle if we have previous points
-      if (currentIndex > 0) {
-        // Look ahead for smoother rotation (if possible)
-        const lookAheadIndex = Math.min(currentIndex + 3, interpolatedPath.length - 1);
-        const lookAheadPoint = interpolatedPath[lookAheadIndex];
-        const prevPoint = interpolatedPath[Math.max(0, currentIndex - 1)];
-        
-        // Use the look ahead point for rotation calculation if available
-        const targetX = lookAheadPoint.x;
-        const targetY = lookAheadPoint.y;
-        
-        const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
-        
-        // Set positions with calculated angle
-        car.body.set({ left: newX, top: newY, angle: angle });
-        car.roof.set({ left: newX, top: newY - 15, angle: angle });
-        car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
-        car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle }); 
-        car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle });
-        car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
-      } else {
-        car.body.set({ left: newX, top: newY });
-        car.roof.set({ left: newX, top: newY - 15 });
-        car.wheel1.set({ left: newX - 20, top: newY + 15 });
-        car.wheel2.set({ left: newX + 0, top: newY + 15 });
-        car.wheel3.set({ left: newX + 20, top: newY + 15 });
-        car.headlight.set({ left: newX + 30, top: newY + 5 });
-      }
+      // Use the look ahead point for rotation calculation if available
+      const targetX = lookAheadPoint.x;
+      const targetY = lookAheadPoint.y;
+      
+      const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
+      
+      // Set positions with calculated angle
+      car.body.set({ left: newX, top: newY, angle: angle });
+      car.roof.set({ left: newX, top: newY - 15, angle: angle });
+      car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
+      car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle }); 
+      car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle });
+      car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
     } else {
-      console.log("No car object available for animation");
-      return;
+      car.body.set({ left: newX, top: newY });
+      car.roof.set({ left: newX, top: newY - 15 });
+      car.wheel1.set({ left: newX - 20, top: newY + 15 });
+      car.wheel2.set({ left: newX + 0, top: newY + 15 });
+      car.wheel3.set({ left: newX + 20, top: newY + 15 });
+      car.headlight.set({ left: newX + 30, top: newY + 5 });
     }
     
     // Update car position state for any UI that needs it
@@ -262,9 +218,10 @@ export const usePathAnimation = ({
     setCurrentPathIndex(currentIndex);
     
     // Calculate the step size to complete animation in about 10 seconds
+    // For a typical path of around 300-500 points, we want to move every 20-30ms
     const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 500)); // Adjust step size based on path length
     
-    // Adjust the speed to complete in approximately 10 seconds
+    // Ajustar la velocidad para completar en aproximadamente 10 segundos
     const baseSpeed = 20; 
     const adjustedSpeed = Math.max(5, Math.min(50, currentAnimationSpeed / 10));
     
@@ -275,7 +232,7 @@ export const usePathAnimation = ({
     
     // Skip points for faster animation
     const nextIndex = currentIndex + stepSize;
-  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed, carObjectsRef]);
+  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed]);
 
   // Cancel any ongoing animation
   const cancelAnimation = useCallback(() => {
@@ -306,7 +263,7 @@ export const usePathAnimation = ({
     }
   }, [debugMode]);
 
-  // Clear the path trace
+  // Añadir una función para limpiar el path trace
   const clearPathTrace = useCallback(() => {
     if (pathTraceRef.current && fabricCanvas) {
       fabricCanvas.remove(pathTraceRef.current);
@@ -327,7 +284,6 @@ export const usePathAnimation = ({
     showPath,
     carObjectsRef,
     pathTraceRef,
-    carImageRef,
     debugMode,
     updatePath,
     moveCar,
@@ -335,7 +291,6 @@ export const usePathAnimation = ({
     toggleDebugMode,
     setAnimationSpeed,
     currentAnimationSpeed,
-    clearPathTrace,
-    setCarImageRef
+    clearPathTrace
   };
 };

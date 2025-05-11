@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Image as FabricImage } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button"; 
@@ -8,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
 import { Point } from './utils/pathUtils';
-import { createCar, createEndPoint, createStartPoint, createCarFromImage, CarImage } from './utils/carUtils';
+import { createCar, createEndPoint, createStartPoint } from './utils/carUtils';
 import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
@@ -26,7 +26,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
   const [pathExists, setPathExists] = useState<boolean>(false);
   const [endPosition, setEndPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
-  const [carImage, setCarImage] = useState<FabricImage | null>(null);
 
   // Handle errors
   const handleError = (message: string) => {
@@ -80,7 +79,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     onError: handleError
   });
 
-  // Path animation
+  // Path animation - Nota: ahora incluye clearPathTrace
   const {
     interpolatedPath,
     isPlaying,
@@ -90,13 +89,13 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     currentPathIndex,
     setCurrentPathIndex,
     animationProgress,
+    carObjectsRef: animationCarRef,
     updatePath,
     moveCar,
     cancelAnimation,
     toggleDebugMode,
     setAnimationSpeed: setPathAnimationSpeed,
-    clearPathTrace,
-    setCarImageRef
+    clearPathTrace
   } = usePathAnimation({
     fabricCanvas,
     path,
@@ -112,46 +111,17 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     }
   }, [path, updatePath]);
 
+  // Share the car ref between hooks
+  useEffect(() => {
+    if (carObjectsRef.current) {
+      animationCarRef.current = carObjectsRef.current;
+    }
+  }, [carObjectsRef.current]);
+
   // Update animation speed when slider changes
   useEffect(() => {
     setPathAnimationSpeed(animationSpeed);
   }, [animationSpeed]);
-
-  // Load car image when canvas is ready
-  useEffect(() => {
-    const loadCarImage = async () => {
-      if (fabricCanvas && canvasReady && !isInitializing) {
-        try {
-          // Remove previous car image if exists
-          if (carImage) {
-            fabricCanvas.remove(carImage);
-          }
-          
-          // Create new car image at start position
-          const newCarImage = await createCarFromImage(fabricCanvas, 50, 50);
-          fabricCanvas.add(newCarImage);
-          fabricCanvas.renderAll();
-          
-          // Store car image reference
-          setCarImage(newCarImage);
-          setCarImageRef(newCarImage);
-          
-          console.log('Car image initialized');
-        } catch (error) {
-          console.error('Failed to load car image:', error);
-          handleError('No se pudo cargar la imagen del coche. Usando coche predeterminado.');
-          
-          // Fall back to default car if image loading fails
-          const defaultCar = createCar(50, 50);
-          fabricCanvas.add(defaultCar.body, defaultCar.roof, defaultCar.wheel1, defaultCar.wheel2, defaultCar.wheel3, defaultCar.headlight);
-          fabricCanvas.renderAll();
-          carObjectsRef.current = defaultCar;
-        }
-      }
-    };
-    
-    loadCarImage();
-  }, [fabricCanvas, canvasReady, isInitializing]);
 
   // Start animation along the path
   const handlePlay = () => {
@@ -186,37 +156,20 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
         }
       }
       
-      // Position the car image at the start of the path
-      const loadNewCarAtStart = async () => {
-        try {
-          // Remove old car image if exists
-          if (carImage) {
-            fabricCanvas.remove(carImage);
-          }
-          
-          // Create new car at starting position
-          const newCarImage = await createCarFromImage(fabricCanvas, path[0].x, path[0].y);
-          fabricCanvas.add(newCarImage);
-          setCarImage(newCarImage);
-          setCarImageRef(newCarImage);
-          
-          fabricCanvas.renderAll();
-          
-          // Cancel any existing animation
-          cancelAnimation();
-          
-          // Start the animation with a slight delay
-          console.log("Starting car animation sequence");
-          setTimeout(() => {
-            requestAnimationFrame(() => moveCar(0));
-          }, 500);
-        } catch (error) {
-          console.error('Failed to load car image for animation:', error);
-          handleError('Error al cargar la imagen del coche para la animación');
-        }
-      };
+      // Re-add the car at the starting position
+      const car = createCar(path[0].x, path[0].y); // Start exactly at the first point of the path
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
+      animationCarRef.current = car;
+      fabricCanvas.renderAll();
       
-      loadNewCarAtStart();
+      // Cancel any existing animation
+      cancelAnimation();
+      
+      // Start the animation with a slight delay
+      console.log("Starting car animation sequence");
+      setTimeout(() => {
+        requestAnimationFrame(() => moveCar(0));
+      }, 500);
     }
   };
 
@@ -243,21 +196,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       const startPoint = createStartPoint(50, 50);
       fabricCanvas.add(startPoint);
       
-      // Add car image back to start
-      const loadNewCar = async () => {
-        try {
-          const newCarImage = await createCarFromImage(fabricCanvas, 50, 50);
-          fabricCanvas.add(newCarImage);
-          setCarImage(newCarImage);
-          setCarImageRef(newCarImage);
-          fabricCanvas.renderAll();
-        } catch (error) {
-          console.error('Failed to reload car image after clearing:', error);
-          handleError('Error al reiniciar el coche');
-        }
-      };
-      
-      loadNewCar();
+      // Add car back to start - ahora con color rojo
+      const car = createCar(50, 50);
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
+      carObjectsRef.current = car;
+      animationCarRef.current = car;
+      fabricCanvas.renderAll();
 
       // Reset states
       setPath([]);
