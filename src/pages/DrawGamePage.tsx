@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -8,12 +7,13 @@ import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-
 const DrawGamePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState<boolean>(false);
-  const { toast } = useToast();
-  
+  const {
+    toast
+  } = useToast();
+
   // Log when component mounts to help with debugging
   useEffect(() => {
     console.log("DrawGamePage mounted");
@@ -26,7 +26,6 @@ const DrawGamePage: React.FC = () => {
       const timer = setTimeout(() => {
         setError(null);
       }, 5000);
-      
       return () => clearTimeout(timer);
     }
   }, [error]);
@@ -40,22 +39,18 @@ const DrawGamePage: React.FC = () => {
       variant: "destructive"
     });
   };
-
-  return (
-    <div 
-      className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden"
-      style={{
-        backgroundColor: "#bba7ca",
-        backgroundSize: "cover",
-        backgroundAttachment: "fixed"
-      }}
-    >
-      <motion.div 
-        className="w-full max-w-3xl flex flex-col items-center gap-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
+  return <div className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden" style={{
+    backgroundColor: "#bba7ca",
+    backgroundSize: "cover",
+    backgroundAttachment: "fixed"
+  }}>
+      <motion.div className="w-full max-w-3xl flex flex-col items-center gap-6" initial={{
+      opacity: 0
+    }} animate={{
+      opacity: 1
+    }} transition={{
+      duration: 0.5
+    }}>
         {/* Header */}
         <div className="w-full flex justify-between items-center">
           <Link to="/">
@@ -64,13 +59,13 @@ const DrawGamePage: React.FC = () => {
             </Button>
           </Link>
           
-          <motion.h1 
-            className="text-3xl font-bold kids-text text-white"
-            animate={{
-              scale: [1, 1.05, 1],
-              transition: { repeat: Infinity, duration: 2 }
-            }}
-          >
+          <motion.h1 animate={{
+          scale: [1, 1.05, 1],
+          transition: {
+            repeat: Infinity,
+            duration: 2
+          }
+        }} className="kids-text text-fuchsia-900 text-4xl font-medium">
             Juego del Cochecito
           </motion.h1>
           
@@ -78,52 +73,56 @@ const DrawGamePage: React.FC = () => {
         </div>
         
         {/* Error Display */}
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="w-full"
-          >
+        {error && <motion.div initial={{
+        opacity: 0,
+        y: -20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} exit={{
+        opacity: 0,
+        y: -20
+      }} className="w-full">
             <Alert variant="destructive" className="border-red-500 bg-red-100">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
-          </motion.div>
-        )}
+          </motion.div>}
         
         {/* Game Component */}
-        <motion.div 
-          className="w-full"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
+        <motion.div className="w-full" initial={{
+        y: 20,
+        opacity: 0
+      }} animate={{
+        y: 0,
+        opacity: 1
+      }} transition={{
+        delay: 0.2
+      }}>
           <DrawPathGame onError={handleError} onHelp={() => setShowHelp(true)} />
         </motion.div>
       </motion.div>
       
       {/* Help Instructions Modal */}
       <AnimatePresence>
-        {showHelp && (
-          <motion.div 
-            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowHelp(false)}
-          >
-            <motion.div 
-              className="bg-white rounded-xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto relative"
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button 
-                className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
-                onClick={() => setShowHelp(false)}
-              >
+        {showHelp && <motion.div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4" initial={{
+        opacity: 0
+      }} animate={{
+        opacity: 1
+      }} exit={{
+        opacity: 0
+      }} onClick={() => setShowHelp(false)}>
+            <motion.div className="bg-white rounded-xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto relative" initial={{
+          scale: 0.9,
+          y: 20
+        }} animate={{
+          scale: 1,
+          y: 0
+        }} exit={{
+          scale: 0.9,
+          y: 20
+        }} onClick={e => e.stopPropagation()}>
+              <button className="absolute top-3 right-3 text-gray-600 hover:text-gray-900" onClick={() => setShowHelp(false)}>
                 <X className="h-6 w-6" />
               </button>
               
@@ -167,21 +166,15 @@ const DrawGamePage: React.FC = () => {
               </ol>
               
               <div className="mt-6 pt-4 border-t border-gray-200">
-                <Button 
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white kids-text text-xl py-6"
-                  onClick={() => setShowHelp(false)}
-                >
+                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white kids-text text-xl py-6" onClick={() => setShowHelp(false)}>
                   ¡Entendido!
                 </Button>
               </div>
             </motion.div>
-          </motion.div>
-        )}
+          </motion.div>}
       </AnimatePresence>
       
       <Toaster />
-    </div>
-  );
+    </div>;
 };
-
 export default DrawGamePage;
