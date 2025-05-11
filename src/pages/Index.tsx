@@ -112,7 +112,6 @@ const GameContent = () => {
     if (level >= 9) countries.push("Antártida");
     return countries;
   }, [level]);
-  
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -122,7 +121,6 @@ const GameContent = () => {
       });
     }
   };
-  
   return <div className="min-h-screen flex flex-col items-center relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
@@ -168,21 +166,25 @@ const GameContent = () => {
         }} className="w-full rounded-lg p-5 shadow-lg bg-purple-200">
             <div className="text-center mb-4">
               <h2 className="text-2xl font-normal text-purple-800 kids-text flex items-center justify-center">
-                <motion.span className="inline-block" 
-                  animate={{
-                    rotate: [0, 360],
-                    transition: { repeat: Infinity, duration: 8, ease: "linear" }
-                  }}
-                >
+                <motion.span className="inline-block" animate={{
+                rotate: [0, 360],
+                transition: {
+                  repeat: Infinity,
+                  duration: 8,
+                  ease: "linear"
+                }
+              }}>
                   <Globe className="h-7 w-7 text-blue-600" />
                 </motion.span>
                 <span className="mx-2 font-normal text-xl">Este nivel te permite conducir desde:</span>
-                <motion.span className="inline-block"
-                  animate={{
-                    rotate: [0, 360],
-                    transition: { repeat: Infinity, duration: 8, ease: "linear" }
-                  }}
-                >
+                <motion.span className="inline-block" animate={{
+                rotate: [0, 360],
+                transition: {
+                  repeat: Infinity,
+                  duration: 8,
+                  ease: "linear"
+                }
+              }}>
                   <Globe className="h-7 w-7 text-blue-600" />
                 </motion.span>
               </h2>
@@ -253,7 +255,7 @@ const GameContent = () => {
         }}>
             <div className="text-center">
               <h2 className="text-2xl text-purple-800 kids-text mb-3 font-normal">Conduce tu coche al destino</h2>
-              <p className="text-purple-700 kids-text mb-4 font-normal text-2xl">Dibuja un camino y conduce hasta tu país destino</p>
+              <p className="text-purple-700 kids-text mb-4 font-normal text-xl">Dibuja un camino y conduce hasta tu país destino</p>
               <Link to="/draw-game">
                 <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl kids-text px-6 py-3 font-normal">
                   <Car className="mr-2 h-6 w-6" /> Jugar
