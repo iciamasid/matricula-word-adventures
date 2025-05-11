@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,9 +15,10 @@ import SpeedControl from './SpeedControl';
 
 interface DrawPathGameProps {
   onError?: (message: string) => void;
+  onHelp?: () => void;
 }
 
-const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
+const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -171,7 +173,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     }
   };
 
-  // Clear canvas and reset - Modificado para limpiar correctamente el trazo dibujado
+  // Clear canvas and reset
   const handleClear = () => {
     if (!fabricCanvas) return;
     
@@ -193,7 +195,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Add start point back
       const startPoint = createStartPoint(50, 50);
       fabricCanvas.add(startPoint);
-      setStartPointObj(startPoint);
       
       // Add car back to start - ahora con color rojo
       const car = createCar(50, 50);
@@ -283,6 +284,13 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     console.log(`Animation speed set to: ${speed}`);
   };
 
+  // Handle help button click
+  const handleHelp = () => {
+    if (onHelp) {
+      onHelp();
+    }
+  };
+
   return (
     <div className="flex flex-col w-full gap-4">
       <Card className="border-4 border-purple-300 shadow-lg overflow-hidden">
@@ -292,7 +300,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
             
             {/* Drawing mode indicator */}
             {isDrawing && (
-              <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md">
+              <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md kids-text">
                 ¡Dibuja ahora el camino!
               </div>
             )}
@@ -301,9 +309,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
             {isPlaying && interpolatedPath.length > 0 && (
               <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
                 <div className="flex flex-col items-center gap-1 px-4">
-                  <span className="text-xs font-medium">Animación en progreso</span>
+                  <span className="text-xs font-medium kids-text">Animación en progreso</span>
                   <Progress value={animationProgress} className="h-3 w-full" />
-                  <span className="text-xs">{animationProgress}%</span>
+                  <span className="text-xs kids-text">{animationProgress}%</span>
                 </div>
               </div>
             )}
@@ -338,6 +346,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         onDraw={handleDrawMode}
         onPlay={handlePlay}
         onClear={handleClear}
+        onHelp={handleHelp}
       />
       
       {/* Debug button (only visible during development) */}

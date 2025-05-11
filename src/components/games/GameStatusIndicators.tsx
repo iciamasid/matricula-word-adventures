@@ -1,6 +1,8 @@
 
 import React from 'react';
 import { Progress } from "@/components/ui/progress";
+import { Trophy, AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface GameStatusIndicatorsProps {
   isInitializing: boolean;
@@ -25,34 +27,57 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
     <>
       {/* Loading indicator */}
       {isInitializing && (
-        <div className="text-center p-4 bg-purple-100 rounded-lg animate-pulse">
-          <p className="font-bold text-purple-800">Inicializando el juego...</p>
-          <p className="text-purple-600">Preparando el tablero, por favor espera.</p>
-        </div>
+        <motion.div 
+          className="text-center p-3 bg-purple-100 rounded-lg shadow-md animate-pulse"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <div className="w-8 h-8 border-4 border-purple-800 border-t-transparent rounded-full animate-spin"></div>
+            <p className="font-bold text-purple-800 kids-text text-xl">Cargando...</p>
+          </div>
+        </motion.div>
       )}
       
       {/* Canvas state indicator */}
       {!canvasReady && !isInitializing && (
-        <div className="text-center p-4 bg-red-100 rounded-lg border border-red-300">
-          <p className="font-bold text-red-800">No se pudo cargar el juego</p>
-          <p className="text-red-600">Por favor, recarga la página e intenta de nuevo.</p>
+        <div className="text-center p-3 bg-red-100 rounded-lg border-2 border-red-300 shadow-md">
+          <div className="flex items-center justify-center gap-2">
+            <AlertCircle className="w-7 h-7 text-red-600" />
+            <p className="font-bold text-red-600 kids-text text-lg">¡Ups! No se pudo cargar el juego 🙁</p>
+          </div>
         </div>
       )}
       
       {/* Active drawing instructions */}
       {isDrawing && canvasReady && (
-        <div className="text-center p-4 bg-green-100 rounded-lg border-2 border-green-300 animate-pulse">
-          <p className="font-bold text-green-800">¡Modo dibujo activo!</p>
-          <p className="text-green-600">Dibuja un camino para el coche directamente en el tablero.</p>
-        </div>
+        <motion.div 
+          className="text-center p-3 bg-green-100 rounded-lg border-2 border-green-300 shadow-md"
+          animate={{ 
+            scale: [1, 1.03, 1],
+            transition: { repeat: Infinity, duration: 1.5 }
+          }}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <span role="img" aria-label="pencil" className="text-2xl">✏️</span>
+            <p className="font-bold text-green-700 kids-text text-xl">¡Dibuja un camino para el coche!</p>
+          </div>
+        </motion.div>
       )}
       
       {/* Animation completion message */}
       {animationCompleted && (
-        <div className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300">
-          <p className="font-bold text-yellow-800">¡Felicidades!</p>
-          <p className="text-yellow-600">El coche ha llegado a su destino. Puedes dibujar un nuevo camino.</p>
-        </div>
+        <motion.div 
+          className="text-center p-3 bg-yellow-100 rounded-lg border-2 border-yellow-300 shadow-md"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <Trophy className="w-7 h-7 text-yellow-600" />
+            <p className="font-bold text-yellow-700 kids-text text-xl">¡Has llegado a la meta! 🎉</p>
+          </div>
+        </motion.div>
       )}
     </>
   );

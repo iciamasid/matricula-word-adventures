@@ -1,8 +1,8 @@
 
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, AlertCircle } from "lucide-react";
+import { ArrowLeft, AlertCircle, HelpCircle, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const DrawGamePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
+  const [showHelp, setShowHelp] = useState<boolean>(false);
   const { toast } = useToast();
   
   // Log when component mounts to help with debugging
@@ -63,7 +64,15 @@ const DrawGamePage: React.FC = () => {
             </Button>
           </Link>
           
-          <h1 className="text-3xl font-bold kids-text text-white">Juego del Cochecito</h1>
+          <motion.h1 
+            className="text-3xl font-bold kids-text text-white"
+            animate={{
+              scale: [1, 1.05, 1],
+              transition: { repeat: Infinity, duration: 2 }
+            }}
+          >
+            Juego del Cochecito
+          </motion.h1>
           
           <div className="w-[100px]"></div> {/* Empty div for layout balance */}
         </div>
@@ -83,52 +92,92 @@ const DrawGamePage: React.FC = () => {
           </motion.div>
         )}
         
-        {/* Game Instructions - Updated with clearer instructions */}
-        <motion.div 
-          className="bg-white/90 rounded-lg p-5 w-full shadow-lg"
-          initial={{ y: 20 }}
-          animate={{ y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <h2 className="text-2xl font-bold text-purple-800 kids-text mb-3">¿Cómo jugar?</h2>
-          <ol className="list-decimal list-inside space-y-2 text-purple-900 kids-text">
-            <li>Primero, haz clic en el botón <span className="font-bold bg-green-100 px-2 py-1 rounded">Dibujar Camino</span></li>
-            <li>Luego, mantén presionado y mueve tu dedo o ratón para dibujar un camino para el coche</li>
-            <li>Dibuja líneas continuas y no demasiado rápido para mejores resultados</li>
-            <li>Cuando termines de dibujar, pulsa el botón <span className="font-bold bg-cyan-100 px-2 py-1 rounded">Jugar</span></li>
-            <li>¡Mira cómo el cochecito sigue exactamente el camino que dibujaste!</li>
-          </ol>
-          <div className="mt-3 bg-yellow-100 p-2 rounded-md">
-            <p className="text-amber-700 text-sm font-medium">
-              ¡El coche sigue exactamente el trazo que dibujes! La animación va despacio para que puedas ver bien cómo sigue tu camino.
-            </p>
-          </div>
-        </motion.div>
-        
         {/* Game Component */}
         <motion.div 
           className="w-full"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.2 }}
         >
-          <DrawPathGame onError={handleError} />
-        </motion.div>
-        
-        {/* Fun Fact */}
-        <motion.div 
-          className="bg-purple-100/90 border-2 border-purple-300 rounded-lg p-4 w-full shadow-lg"
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6 }}
-        >
-          <h3 className="text-lg font-bold text-purple-800 kids-text">¿Sabías que...?</h3>
-          <p className="text-purple-700 kids-text">
-            Los coches siguen caminos programados en muchos juegos y aplicaciones. 
-            ¡Lo que acabas de hacer es similar a cómo los ingenieros programan vehículos autónomos!
-          </p>
+          <DrawPathGame onError={handleError} onHelp={() => setShowHelp(true)} />
         </motion.div>
       </motion.div>
+      
+      {/* Help Instructions Modal */}
+      <AnimatePresence>
+        {showHelp && (
+          <motion.div 
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowHelp(false)}
+          >
+            <motion.div 
+              className="bg-white rounded-xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto relative"
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                className="absolute top-3 right-3 text-gray-600 hover:text-gray-900"
+                onClick={() => setShowHelp(false)}
+              >
+                <X className="h-6 w-6" />
+              </button>
+              
+              <h2 className="text-2xl font-bold text-purple-800 kids-text mb-4 flex items-center gap-2">
+                <HelpCircle className="h-7 w-7 text-purple-600" />
+                ¿Cómo jugar?
+              </h2>
+              
+              <ol className="list-decimal list-inside space-y-4 text-purple-900 kids-text">
+                <li className="flex items-start gap-2">
+                  <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">1</div>
+                  <div>
+                    <span className="font-bold">Haz clic en el botón <span className="bg-green-100 px-2 py-1 rounded">Dibujar</span></span>
+                    <p className="text-sm text-purple-700">Esto activará el modo de dibujo</p>
+                  </div>
+                </li>
+                
+                <li className="flex items-start gap-2">
+                  <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">2</div>
+                  <div>
+                    <span className="font-bold">Dibuja un camino en el tablero</span>
+                    <p className="text-sm text-purple-700">Mantén pulsado y mueve el dedo o ratón para dibujar</p>
+                  </div>
+                </li>
+                
+                <li className="flex items-start gap-2">
+                  <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">3</div>
+                  <div>
+                    <span className="font-bold">Haz clic en <span className="bg-cyan-100 px-2 py-1 rounded">Jugar</span></span>
+                    <p className="text-sm text-purple-700">El coche seguirá exactamente el camino que dibujaste</p>
+                  </div>
+                </li>
+                
+                <li className="flex items-start gap-2">
+                  <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">4</div>
+                  <div>
+                    <span className="font-bold">Ajusta la velocidad con el control deslizante</span>
+                    <p className="text-sm text-purple-700">Más lento o más rápido según prefieras</p>
+                  </div>
+                </li>
+              </ol>
+              
+              <div className="mt-6 pt-4 border-t border-gray-200">
+                <Button 
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white kids-text text-xl py-6"
+                  onClick={() => setShowHelp(false)}
+                >
+                  ¡Entendido!
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       
       <Toaster />
     </div>
