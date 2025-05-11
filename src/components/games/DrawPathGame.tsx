@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { motion } from 'framer-motion';
@@ -135,6 +136,16 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
   const [endPointObj, setEndPointObj] = useState<Circle | null>(null);
   const [canvasReady, setCanvasReady] = useState<boolean>(false);
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
+  const [currentPathIndex, setCurrentPathIndex] = useState<number>(0);
+  const [animationCompleted, setAnimationCompleted] = useState<boolean>(false);
+  const animationRef = useRef<number | null>(null);
+  const carObjectsRef = useRef<{
+    body: Rect;
+    roof: Rect;
+    wheel1: Circle;
+    wheel2: Circle;
+    headlight: Circle;
+  } | null>(null);
 
   // Initialize canvas on component mount
   useEffect(() => {
@@ -177,6 +188,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Create and add car to canvas
       const car = createCar(50, 50);
       canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+      carObjectsRef.current = car;
       canvas.renderAll();
 
       // Set initial car position
@@ -265,6 +277,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Clean up on unmount
       return () => {
         console.log("Cleaning up canvas");
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+        }
         canvas.dispose();
       };
     } catch (error) {
@@ -296,6 +311,72 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, [fabricCanvas]);
 
+  // Clean up animation on unmount or when path changes
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [path]);
+
+  // Move car to the next point in the path
+  const moveCar = (currentIndex: number) => {
+    if (!fabricCanvas || !path.length || !carObjectsRef.current) return;
+    
+    const car = carObjectsRef.current;
+    if (!car) return;
+    
+    if (currentIndex >= path.length) {
+      // Animation is complete
+      setIsPlaying(false);
+      setAnimationCompleted(true);
+      toast({
+        title: "¡Muy bien!",
+        description: "¡El coche ha llegado a su destino!"
+      });
+      return;
+    }
+    
+    const currentPoint = path[currentIndex];
+    const newX = currentPoint.x;
+    const newY = currentPoint.y;
+    
+    // Calculate rotation angle if we have previous points
+    if (currentIndex > 0) {
+      const prevPoint = path[currentIndex - 1];
+      const angle = Math.atan2(newY - prevPoint.y, newX - prevPoint.x) * 180 / Math.PI;
+      
+      car.body.set({ left: newX, top: newY, angle: angle });
+      car.roof.set({ left: newX, top: newY - 15, angle: angle });
+      car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
+      car.wheel2.set({ left: newX + 20, top: newY + 15, angle: angle });
+      car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
+    } else {
+      car.body.set({ left: newX, top: newY });
+      car.roof.set({ left: newX, top: newY - 15 });
+      car.wheel1.set({ left: newX - 20, top: newY + 15 });
+      car.wheel2.set({ left: newX + 20, top: newY + 15 });
+      car.headlight.set({ left: newX + 30, top: newY + 5 });
+    }
+    
+    // Update car position state for any UI that needs it
+    setCarPosition({ x: newX, y: newY });
+    
+    // Update the canvas
+    fabricCanvas.renderAll();
+    
+    // Schedule next frame
+    const nextIndex = currentIndex + 1;
+    setCurrentPathIndex(nextIndex);
+    
+    // Add delay between movements (adjust for speed)
+    const speed = 25; // Lower is faster
+    setTimeout(() => {
+      animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
+    }, speed);
+  };
+
   // Start animation along the path
   const handlePlay = () => {
     if (path.length === 0) {
@@ -311,6 +392,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     
     setIsPlaying(true);
     setIsDrawing(false);
+    setAnimationCompleted(false);
+    setCurrentPathIndex(0);
     
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = false;
@@ -324,21 +407,22 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         }
       }
       
-      // Re-add the car at the starting position for the SVG animation
+      // Re-add the car at the starting position
       const car = createCar(50, 50);
       fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+      carObjectsRef.current = car;
       fabricCanvas.renderAll();
+      
+      // Cancel any existing animation
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      
+      // Start the animation
+      setTimeout(() => {
+        animationRef.current = requestAnimationFrame(() => moveCar(0));
+      }, 100);
     }
-
-    // Wait for animation to complete
-    setTimeout(() => {
-      setIsPlaying(false);
-      // Show success message
-      toast({
-        title: "¡Muy bien!",
-        description: "¡El coche ha llegado a su destino!"
-      });
-    }, path.length * 20); // Animation duration based on path length
   };
 
   // Clear canvas and reset
@@ -348,6 +432,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     console.log("Clearing canvas");
 
     try {
+      // Cancel any ongoing animation
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+      
       // Remove all objects except the starting point
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
@@ -362,6 +451,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Add car back to start
       const car = createCar(50, 50);
       fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+      carObjectsRef.current = car;
       fabricCanvas.renderAll();
 
       // Reset states
@@ -374,6 +464,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         y: 50
       });
       setEndPointObj(null);
+      setAnimationCompleted(false);
+      setCurrentPathIndex(0);
       fabricCanvas.isDrawingMode = false;
       
       toast({
@@ -457,41 +549,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
               </div>
             )}
             
-            {/* Animated car that follows the path */}
+            {/* Progress indicator for animation */}
             {isPlaying && path.length > 0 && (
-              <motion.div 
-                className="absolute z-10 pointer-events-none" 
-                style={{
-                  width: 60,
-                  height: 30,
-                  x: carPosition.x - 30,
-                  y: carPosition.y - 15
-                }} 
-                animate={{
-                  x: path.map(p => p.x - 30),
-                  y: path.map(p => p.y - 15),
-                  rotate: path.map((p, i) => {
-                    if (i === 0 || i >= path.length - 1) return 0;
-                    const prev = path[i - 1];
-                    const angle = Math.atan2(p.y - prev.y, p.x - prev.x) * 180 / Math.PI;
-                    return angle;
-                  })
-                }} 
-                transition={{
-                  duration: path.length * 0.02,
-                  times: path.map((_, i) => i / (path.length - 1)),
-                  ease: "linear"
-                }}
-              >
-                {/* Simple car SVG for animation */}
-                <svg width="100%" height="100%" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
-                  <rect x="0" y="10" width="60" height="30" fill="#9B59B6" rx="10" ry="10" />
-                  <rect x="10" y="0" width="40" height="20" fill="#7D3C98" rx="8" ry="8" />
-                  <circle cx="15" cy="30" r="8" fill="#34495E" />
-                  <circle cx="45" cy="30" r="8" fill="#34495E" />
-                  <circle cx="55" cy="15" r="4" fill="#F1C40F" />
-                </svg>
-              </motion.div>
+              <div className="absolute bottom-0 left-0 right-0 bg-blue-500 text-white text-center py-1 z-20 rounded-b-md">
+                Animación en progreso: {Math.round((currentPathIndex / path.length) * 100)}%
+              </div>
             )}
           </div>
         </CardContent>
@@ -547,6 +609,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         <div className="text-center p-4 bg-green-100 rounded-lg border-2 border-green-300 animate-pulse">
           <p className="font-bold text-green-800">¡Modo dibujo activo!</p>
           <p className="text-green-600">Dibuja un camino para el coche directamente en el tablero.</p>
+        </div>
+      )}
+      
+      {/* Animation completion message */}
+      {animationCompleted && (
+        <div className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300">
+          <p className="font-bold text-yellow-800">¡Felicidades!</p>
+          <p className="text-yellow-600">El coche ha llegado a su destino. Puedes dibujar un nuevo camino.</p>
         </div>
       )}
     </div>;
