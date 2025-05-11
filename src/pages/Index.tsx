@@ -261,7 +261,7 @@ const GameContent = () => {
           </motion.div>
           
           {/* Simplified Level Rewards - Only button and destination */}
-          <motion.div className="w-full bg-white/90 rounded-lg p-5 shadow-lg" initial={{
+          <motion.div initial={{
           opacity: 0,
           y: 20
         }} animate={{
@@ -269,7 +269,7 @@ const GameContent = () => {
           y: 0
         }} transition={{
           delay: 0.3
-        }}>
+        }} className="w-full rounded-lg p-5 shadow-lg bg-purple-200">
             <div className="text-center mb-4">
               <h2 className="text-2xl font-bold text-purple-800 kids-text flex items-center justify-center">
                 <motion.span animate={{
