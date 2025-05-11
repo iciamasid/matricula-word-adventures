@@ -77,7 +77,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     onError: handleError
   });
 
-  // Path animation
+  // Path animation - Nota: ahora incluye clearPathTrace
   const {
     interpolatedPath,
     isPlaying,
@@ -92,7 +92,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     moveCar,
     cancelAnimation,
     toggleDebugMode,
-    setAnimationSpeed: setPathAnimationSpeed
+    setAnimationSpeed: setPathAnimationSpeed,
+    clearPathTrace
   } = usePathAnimation({
     fabricCanvas,
     path,
@@ -143,21 +144,19 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = false;
       
-      // Remove previous car shapes and path trace
+      // Remove previous car shapes but NOT the path trace
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
-        if (obj instanceof Rect || 
-            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10) ||
-            (obj instanceof Path)
-           ) {
+        if ((obj instanceof Rect) || 
+            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10)) {
           fabricCanvas.remove(obj);
         }
       }
       
       // Re-add the car at the starting position
       const car = createCar(path[0].x, path[0].y); // Start exactly at the first point of the path
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
       animationCarRef.current = car;
       fabricCanvas.renderAll();
       
@@ -172,7 +171,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
     }
   };
 
-  // Clear canvas and reset
+  // Clear canvas and reset - Modificado para limpiar correctamente el trazo dibujado
   const handleClear = () => {
     if (!fabricCanvas) return;
     
@@ -182,23 +181,24 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Cancel any ongoing animation
       cancelAnimation();
       
-      // Remove all objects except the path trace
-      const objects = fabricCanvas.getObjects();
-      for (let i = objects.length - 1; i >= 0; i--) {
-        const obj = objects[i];
-        // Keep the path trace object when it exists (purple line)
-        if (!(obj instanceof Path)) {
-          fabricCanvas.remove(obj);
-        }
-      }
-
+      // Clear the path trace
+      clearPathTrace();
+      
+      // Remove all objects
+      fabricCanvas.clear();
+      
+      // Reset the canvas background
+      fabricCanvas.backgroundColor = '#f9f2ff';
+      
       // Add start point back
       const startPoint = createStartPoint(50, 50);
       fabricCanvas.add(startPoint);
+      setStartPointObj(startPoint);
       
-      // Add car back to start
+      // Add car back to start - ahora con color rojo
       const car = createCar(50, 50);
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight); // Added third wheel
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
+      carObjectsRef.current = car;
       animationCarRef.current = car;
       fabricCanvas.renderAll();
 

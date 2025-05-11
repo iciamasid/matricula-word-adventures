@@ -2,7 +2,7 @@
 import { Circle, Rect } from 'fabric';
 
 // Create a simple car object using Fabric.js shapes
-export const createCar = (left: number, top: number, color = '#9B59B6', scale = 1) => {
+export const createCar = (left: number, top: number, color = '#E74C3C', scale = 1) => {
   // Car body
   const body = new Rect({
     left: left,
@@ -23,7 +23,7 @@ export const createCar = (left: number, top: number, color = '#9B59B6', scale = 
     top: top - 15 * scale,
     width: 40 * scale,
     height: 20 * scale,
-    fill: '#7D3C98',
+    fill: '#C0392B', // Darker shade of red for the roof
     rx: 8 * scale,
     ry: 8 * scale,
     originX: 'center',
@@ -31,7 +31,7 @@ export const createCar = (left: number, top: number, color = '#9B59B6', scale = 
     selectable: false
   });
 
-  // Car wheels - now with 3 wheels instead of 2
+  // Car wheels - three wheels for better stability
   const wheel1 = new Circle({
     left: left - 20 * scale,
     top: top + 15 * scale,
@@ -78,7 +78,7 @@ export const createCar = (left: number, top: number, color = '#9B59B6', scale = 
     roof,
     wheel1,
     wheel2,
-    wheel3, // Added third wheel
+    wheel3,
     headlight
   };
 };
@@ -113,6 +113,6 @@ export interface CarObject {
   roof: Rect;
   wheel1: Circle;
   wheel2: Circle;
-  wheel3: Circle; // Added third wheel to the interface
+  wheel3: Circle;
   headlight: Circle;
 }

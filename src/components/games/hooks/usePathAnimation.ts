@@ -9,7 +9,7 @@ interface UsePathAnimationProps {
   path: Point[];
   startPointObj: Circle | null;
   endPointObj: Circle | null;
-  animationSpeed?: number; // Added animation speed prop
+  animationSpeed?: number;
 }
 
 export const usePathAnimation = ({
@@ -17,7 +17,7 @@ export const usePathAnimation = ({
   path,
   startPointObj,
   endPointObj,
-  animationSpeed = 180 // Default value if not provided
+  animationSpeed = 180
 }: UsePathAnimationProps) => {
   const [interpolatedPath, setInterpolatedPath] = useState<Point[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -73,12 +73,11 @@ export const usePathAnimation = ({
     setInterpolatedPath(interpolated);
   }, [createInterpolatedPath]);
 
-  // Path trace visualization
+  // Path trace visualization - Modificado para asegurar que el trazo permanezca visible
   const updatePathTrace = useCallback((currentIndex: number) => {
     if (!fabricCanvas || interpolatedPath.length === 0) return;
     
-    // Always keep the original path visible - don't remove it
-    // Create path trace if it doesn't exist yet
+    // Crear la traza del camino si no existe
     if (!pathTraceRef.current) {
       // Create the full path trace at once
       const pathData = interpolatedPath.map((point, idx) => 
@@ -93,7 +92,7 @@ export const usePathAnimation = ({
         strokeLineJoin: 'round',
         selectable: false,
         evented: false,
-        opacity: 0.7, // Slightly transparent
+        opacity: 0.8, // Slightly transparent
       });
       
       // Add the trace to the canvas
@@ -115,9 +114,6 @@ export const usePathAnimation = ({
       }
     }
     
-    // Create progress indicator circle that moves along the path
-    const currentPoint = interpolatedPath[currentIndex];
-    
     // Ensure car is on top
     if (carObjectsRef.current) {
       const car = carObjectsRef.current;
@@ -126,7 +122,7 @@ export const usePathAnimation = ({
       car.roof.set('zIndex', 6);
       car.wheel1.set('zIndex', 5);
       car.wheel2.set('zIndex', 5);
-      car.wheel3.set('zIndex', 5); // Added for the new third wheel
+      car.wheel3.set('zIndex', 5);
       car.headlight.set('zIndex', 6);
     }
       
@@ -188,25 +184,23 @@ export const usePathAnimation = ({
       car.body.set({ left: newX, top: newY, angle: angle });
       car.roof.set({ left: newX, top: newY - 15, angle: angle });
       car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
-      car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle }); // Middle wheel position updated
-      car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle }); // Third wheel
+      car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle }); 
+      car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle });
       car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
     } else {
       car.body.set({ left: newX, top: newY });
       car.roof.set({ left: newX, top: newY - 15 });
       car.wheel1.set({ left: newX - 20, top: newY + 15 });
-      car.wheel2.set({ left: newX + 0, top: newY + 15 }); // Middle wheel position updated
-      car.wheel3.set({ left: newX + 20, top: newY + 15 }); // Third wheel
+      car.wheel2.set({ left: newX + 0, top: newY + 15 });
+      car.wheel3.set({ left: newX + 20, top: newY + 15 });
       car.headlight.set({ left: newX + 30, top: newY + 5 });
     }
     
     // Update car position state for any UI that needs it
     setCarPosition({ x: newX, y: newY });
     
-    // Update the path trace to show progress
-    if (showPath) {
-      updatePathTrace(currentIndex);
-    }
+    // Always update the path trace to show progress
+    updatePathTrace(currentIndex);
     
     // Update progress state
     const progress = Math.round((currentIndex / interpolatedPath.length) * 100);
@@ -227,20 +221,18 @@ export const usePathAnimation = ({
     // For a typical path of around 300-500 points, we want to move every 20-30ms
     const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 500)); // Adjust step size based on path length
     
-    // Skip points for faster animation
-    const nextIndex = currentIndex + stepSize;
-    
-    // Use smaller timeout value for faster animation
-    // Base speed is much faster (20ms), and slider will adjust from there
-    const baseSpeed = 20; // Much faster base speed
-    // The slider now provides finer adjustment around this faster base speed
-    const adjustedSpeed = Math.max(5, Math.min(50, currentAnimationSpeed / 10)); // Keep speed between 5-50ms
+    // Ajustar la velocidad para completar en aproximadamente 10 segundos
+    const baseSpeed = 20; 
+    const adjustedSpeed = Math.max(5, Math.min(50, currentAnimationSpeed / 10));
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
       animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
     }, adjustedSpeed);
-  }, [fabricCanvas, interpolatedPath, showPath, updatePathTrace, debugMode, currentAnimationSpeed]);
+    
+    // Skip points for faster animation
+    const nextIndex = currentIndex + stepSize;
+  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed]);
 
   // Cancel any ongoing animation
   const cancelAnimation = useCallback(() => {
@@ -271,6 +263,14 @@ export const usePathAnimation = ({
     }
   }, [debugMode]);
 
+  // Añadir una función para limpiar el path trace
+  const clearPathTrace = useCallback(() => {
+    if (pathTraceRef.current && fabricCanvas) {
+      fabricCanvas.remove(pathTraceRef.current);
+      pathTraceRef.current = null;
+    }
+  }, [fabricCanvas]);
+
   return {
     interpolatedPath,
     isPlaying,
@@ -290,6 +290,7 @@ export const usePathAnimation = ({
     cancelAnimation,
     toggleDebugMode,
     setAnimationSpeed,
-    currentAnimationSpeed
+    currentAnimationSpeed,
+    clearPathTrace
   };
 };
