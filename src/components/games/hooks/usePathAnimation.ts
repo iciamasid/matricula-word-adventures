@@ -1,4 +1,3 @@
-
 import { useRef, useState, useCallback } from 'react';
 import { Canvas as FabricCanvas, Circle, Path } from 'fabric';
 import { toast } from '@/hooks/use-toast';
@@ -55,9 +54,9 @@ export const usePathAnimation = ({
         Math.pow(point2.y - point1.y, 2)
       );
       
-      // More steps for longer distances - provides consistent movement speed
-      // Using a much smaller divisor for more interpolation points and smoother animation
-      const steps = Math.max(20, Math.ceil(distance / 0.5)); // Much more dense interpolation
+      // Reduce the number of interpolation points for faster animation
+      // Adjusting the divisor to create fewer interpolation points
+      const steps = Math.max(10, Math.ceil(distance / 2)); // Less dense interpolation for faster movement
       
       // Skip the first point as it's already added
       const betweenPoints = interpolatePoints(point1, point2, steps).slice(1);
@@ -78,37 +77,29 @@ export const usePathAnimation = ({
   const updatePathTrace = useCallback((currentIndex: number) => {
     if (!fabricCanvas || interpolatedPath.length === 0) return;
     
-    // Remove existing trace if any
-    if (pathTraceRef.current) {
-      fabricCanvas.remove(pathTraceRef.current);
-    }
-    
-    // Only draw if we have enough points
-    if (currentIndex > 1) {
-      // Create a subset of the path up to the current index
-      const pathSoFar = interpolatedPath.slice(0, currentIndex + 1);
-      
-      // Create a new path trace with thicker stroke and more visible color
-      const pathData = pathSoFar.map((point, idx) => 
+    // Always keep the original path visible - don't remove it
+    // Create path trace if it doesn't exist yet
+    if (!pathTraceRef.current) {
+      // Create the full path trace at once
+      const pathData = interpolatedPath.map((point, idx) => 
         idx === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`
       ).join(' ');
       
       const trace = new Path(pathData, {
         fill: '',
-        stroke: '#2ECC71', // Brighter green
+        stroke: '#9B59B6', // Purple color matching the car
         strokeWidth: 6, // Thicker line
         strokeLineCap: 'round',
         strokeLineJoin: 'round',
         selectable: false,
         evented: false,
-        opacity: 0.8, // Slightly transparent
+        opacity: 0.7, // Slightly transparent
       });
       
-      // Add the trace to the canvas and set its z-index properly
-      // First add at the bottom z-index
+      // Add the trace to the canvas
       fabricCanvas.add(trace);
       
-      // Update z-index directly instead of using moveTo
+      // Update z-index directly
       trace.set('zIndex', 0);
       
       // Store the path trace reference
@@ -116,25 +107,32 @@ export const usePathAnimation = ({
       
       // Make sure the start point is on top of the path trace
       if (startPointObj) {
-        // Place start point above the trace
         startPointObj.set('zIndex', 1);
       }
       
-      // Ensure car is on top
-      if (carObjectsRef.current) {
-        const car = carObjectsRef.current;
-        // Set higher z-index for car components
-        car.body.set('zIndex', 5);
-        car.roof.set('zIndex', 6);
-        car.wheel1.set('zIndex', 5);
-        car.wheel2.set('zIndex', 5);
-        car.headlight.set('zIndex', 6);
+      if (endPointObj) {
+        endPointObj.set('zIndex', 1);
       }
-      
-      // Re-render the canvas to apply the z-index changes
-      fabricCanvas.requestRenderAll();
     }
-  }, [fabricCanvas, interpolatedPath, startPointObj]);
+    
+    // Create progress indicator circle that moves along the path
+    const currentPoint = interpolatedPath[currentIndex];
+    
+    // Ensure car is on top
+    if (carObjectsRef.current) {
+      const car = carObjectsRef.current;
+      // Set higher z-index for car components
+      car.body.set('zIndex', 5);
+      car.roof.set('zIndex', 6);
+      car.wheel1.set('zIndex', 5);
+      car.wheel2.set('zIndex', 5);
+      car.wheel3.set('zIndex', 5); // Added for the new third wheel
+      car.headlight.set('zIndex', 6);
+    }
+      
+    // Re-render the canvas to apply the z-index changes
+    fabricCanvas.requestRenderAll();
+  }, [fabricCanvas, interpolatedPath, startPointObj, endPointObj]);
 
   // Move car along the path
   const moveCar = useCallback((currentIndex: number) => {
@@ -190,13 +188,15 @@ export const usePathAnimation = ({
       car.body.set({ left: newX, top: newY, angle: angle });
       car.roof.set({ left: newX, top: newY - 15, angle: angle });
       car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
-      car.wheel2.set({ left: newX + 20, top: newY + 15, angle: angle });
+      car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle }); // Middle wheel position updated
+      car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle }); // Third wheel
       car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
     } else {
       car.body.set({ left: newX, top: newY });
       car.roof.set({ left: newX, top: newY - 15 });
       car.wheel1.set({ left: newX - 20, top: newY + 15 });
-      car.wheel2.set({ left: newX + 20, top: newY + 15 });
+      car.wheel2.set({ left: newX + 0, top: newY + 15 }); // Middle wheel position updated
+      car.wheel3.set({ left: newX + 20, top: newY + 15 }); // Third wheel
       car.headlight.set({ left: newX + 30, top: newY + 5 });
     }
     
@@ -223,11 +223,23 @@ export const usePathAnimation = ({
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
     
-    // Use the current animation speed (can be adjusted by slider)
+    // Calculate the step size to complete animation in about 10 seconds
+    // For a typical path of around 300-500 points, we want to move every 20-30ms
+    const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 500)); // Adjust step size based on path length
+    
+    // Skip points for faster animation
+    const nextIndex = currentIndex + stepSize;
+    
+    // Use smaller timeout value for faster animation
+    // Base speed is much faster (20ms), and slider will adjust from there
+    const baseSpeed = 20; // Much faster base speed
+    // The slider now provides finer adjustment around this faster base speed
+    const adjustedSpeed = Math.max(5, Math.min(50, currentAnimationSpeed / 10)); // Keep speed between 5-50ms
+    
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
-      animationRef.current = requestAnimationFrame(() => moveCar(currentIndex + 1));
-    }, currentAnimationSpeed);
+      animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
+    }, adjustedSpeed);
   }, [fabricCanvas, interpolatedPath, showPath, updatePathTrace, debugMode, currentAnimationSpeed]);
 
   // Cancel any ongoing animation

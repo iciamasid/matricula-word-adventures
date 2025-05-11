@@ -31,7 +31,7 @@ export const createCar = (left: number, top: number, color = '#9B59B6', scale = 
     selectable: false
   });
 
-  // Car wheels
+  // Car wheels - now with 3 wheels instead of 2
   const wheel1 = new Circle({
     left: left - 20 * scale,
     top: top + 15 * scale,
@@ -41,7 +41,18 @@ export const createCar = (left: number, top: number, color = '#9B59B6', scale = 
     originY: 'center',
     selectable: false
   });
+  
   const wheel2 = new Circle({
+    left: left + 0 * scale, // Middle wheel
+    top: top + 15 * scale,
+    radius: 8 * scale,
+    fill: '#34495E',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  const wheel3 = new Circle({
     left: left + 20 * scale,
     top: top + 15 * scale,
     radius: 8 * scale,
@@ -61,11 +72,13 @@ export const createCar = (left: number, top: number, color = '#9B59B6', scale = 
     originY: 'center',
     selectable: false
   });
+  
   return {
     body,
     roof,
     wheel1,
     wheel2,
+    wheel3, // Added third wheel
     headlight
   };
 };
@@ -100,5 +113,6 @@ export interface CarObject {
   roof: Rect;
   wheel1: Circle;
   wheel2: Circle;
+  wheel3: Circle; // Added third wheel to the interface
   headlight: Circle;
 }

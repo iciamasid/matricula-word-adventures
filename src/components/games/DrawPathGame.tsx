@@ -1,9 +1,8 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button"; // Added the missing Button import
+import { Button } from "@/components/ui/button"; 
 import { toast } from '@/hooks/use-toast';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
@@ -183,30 +182,23 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
       // Cancel any ongoing animation
       cancelAnimation();
       
-      // Remove all objects
+      // Remove all objects except the path trace
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
-        fabricCanvas.remove(objects[i]);
+        const obj = objects[i];
+        // Keep the path trace object when it exists (purple line)
+        if (!(obj instanceof Path)) {
+          fabricCanvas.remove(obj);
+        }
       }
 
       // Add start point back
       const startPoint = createStartPoint(50, 50);
       fabricCanvas.add(startPoint);
       
-      // Update the startPointObj reference
-      // This line was missing, causing the TS2552 error
-      if (typeof startPointObj === 'object' && 'current' in startPointObj) {
-        // If it's a ref
-        startPointObj.current = startPoint;
-      } else {
-        // Direct reference - need to access the setter
-        // This is a workaround since we don't have direct access to setStartPointObj
-        // We're handling this through the canvas hook
-      }
-
       // Add car back to start
       const car = createCar(50, 50);
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight); // Added third wheel
       animationCarRef.current = car;
       fabricCanvas.renderAll();
 
