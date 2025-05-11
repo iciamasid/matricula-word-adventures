@@ -20,7 +20,7 @@ const SpeedControl: React.FC<SpeedControlProps> = ({
         <div className="flex items-center gap-3 pt-1">
           <div className="flex items-center gap-1 text-purple-700">
             <ArrowLeft className="h-4 w-4" />
-            <span className="text-xs">Lento</span>
+            <span className="text-xs">20km/h</span>
           </div>
           
           <Slider disabled={disabled} onValueChange={onValueChange} defaultValue={defaultValue} max={100} step={1} className="flex-1" />
