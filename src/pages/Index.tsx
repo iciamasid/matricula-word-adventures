@@ -226,7 +226,7 @@ const GameContent = () => {
             }}>
                 {level}
               </motion.p>
-              <p className="text-purple-600 kids-text text-xl font-medium">
+              <p className="kids-text text-xl font-medium text-purple-800">
                 {level > 1 ? '¡Nivel desbloqueado!' : 'Primer nivel'}
               </p>
             </motion.div>
@@ -375,5 +375,4 @@ const GameContent = () => {
       <Toaster />
     </div>;
 };
-
 export default Index;
