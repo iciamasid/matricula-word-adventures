@@ -75,13 +75,13 @@ const PlayerRegistration: React.FC = () => {
               </RadioGroup>
             </motion.div>
           </div>
-        </motion.div> : <motion.div className="w-full max-w-md flex justify-between items-center bg-white/90 rounded-lg p-3 shadow-md mb-4" initial={{
+        </motion.div> : <motion.div initial={{
       opacity: 0,
       y: 20
     }} animate={{
       opacity: 1,
       y: 0
-    }}>
+    }} className="w-full max-w-md flex justify-between items-center rounded-lg p-3 shadow-md mb-4 bg-violet-200">
           <div className="flex items-center">
             {playerGender === "niño" ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
             <span className="text-lg font-medium text-purple-800 kids-text">
