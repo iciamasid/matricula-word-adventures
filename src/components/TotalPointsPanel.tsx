@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
-import { Globe } from "lucide-react";
+import { Award } from "lucide-react";
 
 const TotalPointsPanel: React.FC = () => {
   const { totalPoints } = useGame();
@@ -23,12 +23,13 @@ const TotalPointsPanel: React.FC = () => {
           }} 
           transition={{ duration: 3, repeat: Infinity }}
         >
-          <Globe className="w-8 h-8 text-game-green" />
+          {/* Changed from Globe to medal emoji */}
+          <div className="w-8 h-8 text-3xl text-game-green">🏅</div>
         </motion.div>
-        <h3 className="text-2xl font-bold text-purple-800 kids-text">Puntos Totales</h3>
+        <h3 className="text-2xl text-purple-800 kids-text font-normal">Puntos Totales</h3>
       </div>
       <motion.p 
-        className="text-3xl font-bold text-purple-900 kids-text mt-1"
+        className="text-3xl text-purple-900 kids-text mt-1 font-normal"
         animate={{ scale: [1, 1.05, 1] }}
         transition={{ duration: 2, repeat: Infinity }}
       >

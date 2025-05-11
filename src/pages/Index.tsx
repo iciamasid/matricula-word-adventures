@@ -6,7 +6,7 @@ import ErrorAlert from "@/components/ErrorAlert";
 import LevelRewards from "@/components/LevelRewards";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Flag, Info, RefreshCw, Car } from "lucide-react";
+import { Flag, Info, RefreshCw, Car, Trophy } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -153,7 +153,7 @@ const GameContent = () => {
           
           {/* Score components in a single row */}
           <div className="w-full grid grid-cols-2 gap-4 mb-4">
-            {/* Total Points Panel - with updated larger icon */}
+            {/* Total Points Panel - with updated icon */}
             <motion.div initial={{
             opacity: 0,
             x: -20
@@ -173,11 +173,11 @@ const GameContent = () => {
                 duration: 3,
                 repeat: Infinity
               }}>
-                  <motion.div className="w-14 h-14 text-3xl text-game-green">🌍</motion.div>
+                  <motion.div className="w-14 h-14 text-3xl text-game-green">🏅</motion.div>
                 </motion.div>
-                <h3 className="text-purple-800 kids-text font-medium text-xl">Puntos</h3>
+                <h3 className="text-purple-800 kids-text font-normal text-xl">Puntos</h3>
               </div>
-              <motion.p className="text-3xl font-bold text-purple-900 kids-text mt-1" animate={{
+              <motion.p className="text-3xl text-purple-900 kids-text mt-1 font-normal" animate={{
               scale: [1, 1.05, 1]
             }} transition={{
               duration: 2,
@@ -217,50 +217,26 @@ const GameContent = () => {
               }}>
                   <motion.div className="w-14 h-14 text-3xl text-game-purple">🏆</motion.div>
                 </motion.div>
-                <h3 className="text-xl text-purple-800 kids-text font-medium">Nivel</h3>
+                <h3 className="text-xl text-purple-800 kids-text font-normal">Nivel</h3>
               </div>
-              <motion.p className="text-3xl font-bold text-purple-900 kids-text mt-1" animate={level > 1 ? {
+              <motion.p className="text-3xl text-purple-900 kids-text mt-1 font-normal" animate={level > 1 ? {
               scale: [1, 1.2, 1]
             } : {}} transition={{
               duration: 0.5
             }}>
                 {level}
               </motion.p>
-              <p className="kids-text text-xl font-medium text-purple-800">
-                {level > 1 ? '¡Nivel desbloqueado!' : 'Primer nivel'}
-              </p>
+              {level === 1 ? (
+                <p className="opacity-0">·</p>
+              ) : (
+                <p className="kids-text text-xl font-normal text-purple-800">
+                  ¡Nivel desbloqueado!
+                </p>
+              )}
             </motion.div>
           </div>
           
-          {/* Title for the map - updated text */}
-          <motion.h2 initial={{
-          opacity: 0,
-          y: 10
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.2
-        }} className="mt-2 mb-2 text-center kids-text reward-text text-3xl font-medium py-[20px] text-purple-800">
-            ¿Qué países puedes visitar con estos puntos?
-          </motion.h2>
-          
-          {/* Mapa Mundi con países desbloqueados - shifted 4mm to the right for mobile */}
-          <motion.div className="w-full h-[200px] rounded-lg overflow-hidden mb-2 border-4 border-white/50 shadow-lg relative" initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.2
-        }}>
-            <div className={`absolute inset-0 ${isMobile ? 'ml-4' : ''}`}>
-              <WorldMap highlightCountry={destinationInfo.country} unlockedCountries={unlockedCountries} />
-            </div>
-          </motion.div>
-          
-          {/* Simplified Level Rewards - Only button and destination */}
+          {/* "Has llegado hasta" panel - Moved before the map */}
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -271,7 +247,7 @@ const GameContent = () => {
           delay: 0.3
         }} className="w-full rounded-lg p-5 shadow-lg bg-purple-200">
             <div className="text-center mb-4">
-              <h2 className="text-2xl font-bold text-purple-800 kids-text flex items-center justify-center">
+              <h2 className="text-2xl font-normal text-purple-800 kids-text flex items-center justify-center">
                 <motion.span animate={{
                 scale: [1, 1.1, 1]
               }} transition={{
@@ -293,7 +269,7 @@ const GameContent = () => {
               </h2>
               
               <div className="flex items-center justify-center gap-2 my-4">
-                <motion.p className="text-4xl font-bold text-purple-900 kids-text" animate={{
+                <motion.p className="text-4xl font-normal text-purple-900 kids-text" animate={{
                 scale: [1, 1.05, 1]
               }} transition={{
                 duration: 2,
@@ -311,7 +287,7 @@ const GameContent = () => {
                 </motion.span>
               </div>
               
-              <p className="text-purple-700 mb-4 kids-text font-medium text-4xl">
+              <p className="text-purple-700 mb-4 kids-text font-normal text-4xl">
                 {destinationInfo.country}
               </p>
               
@@ -323,7 +299,22 @@ const GameContent = () => {
             </div>
           </motion.div>
           
-          {/* Drawing Game Button - NEW */}
+          {/* Mapa Mundi con países desbloqueados - Now after "Has llegado hasta" panel */}
+          <motion.div className="w-full h-[200px] rounded-lg overflow-hidden mb-2 border-4 border-white/50 shadow-lg relative" initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.2
+        }}>
+            <div className={`absolute inset-0 ${isMobile ? 'ml-4' : ''}`}>
+              <WorldMap highlightCountry={destinationInfo.country} unlockedCountries={unlockedCountries} />
+            </div>
+          </motion.div>
+          
+          {/* Drawing Game Button */}
           <motion.div className="w-full bg-purple-200/90 rounded-lg p-4 shadow-lg" initial={{
           opacity: 0,
           y: 20
@@ -336,8 +327,8 @@ const GameContent = () => {
           scale: 1.02
         }}>
             <div className="text-center">
-              <h2 className="text-2xl text-purple-800 kids-text mb-3 font-medium">¡Juego del Cochecito!</h2>
-              <p className="text-purple-700 kids-text mb-4 text-base font-medium">
+              <h2 className="text-2xl text-purple-800 kids-text mb-3 font-normal">¡Juego del Cochecito!</h2>
+              <p className="text-purple-700 kids-text mb-4 text-base font-normal">
                 Dibuja un camino y haz que el cochecito lo siga
               </p>
               <Link to="/draw-game">
@@ -355,7 +346,7 @@ const GameContent = () => {
           type: "spring",
           stiffness: 400
         }}>
-            <Button onClick={handleResetGame} size="lg" className="w-full text-white kids-text py-6 bg-gray-600 hover:bg-gray-500 text-xl font-light">
+            <Button onClick={handleResetGame} size="lg" className="w-full text-white kids-text py-6 bg-gray-600 hover:bg-gray-500 text-xl font-normal">
               <RefreshCw className="mr-2 h-5 w-5" /> Iniciar nueva partida
             </Button>
           </motion.div>

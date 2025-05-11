@@ -27,16 +27,16 @@ const ScorePanel: React.FC = () => {
           >
             <Star className="w-7 h-7 text-game-yellow" />
           </motion.div>
-          <h3 className="text-xl font-bold text-purple-800 kids-text">Puntos</h3>
+          <h3 className="text-xl text-purple-800 kids-text font-normal">Puntos</h3>
         </div>
         <motion.p 
-          className="text-3xl font-bold text-purple-900 kids-text mt-1"
+          className="text-3xl text-purple-900 kids-text mt-1 font-normal"
           animate={previousScore > 0 ? { scale: [1, 1.2, 1] } : {}}
           transition={{ duration: 0.5 }}
         >
           {previousScore}
         </motion.p>
-        <p className="text-sm text-purple-600 kids-text">ronda anterior</p>
+        <p className="text-sm text-purple-600 kids-text font-normal">ronda anterior</p>
       </motion.div>
       
       {/* Level Panel - Updated to be transparent */}
@@ -56,18 +56,22 @@ const ScorePanel: React.FC = () => {
           >
             <Award className="w-7 h-7 text-game-purple" />
           </motion.div>
-          <h3 className="text-xl font-bold text-purple-800 kids-text">Nivel</h3>
+          <h3 className="text-xl text-purple-800 kids-text font-normal">Nivel</h3>
         </div>
         <motion.p 
-          className="text-3xl font-bold text-purple-900 kids-text mt-1"
+          className="text-3xl text-purple-900 kids-text mt-1 font-normal"
           animate={level > 1 ? { scale: [1, 1.2, 1] } : {}}
           transition={{ duration: 0.5 }}
         >
           {level}
         </motion.p>
-        <p className="text-sm text-purple-600 kids-text">
-          {level > 1 ? '¡Nivel desbloqueado!' : 'Primer nivel'}
-        </p>
+        {level === 1 ? (
+          <p className="opacity-0">·</p>
+        ) : (
+          <p className="text-sm text-purple-600 kids-text font-normal">
+            ¡Nivel desbloqueado!
+          </p>
+        )}
       </motion.div>
     </div>
   );
