@@ -36,7 +36,7 @@ const DrawControls: React.FC<DrawControlsProps> = ({
         </Button>
       </div>
       
-      <Button onClick={onClear} disabled={isPlaying || isInitializing || !canvasReady || !pathExists && !isDrawing} className="bg-amber-500 hover:bg-amber-400 text-white px-6 py-4 text-lg kids-text">
+      <Button onClick={onClear} disabled={isPlaying || isInitializing || !canvasReady || !pathExists && !isDrawing} className="text-white px-6 py-4 text-lg kids-text bg-red-600 hover:bg-red-500">
         <Eraser className="mr-2 h-5 w-5" /> 
         Borrar
       </Button>
