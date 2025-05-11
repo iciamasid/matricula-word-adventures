@@ -321,7 +321,7 @@ const GameContent = () => {
         }}>
             <div className="text-center">
               <h2 className="text-2xl text-purple-800 kids-text mb-3 font-normal">Conduce tu coche al destino</h2>
-              <p className="text-purple-700 kids-text mb-4 font-normal text-xl">Dibuja un camino y conduce hasta tu país destino</p>
+              <p className="text-purple-700 kids-text mb-4 font-normal text-2xl">Dibuja un camino y conduce hasta tu país destino</p>
               <Link to="/draw-game">
                 <Button className="bg-purple-600 hover:bg-purple-700 text-white text-xl kids-text px-6 py-3 font-normal">
                   <Car className="mr-2 h-6 w-6" /> Jugar
