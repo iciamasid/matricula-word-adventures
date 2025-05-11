@@ -197,7 +197,7 @@ const GameContent = () => {
             </motion.div>
             
             {/* Level Panel - Updated to be transparent and without border */}
-            <motion.div className="rounded-lg p-4 bg-transparent shadow-lg text-center" initial={{
+            <motion.div initial={{
             opacity: 0,
             x: 20
           }} animate={{
@@ -207,7 +207,7 @@ const GameContent = () => {
             delay: 0.1
           }} whileHover={{
             scale: 1.02
-          }}>
+          }} className="rounded-lg p-4 bg-transparent shadow-lg text-center py-[56px]">
               <div className="flex items-center justify-center gap-2">
                 <motion.div animate={{
                 rotate: [0, 10, -10, 0]
