@@ -7,6 +7,9 @@ const LicensePlate: React.FC = () => {
   const { plateConsonants } = useGame();
   const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
 
+  // Ensure plateConsonants is treated as a string and safely convert to array
+  const consonantsArray = typeof plateConsonants === 'string' ? plateConsonants.split('') : [];
+
   return (
     <motion.div
       className="w-full"
@@ -34,8 +37,7 @@ const LicensePlate: React.FC = () => {
 
         {/* License plate content */}
         <div className="flex items-center justify-center space-x-2 ml-10">
-          {/* Convert plateConsonants string to array before using map */}
-          {plateConsonants.split('').map((consonant, index) => (
+          {consonantsArray.map((consonant, index) => (
             <motion.div
               key={index}
               className={`${CONSONANT_COLORS[index]} w-12 h-12 rounded-lg flex items-center justify-center shadow-md`}

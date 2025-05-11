@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { 
   generateLicensePlate, 
@@ -113,7 +112,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Game state
   const [licensePlate, setLicensePlate] = useState("");
-  const [plateConsonants, setPlateConsonants] = useState("");
+  const [plateConsonants, setPlateConsonants] = useState(""); // Ensuring it's initialized as a string
   const [currentWord, setCurrentWord] = useState("");
   const [score, setScore] = useState(0);
   const [previousScore, setPreviousScore] = useState(0);
@@ -221,6 +220,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     setLicensePlate(newPlate);
+    // Ensure plateConsonants is always a string
     setPlateConsonants(getConsonantsFromPlate(newPlate));
     setCurrentWord("");
     setPreviousScore(score);  // Store the previous round's score
