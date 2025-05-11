@@ -142,7 +142,7 @@ const CountryPageContent = () => {
                 </motion.span>
                 Sobre {countryData.name}
               </h3>
-              <p className="kids-text font-medium text-fuchsia-600">{countryData.description}</p>
+              <p className="kids-text text-fuchsia-600 text-lg font-normal">{countryData.description}</p>
             </div>
             
             <CountryPageIcons type="fact">
