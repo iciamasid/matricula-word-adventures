@@ -392,7 +392,7 @@ const GameContent = () => {
           type: "spring",
           stiffness: 400
         }}>
-            <Button onClick={handleResetGame} size="lg" className="w-full text-white kids-text text-xl font-normal py-[24px] bg-purple-700 hover:bg-purple-600">
+            <Button onClick={handleResetGame} size="lg" className="w-full text-white kids-text text-xl font-normal bg-purple-700 hover:bg-purple-600 px-[10px] mx-0 my-0 py-[20px]">
               <RefreshCw className="mr-2 h-5 w-5" /> Iniciar nueva partida
             </Button>
           </motion.div>
