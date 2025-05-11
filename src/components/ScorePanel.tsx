@@ -39,9 +39,9 @@ const ScorePanel: React.FC = () => {
         <p className="text-sm text-purple-600 kids-text">ronda anterior</p>
       </motion.div>
       
-      {/* Level Panel */}
+      {/* Level Panel - Updated to be transparent */}
       <motion.div 
-        className="rounded-lg p-4 bg-white/90 shadow-lg text-center"
+        className="rounded-lg p-4 bg-transparent shadow-lg text-center"
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.1 }}

@@ -55,6 +55,14 @@ const getLevelFlag = (level: number) => {
   }
 };
 
+// Define custom consonant colors array for use in the page
+const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
+const Index = () => {
+  return <GameProvider>
+      <GameContent />
+    </GameProvider>;
+};
+
 // Componente para manejar el contenido del juego
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
@@ -188,8 +196,8 @@ const GameContent = () => {
               </div>
             </motion.div>
             
-            {/* Level Panel - with updated larger icon */}
-            <motion.div className="rounded-lg p-4 bg-white/90 shadow-lg text-center" initial={{
+            {/* Level Panel - Updated to be transparent and without border */}
+            <motion.div className="rounded-lg p-4 bg-transparent shadow-lg text-center" initial={{
             opacity: 0,
             x: 20
           }} animate={{
@@ -368,11 +376,4 @@ const GameContent = () => {
     </div>;
 };
 
-// Define custom consonant colors array for use in the page
-const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
-const Index = () => {
-  return <GameProvider>
-      <GameContent />
-    </GameProvider>;
-};
 export default Index;
