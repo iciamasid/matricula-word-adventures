@@ -184,7 +184,7 @@ const GameContent = () => {
           y: 0
         }} transition={{
           delay: 0.3
-        }} className="w-full rounded-lg p-5 shadow-lg bg-purple-200">
+        }} className="w-full rounded-lg p-5 shadow-lg bg-purple-200 py-[20px]">
             <div className="text-center mb-4">
               <h2 className="text-2xl font-normal text-purple-800 kids-text flex items-center justify-center">
                 <motion.span className="inline-block" animate={{
