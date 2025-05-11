@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -61,12 +60,22 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
         
         // Remove existing end point if any
         if (endPointObj && fabricCanvas) {
-          fabricCanvas.remove(endPointObj);
+          // Check if endPointObj is a group of objects or a single object
+          if ('endMarker' in endPointObj) {
+            // It's a group with named properties
+            if (endPointObj.endMarker) fabricCanvas.remove(endPointObj.endMarker);
+            if (endPointObj.text) fabricCanvas.remove(endPointObj.text);
+            if (endPointObj.flagIcon) fabricCanvas.remove(endPointObj.flagIcon);
+          } else {
+            // It's a single object
+            fabricCanvas.remove(endPointObj);
+          }
         }
         
         // Create a custom end point with destination name
         if (fabricCanvas) {
-          createEndPoint(lastPoint.x, lastPoint.y, fabricCanvas, destinationCountry);
+          const newEndPoint = createEndPoint(lastPoint.x, lastPoint.y, fabricCanvas, destinationCountry);
+          setEndPointObj(newEndPoint);
         }
         
         setEndPosition({
@@ -191,11 +200,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
-        if ((obj instanceof Rect && obj !== startPointObj && obj !== endPointObj) || 
-            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 15)) {
-          if (obj.type !== 'text') { // No eliminar textos (Madrid, destino)
-            fabricCanvas.remove(obj);
-          }
+        if ((obj instanceof Rect || obj instanceof Circle) && 
+            !obj.data?.isPathTrace && 
+            !obj.data?.isStartMarker && 
+            !obj.data?.isEndMarker && 
+            obj.type !== 'text') {
+          fabricCanvas.remove(obj);
         }
       }
       

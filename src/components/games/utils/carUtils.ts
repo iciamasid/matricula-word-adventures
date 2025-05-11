@@ -1,5 +1,5 @@
 
-import { Canvas, Circle, FabricImage, Rect } from 'fabric';
+import { Canvas, Circle, FabricImage, Rect, Text } from 'fabric';
 
 // Create a more realistic car object using Fabric.js shapes
 export const createCar = (left: number, top: number, color = '#E74C3C', scale = 1) => {
@@ -17,7 +17,14 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     selectable: false,
     strokeWidth: 1,
     stroke: '#000000',
-    shadow: 'rgba(0,0,0,0.3) 0px 3px 5px'
+  });
+  
+  // Add shadow manually
+  body.shadow = new fabric.Shadow({
+    color: 'rgba(0,0,0,0.3)',
+    offsetX: 0,
+    offsetY: 3,
+    blur: 5
   });
 
   // Car roof
@@ -173,7 +180,7 @@ export const createStartPoint = (left: number, top: number, canvas?: Canvas) => 
     });
     
     // Añadir texto "Madrid"
-    const text = new fabric.Text('Madrid', {
+    const text = new Text('Madrid', {
       left: left,
       top: top + 25,
       fontSize: 14,
@@ -186,7 +193,7 @@ export const createStartPoint = (left: number, top: number, canvas?: Canvas) => 
     });
 
     // Añadir un ícono de ubicación sobre el círculo
-    const pinIcon = new fabric.Text('📍', {
+    const pinIcon = new Text('📍', {
       left: left,
       top: top - 5,
       fontSize: 24,
@@ -230,7 +237,7 @@ export const createEndPoint = (left: number, top: number, canvas?: Canvas, desti
     });
     
     // Añadir texto con el nombre del destino
-    const text = new fabric.Text(destinationName, {
+    const text = new Text(destinationName, {
       left: left,
       top: top + 25,
       fontSize: 14,
@@ -243,7 +250,7 @@ export const createEndPoint = (left: number, top: number, canvas?: Canvas, desti
     });
 
     // Añadir un ícono de bandera
-    const flagIcon = new fabric.Text('🏁', {
+    const flagIcon = new Text('🏁', {
       left: left,
       top: top - 5,
       fontSize: 24,
@@ -280,4 +287,18 @@ export interface CarObject {
   headlight1: Circle;
   headlight2: Circle;
   taillight: Rect;
+}
+
+// Add fabric namespace for the Shadow object
+declare namespace fabric {
+  interface ShadowOptions {
+    color: string;
+    blur?: number;
+    offsetX?: number;
+    offsetY?: number;
+  }
+
+  class Shadow {
+    constructor(options: ShadowOptions);
+  }
 }

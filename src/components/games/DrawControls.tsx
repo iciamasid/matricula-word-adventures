@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Trash2, Route } from 'lucide-react';
+import { ArrowRight, Trash2, Route, HelpCircle } from 'lucide-react';
 
 interface DrawControlsProps {
   isPlaying: boolean;
@@ -12,6 +12,7 @@ interface DrawControlsProps {
   onDraw: () => void;
   onPlay: () => void;
   onClear: () => void;
+  onHelp?: () => void; // Added onHelp prop as optional
 }
 
 const DrawControls: React.FC<DrawControlsProps> = ({
@@ -22,7 +23,8 @@ const DrawControls: React.FC<DrawControlsProps> = ({
   isInitializing,
   onDraw,
   onPlay,
-  onClear
+  onClear,
+  onHelp
 }) => {
   return <div className="flex flex-col sm:flex-row justify-between gap-4">
       <Button onClick={onDraw} variant="outline" disabled={isPlaying || isDrawing || !canvasReady || isInitializing} className="text-slate-50 font-medium text-2xl text-center bg-violet-600 hover:bg-violet-500 px-[10px]">

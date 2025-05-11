@@ -10,17 +10,21 @@ interface UseDrawPathCanvasProps {
   containerRef: RefObject<HTMLDivElement>;
   onPathCreated: (points: Point[]) => void;
   onError: (message: string) => void;
+  carColor?: string; // Added carColor prop
+  carScale?: number; // Added carScale prop
 }
 
 export const useDrawPathCanvas = ({
   canvasRef,
   containerRef,
   onPathCreated,
-  onError
+  onError,
+  carColor = '#E74C3C', // Default value
+  carScale = 1 // Default value
 }: UseDrawPathCanvasProps) => {
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
-  const [startPointObj, setStartPointObj] = useState<Circle | null>(null);
-  const [endPointObj, setEndPointObj] = useState<Circle | null>(null);
+  const [startPointObj, setStartPointObj] = useState<any>(null); // Changed to any temporarily
+  const [endPointObj, setEndPointObj] = useState<any>(null); // Changed to any temporarily
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [canvasReady, setCanvasReady] = useState<boolean>(false);
   const carObjectsRef = useRef<CarObject | null>(null);
@@ -59,14 +63,17 @@ export const useDrawPathCanvas = ({
       
       console.log("Drawing brush configured");
       
-      // Add car starting point
-      const startPoint = createStartPoint(50, 50);
-      canvas.add(startPoint);
+      // Add car starting point (using canvas parameter to create complex marker)
+      const startPoint = createStartPoint(50, 50, canvas);
+      // We don't need to add startPoint to canvas here as it's already added inside createStartPoint
       setStartPointObj(startPoint);
 
       // Create and add car to canvas
-      const car = createCar(50, 50);
-      canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+      const car = createCar(50, 50, carColor, carScale);
+      Object.values(car).forEach(part => {
+        canvas.add(part);
+      });
+      
       carObjectsRef.current = car;
       canvas.renderAll();
 
