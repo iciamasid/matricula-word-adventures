@@ -392,8 +392,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError }) => {
         evented: false,
       });
       
+      // Add the trace to the canvas and ensure it's behind other objects
       fabricCanvas.add(trace);
-      fabricCanvas.sendToBack(trace);
+      
+      // In Fabric.js v6, sendToBack is replaced with moving objects in the stack
+      if (trace.canvas) {
+        trace.moveTo(0); // Move to index 0 (back of the stack)
+      }
+      
       pathTraceRef.current = trace;
     }
   };
