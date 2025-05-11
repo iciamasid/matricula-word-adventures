@@ -2,20 +2,18 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, AlertCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import HelpButton from "@/components/games/HelpButton";
-import GameStatsDisplay from "@/components/games/GameStatsDisplay";
 
 const DrawGamePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   
+  // Log when component mounts to help with debugging
   useEffect(() => {
     console.log("DrawGamePage mounted");
     return () => console.log("DrawGamePage unmounted");
@@ -47,7 +45,6 @@ const DrawGamePage: React.FC = () => {
       className="min-h-screen flex flex-col items-center px-4 py-6 relative overflow-hidden"
       style={{
         backgroundColor: "#bba7ca",
-        backgroundImage: "url('data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E')",
         backgroundSize: "cover",
         backgroundAttachment: "fixed"
       }}
@@ -58,27 +55,18 @@ const DrawGamePage: React.FC = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        {/* Header with game stats */}
+        {/* Header */}
         <div className="w-full flex justify-between items-center">
           <Link to="/">
-            <Button variant="outline" className="bg-white/80 hover:bg-white kids-text flex gap-2 items-center">
-              <ArrowLeft className="h-4 w-4" /> Volver
+            <Button variant="outline" className="bg-white/80 hover:bg-white">
+              <ArrowLeft className="mr-2 h-5 w-5" /> Volver
             </Button>
           </Link>
           
-          <GameStatsDisplay />
+          <h1 className="text-3xl font-bold kids-text text-white">Juego del Cochecito</h1>
           
-          <HelpButton className="h-10 w-10" />
+          <div className="w-[100px]"></div> {/* Empty div for layout balance */}
         </div>
-        
-        {/* Game title */}
-        <motion.h1 
-          className="text-3xl font-bold kids-text text-white drop-shadow-md"
-          animate={{ y: [0, -5, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          Juego del Cochecito
-        </motion.h1>
         
         {/* Error Display */}
         {error && (
@@ -95,6 +83,28 @@ const DrawGamePage: React.FC = () => {
           </motion.div>
         )}
         
+        {/* Game Instructions - Updated with clearer instructions */}
+        <motion.div 
+          className="bg-white/90 rounded-lg p-5 w-full shadow-lg"
+          initial={{ y: 20 }}
+          animate={{ y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <h2 className="text-2xl font-bold text-purple-800 kids-text mb-3">¿Cómo jugar?</h2>
+          <ol className="list-decimal list-inside space-y-2 text-purple-900 kids-text">
+            <li>Primero, haz clic en el botón <span className="font-bold bg-green-100 px-2 py-1 rounded">Dibujar Camino</span></li>
+            <li>Luego, mantén presionado y mueve tu dedo o ratón para dibujar un camino para el coche</li>
+            <li>Dibuja líneas continuas y no demasiado rápido para mejores resultados</li>
+            <li>Cuando termines de dibujar, pulsa el botón <span className="font-bold bg-cyan-100 px-2 py-1 rounded">Jugar</span></li>
+            <li>¡Mira cómo el cochecito sigue exactamente el camino que dibujaste!</li>
+          </ol>
+          <div className="mt-3 bg-yellow-100 p-2 rounded-md">
+            <p className="text-amber-700 text-sm font-medium">
+              ¡El coche sigue exactamente el trazo que dibujes! La animación va despacio para que puedas ver bien cómo sigue tu camino.
+            </p>
+          </div>
+        </motion.div>
+        
         {/* Game Component */}
         <motion.div 
           className="w-full"
@@ -103,6 +113,20 @@ const DrawGamePage: React.FC = () => {
           transition={{ delay: 0.4 }}
         >
           <DrawPathGame onError={handleError} />
+        </motion.div>
+        
+        {/* Fun Fact */}
+        <motion.div 
+          className="bg-purple-100/90 border-2 border-purple-300 rounded-lg p-4 w-full shadow-lg"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          <h3 className="text-lg font-bold text-purple-800 kids-text">¿Sabías que...?</h3>
+          <p className="text-purple-700 kids-text">
+            Los coches siguen caminos programados en muchos juegos y aplicaciones. 
+            ¡Lo que acabas de hacer es similar a cómo los ingenieros programan vehículos autónomos!
+          </p>
         </motion.div>
       </motion.div>
       
