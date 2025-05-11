@@ -6,6 +6,7 @@ import { MapPin, Sparkles, Award, Star } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Progress } from "@/components/ui/progress";
 
 const LevelRewards: React.FC = () => {
   const { destination, destinationInfo } = useGame();
