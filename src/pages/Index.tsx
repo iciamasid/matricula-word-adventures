@@ -146,7 +146,7 @@ const GameContent = () => {
           {/* Score components in a single row */}
           <div className="w-full grid grid-cols-2 gap-4 mb-4">
             {/* Total Points Panel - with updated larger icon */}
-            <motion.div className="rounded-lg p-4 bg-white/90 shadow-lg text-center" initial={{
+            <motion.div initial={{
             opacity: 0,
             x: -20
           }} animate={{
@@ -156,7 +156,7 @@ const GameContent = () => {
             delay: 0.1
           }} whileHover={{
             scale: 1.02
-          }}>
+          }} className="rounded-lg p-4 shadow-lg text-center bg-transparent">
               <div className="flex items-center justify-center gap-2">
                 <motion.div animate={{
                 rotate: [0, 10, -10, 0],
