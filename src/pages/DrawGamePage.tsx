@@ -54,7 +54,7 @@ const DrawGamePage: React.FC = () => {
         {/* Header */}
         <div className="w-full flex justify-between items-center">
           <Link to="/">
-            <Button variant="outline" className="bg-white/80 hover:bg-white">
+            <Button variant="outline" className="bg-teal-400 hover:bg-teal-300 text-slate-600 text-lg">
               <ArrowLeft className="mr-2 h-5 w-5" /> Volver
             </Button>
           </Link>
