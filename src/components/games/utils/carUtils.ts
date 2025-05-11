@@ -95,33 +95,30 @@ export const createCarFromImage = (
       return;
     }
     
-    // The correct format for FabricImage.fromURL in fabric.js v6 is:
-    // FabricImage.fromURL(url: string, options?: LoadImageOptions)
-    FabricImage.fromURL('/lovable-uploads/coche animado.gif', {
-      left,
-      top,
-      originX: 'center',
-      originY: 'center',
-      scaleX: scale,
-      scaleY: scale,
-      selectable: false,
-      evented: false,
-      crossOrigin: 'anonymous',
-      onError: () => {
+    // The correct format for FabricImage.fromURL in fabric.js v6
+    FabricImage.fromURL('/lovable-uploads/coche animado.gif', (img) => {
+      if (!img) {
         console.error('Failed to load car image');
         reject(new Error('Failed to load car image'));
-      },
-      onComplete: (img) => {
-        if (!img) {
-          console.error('Failed to load car image');
-          reject(new Error('Failed to load car image'));
-          return;
-        }
-        
-        img.set({ zIndex: 100 });
-        console.log('Car image loaded successfully');
-        resolve(img);
+        return;
       }
+      
+      img.set({
+        left,
+        top,
+        originX: 'center',
+        originY: 'center',
+        scaleX: scale,
+        scaleY: scale,
+        selectable: false,
+        evented: false,
+        zIndex: 100
+      });
+      
+      console.log('Car image loaded successfully');
+      resolve(img);
+    }, {
+      crossOrigin: 'anonymous'
     });
   });
 };
