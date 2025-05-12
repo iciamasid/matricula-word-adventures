@@ -8,15 +8,15 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     switch (color.toLowerCase()) {
       case 'bg-yellow-500':
       case '#f1c40f': 
-        return '/lovable-uploads/cocheamarillo.png'; // Yellow car
+        return '/lovable-uploads/081dd077-2e84-47e0-a4d6-3e861e23dff1.png'; // Yellow car
       case 'bg-blue-500':
       case '#33c3f0': 
-        return '/lovable-uploads/cocheazul.png'; // Blue car
+        return '/lovable-uploads/d3c96b79-3e3a-45c6-afde-5daa1e67bf01.png'; // Blue car
       case 'bg-red-500':
       case '#e74c3c': 
-        return '/lovable-uploads/cocherojo.png'; // Red car
+        return '/lovable-uploads/dd6a80df-8c7c-4cb5-ba23-aed3586a5f04.png'; // Red car
       default:
-        return '/lovable-uploads/cocherojo.png'; // Default to red car
+        return '/lovable-uploads/dd6a80df-8c7c-4cb5-ba23-aed3586a5f04.png'; // Default to red car
     }
   };
   
@@ -29,54 +29,51 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     angle: 0
   };
 
+  // Fix for error TS2304: Define carImage variable
+  let carImage: any = null;
+
   // Helper function to create the image object with proper sizing and positioning
   const createCarImage = (fabricCanvas: any) => {
     const imagePath = getCarImagePath();
     
     return new Promise<any>((resolve) => {
-      // Load car image from path
-      FabricImage.fromURL(imagePath, {
-        // This fixes TS2559: Using object with callback instead of direct callback
-        onLoad: (img) => {
-          if (!img) {
-            console.error("Failed to load car image");
-            resolve(null);
-            return;
-          }
-          
-          // Scale and position the car image
-          const scaleFactor = 0.15 * scale; // Adjust this based on the actual image size
-          img.scale(scaleFactor);
-          
-          // Position at the center point
-          img.set({
-            left,
-            top,
-            originX: 'center',
-            originY: 'center',
-            selectable: false,
-            // Apply a shadow for a nicer look
-            shadow: new Shadow({
-              color: 'rgba(0,0,0,0.3)',
-              blur: 4 * scale,
-              offsetX: 0,
-              offsetY: 1 * scale
-            })
-          });
-          
-          if (fabricCanvas) {
-            fabricCanvas.add(img);
-            fabricCanvas.renderAll();
-          }
-          
-          resolve(img);
+      // Load car image from path - using correct Fabric.js v6 syntax
+      FabricImage.fromURL(imagePath, (img) => {
+        if (!img) {
+          console.error("Failed to load car image");
+          resolve(null);
+          return;
         }
+        
+        // Scale and position the car image
+        const scaleFactor = 0.15 * scale; // Adjust this based on the actual image size
+        img.scale(scaleFactor);
+        
+        // Position at the center point
+        img.set({
+          left,
+          top,
+          originX: 'center',
+          originY: 'center',
+          selectable: false,
+          // Apply a shadow for a nicer look
+          shadow: new Shadow({
+            color: 'rgba(0,0,0,0.3)',
+            blur: 4 * scale,
+            offsetX: 0,
+            offsetY: 1 * scale
+          })
+        });
+        
+        if (fabricCanvas) {
+          fabricCanvas.add(img);
+          fabricCanvas.renderAll();
+        }
+        
+        resolve(img);
       });
     });
   };
-  
-  // Fix for error TS2304: Define carImage variable
-  let carImage: any = null;
   
   // Return an object that matches the CarObject interface structure
   // but uses a single image instead of multiple shapes

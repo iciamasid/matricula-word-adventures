@@ -22,9 +22,9 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({ isOpen, onToggle, e
   const { selectedCarColor, setSelectedCarColor } = useGame();
 
   const carOptions: CarOption[] = [
-    { id: "1", name: "Coche Amarillo", image: "cocheamarillo.png", color: "bg-yellow-500" },
-    { id: "2", name: "Coche Azul", image: "cocheazul.png", color: "bg-blue-500" },
-    { id: "3", name: "Coche Rojo", image: "cocherojo.png", color: "bg-red-500" },
+    { id: "1", name: "Coche Amarillo", image: "081dd077-2e84-47e0-a4d6-3e861e23dff1.png", color: "bg-yellow-500" },
+    { id: "2", name: "Coche Azul", image: "d3c96b79-3e3a-45c6-afde-5daa1e67bf01.png", color: "bg-blue-500" },
+    { id: "3", name: "Coche Rojo", image: "dd6a80df-8c7c-4cb5-ba23-aed3586a5f04.png", color: "bg-red-500" },
   ];
 
   // No need for handleSave, selection is saved automatically
