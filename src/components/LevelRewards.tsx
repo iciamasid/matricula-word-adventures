@@ -116,7 +116,10 @@ const LevelRewards: React.FC = () => {
               transition={{ delay: 0.5 }}
             >
               <motion.div
-                animate={{ rotate: [0, 10, 0, -10, 0], scale: [1, 1.2, 1] }}
+                animate={{ 
+                  rotate: [0, 10, 0, -10, 0], 
+                  scale: [1, 1.2, 1] 
+                }}
                 transition={{ duration: 2, repeat: Infinity }}
                 className="flex-shrink-0 mt-1 text-3xl"
               >

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -11,7 +12,6 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
 import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
-import GamePopup from "@/components/GamePopup";
 import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import NewGameButton from "@/components/NewGameButton";
@@ -38,46 +38,9 @@ const GameContent = () => {
     plateConsonants,
     score,
     previousScore,
-    showCompletionBanner
   } = useGame();
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [showLevelUp, setShowLevelUp] = useState(false);
-  const [prevLevel, setPrevLevel] = useState(level); // Initialize prevLevel with level
-  const [showLevelUpFromNavigation, setShowLevelUpFromNavigation] = useState(false);
 
-  // Show success popup when score changes
-  useEffect(() => {
-    if (score > 0) {
-      setShowSuccess(true);
-      setTimeout(() => setShowSuccess(false), 3000);
-    }
-  }, [score]);
-
-  // Show level up popup ONLY when level changes and not from navigation
-  useEffect(() => {
-    // Only show the popup when the level increases (not when loading the page or returning from navigation)
-    if (level > prevLevel && prevLevel !== 0 && !showLevelUpFromNavigation) {
-      setShowLevelUp(true);
-    }
-    // Always update the previous level
-    setPrevLevel(level);
-
-    // Reset navigation flag
-    setShowLevelUpFromNavigation(false);
-  }, [level, prevLevel, showLevelUpFromNavigation]);
-
-  // Detection of navigation return
-  useEffect(() => {
-    // Check if this is a page return/navigation
-    const isNavigatingBack = sessionStorage.getItem('navigatingBack');
-    if (isNavigatingBack === 'true') {
-      // Set flag to prevent level up popup when returning
-      setShowLevelUpFromNavigation(true);
-      sessionStorage.removeItem('navigatingBack');
-    }
-  }, []);
-
-  // Set navigation flag when leaving
+  // Usamos sessionStorage para marcar cuando estamos navegando entre páginas
   const handleNavigation = () => {
     sessionStorage.setItem('navigatingBack', 'true');
   };
@@ -98,6 +61,7 @@ const GameContent = () => {
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
+  
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -107,6 +71,7 @@ const GameContent = () => {
       });
     }
   };
+  
   return <div className="min-h-screen flex flex-col items-center relative overflow-hidden" style={{
     backgroundColor: "#bba7ca",
     backgroundSize: "cover",
@@ -334,14 +299,8 @@ const GameContent = () => {
           </motion.div>
         </div>
         
-        {/* Error Alert using GamePopup */}
+        {/* Error Alert using GamePopup - Mantén esto porque maneja los errores */}
         <ErrorAlert />
-        
-        {/* Success Popup */}
-        <GamePopup open={showSuccess} onClose={() => setShowSuccess(false)} type="success" message="¡MUY BIEN!" points={score} />
-        
-        {/* Level Up Popup */}
-        <GamePopup open={showLevelUp} onClose={() => setShowLevelUp(false)} type="levelUp" message="¡NIVEL DESBLOQUEADO!" level={level} />
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
