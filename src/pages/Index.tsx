@@ -16,7 +16,6 @@ import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import NewGameButton from "@/components/NewGameButton";
 import WorldTourProgress from "@/components/WorldTourProgress";
-import CarCustomization from "@/components/CarCustomization";
 
 // Define custom consonant colors array for use in the page
 const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
@@ -182,7 +181,7 @@ const GameContent = () => {
       </div>
     
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
-        {/* Player Registration Form */}
+        {/* Player Registration Form and Car Customization */}
         <PlayerRegistration />
         
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
@@ -191,9 +190,6 @@ const GameContent = () => {
           
           {/* Add New Game Button with slot machine style */}
           <NewGameButton />
-          
-          {/* Car Customization Component */}
-          <CarCustomization />
           
           {/* Score components in a single row */}
           <ScorePanel />

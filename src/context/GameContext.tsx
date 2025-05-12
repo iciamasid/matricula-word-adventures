@@ -264,7 +264,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Modified: Track popup state changes to generate new plate when all popups are closed
   useEffect(() => {
-    if (isGeneratingLicensePlate && !showBonusPopup && !showAgeBonusPopup) {
+    if (isGeneratingLicensePlate && !showBonusPopup && !showAgeBonusPopup && !showCompletionBanner) {
       const timer = setTimeout(() => {
         doGenerateNewPlate();
         setIsGeneratingLicensePlate(false);
@@ -272,7 +272,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       return () => clearTimeout(timer);
     }
-  }, [showBonusPopup, showAgeBonusPopup, isGeneratingLicensePlate]);
+  }, [showBonusPopup, showAgeBonusPopup, showCompletionBanner, isGeneratingLicensePlate]);
   
   // Reset the entire game
   const resetGame = () => {
@@ -369,14 +369,21 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Generate a new license plate - now just sets a flag when we're ready to generate
   const generateNewPlate = () => {
-    // If any popup is shown, set the flag to generate later
+    // Start the animation
+    setIsGeneratingLicensePlate(true);
+    
+    // If any popup is shown, wait for them to close (the useEffect above will handle generation)
     if (showBonusPopup || showAgeBonusPopup || showCompletionBanner) {
-      setIsGeneratingLicensePlate(true);
       return;
     }
     
-    // Otherwise generate immediately
-    doGenerateNewPlate();
+    // Otherwise generate after a 3-second delay for the animation
+    const timer = setTimeout(() => {
+      doGenerateNewPlate();
+      setIsGeneratingLicensePlate(false);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
   };
   
   const closeBonusPopup = () => {

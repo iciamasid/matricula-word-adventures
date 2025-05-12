@@ -116,3 +116,10 @@ export interface CarObject {
   wheel3: Circle;
   headlight: Circle;
 }
+
+export interface CarColor {
+  id: string;
+  name: string;
+  image: string;
+  color: string;
+}

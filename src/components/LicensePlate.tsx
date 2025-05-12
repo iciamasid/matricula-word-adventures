@@ -104,7 +104,7 @@ const LicensePlate: React.FC = () => {
         {!selectedCarColor && (
           <motion.img 
             src="/lovable-uploads/coche_portada.gif" 
-            alt="Coche caca" 
+            alt="Coche predeterminado" 
             animate={{ y: [0, -3, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             className="h-16 w-auto"
