@@ -102,8 +102,10 @@ const WordInput: React.FC = () => {
   useEffect(() => {
     // If there was a successful submission
     if (submitSuccess) {
+      console.log("Submit success detected, scheduling new plate generation");
       // Wait for 3 seconds before generating a new plate
       const timer = setTimeout(() => {
+        console.log("Generating new plate after successful submission");
         generateNewPlate();
       }, 3000);
       
