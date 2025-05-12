@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import PlayerNameInput from "@/components/PlayerNameInput";
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
-
 const PlayerRegistration: React.FC = () => {
   const {
     playerName,
@@ -20,8 +18,10 @@ const PlayerRegistration: React.FC = () => {
     setPlayerAge,
     setPlayerGender
   } = useGame();
-  
-  const { t, isEnglish } = useLanguage();
+  const {
+    t,
+    isEnglish
+  } = useLanguage();
   const [showForm, setShowForm] = useState(!playerName || !playerAge);
   const [showCarCustomization, setShowCarCustomization] = useState(false);
 
@@ -43,14 +43,12 @@ const PlayerRegistration: React.FC = () => {
       }
     }
   }, [playerName, playerGender, setPlayerGender]);
-
   useEffect(() => {
     // If we have both name and age, hide the form
     if (playerName && playerAge) {
       setShowForm(false);
     }
   }, [playerName, playerAge]);
-
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
   };
@@ -65,16 +63,16 @@ const PlayerRegistration: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [selectedCarColor]);
-
-  return (
-    <>
-      {showForm ? (
-        <motion.div 
-          className={`w-full max-w-md ${bgColor} rounded-lg p-5 shadow-lg mb-4`} 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+  return <>
+      {showForm ? <motion.div className={`w-full max-w-md ${bgColor} rounded-lg p-5 shadow-lg mb-4`} initial={{
+      opacity: 0,
+      y: -20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.5
+    }}>
           <h2 className={`text-xl ${textColor} kids-text mb-4 text-center font-normal`}>
             {t('welcome_game')}
           </h2>
@@ -85,58 +83,42 @@ const PlayerRegistration: React.FC = () => {
             <PlayerNameInput onSave={setPlayerName} initialName={playerName} />
             <PlayerAgeInput onSave={setPlayerAge} initialAge={playerAge} />
           </div>
-        </motion.div>
-      ) : (
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md flex flex-col gap-3 mb-4"
-        >
+        </motion.div> : <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} className="w-full max-w-md flex flex-col gap-3 mb-4">
           {/* Player info display */}
-          <motion.div className={`flex justify-between items-center rounded-lg p-3 shadow-md ${panelBg}`}>
+          <motion.div className="">
             <div className="flex items-center">
               {playerGender === t('boy') ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
               <span className={`font-medium ${textColor} kids-text text-3xl`}>
                 {playerName}, {playerAge} {t('years')}
               </span>
             </div>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className={btnColor}
-              onClick={() => setShowForm(true)}
-            >
+            <Button size="sm" variant="outline" className={btnColor} onClick={() => setShowForm(true)}>
               {t('edit')}
             </Button>
           </motion.div>
           
           {/* Car selection button */}
-          <motion.div 
-            className={`flex justify-between items-center rounded-lg p-3 shadow-md ${panelBg} cursor-pointer`} 
-            onClick={toggleCarCustomization}
-          >
+          <motion.div className={`flex justify-between items-center rounded-lg p-3 shadow-md ${panelBg} cursor-pointer`} onClick={toggleCarCustomization}>
             <div className="flex items-center">
               <Car className={`h-5 w-5 mr-2 ${isEnglish ? 'text-orange-700' : 'text-purple-700'}`} />
               <span className={`font-medium ${textColor} kids-text text-xl`}>
                 {selectedCarColor ? t('car_selected') : t('select_car')}
               </span>
             </div>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className={btnColor}
-              onClick={toggleCarCustomization}
-            >
+            <Button size="sm" variant="outline" className={btnColor} onClick={toggleCarCustomization}>
               {showCarCustomization ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
           </motion.div>
           
           {/* Car customization panel */}
           <CarCustomization isOpen={showCarCustomization} onToggle={toggleCarCustomization} />
-        </motion.div>
-      )}
-    </>
-  );
+        </motion.div>}
+    </>;
 };
-
 export default PlayerRegistration;
