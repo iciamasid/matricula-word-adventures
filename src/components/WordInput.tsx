@@ -19,13 +19,55 @@ const WordInput: React.FC = () => {
   
   const inputRef = useRef<HTMLInputElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [placeholderText, setPlaceholderText] = useState("");
+  const [fullPlaceholder, setFullPlaceholder] = useState("");
   
   useEffect(() => {
     // Focus the input when the component mounts
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+    
+    // Set the full placeholder text based on language
+    const text = isEnglish 
+      ? `WRITE A WORD WITH THESE CONSONANTS: ${plateConsonants.join(', ')}` 
+      : `ESCRIBE UNA PALABRA CON ESTAS CONSONANTES: ${plateConsonants.join(', ')}`;
+    setFullPlaceholder(text);
+  }, [plateConsonants, isEnglish]);
+  
+  // Animated placeholder effect
+  useEffect(() => {
+    if (!fullPlaceholder) return;
+    
+    let currentIndex = 0;
+    let direction = 1; // 1 for forward, -1 for backward
+    
+    const interval = setInterval(() => {
+      if (direction === 1) {
+        // Moving forward, adding characters
+        currentIndex += 1;
+        if (currentIndex >= fullPlaceholder.length) {
+          // When reaching the end, pause before going backward
+          setTimeout(() => {
+            direction = -1;
+          }, 1000); 
+        }
+      } else {
+        // Moving backward, removing characters
+        currentIndex -= 1;
+        if (currentIndex <= 0) {
+          // When reaching the start, pause before going forward
+          setTimeout(() => {
+            direction = 1;
+          }, 500);
+        }
+      }
+      
+      setPlaceholderText(fullPlaceholder.substring(0, currentIndex));
+    }, 100);
+    
+    return () => clearInterval(interval);
+  }, [fullPlaceholder]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentWord(e.target.value.toUpperCase());
@@ -62,7 +104,7 @@ const WordInput: React.FC = () => {
           value={currentWord} 
           onChange={handleInputChange} 
           onKeyDown={handleKeyDown} 
-          placeholder={t("type_here")} 
+          placeholder={placeholderText || " "} 
           className={`flex-1 text-center font-bold text-3xl py-6 uppercase border-2 ${borderColor} shadow-md kids-text`} 
           autoComplete="off" 
         />

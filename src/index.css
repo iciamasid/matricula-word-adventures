@@ -110,6 +110,11 @@
   button {
     @apply rounded-xl text-lg py-3;
   }
+  
+  /* Base container for desktop visibility */
+  .app-container {
+    @apply w-full max-w-3xl mx-auto;
+  }
 }
 
 .license-plate {
@@ -305,5 +310,34 @@
     left: 50% !important;
     transform: translateX(-50%) !important;
     width: 90% !important;
+  }
+}
+
+/* Make sure all content is visible on desktop */
+@media (min-width: 1024px) {
+  .container-desktop {
+    max-width: 80%;
+    margin: 0 auto;
+  }
+  
+  .game-panel {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Make sure inputs and elements are large enough on desktop */
+@media (min-width: 768px) {
+  .kids-text {
+    font-size: 1.2rem;
+  }
+  
+  input, textarea, button {
+    font-size: 1.1rem;
+  }
+  
+  .game-button {
+    padding: 1rem 1.5rem;
   }
 }

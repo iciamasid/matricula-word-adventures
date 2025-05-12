@@ -26,9 +26,9 @@ const PlayerRegistration: React.FC = () => {
   const [showCarCustomization, setShowCarCustomization] = useState(false);
 
   // Set color theme based on language
-  const bgColor = isEnglish ? "bg-orange-100/90" : "bg-purple-100/90";
+  const bgColor = isEnglish ? "bg-orange-100/70 backdrop-blur-sm" : "bg-purple-100/70 backdrop-blur-sm";
   const btnColor = isEnglish ? "border-orange-400 text-orange-700 hover:bg-orange-100" : "border-purple-400 text-purple-700 hover:bg-purple-100";
-  const panelBg = isEnglish ? "bg-orange-200" : "bg-violet-200";
+  const panelBg = isEnglish ? "bg-orange-200/80 backdrop-blur-sm" : "bg-violet-200/80 backdrop-blur-sm";
   const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
 
   // Auto-detect gender based on common Spanish name endings

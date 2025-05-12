@@ -24,14 +24,14 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
   interpolatedPathLength,
   animationCompleted
 }) => {
-  const { isEnglish } = useLanguage();
+  const { isEnglish, t } = useLanguage();
   
   return (
-    <>
+    <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4">
       {/* Loading indicator */}
       {isInitializing && (
         <motion.div 
-          className="text-center p-3 bg-purple-100 rounded-lg shadow-md animate-pulse"
+          className="text-center p-3 bg-purple-100 rounded-lg shadow-md animate-pulse mb-4"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
         >
@@ -46,7 +46,7 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
       
       {/* Canvas state indicator */}
       {!canvasReady && !isInitializing && (
-        <div className="text-center p-3 bg-red-100 rounded-lg border-2 border-red-300 shadow-md">
+        <div className="text-center p-3 bg-red-100 rounded-lg border-2 border-red-300 shadow-md mb-4">
           <div className="flex items-center justify-center gap-2">
             <AlertCircle className="w-7 h-7 text-red-600" />
             <p className="font-bold text-red-600 kids-text text-lg">
@@ -59,7 +59,7 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
       {/* Active drawing instructions */}
       {isDrawing && canvasReady && (
         <motion.div 
-          className="text-center p-3 bg-green-100 rounded-lg border-2 border-green-300 shadow-md"
+          className="text-center p-3 bg-green-100 rounded-lg border-2 border-green-300 shadow-md mb-4"
           animate={{ 
             scale: [1, 1.03, 1],
             transition: { repeat: Infinity, duration: 1.5 }
@@ -77,7 +77,7 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
       {/* Animation completion message */}
       {animationCompleted && (
         <motion.div 
-          className="text-center p-3 bg-yellow-100 rounded-lg border-2 border-yellow-300 shadow-md"
+          className="text-center p-3 bg-yellow-100 rounded-lg border-2 border-yellow-300 shadow-md mb-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
@@ -98,7 +98,7 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
           </div>
         </motion.div>
       )}
-    </>
+    </div>
   );
 };
 

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -92,9 +91,6 @@ const GameContent = () => {
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
-      {/* Language Selector at the top of the page */}
-      <LanguageSelector />
-      
       {/* Special background effect when the world tour is completed */}
       {level >= 10 && <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
@@ -115,8 +111,8 @@ const GameContent = () => {
         </div>}
       
       <div className="relative w-full">
-        <motion.img src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" alt="Matriculabra Cadabra" className="w-full object-contain mb-4 px-0" style={{
-        maxHeight: isMobile ? "28vh" : "30vh",
+        <motion.img src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" alt="Matriculabra Cadabra" className="w-full object-contain mb-2 px-0" style={{
+        maxHeight: isMobile ? "28vh" : "25vh",
         width: "100%"
       }} initial={{
         opacity: 0,
@@ -133,10 +129,15 @@ const GameContent = () => {
           variant="outline" 
           size="sm" 
           onClick={() => setShowInstructions(true)} 
-          className={`absolute bottom-6 right-4 ${isEnglish ? 'bg-orange-100/90 hover:bg-orange-200 text-orange-900 border-orange-300' : 'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}
+          className={`absolute bottom-4 right-4 ${isEnglish ? 'bg-orange-100/90 hover:bg-orange-200 text-orange-900 border-orange-300' : 'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}
         >
           <Globe className="w-4 h-4 mr-1" /> {t("help")}
         </Button>
+      </div>
+
+      {/* Language Selector below the image */}
+      <div className="w-full flex justify-center mb-4">
+        <LanguageSelector />
       </div>
     
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
