@@ -6,7 +6,7 @@ import PlayerAgeInput from "@/components/PlayerAgeInput";
 import CarCustomization from "@/components/CarCustomization";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { User, UserRound } from "lucide-react";
+import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
@@ -15,11 +15,13 @@ const PlayerRegistration: React.FC = () => {
     playerName,
     playerAge,
     playerGender,
+    selectedCarColor,
     setPlayerName,
     setPlayerAge,
     setPlayerGender
   } = useGame();
   const [showForm, setShowForm] = useState(!playerName || !playerAge || !playerGender);
+  const [showCarCustomization, setShowCarCustomization] = useState(false);
 
   useEffect(() => {
     // If we have both name, age and gender, hide the form
@@ -27,6 +29,10 @@ const PlayerRegistration: React.FC = () => {
       setShowForm(false);
     }
   }, [playerName, playerAge, playerGender]);
+
+  const toggleCarCustomization = () => {
+    setShowCarCustomization(!showCarCustomization);
+  };
 
   return (
     <>
@@ -127,8 +133,29 @@ const PlayerRegistration: React.FC = () => {
             </Button>
           </motion.div>
           
+          {/* Car selection button */}
+          <motion.div 
+            className="flex justify-between items-center rounded-lg p-3 shadow-md bg-violet-200 cursor-pointer"
+            onClick={toggleCarCustomization}
+          >
+            <div className="flex items-center">
+              <Car className="h-5 w-5 mr-2 text-purple-700" />
+              <span className="font-medium text-purple-800 kids-text text-xl">
+                {selectedCarColor ? "Tu coche seleccionado" : "Selecciona tu coche"}
+              </span>
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-purple-400 text-purple-700 hover:bg-purple-100"
+              onClick={toggleCarCustomization}
+            >
+              {showCarCustomization ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </motion.div>
+          
           {/* Car customization panel */}
-          <CarCustomization />
+          <CarCustomization isOpen={showCarCustomization} onToggle={toggleCarCustomization} />
         </motion.div>
       )}
     </>

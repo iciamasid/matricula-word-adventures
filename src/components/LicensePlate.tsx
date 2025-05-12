@@ -26,6 +26,29 @@ const LicensePlate: React.FC = () => {
       animate={{ scale: 1, opacity: 1 }} 
       transition={{ duration: 0.5 }}
     >
+      {/* Car image centered above the license plate */}
+      <div className="flex justify-center w-full mb-3">
+        {selectedCarColor && (
+          <motion.img 
+            src={`/lovable-uploads/${selectedCarColor.image}`} 
+            alt="Coche personalizado" 
+            animate={{ y: [0, -3, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="h-16 w-auto"
+          />
+        )}
+        
+        {!selectedCarColor && (
+          <motion.img 
+            src="/lovable-uploads/coche_portada.gif" 
+            alt="Coche predeterminado" 
+            animate={{ y: [0, -3, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="h-16 w-auto"
+          />
+        )}
+      </div>
+      
       {/* Vintage license plate with EU flag */}
       <div 
         className="relative bg-gray-100 p-3 rounded-md border-2 border-gray-400 w-full flex items-center justify-center space-x-2 shadow-md" 
@@ -87,29 +110,6 @@ const LicensePlate: React.FC = () => {
             </motion.div>
           ))}
         </div>
-      </div>
-      
-      {/* Car image centered below the license plate */}
-      <div className="flex justify-center w-full mt-2">
-        {selectedCarColor && (
-          <motion.img 
-            src={`/lovable-uploads/${selectedCarColor.image}`} 
-            alt="Coche personalizado" 
-            animate={{ y: [0, -3, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="h-16 w-auto"
-          />
-        )}
-        
-        {!selectedCarColor && (
-          <motion.img 
-            src="/lovable-uploads/coche_portada.gif" 
-            alt="Coche predeterminado" 
-            animate={{ y: [0, -3, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="h-16 w-auto"
-          />
-        )}
       </div>
     </motion.div>
   );

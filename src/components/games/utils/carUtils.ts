@@ -3,13 +3,32 @@ import { Circle, Rect } from 'fabric';
 
 // Create a simple car object using Fabric.js shapes
 export const createCar = (left: number, top: number, color = '#E74C3C', scale = 1) => {
+  // Determine car color based on game selection
+  const carColor = () => {
+    switch (color.toLowerCase()) {
+      case 'bg-yellow-500':
+      case '#f1c40f': 
+        return '#F1C40F'; // Yellow
+      case 'bg-blue-500':
+      case '#33c3f0': 
+        return '#33C3F0'; // Blue
+      case 'bg-red-500':
+      case '#e74c3c': 
+        return '#E74C3C'; // Red
+      default:
+        return color;
+    }
+  };
+  
+  const actualColor = carColor();
+  
   // Car body
   const body = new Rect({
     left: left,
     top: top,
     width: 60 * scale,
     height: 30 * scale,
-    fill: color,
+    fill: actualColor,
     rx: 10 * scale,
     ry: 10 * scale,
     originX: 'center',
@@ -17,13 +36,28 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     selectable: false
   });
 
-  // Car roof
+  // Car roof - darker shade of the selected color
+  let roofColor;
+  switch (actualColor) {
+    case '#F1C40F': // Yellow
+      roofColor = '#D4AC0D';
+      break;
+    case '#33C3F0': // Blue
+      roofColor = '#2980B9';
+      break;
+    case '#E74C3C': // Red
+      roofColor = '#C0392B';
+      break;
+    default:
+      roofColor = '#C0392B';
+  }
+  
   const roof = new Rect({
     left: left,
     top: top - 15 * scale,
     width: 40 * scale,
     height: 20 * scale,
-    fill: '#C0392B', // Darker shade of red for the roof
+    fill: roofColor,
     rx: 8 * scale,
     ry: 8 * scale,
     originX: 'center',
