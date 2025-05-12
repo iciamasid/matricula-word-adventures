@@ -1,26 +1,29 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
-import { Plus, Loader2 } from "lucide-react";
+import { Plus, Star, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
 const NewGameButton: React.FC = () => {
   const {
     generateNewPlate,
+    gamesPlayed,
     showBonusPopup,
     showAgeBonusPopup,
     showCompletionBanner,
-    setIsGeneratingLicensePlate
+    setIsGeneratingLicensePlate,
+    submitSuccess
   } = useGame();
   const [isAnimating, setIsAnimating] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const { t, isEnglish } = useLanguage();
 
-  // Check if any popups are open
-  const popupsOpen = showBonusPopup || showAgeBonusPopup || showCompletionBanner;
+  // Check if any popups are open or if we're in the process of auto-generating after submission
+  const popupsOpen = showBonusPopup || showAgeBonusPopup || showCompletionBanner || submitSuccess;
 
-  // Disable button when popups are open
+  // Disable button when popups are open or during auto-generation
   useEffect(() => {
     setButtonDisabled(popupsOpen);
   }, [popupsOpen]);
@@ -31,10 +34,12 @@ const NewGameButton: React.FC = () => {
     setButtonDisabled(true);
 
     // Signal that we're starting the license plate generation
+    // Ensure we're passing a boolean value (true) to the state setter
     setIsGeneratingLicensePlate(true);
 
     // Trigger plate generation but with a 3 second delay for the animation
     setTimeout(() => {
+      console.log("Generating new plate from button click");
       generateNewPlate();
       setButtonDisabled(false);
 
@@ -45,6 +50,7 @@ const NewGameButton: React.FC = () => {
 
   // Determine gradient colors based on language
   const buttonGradient = isEnglish ? "from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800" : "from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800";
+  const starColor = isEnglish ? "text-orange-400" : "text-game-yellow";
   
   return (
     <motion.div 
@@ -129,7 +135,10 @@ const NewGameButton: React.FC = () => {
         </div>
       </Button>
       
-      {/* Removed the games played counter as requested */}
+      <div className="flex items-center justify-center text-xs text-gray-500">
+        <Star className={`w-3 h-3 mr-1 ${starColor}`} />
+        <span>{gamesPlayed} {t("games_played")}</span>
+      </div>
     </motion.div>
   );
 };
