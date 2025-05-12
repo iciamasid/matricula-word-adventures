@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -45,7 +46,7 @@ const GameContent = () => {
   } = useGame();
   const [showSuccess, setShowSuccess] = useState(false);
   const [showLevelUp, setShowLevelUp] = useState(false);
-  const [prevLevel, setPrevLevel] = useState(level);
+  const [prevLevel, setPrevLevel] = useState(level); // Initialize prevLevel with level
   const [showLevelUpFromNavigation, setShowLevelUpFromNavigation] = useState(false);
 
   // Show success popup when score changes
@@ -67,7 +68,7 @@ const GameContent = () => {
 
     // Reset navigation flag
     setShowLevelUpFromNavigation(false);
-  }, [level]);
+  }, [level, prevLevel, showLevelUpFromNavigation]);
 
   // Detection of navigation return
   useEffect(() => {

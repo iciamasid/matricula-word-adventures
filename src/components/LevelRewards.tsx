@@ -45,7 +45,9 @@ const LevelRewards: React.FC = () => {
               </motion.span>
             </div>
             <motion.div
-              animate={{ rotate: [0, 10, 0, -10, 0] }}
+              animate={{ 
+                rotate: [0, 10, 0, -10, 0] 
+              }}
               transition={{ duration: 2, repeat: Infinity }}
               className="ml-2"
             >
