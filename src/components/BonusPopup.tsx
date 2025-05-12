@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Award, Gift, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
@@ -51,6 +51,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
       {open && (
         <AlertDialog open={open}>
           <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
+            <AlertDialogTitle className="sr-only">Bonus Points</AlertDialogTitle>
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}

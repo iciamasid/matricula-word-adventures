@@ -30,25 +30,33 @@ const WordInput: React.FC = () => {
     
     // Set the full placeholder text based on language
     // Ensure plateConsonants is always an array we can join
-    let consonantsArray: string[] = [];
+    let consonantsText = "";
     
     if (Array.isArray(plateConsonants)) {
       // If it's already an array, use it
-      consonantsArray = plateConsonants;
+      consonantsText = plateConsonants.join(', ');
     } else if (typeof plateConsonants === 'string') {
-      // If it's a string, split it into an array
-      consonantsArray = plateConsonants.split('');
+      // If it's a string, convert to array if possible or use as is
+      try {
+        const parsedArray = JSON.parse(plateConsonants);
+        if (Array.isArray(parsedArray)) {
+          consonantsText = parsedArray.join(', ');
+        } else {
+          consonantsText = plateConsonants;
+        }
+      } catch {
+        // If parsing fails, use the string directly
+        consonantsText = plateConsonants;
+      }
     } else if (plateConsonants) {
-      // If it's another truthy value (object, etc.), convert to string first
-      consonantsArray = String(plateConsonants).split('');
+      // If it's another truthy value, convert to string
+      consonantsText = String(plateConsonants);
     }
     
-    // Now safely join the array
-    const consonantsText = consonantsArray.join(', ');
-    
+    // Now set the text using the simplified message
     const text = isEnglish 
-      ? `WRITE A WORD WITH THESE CONSONANTS: ${consonantsText}` 
-      : `ESCRIBE UNA PALABRA CON ESTAS CONSONANTES: ${consonantsText}`;
+      ? `USE THESE LETTERS: ${consonantsText}` 
+      : `USA ESAS LETRAS: ${consonantsText}`;
     setFullPlaceholder(text);
   }, [plateConsonants, isEnglish]);
   
