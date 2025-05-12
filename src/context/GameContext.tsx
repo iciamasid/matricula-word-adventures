@@ -13,6 +13,14 @@ import AgeBonusPopup from "@/components/AgeBonusPopup";
 import CompletionBanner from "@/components/CompletionBanner";
 import { useLanguage, Language } from "@/context/LanguageContext";
 
+// Define la interfaz CarColor
+export interface CarColor {
+  id: string;
+  name: string;
+  image: string;
+  color: string;
+}
+
 // Ciudades del mundo con datos interesantes para niños - Updated with Spain as level 0
 const WORLD_DESTINATIONS = [
   {
@@ -89,13 +97,6 @@ const WORLD_DESTINATIONS = [
   }
 ];
 
-interface CarColor {
-  id: string;
-  name: string;
-  image: string;
-  color: string;
-}
-
 interface GameContextType {
   licensePlate: string;
   plateConsonants: string;
@@ -129,6 +130,7 @@ interface GameContextType {
   showCompletionBanner: boolean;
   isGeneratingLicensePlate: boolean;
   selectedCarColor: CarColor | null;
+  submitSuccess: string | null;
   
   // Actions
   generateNewPlate: () => void;
@@ -145,6 +147,7 @@ interface GameContextType {
   setPlayerGender: (gender: "niño" | "niña") => void;
   setIsGeneratingLicensePlate: (isGenerating: boolean) => void;
   setSelectedCarColor: (carColor: CarColor | null) => void;
+  clearSubmitSuccess: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -489,10 +492,18 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         successMessage = t("very_good");
       }
       
+      // Establecer el mensaje de éxito para mostrar el popup
+      setSubmitSuccess(successMessage);
+      
       toast({
         title: successMessage,
         description: `${t("points_earned")} ${newScore} ${t("points")}.`,
       });
+      
+      // Auto-cerrar el popup de éxito después de 3 segundos
+      setTimeout(() => {
+        setSubmitSuccess(null);
+      }, 3000);
       
       // Flag that we want to generate a new plate after popups close
       setIsGeneratingLicensePlate(true);
@@ -510,6 +521,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     return array.join("");
   };
+  
+  // Nuevo estado para manejar el éxito al enviar una palabra
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   
   return (
     <GameContext.Provider
@@ -536,6 +550,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         showCompletionBanner,
         isGeneratingLicensePlate,
         selectedCarColor,
+        submitSuccess,
         generateNewPlate,
         setCurrentWord,
         submitWord,
@@ -549,7 +564,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setPlayerAge: (age: number) => setPlayerAge(age),
         setPlayerGender: (gender: "niño" | "niña") => setPlayerGender(gender),
         setIsGeneratingLicensePlate: (isGenerating: boolean) => setIsGeneratingLicensePlate(isGenerating),
-        setSelectedCarColor: (carColor: CarColor | null) => setSelectedCarColor(carColor)
+        setSelectedCarColor: (carColor: CarColor | null) => setSelectedCarColor(carColor),
+        clearSubmitSuccess
       }}
     >
       {children}
