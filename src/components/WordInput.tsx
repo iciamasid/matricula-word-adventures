@@ -1,138 +1,156 @@
 
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Send, Rotate } from 'lucide-react';
-import { useGame } from '@/context/GameContext';
-import { useLanguage } from '@/context/LanguageContext';
+import React, { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useGame } from "@/context/GameContext";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
 const WordInput: React.FC = () => {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { state, submitWord, setCurrentWord, generateNewPlate } = useGame();
-  const { t, isEnglish } = useLanguage();
-  const [isSpinning, setIsSpinning] = useState(false);
+  const {
+    currentWord,
+    setCurrentWord,
+    submitWord,
+    plateConsonants,
+  } = useGame();
   
-  // Focus on input when component mounts
+  const { t, isEnglish } = useLanguage();
+  
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [placeholderText, setPlaceholderText] = useState("");
+  const [fullPlaceholder, setFullPlaceholder] = useState("");
+  
   useEffect(() => {
+    // Focus the input when the component mounts
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Filter out non-letter characters and convert to uppercase
-    const filteredValue = e.target.value
-      .replace(/[^a-zA-ZáéíóúüñÁÉÍÓÚÜÑ]/g, '')
-      .toUpperCase();
     
-    setCurrentWord(filteredValue);
+    // Set the full placeholder text based on language
+    // Ensure plateConsonants is always an array we can join
+    let consonantsText = "";
+    
+    if (Array.isArray(plateConsonants)) {
+      // If it's already an array, use it
+      consonantsText = plateConsonants.join(', ');
+    } else if (typeof plateConsonants === 'string') {
+      // If it's a string, convert to array if possible or use as is
+      try {
+        const parsedArray = JSON.parse(plateConsonants);
+        if (Array.isArray(parsedArray)) {
+          consonantsText = parsedArray.join(', ');
+        } else {
+          consonantsText = plateConsonants;
+        }
+      } catch {
+        // If parsing fails, use the string directly
+        consonantsText = plateConsonants;
+      }
+    } else if (plateConsonants) {
+      // If it's another truthy value, convert to string
+      consonantsText = String(plateConsonants);
+    }
+    
+    // Now set the text using the simplified message
+    const text = isEnglish 
+      ? `USE THESE LETTERS: ${consonantsText}` 
+      : `USA ESAS LETRAS: ${consonantsText}`;
+    setFullPlaceholder(text);
+  }, [plateConsonants, isEnglish]);
+  
+  // Animated placeholder effect
+  useEffect(() => {
+    if (!fullPlaceholder) return;
+    
+    let currentIndex = 0;
+    let direction = 1; // 1 for forward, -1 for backward
+    
+    const interval = setInterval(() => {
+      if (direction === 1) {
+        // Moving forward, adding characters
+        currentIndex += 1;
+        if (currentIndex >= fullPlaceholder.length) {
+          // When reaching the end, pause before going backward
+          setTimeout(() => {
+            direction = -1;
+          }, 1000); 
+        }
+      } else {
+        // Moving backward, removing characters
+        currentIndex -= 1;
+        if (currentIndex <= 0) {
+          // When reaching the start, pause before going forward
+          setTimeout(() => {
+            direction = 1;
+          }, 500);
+        }
+      }
+      
+      setPlaceholderText(fullPlaceholder.substring(0, currentIndex));
+    }, 100);
+    
+    return () => clearInterval(interval);
+  }, [fullPlaceholder]);
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCurrentWord(e.target.value.toUpperCase());
   };
-
+  
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && state.currentWord.trim() !== '') {
-      submitWord();
+    if (e.key === "Enter") {
+      handleSubmit();
     }
   };
-
+  
   const handleSubmit = () => {
-    if (state.currentWord.trim() !== '') {
-      submitWord();
-    }
+    setIsAnimating(true);
+    submitWord();
+    setTimeout(() => setIsAnimating(false), 500);
   };
-
-  const handleGenerateNewPlate = () => {
-    setIsSpinning(true);
-    generateNewPlate();
-    setTimeout(() => {
-      setIsSpinning(false);
-    }, 1000);
-  };
-
-  // Determine background color based on language
-  const buttonBgColor = isEnglish ? "bg-orange-600 hover:bg-orange-700" : "bg-purple-600 hover:bg-purple-700";
-  const buttonBgColorLight = isEnglish ? "bg-orange-500 hover:bg-orange-600" : "bg-purple-500 hover:bg-purple-600";
+  
+  // Determine border color based on language
+  const borderColor = isEnglish 
+    ? "border-orange-400" 
+    : "border-purple-400";
+  
+  // Determine gradient colors for button based on language
+  const buttonGradient = isEnglish
+    ? "from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800"
+    : "from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800";
   
   return (
-    <div className="w-full">
-      <motion.div
-        className="bg-white p-3 rounded-lg shadow-md border-2 border-gray-200"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2">
-            <Input
-              type="text"
-              placeholder={t('enter_word_with_these_letters')}
-              value={state.currentWord}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              className="flex-1 text-xl uppercase kids-text"
-              ref={inputRef}
-              maxLength={15}
-              autoComplete="off"
-            />
-            
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleSubmit}
-              className={`${buttonBgColor} text-white py-2 px-4 rounded-lg transition-colors duration-200 kids-text`}
-              disabled={state.currentWord.trim() === ''}
-            >
-              <Send className="h-5 w-5" />
-            </motion.button>
-          </div>
-          
-          <div className="flex justify-between items-center">
-            <div className="text-sm text-gray-500">
-              {state.currentWord.length > 0 ? (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-blue-600 text-sm"
-                >
-                  {state.currentWord.length} {t('letters')}
-                </motion.p>
-              ) : (
-                <p className="opacity-0">-</p>
-              )}
-            </div>
-            
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleGenerateNewPlate}
-              className={`text-white ${buttonBgColorLight} border-none kids-text font-normal`}
-            >
-              <motion.div
-                animate={isSpinning ? { rotate: 360 } : {}}
-                transition={{ duration: 1, ease: "easeInOut" }}
-                className="flex items-center"
-              >
-                <Rotate className="mr-2 h-4 w-4" />
-                {t('new_license_plate')}
-              </motion.div>
-            </Button>
-          </div>
-
-          {/* Player instructions - styled for mobile */}
-          <style>
-            {`
-            @media (max-width: 640px) {
-              .mobile-instructions {
-                font-size: 0.9rem;
-              }
-            }
-            `}
-          </style>
-          <p className="text-gray-600 mt-2 text-sm mobile-instructions">
-            {t('instructions_short')}
-          </p>
-        </div>
-      </motion.div>
+    <div className="w-full max-w-xs relative">      
+      <div className="flex gap-2">
+        <Input 
+          ref={inputRef} 
+          type="text" 
+          value={currentWord} 
+          onChange={handleInputChange} 
+          onKeyDown={handleKeyDown} 
+          placeholder={placeholderText || " "} 
+          className={`flex-1 text-center font-bold text-3xl py-6 uppercase border-2 ${borderColor} shadow-md kids-text`} 
+          autoComplete="off" 
+        />
+        <motion.div 
+          whileHover={{
+            scale: 1.05
+          }} 
+          whileTap={{
+            scale: 0.95
+          }}
+        >
+          <Button 
+            onClick={handleSubmit} 
+            className={`h-full bg-gradient-to-r ${buttonGradient} text-2xl ${isAnimating ? "animate-bounce" : ""}`} 
+            disabled={currentWord.trim().length < 3} 
+            size="lg"
+          >
+            <ArrowRight className="w-7 h-7" />
+          </Button>
+        </motion.div>
+      </div>
     </div>
   );
 };

@@ -11,19 +11,19 @@ import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
 
 const PlayerRegistration: React.FC = () => {
-  const { state, setPlayerName, setPlayerAge, setPlayerGender } = useGame();
   const {
     playerName,
     playerAge,
     playerGender,
-    selectedCarColor
-  } = state;
-  
+    selectedCarColor,
+    setPlayerName,
+    setPlayerAge,
+    setPlayerGender
+  } = useGame();
   const {
     t,
     isEnglish
   } = useLanguage();
-  
   const [showForm, setShowForm] = useState(!playerName || !playerAge);
   const [showCarCustomization, setShowCarCustomization] = useState(false);
 
@@ -95,29 +95,31 @@ const PlayerRegistration: React.FC = () => {
       opacity: 1,
       y: 0
     }} className="w-full max-w-md flex flex-col gap-3 mb-4">
-          {/* Player info display - aligned center */}
-          <div className="flex items-center justify-center">
-            <div className="flex items-center">
+          {/* Player info display */}
+          <motion.div className="flex flex-col items-center">
+            <div className="flex items-center justify-center mb-2">
               {playerGender === t('boy') ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
               <span className={`font-medium ${textColor} kids-text text-3xl`}>
                 {playerName} {playerAge} {t('years')}
               </span>
-              <Button size="sm" variant="outline" className={`${btnColor} ml-2`} onClick={() => setShowForm(true)}>
-                {t('edit')}
-              </Button>
             </div>
-          </div>
+            <Button size="sm" variant="outline" className={btnColor} onClick={() => setShowForm(true)}>
+              {t('edit')}
+            </Button>
+          </motion.div>
           
-          {/* Car selection button - aligned horizontally */}
-          <div className="flex items-center justify-center">
-            <Car className={`h-5 w-5 mr-2 ${isEnglish ? 'text-orange-700' : 'text-purple-700'}`} />
-            <span className={`font-medium ${textColor} kids-text text-xl mr-2`}>
-              {selectedCarColor ? t('car_selected') : t('select_car')}
-            </span>
-            <Button size="sm" variant="outline" className={`${btnColor}`} onClick={toggleCarCustomization}>
+          {/* Car selection button */}
+          <motion.div onClick={toggleCarCustomization} className="flex flex-col items-center">
+            <div className="flex items-center justify-center mb-2">
+              <Car className={`h-5 w-5 mr-2 ${isEnglish ? 'text-orange-700' : 'text-purple-700'}`} />
+              <span className={`font-medium ${textColor} kids-text text-xl`}>
+                {selectedCarColor ? t('car_selected') : t('select_car')}
+              </span>
+            </div>
+            <Button size="sm" variant="outline" className={btnColor} onClick={toggleCarCustomization}>
               {showCarCustomization ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
-          </div>
+          </motion.div>
           
           {/* Car customization panel */}
           <CarCustomization isOpen={showCarCustomization} onToggle={toggleCarCustomization} />

@@ -7,17 +7,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
-import { WORLD_DESTINATIONS } from "@/utils/mapData";
 
 const LevelRewards: React.FC = () => {
-  const { level, destinationInfo } = useGame();
+  const { level, destination, destinationInfo } = useGame();
   const navigate = useNavigate();
-  
-  // Find destination fact from WORLD_DESTINATIONS
-  const destinationData = WORLD_DESTINATIONS.find(
-    dest => dest.country === destinationInfo.country
-  );
-  const fact = destinationData?.fact || "¡Este lugar tiene muchas cosas interesantes por descubrir!";
   
   const handleExploreCountry = () => {
     navigate(`/country/${destinationInfo.country}`);
@@ -86,7 +79,7 @@ const LevelRewards: React.FC = () => {
               <div className="flex items-center gap-2">
                 <AnimatePresence mode="wait">
                   <motion.p 
-                    key={destinationInfo.city}
+                    key={destination}
                     className="text-3xl font-bold text-purple-900 kids-text"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -132,7 +125,7 @@ const LevelRewards: React.FC = () => {
               >
                 {"🌟"}
               </motion.div>
-              <p className="text-2xl text-purple-800 leading-relaxed kids-text reward-text">{fact}</p>
+              <p className="text-2xl text-purple-800 leading-relaxed kids-text reward-text">{destinationInfo.fact}</p>
             </motion.div>
             
             {destinationInfo.city && (

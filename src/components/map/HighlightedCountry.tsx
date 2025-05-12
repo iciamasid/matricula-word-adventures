@@ -9,15 +9,11 @@ interface HighlightedCountryProps {
 }
 
 const HighlightedCountry: React.FC<HighlightedCountryProps> = ({ country }) => {
-  // Ensure country is not empty and find the country's flag
-  const safeCountry = country || "España";
-  
-  // Use a safe access pattern to avoid undefined errors
-  const destination = WORLD_DESTINATIONS.find(dest => dest.country === safeCountry);
-  const countryFlag = destination?.flag || "🚩";
+  // Find the country's flag from the destinations data
+  const countryFlag = WORLD_DESTINATIONS.find(dest => dest.country === country)?.flag || "🚩";
   
   // Get the country position on the map
-  const position = getCountryPosition(safeCountry);
+  const position = getCountryPosition(country);
   
   return (
     <motion.div 
