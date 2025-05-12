@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
-import { Plus, Star } from "lucide-react";
+import { Plus, Star, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 const NewGameButton: React.FC = () => {
-  const { generateNewPlate, gamesPlayed, showBonusPopup, showAgeBonusPopup, showCompletionBanner } = useGame();
+  const { generateNewPlate, gamesPlayed, showBonusPopup, showAgeBonusPopup, showCompletionBanner, setIsGeneratingLicensePlate } = useGame();
   const [isAnimating, setIsAnimating] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   
@@ -21,10 +21,19 @@ const NewGameButton: React.FC = () => {
     if (buttonDisabled) return;
     
     setIsAnimating(true);
-    generateNewPlate();
+    setButtonDisabled(true);
     
-    // Keep the animation going for a bit longer to make it more noticeable
-    setTimeout(() => setIsAnimating(false), 1000);
+    // Signal that we're starting the license plate generation
+    setIsGeneratingLicensePlate(true);
+    
+    // Trigger plate generation but with a 3 second delay for the animation
+    setTimeout(() => {
+      generateNewPlate();
+      setButtonDisabled(false);
+      
+      // Keep the animation going for a bit longer after generation
+      setTimeout(() => setIsAnimating(false), 1000);
+    }, 3000);
   };
   
   return (
@@ -49,21 +58,21 @@ const NewGameButton: React.FC = () => {
                 <motion.span 
                   className="inline-block text-lg font-bold"
                   animate={{ y: [-20, 20], opacity: [0, 1, 0] }}
-                  transition={{ duration: 0.3, times: [0, 0.5, 1], repeat: 3 }}
+                  transition={{ duration: 0.3, times: [0, 0.5, 1], repeat: 10 }}
                 >
                   7
                 </motion.span>
                 <motion.span 
                   className="inline-block text-lg font-bold"
                   animate={{ y: [-20, 20], opacity: [0, 1, 0] }}
-                  transition={{ duration: 0.3, times: [0, 0.5, 1], repeat: 3, delay: 0.1 }}
+                  transition={{ duration: 0.3, times: [0, 0.5, 1], repeat: 10, delay: 0.1 }}
                 >
                   7
                 </motion.span>
                 <motion.span 
                   className="inline-block text-lg font-bold"
                   animate={{ y: [-20, 20], opacity: [0, 1, 0] }}
-                  transition={{ duration: 0.3, times: [0, 0.5, 1], repeat: 3, delay: 0.2 }}
+                  transition={{ duration: 0.3, times: [0, 0.5, 1], repeat: 10, delay: 0.2 }}
                 >
                   7
                 </motion.span>
@@ -73,7 +82,14 @@ const NewGameButton: React.FC = () => {
             )}
           </div>
           <span className={isAnimating ? "ml-2" : ""}>
-            Nueva Matrícula
+            {isAnimating ? (
+              <div className="flex items-center">
+                <span>Generando</span>
+                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+              </div>
+            ) : (
+              "Nueva Matrícula"
+            )}
           </span>
         </div>
       </Button>

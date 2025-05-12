@@ -1,100 +1,101 @@
 
-import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { useGame } from "@/context/GameContext";
-import { Progress } from "@/components/ui/progress";
-import { Globe } from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { useGame } from '@/context/GameContext';
+import { Progress } from '@/components/ui/progress';
+import { motion } from 'framer-motion';
 
-// Function to get flag emoji based on level
+// Function to get the flag emoji based on level
 const getLevelFlag = (level: number) => {
   switch (level) {
-    case 0:
-      return "🇪🇸";
-    case 1:
-      return "🇫🇷";
-    case 2:
-      return "🇮🇹";
-    case 3:
-      return "🇷🇺";
-    case 4:
-      return "🇯🇵";
-    case 5:
-      return "🇦🇺";
-    case 6:
-      return "🇺🇸";
-    case 7:
-      return "🇲🇽";
-    case 8:
-      return "🇵🇪";
-    case 9:
-      return "🇦🇷";
-    case 10:
-      return "🇪🇸";
-    default:
-      return "🇪🇸";
+    case 1: return "🇫🇷"; // Francia
+    case 2: return "🇮🇹"; // Italia
+    case 3: return "🇷🇺"; // Rusia
+    case 4: return "🇯🇵"; // Japón
+    case 5: return "🇦🇺"; // Australia
+    case 6: return "🇺🇸"; // Estados Unidos
+    case 7: return "🇲🇽"; // México
+    case 8: return "🇵🇪"; // Perú
+    case 9: return "🇦🇷"; // Argentina
+    case 10: return "🇪🇸"; // España de vuelta
+    default: return "🇪🇸"; // España
   }
 };
 
-const WorldTourProgress: React.FC = () => {
+const WorldTourProgress = () => {
   const { level } = useGame();
   const [animatingLevel, setAnimatingLevel] = useState(0);
-  
-  // Animation loop for progress bar
+  const [isLooping, setIsLooping] = useState(false);
+
+  // Animation for level progress with looping effect
   useEffect(() => {
-    // Start animation from 0
-    setAnimatingLevel(0);
+    const startAnimation = () => {
+      setAnimatingLevel(0);
+      
+      const interval = setInterval(() => {
+        setAnimatingLevel(prev => {
+          const nextLevel = prev + 1;
+          if (nextLevel > level) {
+            setTimeout(() => {
+              setAnimatingLevel(0); // Reset to start the animation again
+            }, 1500); // Pause at the end before restarting
+            clearInterval(interval);
+            return level;
+          }
+          return nextLevel;
+        });
+      }, 500); // 500ms between each level increment
+      
+      return interval;
+    };
     
-    // Create animation loop
-    const animationInterval = setInterval(() => {
-      setAnimatingLevel(prev => {
-        if (prev >= level) {
-          return 0; // Reset to 0 to create a loop
-        }
-        return prev + 1;
-      });
-    }, 1000); // 1 second between each level increment
+    // Start the animation initially
+    let interval = startAnimation();
+    setIsLooping(true);
     
-    return () => clearInterval(animationInterval);
+    // Set up the loop
+    const loopTimer = setInterval(() => {
+      clearInterval(interval);
+      interval = startAnimation();
+    }, (level + 1) * 500 + 2000); // Total animation time plus pause
+    
+    return () => {
+      clearInterval(interval);
+      clearInterval(loopTimer);
+    };
   }, [level]);
   
   return (
     <motion.div 
-      className={`w-full p-4 rounded-lg shadow-lg ${level >= 10 ? 'bg-gradient-to-r from-yellow-100 to-amber-100' : 'bg-purple-100'}`}
+      className="w-full p-4 rounded-lg shadow-lg bg-purple-100"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
+      transition={{ delay: 0.4 }}
     >
-      <h3 className="text-xl text-center text-purple-800 kids-text mb-3 flex items-center justify-center">
-        <Globe className="h-5 w-5 text-blue-600 mr-2" />
-        Progreso de tu vuelta al mundo
-        <Globe className="h-5 w-5 text-blue-600 ml-2" />
-      </h3>
-      
+      <h3 className="text-xl text-center text-purple-800 kids-text mb-3">Progreso de tu vuelta al mundo</h3>
       <div className="relative pt-4 pb-8">
-        <motion.div 
-          className="w-full"
-          animate={{ opacity: [1, 0.7, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <Progress 
-            value={animatingLevel / 10 * 100} 
-            className={`h-4 ${level >= 10 ? 'bg-amber-200' : ''}`} 
-          />
-        </motion.div>
+        <Progress 
+          value={animatingLevel / 10 * 100} 
+          className={`h-4 ${level >= 10 ? 'bg-amber-200' : ''}`} 
+        />
         
         {/* Country markers on progress bar */}
         <div className="absolute top-0 left-0 w-full flex justify-between px-1">
           {[...Array(11)].map((_, i) => (
             <div key={i} className="relative flex flex-col items-center">
-              <div className={`w-3 h-3 rounded-full ${animatingLevel >= i ? 'bg-green-500' : 'bg-gray-300'}`} />
+              <motion.div 
+                className={`w-3 h-3 rounded-full ${animatingLevel >= i ? 'bg-green-500' : 'bg-gray-300'}`}
+                animate={{ scale: animatingLevel === i ? [1, 1.3, 1] : 1 }}
+                transition={{ duration: 0.5 }}
+              />
               <div 
                 className="absolute top-4 transform -translate-x-1/2" 
                 style={{ left: '50%' }}
               >
                 <motion.span 
                   className="text-xs"
-                  animate={{
-                    scale: animatingLevel === i ? [1, 1.3, 1] : 1
+                  animate={{ 
+                    scale: animatingLevel === i ? [1, 1.3, 1] : 1,
+                    y: animatingLevel === i ? [0, -3, 0] : 0
                   }}
                   transition={{ duration: 0.5 }}
                 >

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -17,6 +16,7 @@ import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import NewGameButton from "@/components/NewGameButton";
 import WorldTourProgress from "@/components/WorldTourProgress";
+import CarCustomization from "@/components/CarCustomization";
 
 // Define custom consonant colors array for use in the page
 const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
@@ -191,6 +191,9 @@ const GameContent = () => {
           
           {/* Add New Game Button with slot machine style */}
           <NewGameButton />
+          
+          {/* Car Customization Component */}
+          <CarCustomization />
           
           {/* Score components in a single row */}
           <ScorePanel />

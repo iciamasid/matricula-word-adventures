@@ -88,6 +88,13 @@ const WORLD_DESTINATIONS = [
   }
 ];
 
+interface CarColor {
+  id: string;
+  name: string;
+  image: string;
+  color: string;
+}
+
 interface GameContextType {
   licensePlate: string;
   plateConsonants: string;
@@ -119,6 +126,8 @@ interface GameContextType {
   playerGender: "niño" | "niña" | "";
   showAgeBonusPopup: boolean;
   showCompletionBanner: boolean;
+  isGeneratingLicensePlate: boolean;
+  selectedCarColor: CarColor | null;
   
   // Actions
   generateNewPlate: () => void;
@@ -133,6 +142,8 @@ interface GameContextType {
   setPlayerName: (name: string) => void;
   setPlayerAge: (age: number) => void;
   setPlayerGender: (gender: "niño" | "niña") => void;
+  setIsGeneratingLicensePlate: (isGenerating: boolean) => void;
+  setSelectedCarColor: (carColor: CarColor | null) => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -164,7 +175,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [ageCounter, setAgeCounter] = useState(0);
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState(false);
   const [showCompletionBanner, setShowCompletionBanner] = useState(false);
-  const [isGeneratingNewPlate, setIsGeneratingNewPlate] = useState(false);
+  const [isGeneratingLicensePlate, setIsGeneratingLicensePlate] = useState(false);
+  const [selectedCarColor, setSelectedCarColor] = useState<CarColor | null>(null);
   
   // Add a ref to track if this is the initial load
   const isInitialLoad = useRef(true);
@@ -252,15 +264,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Modified: Track popup state changes to generate new plate when all popups are closed
   useEffect(() => {
-    if (isGeneratingNewPlate && !showBonusPopup && !showAgeBonusPopup) {
+    if (isGeneratingLicensePlate && !showBonusPopup && !showAgeBonusPopup) {
       const timer = setTimeout(() => {
         doGenerateNewPlate();
-        setIsGeneratingNewPlate(false);
+        setIsGeneratingLicensePlate(false);
       }, 500); // Small delay to ensure animations complete
       
       return () => clearTimeout(timer);
     }
-  }, [showBonusPopup, showAgeBonusPopup, isGeneratingNewPlate]);
+  }, [showBonusPopup, showAgeBonusPopup, isGeneratingLicensePlate]);
   
   // Reset the entire game
   const resetGame = () => {
@@ -359,7 +371,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const generateNewPlate = () => {
     // If any popup is shown, set the flag to generate later
     if (showBonusPopup || showAgeBonusPopup || showCompletionBanner) {
-      setIsGeneratingNewPlate(true);
+      setIsGeneratingLicensePlate(true);
       return;
     }
     
@@ -447,7 +459,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       // Flag that we want to generate a new plate after popups close
-      setIsGeneratingNewPlate(true);
+      setIsGeneratingLicensePlate(true);
     } else {
       setErrorMessage("La palabra debe contener al menos una consonante de la matrícula.");
     }
@@ -486,6 +498,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         playerGender,
         showAgeBonusPopup,
         showCompletionBanner,
+        isGeneratingLicensePlate,
+        selectedCarColor,
         generateNewPlate,
         setCurrentWord,
         submitWord,
@@ -497,7 +511,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         resetGame,
         setPlayerName: (name: string) => setPlayerName(name),
         setPlayerAge: (age: number) => setPlayerAge(age),
-        setPlayerGender: (gender: "niño" | "niña") => setPlayerGender(gender)
+        setPlayerGender: (gender: "niño" | "niña") => setPlayerGender(gender),
+        setIsGeneratingLicensePlate: (isGenerating: boolean) => setIsGeneratingLicensePlate(isGenerating),
+        setSelectedCarColor: (carColor: CarColor | null) => setSelectedCarColor(carColor)
       }}
     >
       {children}
