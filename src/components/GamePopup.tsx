@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
 import { Award, Gift, Star, Check, X, Trophy } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -25,10 +26,12 @@ const GamePopup: React.FC<GamePopupProps> = ({
 }) => {
   const { isEnglish } = useLanguage();
   const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
+  const [isVisible, setIsVisible] = useState(false);
   
   // Generate random stars for background animation
   useEffect(() => {
     if (open) {
+      setIsVisible(true);
       const newStars = Array.from({ length: 30 }, () => ({
         x: Math.random() * 100,
         y: Math.random() * 100,
@@ -37,14 +40,23 @@ const GamePopup: React.FC<GamePopupProps> = ({
       }));
       setStars(newStars);
       
-      // Auto-close after 3 seconds
+      // Auto-close after 2 seconds (shortened from 3)
       const timer = setTimeout(() => {
-        onClose();
-      }, 3000);
+        handleClose();
+      }, 2000);
       
       return () => clearTimeout(timer);
     }
-  }, [open, onClose]);
+  }, [open]);
+  
+  // Handle proper closing with animation
+  const handleClose = () => {
+    setIsVisible(false);
+    // Wait for exit animation to finish before calling onClose
+    setTimeout(() => {
+      onClose();
+    }, 300);
+  };
 
   // Define colors and icons based on type
   const getColors = () => {
@@ -101,8 +113,12 @@ const GamePopup: React.FC<GamePopupProps> = ({
   return (
     <AnimatePresence>
       {open && (
-        <AlertDialog open={open}>
+        <AlertDialog open={isVisible} onOpenChange={() => handleClose()}>
           <AlertDialogContent className="max-w-sm border-0 p-0 bg-transparent">
+            {/* Hidden, but needed for accessibility */}
+            <AlertDialogTitle className="sr-only">{message}</AlertDialogTitle>
+            <AlertDialogDescription className="sr-only">{explanation}</AlertDialogDescription>
+            
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -157,23 +173,12 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     {message}
                   </motion.h2>
                   
-                  {points !== 0 && (
-                    <motion.h3 
-                      className="text-2xl font-bold mb-3 text-yellow-300 kids-text"
-                      animate={{ y: [0, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      {points > 0 ? `+${points} ${isEnglish ? "POINTS" : "PUNTOS"}` : `${points} ${isEnglish ? "POINTS" : "PUNTOS"}`}
-                    </motion.h3>
-                  )}
-                  
-                  {/* New explanation text for kilometers traveled */}
+                  {/* New simplified explanation text for kilometers */}
                   {explanation && (
                     <motion.div 
-                      className="text-lg font-medium mb-3 text-white kids-text bg-black bg-opacity-20 p-2 rounded-lg"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 }}
+                      className="text-2xl font-bold mb-2 text-yellow-300 kids-text"
+                      animate={{ y: [0, -10, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
                     >
                       {explanation}
                     </motion.div>

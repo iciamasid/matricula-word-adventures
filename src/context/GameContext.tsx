@@ -192,9 +192,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   
   // Add a ref to track if this is the initial load
   const isInitialLoad = useRef(true);
+  // Add a ref to track if we're navigating between pages
+  const isNavigating = useRef(false);
   
   // Initialize the game
   useEffect(() => {
+    // Check if we're navigating between pages
+    const navigatingFlag = sessionStorage.getItem('navigatingBack');
+    if (navigatingFlag === 'true') {
+      // We're returning from another page - don't generate a new plate
+      isNavigating.current = true;
+      // Clear the navigation flag
+      sessionStorage.removeItem('navigatingBack');
+    }
+    
     const savedTotalPoints = localStorage.getItem("matriculabraCadabra_totalPoints");
     const savedHighScore = localStorage.getItem("matriculabraCadabra_highScore");
     const savedGamesPlayed = localStorage.getItem("matriculabraCadabra_gamesPlayed");
@@ -214,7 +225,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedAge) setPlayerAge(parseInt(savedAge));
     if (savedGender) setPlayerGender(savedGender);
     
-    generateNewPlate();
+    // Only generate a new plate if we're not navigating between pages
+    if (!isNavigating.current) {
+      doGenerateNewPlate();
+    } else {
+      // Just load the last known plate without generating a new one
+      const savedPlate = localStorage.getItem("matriculabraCadabra_plate");
+      const savedPlateConsonants = localStorage.getItem("matriculabraCadabra_plateConsonants");
+      
+      if (savedPlate) setLicensePlate(savedPlate);
+      if (savedPlateConsonants) setPlateConsonants(savedPlateConsonants);
+      
+      // Reset the navigation flag
+      isNavigating.current = false;
+    }
   }, []);
   
   // Update level and destination when points change
@@ -278,6 +302,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Modified: Track popup state changes to generate new plate when all popups are closed
   useEffect(() => {
+    // Only proceed if the user has explicitly requested a new license plate
     if (isGeneratingLicensePlate && !showBonusPopup && !showAgeBonusPopup && !showCompletionBanner) {
       const timer = setTimeout(() => {
         doGenerateNewPlate();
@@ -368,11 +393,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     setLicensePlate(newPlate);
     // Ensure plateConsonants is always a string
-    setPlateConsonants(getConsonantsFromPlate(newPlate));
+    const newPlateConsonants = getConsonantsFromPlate(newPlate);
+    setPlateConsonants(newPlateConsonants);
     setCurrentWord("");
     setPreviousScore(score);  // Store the previous round's score
     setScore(0);
     setErrorMessage(null);
+    
+    // Save plate and consonants to localStorage for retrieval after navigation
+    localStorage.setItem("matriculabraCadabra_plate", newPlate);
+    localStorage.setItem("matriculabraCadabra_plateConsonants", newPlateConsonants);
     
     // Check if plate contains "6666" and award bonus points
     if (newPlate.substring(0, 4) === "6666") {
@@ -411,13 +441,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     
-    // Otherwise generate after a 3-second delay for the animation
-    const timer = setTimeout(() => {
-      doGenerateNewPlate();
-      setIsGeneratingLicensePlate(false);
-    }, 3000);
-    
-    return () => clearTimeout(timer);
+    // Otherwise generate immediately
+    doGenerateNewPlate();
+    setIsGeneratingLicensePlate(false);
   };
   
   const closeBonusPopup = () => {
@@ -519,8 +545,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSubmitSuccess(null);
       }, 3000);
       
-      // Flag that we want to generate a new plate after popups close
-      setIsGeneratingLicensePlate(true);
+      // Flag that we want to generate a new plate only after successfully submitting a word
+      // But don't automatically generate a new plate - wait for user to click the button
+      // setIsGeneratingLicensePlate(true); -- REMOVED to prevent automatic generation
     } else {
       setErrorMessage(t("must_contain"));
     }
