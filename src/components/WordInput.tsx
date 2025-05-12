@@ -15,6 +15,7 @@ const WordInput: React.FC = () => {
     submitWord,
     generateNewPlate,
     plateConsonants,
+    submitSuccess
   } = useGame();
   
   const { t, isEnglish } = useLanguage();
@@ -25,8 +26,8 @@ const WordInput: React.FC = () => {
   const [placeholderText, setPlaceholderText] = useState("");
   const [fullPlaceholder, setFullPlaceholder] = useState("");
   
+  // Focus the input when the component mounts
   useEffect(() => {
-    // Focus the input when the component mounts
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -97,6 +98,19 @@ const WordInput: React.FC = () => {
     return () => clearInterval(interval);
   }, [fullPlaceholder]);
   
+  // Generate new plate automatically after successful word submission
+  useEffect(() => {
+    // If there was a successful submission
+    if (submitSuccess) {
+      // Wait for 3 seconds before generating a new plate
+      const timer = setTimeout(() => {
+        generateNewPlate();
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [submitSuccess, generateNewPlate]);
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentWord(e.target.value.toUpperCase());
   };
@@ -104,11 +118,6 @@ const WordInput: React.FC = () => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSubmit();
-      
-      // Generate a new plate after submission
-      setTimeout(() => {
-        generateNewPlate();
-      }, 3000); // Wait a bit to show the result before generating a new plate
     }
   };
   
