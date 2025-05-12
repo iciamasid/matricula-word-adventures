@@ -13,8 +13,8 @@ const SuccessAlert: React.FC = () => {
   
   // Create explanation message based on language
   const explanation = isEnglish 
-    ? `You've traveled {score} km towards your destination!` 
-    : `¡Has recorrido {score} km hacia tu destino!`;
+    ? `You've traveled ${score} km towards your destination!` 
+    : `¡Has recorrido ${score} km hacia tu destino!`;
   
   return (
     <GamePopup
