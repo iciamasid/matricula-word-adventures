@@ -9,11 +9,12 @@ interface HighlightedCountryProps {
 }
 
 const HighlightedCountry: React.FC<HighlightedCountryProps> = ({ country }) => {
-  // Find the country's flag from the destinations data
-  const countryFlag = WORLD_DESTINATIONS.find(dest => dest.country === country)?.flag || "🚩";
+  // Ensure country is not empty and find the country's flag
+  const safeCountry = country || "España";
+  const countryFlag = WORLD_DESTINATIONS.find(dest => dest.country === safeCountry)?.flag || "🚩";
   
   // Get the country position on the map
-  const position = getCountryPosition(country);
+  const position = getCountryPosition(safeCountry);
   
   return (
     <motion.div 

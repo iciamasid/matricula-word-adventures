@@ -126,9 +126,25 @@ export function getCountryInfo(level: number, language: string) {
     }
   ];
 
-  // Make sure we don't go out of bounds
-  const index = level % countries.length;
+  // Make sure we don't go out of bounds and provide a default
+  let index = 0;
+  try {
+    index = Math.abs(level % countries.length);
+  } catch (error) {
+    console.error("Error calculating country index:", error);
+  }
+  
   const lang = language === 'en' ? 'en' : 'es';
   
-  return countries[index][lang];
+  // Provide a fallback if something goes wrong
+  try {
+    return countries[index][lang];
+  } catch (error) {
+    console.error("Error getting country info:", error);
+    return {
+      city: "Madrid",
+      country: "España",
+      flag: "🇪🇸"
+    };
+  }
 }

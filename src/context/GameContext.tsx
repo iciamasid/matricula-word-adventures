@@ -70,8 +70,8 @@ type GameAction =
   | { type: "SET_PLAYER_NAME"; payload: string }
   | { type: "SET_PLAYER_AGE"; payload: number }
   | { type: "SET_PLAYER_GENDER"; payload: string }
-  | {
-      type: "SET_CAR_COLOR";
+  | { 
+      type: "SET_CAR_COLOR"; 
       payload: {
         id: string;
         name: string;
@@ -79,7 +79,23 @@ type GameAction =
         color: string;
       } | null;
     }
-  | { type: "SET_IS_GENERATING_LICENSE_PLATE"; payload: boolean };
+  | { type: "SET_IS_GENERATING_LICENSE_PLATE"; payload: boolean }
+  | { 
+      type: "SET_ORIGIN_INFO"; 
+      payload: {
+        city: string;
+        country: string;
+        flag: string;
+      }
+    }
+  | { 
+      type: "SET_DESTINATION_INFO"; 
+      payload: {
+        city: string;
+        country: string;
+        flag: string;
+      }
+    };
 
 // Initial state for the game
 const initialState: GameState = {
@@ -91,14 +107,14 @@ const initialState: GameState = {
   gamesPlayed: 0,
   level: 0,
   destinationInfo: {
-    city: "",
-    country: "",
-    flag: "",
+    city: "Madrid",
+    country: "España",
+    flag: "🇪🇸"
   },
   originInfo: {
-    city: "",
-    country: "",
-    flag: "",
+    city: "Madrid",
+    country: "España",
+    flag: "🇪🇸"
   },
   errorMessage: null,
   successMessage: null,
@@ -168,6 +184,10 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
       return { ...state, selectedCarColor: action.payload };
     case "SET_IS_GENERATING_LICENSE_PLATE":
       return { ...state, isGeneratingLicensePlate: action.payload };
+    case "SET_ORIGIN_INFO":
+      return { ...state, originInfo: action.payload };
+    case "SET_DESTINATION_INFO":
+      return { ...state, destinationInfo: action.payload };
     case "SUBMIT_WORD": {
       const word = state.currentWord.trim().toUpperCase();
       const isValid = isValidWord(word, state.plateConsonants);
@@ -225,6 +245,35 @@ interface GameContextValue {
   } | null) => void;
   setIsGeneratingLicensePlate: (isGenerating: boolean) => void;
   setCurrentWord: (word: string) => void;
+  resetGame: () => void;
+  totalPoints: number;
+  plateConsonants: string[];
+  score: number;
+  previousScore: number;
+  level: number;
+  originInfo: {
+    city: string;
+    country: string;
+    flag: string;
+  };
+  destinationInfo: {
+    city: string;
+    country: string;
+    flag: string;
+  };
+  playerName: string;
+  playerAge: number | null;
+  playerGender: string | null;
+  selectedCarColor: {
+    id: string;
+    name: string;
+    image: string;
+    color: string;
+  } | null;
+  gamesPlayed: number;
+  showBonusPopup: boolean;
+  showAgeBonusPopup: boolean;
+  showCompletionBanner: boolean;
 }
 
 const GameContext = createContext<GameContextValue>({
@@ -246,6 +295,30 @@ const GameContext = createContext<GameContextValue>({
   setSelectedCarColor: () => {},
   setIsGeneratingLicensePlate: () => {},
   setCurrentWord: () => {},
+  resetGame: () => {},
+  totalPoints: 0,
+  plateConsonants: [],
+  score: 0,
+  previousScore: 0,
+  level: 0,
+  originInfo: {
+    city: "",
+    country: "",
+    flag: ""
+  },
+  destinationInfo: {
+    city: "",
+    country: "",
+    flag: ""
+  },
+  playerName: "",
+  playerAge: null,
+  playerGender: null,
+  selectedCarColor: null,
+  gamesPlayed: 0,
+  showBonusPopup: false,
+  showAgeBonusPopup: false,
+  showCompletionBanner: false,
 });
 
 // Game context provider component
@@ -272,7 +345,18 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     const origin = getCountryInfo(originLevel, language);
     const destination = getCountryInfo(destinationLevel, language);
 
-    // Update origin and destination info in the state
+    // Set origin and destination info
+    dispatch({
+      type: "SET_ORIGIN_INFO",
+      payload: origin
+    });
+    
+    dispatch({
+      type: "SET_DESTINATION_INFO",
+      payload: destination
+    });
+
+    // Update other player information
     dispatch({ type: "SET_PLAYER_NAME", payload: state.playerName });
     dispatch({ type: "SET_PLAYER_AGE", payload: state.playerAge || 0 });
     dispatch({ type: "SET_PLAYER_GENDER", payload: state.playerGender || "" });
@@ -292,6 +376,12 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     state.selectedCarColor,
     state.showCompletionBanner,
   ]);
+
+  // Function to reset the game
+  const resetGame = () => {
+    dispatch({ type: "RESET_GAME" });
+    generateNewPlate();
+  };
 
   // Function to set current word
   const setCurrentWord = (word: string) => {
@@ -378,6 +468,14 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       dispatch({ type: "SET_PLAYER_AGE", payload: parsedState.playerAge });
       dispatch({ type: "SET_PLAYER_GENDER", payload: parsedState.playerGender });
       dispatch({ type: "SET_CAR_COLOR", payload: parsedState.selectedCarColor });
+      
+      // Make sure we have origin and destination info
+      if (parsedState.originInfo) {
+        dispatch({ type: "SET_ORIGIN_INFO", payload: parsedState.originInfo });
+      }
+      if (parsedState.destinationInfo) {
+        dispatch({ type: "SET_DESTINATION_INFO", payload: parsedState.destinationInfo });
+      }
     } else {
       generateNewPlate();
     }
@@ -388,7 +486,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     localStorage.setItem("gameState", JSON.stringify(state));
   }, [state]);
 
-  // Provide the game context value
+  // Provide the game context value with direct access to state properties
   return (
     <GameContext.Provider
       value={{
@@ -409,7 +507,23 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         setPlayerGender,
         setSelectedCarColor,
         setIsGeneratingLicensePlate,
-        setCurrentWord
+        setCurrentWord,
+        resetGame,
+        totalPoints: state.score,
+        plateConsonants: state.plateConsonants,
+        score: state.score,
+        previousScore: state.previousScore,
+        level: state.level,
+        originInfo: state.originInfo,
+        destinationInfo: state.destinationInfo,
+        playerName: state.playerName,
+        playerAge: state.playerAge,
+        playerGender: state.playerGender,
+        selectedCarColor: state.selectedCarColor,
+        gamesPlayed: state.gamesPlayed,
+        showBonusPopup: state.showBonusPopup,
+        showAgeBonusPopup: state.showAgeBonusPopup,
+        showCompletionBanner: state.showCompletionBanner
       }}
     >
       {children}
