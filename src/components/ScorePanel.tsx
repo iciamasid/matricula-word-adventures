@@ -1,7 +1,8 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
-import { Navigation, Route, MapPin, Trophy } from "lucide-react";
+import { Navigation, Route, MapPin, Trophy, Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/context/LanguageContext";
 
