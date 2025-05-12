@@ -19,21 +19,21 @@ import NewGameButton from "@/components/NewGameButton";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
-
 const Index = () => {
-  return (
-    <GameProvider>
+  return <GameProvider>
       <GameContent />
-    </GameProvider>
-  );
+    </GameProvider>;
 };
 
 // Componente para manejar el contenido del juego
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
-  const { language, t, isEnglish } = useLanguage();
-  
+  const {
+    language,
+    t,
+    isEnglish
+  } = useLanguage();
   const {
     totalPoints,
     destinationInfo,
@@ -42,15 +42,13 @@ const GameContent = () => {
     resetGame,
     plateConsonants,
     score,
-    previousScore,
+    previousScore
   } = useGame();
 
   // Determine the color theme based on language
   const bgColor = isEnglish ? "bg-orange-100" : "bg-bba7ca";
   const panelBgColor = isEnglish ? "bg-orange-200" : "bg-purple-200";
-  const panelGradientBg = isEnglish 
-    ? "bg-gradient-to-r from-orange-300 to-orange-200" 
-    : "bg-gradient-to-r from-purple-300 to-purple-200";
+  const panelGradientBg = isEnglish ? "bg-gradient-to-r from-orange-300 to-orange-200" : "bg-gradient-to-r from-purple-300 to-purple-200";
   const buttonBgColor = isEnglish ? "bg-orange-600 hover:bg-orange-700" : "bg-purple-600 hover:bg-purple-700";
   const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
   const textColorLight = isEnglish ? "text-orange-700" : "text-purple-700";
@@ -78,7 +76,6 @@ const GameContent = () => {
     if (level >= 10) countries.push(language === 'es' ? "España (vuelta completa)" : "Spain (full tour)");
     return countries;
   }, [level, language]);
-  
   const handleResetGame = () => {
     if (confirm(t("reset_confirm"))) {
       resetGame();
@@ -88,7 +85,6 @@ const GameContent = () => {
       });
     }
   };
-  
   return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
@@ -127,12 +123,7 @@ const GameContent = () => {
       }} />
         
         {/* Instructions button positioned at bottom right of the image */}
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={() => setShowInstructions(true)} 
-          className={`absolute bottom-4 right-4 ${isEnglish ? 'bg-orange-100/90 hover:bg-orange-200 text-orange-900 border-orange-300' : 'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}
-        >
+        <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute bottom-4 right-4 ${isEnglish ? 'bg-orange-100/90 hover:bg-orange-200 text-orange-900 border-orange-300' : 'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}>
           <Globe className="w-4 h-4 mr-1" /> {t("help")}
         </Button>
       </div>
@@ -213,7 +204,7 @@ const GameContent = () => {
                   </motion.p>
                   <p className={`text-sm ${textColorLight} kids-text`}>{t("origin")}</p>
                   <Link to={`/country/${originInfo.country}`} onClick={handleNavigation}>
-                    <Button className={`mt-2 ${buttonBgColor} text-white text-sm px-3 py-1 kids-text font-normal`}>
+                    <Button className="bg-purple-800 hover:bg-purple-700 text-xl py-[10px] font-normal text-slate-50">
                       {t("learn_about")} {originInfo.country}
                     </Button>
                   </Link>
@@ -277,7 +268,7 @@ const GameContent = () => {
           <WorldTourProgress />
           
           {/* Drawing Game Button - After the world tour progress */}
-          <motion.div className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? (isEnglish ? 'bg-gradient-to-r from-orange-200 to-orange-300/90' : 'bg-gradient-to-r from-purple-200 to-purple-300/90') : isEnglish ? 'bg-orange-200/90' : 'bg-purple-200/90'}`} initial={{
+          <motion.div className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? isEnglish ? 'bg-gradient-to-r from-orange-200 to-orange-300/90' : 'bg-gradient-to-r from-purple-200 to-purple-300/90' : isEnglish ? 'bg-orange-200/90' : 'bg-purple-200/90'}`} initial={{
           opacity: 0,
           y: 20
         }} animate={{
@@ -319,11 +310,7 @@ const GameContent = () => {
           type: "spring",
           stiffness: 400
         }}>
-            <Button 
-              onClick={handleResetGame} 
-              size="lg" 
-              className={`w-full text-white kids-text text-xl font-normal ${isEnglish ? "bg-orange-700 hover:bg-orange-600" : "bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}
-            >
+            <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal ${isEnglish ? "bg-orange-700 hover:bg-orange-600" : "bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}>
               <RefreshCw className="mr-2 h-5 w-5" /> {t("reset_game")}
             </Button>
           </motion.div>
