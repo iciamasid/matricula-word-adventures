@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
@@ -31,7 +32,7 @@ const NewGameButton: React.FC = () => {
     setIsAnimating(true);
     setButtonDisabled(true);
 
-    // Signal that we're starting the license plate generation
+    // Signal that we're starting the license plate generation - fixed the type error here
     setIsGeneratingLicensePlate(true);
 
     // Trigger plate generation but with a 3 second delay for the animation

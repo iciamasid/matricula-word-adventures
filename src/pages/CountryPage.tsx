@@ -67,7 +67,7 @@ const CountryPageContent = () => {
           fact: isSpanish
             ? "¡En Francia hay más de 1.500 tipos diferentes de queso!"
             : "France has more than 1,500 different types of cheese!",
-          image: "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
+          image: "/lovable-uploads/638a48e4-c52f-4687-a1e1-5db85caa1793.png",
           imageAlt: isSpanish ? "Torre Eiffel, París" : "Eiffel Tower, Paris"
         };
       case "italia":
@@ -84,7 +84,7 @@ const CountryPageContent = () => {
           fact: isSpanish
             ? "¡Italia tiene más sitios del Patrimonio Mundial de la UNESCO que cualquier otro país del mundo!"
             : "Italy has more UNESCO World Heritage Sites than any other country in the world!",
-          image: "/lovable-uploads/775e117d-bc61-4576-a77e-acba4f134785.png",
+          image: "/lovable-uploads/6eb44f09-3864-48b2-8a08-b682e3a1ada3.png",
           imageAlt: isSpanish ? "Coliseo Romano, Roma" : "Roman Colosseum, Rome"
         };
       case "rusia":
@@ -101,8 +101,112 @@ const CountryPageContent = () => {
           fact: isSpanish
             ? "¡Rusia es tan grande que tiene 11 zonas horarias diferentes!"
             : "Russia is so large that it has 11 different time zones!",
-          image: "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-          imageAlt: isSpanish ? "El Kremlin, Moscú" : "The Kremlin, Moscow"
+          image: "/lovable-uploads/3eeeb432-83e7-40d5-839a-f72b03d08da9.png",
+          imageAlt: isSpanish ? "Catedral de San Basilio, Moscú" : "Saint Basil's Cathedral, Moscow"
+        };
+      case "japón":
+      case "japon":
+      case "japan":
+        return {
+          name: isSpanish ? "Japón" : "Japan",
+          flag: "🇯🇵",
+          capital: isSpanish ? "Tokio" : "Tokyo",
+          language: isSpanish ? "Japonés" : "Japanese",
+          famousFor: isSpanish ? "El Monte Fuji, el sushi y los cerezos en flor" : "Mount Fuji, sushi, and cherry blossoms",
+          description: isSpanish
+            ? "Japón es un país de contrastes, donde la tradición milenaria convive con la tecnología más avanzada. Sus jardines zen, templos antiguos y la cultura del anime atraen a millones de visitantes. La gastronomía japonesa es considerada Patrimonio de la Humanidad."
+            : "Japan is a country of contrasts, where thousand-year-old tradition coexists with the most advanced technology. Its zen gardens, ancient temples, and anime culture attract millions of visitors. Japanese cuisine is considered a World Heritage.",
+          fact: isSpanish
+            ? "¡Japón tiene más de 6,800 islas!"
+            : "Japan has more than 6,800 islands!",
+          image: "/lovable-uploads/54b230f6-8a76-4e9a-ae4c-5fa2f7087600.png",
+          imageAlt: isSpanish ? "Cruce de Shibuya, Tokio" : "Shibuya Crossing, Tokyo"
+        };
+      case "estados unidos":
+      case "eeuu":
+      case "usa":
+      case "united states":
+        return {
+          name: isSpanish ? "Estados Unidos" : "United States",
+          flag: "🇺🇸",
+          capital: isSpanish ? "Washington D.C." : "Washington D.C.",
+          language: isSpanish ? "Inglés" : "English",
+          famousFor: isSpanish ? "Hollywood, los rascacielos y la Estatua de la Libertad" : "Hollywood, skyscrapers, and the Statue of Liberty",
+          description: isSpanish
+            ? "Estados Unidos es el tercer país más grande del mundo y uno de los más diversos culturalmente. Desde los rascacielos de Nueva York hasta las playas de California, ofrece paisajes variados y algunas de las ciudades más famosas del mundo."
+            : "The United States is the third-largest country in the world and one of the most culturally diverse. From the skyscrapers of New York to the beaches of California, it offers varied landscapes and some of the world's most famous cities.",
+          fact: isSpanish
+            ? "¡Estados Unidos tiene 63 parques nacionales que protegen paisajes increíbles!"
+            : "The United States has 63 national parks protecting incredible landscapes!",
+          image: "/lovable-uploads/21e71de1-c8e4-4bbb-95d6-67ce7ae41316.png",
+          imageAlt: isSpanish ? "Empire State Building, Nueva York" : "Empire State Building, New York"
+        };
+      case "méjico":
+      case "mexico":
+        return {
+          name: isSpanish ? "México" : "Mexico",
+          flag: "🇲🇽",
+          capital: isSpanish ? "Ciudad de México" : "Mexico City",
+          language: isSpanish ? "Español" : "Spanish",
+          famousFor: isSpanish ? "Las pirámides mayas, la comida picante y el Día de los Muertos" : "Mayan pyramids, spicy food, and the Day of the Dead",
+          description: isSpanish
+            ? "México es un país lleno de color, tradiciones y una historia fascinante. Sus ruinas arqueológicas, como Chichén Itzá, muestran la grandeza de sus antiguas civilizaciones. Su gastronomía y festividades son reconocidas mundialmente."
+            : "Mexico is a country full of color, traditions, and a fascinating history. Its archaeological ruins, like Chichen Itza, show the greatness of its ancient civilizations. Its gastronomy and festivities are recognized worldwide.",
+          fact: isSpanish
+            ? "¡México es el país con mayor número de hablantes de español en el mundo!"
+            : "Mexico is the country with the largest number of Spanish speakers in the world!",
+          image: "/lovable-uploads/2957a4f7-6a54-4e2f-bda1-2177609abc5f.png",
+          imageAlt: isSpanish ? "Pirámide de Chichén Itzá" : "Chichen Itza Pyramid"
+        };
+      case "australia":
+      case "australia":
+        return {
+          name: isSpanish ? "Australia" : "Australia",
+          flag: "🇦🇺",
+          capital: isSpanish ? "Canberra" : "Canberra",
+          language: isSpanish ? "Inglés" : "English",
+          famousFor: isSpanish ? "La Ópera de Sídney, los canguros y la Gran Barrera de Coral" : "Sydney Opera House, kangaroos, and the Great Barrier Reef",
+          description: isSpanish
+            ? "Australia es el sexto país más grande del mundo y el único que ocupa todo un continente. Es famoso por su fauna única, incluidos los canguros y koalas, así como por sus paisajes impresionantes como la Gran Barrera de Coral."
+            : "Australia is the sixth-largest country in the world and the only one that occupies an entire continent. It is famous for its unique fauna, including kangaroos and koalas, as well as for impressive landscapes like the Great Barrier Reef.",
+          fact: isSpanish
+            ? "¡Australia tiene más de 10.000 playas! Si visitaras una cada día, tardarías más de 27 años en verlas todas."
+            : "Australia has over 10,000 beaches! If you visited one each day, it would take over 27 years to see them all.",
+          image: "/lovable-uploads/e27d86a7-9c73-425d-806e-1e86fd6c6e99.png",
+          imageAlt: isSpanish ? "Canguro australiano" : "Australian kangaroo"
+        };
+      case "perú":
+      case "peru":
+        return {
+          name: isSpanish ? "Perú" : "Peru",
+          flag: "🇵🇪",
+          capital: isSpanish ? "Lima" : "Lima",
+          language: isSpanish ? "Español" : "Spanish",
+          famousFor: isSpanish ? "Machu Picchu, la gastronomía y las líneas de Nazca" : "Machu Picchu, gastronomy, and the Nazca Lines",
+          description: isSpanish
+            ? "Perú es un país con una rica herencia inca y una geografía diversa, desde los Andes hasta la Amazonía. Machu Picchu, la antigua ciudad inca, es una de las maravillas del mundo. Su cocina es considerada una de las mejores del planeta."
+            : "Peru is a country with a rich Inca heritage and diverse geography, from the Andes to the Amazon. Machu Picchu, the ancient Inca city, is one of the wonders of the world. Its cuisine is considered one of the best on the planet.",
+          fact: isSpanish
+            ? "¡Perú tiene más de 3,000 variedades diferentes de patatas (papas)!"
+            : "Peru has more than 3,000 different varieties of potatoes!",
+          image: "/lovable-uploads/24de870a-769c-4544-8001-8554fe29e7f0.png",
+          imageAlt: isSpanish ? "Machu Picchu" : "Machu Picchu"
+        };
+      case "argentina":
+        return {
+          name: isSpanish ? "Argentina" : "Argentina",
+          flag: "🇦🇷",
+          capital: isSpanish ? "Buenos Aires" : "Buenos Aires",
+          language: isSpanish ? "Español" : "Spanish",
+          famousFor: isSpanish ? "El tango, el fútbol y las Cataratas del Iguazú" : "Tango, football, and Iguazu Falls",
+          description: isSpanish
+            ? "Argentina es el octavo país más grande del mundo y ofrece paisajes muy diversos, desde los glaciares de la Patagonia hasta las cataratas del Iguazú. Su capital, Buenos Aires, es conocida como la 'París de Sudamérica' por su arquitectura y cultura."
+            : "Argentina is the eighth-largest country in the world and offers very diverse landscapes, from the glaciers of Patagonia to Iguazu Falls. Its capital, Buenos Aires, is known as the 'Paris of South America' for its architecture and culture.",
+          fact: isSpanish
+            ? "¡Argentina tiene el punto más alto y más bajo de toda Sudamérica!"
+            : "Argentina has both the highest and lowest points in all of South America!",
+          image: "/lovable-uploads/6060d896-a127-404e-987c-3cd8814f558a.png",
+          imageAlt: isSpanish ? "Obelisco de Buenos Aires" : "Obelisk of Buenos Aires"
         };
       // Add more cases for other countries
       default:
