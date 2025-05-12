@@ -1,5 +1,5 @@
 
-import { Circle, Rect, Polygon } from 'fabric';
+import { Circle, Rect, Polygon, Shadow } from 'fabric';
 
 // Create a more detailed car object using Fabric.js shapes
 export const createCar = (left: number, top: number, color = '#E74C3C', scale = 1) => {
@@ -61,7 +61,12 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     originX: 'center',
     originY: 'center',
     selectable: false,
-    shadow: `rgba(0,0,0,0.3) 0 ${1 * scale}px ${4 * scale}px`
+    shadow: new Shadow({
+      color: 'rgba(0,0,0,0.3)',
+      blur: 4 * scale,
+      offsetX: 0,
+      offsetY: 1 * scale
+    })
   });
 
   // Improved car roof with more car-like shape
@@ -199,7 +204,12 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     originX: 'center',
     originY: 'center',
     selectable: false,
-    shadow: `rgba(255,236,107,0.7) 0 0 ${3 * scale}px`
+    shadow: new Shadow({
+      color: 'rgba(255,236,107,0.7)',
+      blur: 3 * scale,
+      offsetX: 0,
+      offsetY: 0
+    })
   });
   
   // Taillight

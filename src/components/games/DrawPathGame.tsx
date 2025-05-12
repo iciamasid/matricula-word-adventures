@@ -1,6 +1,5 @@
-
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button"; 
@@ -125,62 +124,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     setPathAnimationSpeed(animationSpeed);
   }, [animationSpeed]);
 
-  // Start animation along the path
-  const handlePlay = () => {
-    if (path.length === 0) {
-      toast({
-        title: "¡No hay camino!",
-        description: "Dibuja un camino primero.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    console.log("Starting animation with path points:", path.length);
-    console.log("Interpolated path points:", interpolatedPath.length);
-    
-    // Reset animation state
-    setIsPlaying(true);
-    setIsDrawing(false);
-    setAnimationCompleted(false);
-    setCurrentPathIndex(0);
-    
-    if (fabricCanvas) {
-      fabricCanvas.isDrawingMode = false;
-      
-      // Remove previous car shapes but NOT the path trace
-      const objects = fabricCanvas.getObjects();
-      for (let i = objects.length - 1; i >= 0; i--) {
-        const obj = objects[i];
-        if ((obj instanceof Rect && obj !== startPointObj && obj !== endPointObj) || 
-            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10) ||
-            (obj instanceof Polygon)) {
-          fabricCanvas.remove(obj);
-        }
-      }
-      
-      // Get the color from selectedCarColor
-      const carColorValue = selectedCarColor ? selectedCarColor.color : '#E74C3C';
-      
-      // Re-add the car at the starting position with the selected color
-      const car = createCar(path[0].x, path[0].y, carColorValue);
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
-                      car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow,
-                      car.bumper, car.taillight, car.doorHandle);
-      animationCarRef.current = car;
-      fabricCanvas.renderAll();
-      
-      // Cancel any existing animation
-      cancelAnimation();
-      
-      // Start the animation with a slight delay
-      console.log("Starting car animation sequence");
-      setTimeout(() => {
-        requestAnimationFrame(() => moveCar(0));
-      }, 500);
-    }
-  };
-
   // Clear canvas and reset
   const handleClear = () => {
     if (!fabricCanvas) return;
@@ -238,6 +181,64 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
         description: "No se pudo limpiar el tablero. Inténtalo de nuevo.",
         variant: "destructive"
       });
+    }
+  };
+
+  // Start animation along the path
+  const handlePlay = () => {
+    if (path.length === 0) {
+      toast({
+        title: "¡No hay camino!",
+        description: "Dibuja un camino primero.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    console.log("Starting animation with path points:", path.length);
+    console.log("Interpolated path points:", interpolatedPath.length);
+    
+    // Reset animation state
+    setIsPlaying(true);
+    setIsDrawing(false);
+    setAnimationCompleted(false);
+    setCurrentPathIndex(0);
+    
+    if (fabricCanvas) {
+      fabricCanvas.isDrawingMode = false;
+      
+      // Remove previous car shapes but NOT the path trace
+      const objects = fabricCanvas.getObjects();
+      for (let i = objects.length - 1; i >= 0; i--) {
+        const obj = objects[i];
+        // Fix type comparison by using instanceof instead of direct equality
+        if ((obj instanceof Rect && obj !== startPointObj && obj !== endPointObj) || 
+            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && 
+             obj instanceof Circle && obj.radius !== 10) ||
+            (obj instanceof Polygon)) {
+          fabricCanvas.remove(obj);
+        }
+      }
+      
+      // Get the color from selectedCarColor
+      const carColorValue = selectedCarColor ? selectedCarColor.color : '#E74C3C';
+      
+      // Re-add the car at the starting position with the selected color
+      const car = createCar(path[0].x, path[0].y, carColorValue);
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
+                      car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow,
+                      car.bumper, car.taillight, car.doorHandle);
+      animationCarRef.current = car;
+      fabricCanvas.renderAll();
+      
+      // Cancel any existing animation
+      cancelAnimation();
+      
+      // Start the animation with a slight delay
+      console.log("Starting car animation sequence");
+      setTimeout(() => {
+        requestAnimationFrame(() => moveCar(0));
+      }, 500);
     }
   };
 
