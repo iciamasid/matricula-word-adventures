@@ -7,8 +7,7 @@ import CarCustomization from "@/components/CarCustomization";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import { toast } from "@/hooks/use-toast";
 
 const PlayerRegistration: React.FC = () => {
   const {
@@ -20,36 +19,58 @@ const PlayerRegistration: React.FC = () => {
     setPlayerAge,
     setPlayerGender
   } = useGame();
-  const [showForm, setShowForm] = useState(!playerName || !playerAge || !playerGender);
+  const [showForm, setShowForm] = useState(!playerName || !playerAge);
   const [showCarCustomization, setShowCarCustomization] = useState(false);
 
+  // Auto-detect gender based on common Spanish name endings
   useEffect(() => {
-    // If we have both name, age and gender, hide the form
-    if (playerName && playerAge && playerGender) {
+    if (playerName && !playerGender) {
+      // Simple Spanish name gender detection (not comprehensive)
+      const nameToCheck = playerName.trim().toLowerCase();
+      if (nameToCheck.endsWith('a') || 
+          nameToCheck === 'mercedes' || 
+          nameToCheck === 'dolores' || 
+          nameToCheck === 'ines' || 
+          nameToCheck === 'inés' ||
+          nameToCheck === 'beatriz' ||
+          nameToCheck === 'elena') {
+        setPlayerGender('niña');
+      } else {
+        setPlayerGender('niño');
+      }
+    }
+  }, [playerName, playerGender, setPlayerGender]);
+
+  useEffect(() => {
+    // If we have both name and age, hide the form
+    if (playerName && playerAge) {
       setShowForm(false);
     }
-  }, [playerName, playerAge, playerGender]);
+  }, [playerName, playerAge]);
 
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
   };
+
+  // Auto-hide car customization when a car is selected
+  useEffect(() => {
+    if (selectedCarColor) {
+      // Add a small delay before closing to let the user see the selection
+      const timer = setTimeout(() => {
+        setShowCarCustomization(false);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [selectedCarColor]);
 
   return (
     <>
       {showForm ? (
         <motion.div
           className="w-full max-w-md bg-purple-100/90 rounded-lg p-5 shadow-lg mb-4"
-          initial={{
-            opacity: 0,
-            y: -20
-          }}
-          animate={{
-            opacity: 1,
-            y: 0
-          }}
-          transition={{
-            duration: 0.5
-          }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
           <h2 className="text-xl text-purple-800 kids-text mb-4 text-center font-normal">
             ¡Bienvenido a Matriculabra Cadabra!
@@ -61,58 +82,26 @@ const PlayerRegistration: React.FC = () => {
             <PlayerNameInput onSave={setPlayerName} initialName={playerName} />
             <PlayerAgeInput onSave={setPlayerAge} initialAge={playerAge} />
             
-            {/* Gender Selection */}
+            {/* Replace gender selection with car selection */}
             <motion.div
               className="bg-white/90 rounded-lg p-4 shadow-md"
-              initial={{
-                opacity: 0,
-                y: 20
-              }}
-              animate={{
-                opacity: 1,
-                y: 0
-              }}
-              transition={{
-                delay: 0.3
-              }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
             >
-              <p className="text-lg font-medium text-purple-800 kids-text mb-2">¿Eres niño o niña?</p>
-              <RadioGroup
-                value={playerGender || ''}
-                onValueChange={value => {
-                  setPlayerGender(value as "niño" | "niña");
-                  localStorage.setItem("matriculabraCadabra_playerGender", value);
-                }}
-                className="flex gap-6"
-              >
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="niño" id="radio-niño" />
-                  <Label htmlFor="radio-niño" className="text-purple-700 kids-text flex items-center">
-                    <span className="mr-1">Niño</span> 
-                    <span className="text-xl">👦</span>
-                  </Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <RadioGroupItem value="niña" id="radio-niña" />
-                  <Label htmlFor="radio-niña" className="text-purple-700 kids-text flex items-center">
-                    <span className="mr-1">Niña</span> 
-                    <span className="text-xl">👧</span>
-                  </Label>
-                </div>
-              </RadioGroup>
+              <p className="text-lg font-medium text-purple-800 kids-text mb-2">Selecciona tu coche</p>
+              <CarCustomization 
+                isOpen={true} 
+                onToggle={() => {}} 
+                embedded={true}
+              />
             </motion.div>
           </div>
         </motion.div>
       ) : (
         <motion.div
-          initial={{
-            opacity: 0,
-            y: 20
-          }}
-          animate={{
-            opacity: 1,
-            y: 0
-          }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="w-full max-w-md flex flex-col gap-3 mb-4"
         >
           {/* Player info display */}

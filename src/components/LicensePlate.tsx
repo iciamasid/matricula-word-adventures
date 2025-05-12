@@ -51,12 +51,12 @@ const LicensePlate: React.FC = () => {
       
       {/* Vintage license plate with EU flag */}
       <div 
-        className="relative bg-gray-100 p-3 rounded-md border-2 border-gray-400 w-full flex items-center justify-center space-x-2 shadow-md" 
+        className="relative bg-gray-100 p-3 rounded-md border-2 border-gray-400 w-full flex items-center justify-center shadow-md" 
         style={{ background: 'linear-gradient(to bottom, #F1F0FB 0%, #aaadb0 100%)' }}
       >
         {/* License plate content - numbers and letters with space for the EU flag */}
-        <div className="flex items-center justify-center space-x-2 ml-8">
-          {/* Numbers part with slot machine effect */}
+        <div className="flex items-center justify-center space-x-2">
+          {/* Numbers part with slot machine effect - centered */}
           {numbers.split('').map((number, index) => (
             <motion.div 
               key={`number-${index}`} 

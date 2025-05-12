@@ -3,7 +3,7 @@ import React from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Car, ChevronUp, ChevronDown, Save } from "lucide-react";
+import { Car } from "lucide-react";
 
 interface CarOption {
   id: string;
@@ -15,9 +15,10 @@ interface CarOption {
 interface CarCustomizationProps {
   isOpen: boolean;
   onToggle: () => void;
+  embedded?: boolean;
 }
 
-const CarCustomization: React.FC<CarCustomizationProps> = ({ isOpen, onToggle }) => {
+const CarCustomization: React.FC<CarCustomizationProps> = ({ isOpen, onToggle, embedded = false }) => {
   const { selectedCarColor, setSelectedCarColor } = useGame();
 
   const carOptions: CarOption[] = [
@@ -26,9 +27,39 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({ isOpen, onToggle })
     { id: "3", name: "Coche Rojo", image: "cocherojo.png", color: "bg-red-500" },
   ];
 
-  const handleSave = () => {
-    onToggle();
-  };
+  // No need for handleSave, selection is saved automatically
+
+  // If embedded is true, we don't need conditional rendering based on isOpen
+  if (embedded) {
+    return (
+      <div className="w-full">
+        <div className="grid grid-cols-3 gap-3">
+          {carOptions.map((car) => (
+            <motion.div
+              key={car.id}
+              className={`rounded-lg p-2 cursor-pointer ${
+                selectedCarColor?.id === car.id
+                  ? "ring-2 ring-purple-500 bg-purple-50"
+                  : "bg-white hover:bg-purple-50"
+              }`}
+              whileHover={{ scale: 1.05 }}
+              onClick={() => setSelectedCarColor(car)}
+            >
+              <div className="flex flex-col items-center">
+                <div className={`w-8 h-8 rounded-full mb-2 ${car.color}`}></div>
+                <img
+                  src={`/lovable-uploads/${car.image}`}
+                  alt={car.name}
+                  className="h-12 w-auto mb-1"
+                />
+                {/* Car names removed as requested */}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <motion.div
@@ -37,19 +68,11 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({ isOpen, onToggle })
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
     >
-      <div className="text-center mb-3 flex justify-between items-center">
-        <h3 className="text-xl text-purple-800 kids-text font-normal flex items-center">
+      <div className="text-center mb-3">
+        <h3 className="text-xl text-purple-800 kids-text font-normal flex items-center justify-center">
           <Car className="mr-2 h-5 w-5 text-purple-700" />
           Selecciona tu coche
         </h3>
-        <Button 
-          size="sm" 
-          variant="outline" 
-          className="border-purple-400 text-purple-700 hover:bg-purple-100"
-          onClick={handleSave}
-        >
-          <Save className="h-4 w-4 mr-1" /> Guardar
-        </Button>
       </div>
 
       <div className="grid grid-cols-3 gap-3">
@@ -71,7 +94,7 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({ isOpen, onToggle })
                 alt={car.name}
                 className="h-12 w-auto mb-1"
               />
-              {/* Car name removed as requested */}
+              {/* Car names removed as requested */}
             </div>
           </motion.div>
         ))}

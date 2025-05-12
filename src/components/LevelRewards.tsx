@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
 
 const LevelRewards: React.FC = () => {
-  const { destination, destinationInfo } = useGame();
+  const { level, destination, destinationInfo } = useGame();
   const navigate = useNavigate();
   
   const handleExploreCountry = () => {
@@ -27,7 +27,23 @@ const LevelRewards: React.FC = () => {
         <CardHeader className="pb-2">
           <CardTitle className="text-2xl text-purple-800 flex items-center justify-center kids-text">
             <Sparkles className="h-6 w-6 text-yellow-500 mr-2" />
-            ¡Has llegado hasta!
+            {/* Show Level number with flag next to it */}
+            <div className="flex items-center">
+              <span>Nivel {level}</span>
+              <motion.span 
+                className="ml-2 text-3xl"
+                animate={{ 
+                  rotate: [0, 10, -10, 0],
+                  scale: [1, 1.1, 1]
+                }} 
+                transition={{
+                  duration: 2,
+                  repeat: Infinity
+                }}
+              >
+                {destinationInfo.flag}
+              </motion.span>
+            </div>
             <motion.div
               animate={{ rotate: [0, 10, 0, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -36,6 +52,11 @@ const LevelRewards: React.FC = () => {
               <Star className="h-6 w-6 text-yellow-500" />
             </motion.div>
           </CardTitle>
+          
+          {/* Text below the level number */}
+          <p className="text-center text-purple-700 kids-text">
+            Estás en la ciudad de {destinationInfo.city}, {destinationInfo.country}
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           <motion.div 

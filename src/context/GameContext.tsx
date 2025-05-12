@@ -274,6 +274,26 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [showBonusPopup, showAgeBonusPopup, showCompletionBanner, isGeneratingLicensePlate]);
   
+  // Show level up popup ONLY when level changes and not from navigation
+  useEffect(() => {
+    // Only show the popup when the level increases (not when loading the page or returning from navigation)
+    if (level > prevLevel && prevLevel !== 0 && !showLevelUpFromNavigation) {
+      setShowLevelUp(true);
+      
+      // Auto-close the level up popup after 2 seconds
+      const timer = setTimeout(() => {
+        setShowLevelUp(false);
+      }, 2000); // Changed from default (longer) to 2 seconds as requested
+      
+      return () => clearTimeout(timer);
+    }
+    // Always update the previous level
+    setPrevLevel(level);
+
+    // Reset navigation flag
+    setShowLevelUpFromNavigation(false);
+  }, [level]);
+  
   // Reset the entire game
   const resetGame = () => {
     setTotalPoints(0);
