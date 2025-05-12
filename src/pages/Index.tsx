@@ -335,4 +335,5 @@ const GameContent = () => {
       <Toaster />
     </div>;
 };
+
 export default Index;

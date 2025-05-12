@@ -55,7 +55,7 @@ const WordInput: React.FC = () => {
     
     // Now set the text using the simplified message
     const text = isEnglish 
-      ? `USE THESE LETTERS: ${consonantsText}` 
+      ? `USA ESTAS LETRAS: ${consonantsText}` 
       : `USA ESAS LETRAS: ${consonantsText}`;
     setFullPlaceholder(text);
   }, [plateConsonants, isEnglish]);
@@ -132,7 +132,16 @@ const WordInput: React.FC = () => {
           placeholder={placeholderText || " "} 
           className={`flex-1 text-center font-bold text-3xl py-6 uppercase border-2 ${borderColor} shadow-md kids-text`} 
           autoComplete="off" 
+          // Adding a style prop for the placeholder to make it smaller
+          style={{ 
+            "--placeholder-text-size": "0.85em", 
+          } as React.CSSProperties}
         />
+        <style jsx global>{`
+          input::placeholder {
+            font-size: var(--placeholder-text-size, 0.85em) !important;
+          }
+        `}</style>
         <motion.div 
           whileHover={{
             scale: 1.05
