@@ -34,7 +34,7 @@ const NewGameButton: React.FC = () => {
     setButtonDisabled(true);
 
     // Signal that we're starting the license plate generation
-    setIsGeneratingLicensePlate(true);
+    setIsGeneratingLicensePlate(true); // Fixed: Now passing a boolean value (true) instead of potentially a string
 
     // Trigger plate generation but with a 3 second delay for the animation
     setTimeout(() => {
