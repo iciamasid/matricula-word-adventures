@@ -1,125 +1,274 @@
+import { Circle, Rect, Polygon, Shadow } from 'fabric';
 
-import { Circle, Rect, Polygon, Shadow, Image as FabricImage } from 'fabric';
-
-// Create a car using an image instead of drawn shapes
+// Create a more detailed car object using Fabric.js shapes
 export const createCar = (left: number, top: number, color = '#E74C3C', scale = 1) => {
-  // Determine which car image to use based on color
-  const getCarImagePath = () => {
+  // Determine car color based on game selection
+  const carColor = () => {
     switch (color.toLowerCase()) {
       case 'bg-yellow-500':
       case '#f1c40f': 
-        return '/lovable-uploads/081dd077-2e84-47e0-a4d6-3e861e23dff1.png'; // Yellow car
+        return '#F1C40F'; // Yellow
       case 'bg-blue-500':
       case '#33c3f0': 
-        return '/lovable-uploads/d3c96b79-3e3a-45c6-afde-5daa1e67bf01.png'; // Blue car
+        return '#33C3F0'; // Blue
       case 'bg-red-500':
       case '#e74c3c': 
-        return '/lovable-uploads/dd6a80df-8c7c-4cb5-ba23-aed3586a5f04.png'; // Red car
+        return '#E74C3C'; // Red
       default:
-        return '/lovable-uploads/dd6a80df-8c7c-4cb5-ba23-aed3586a5f04.png'; // Default to red car
+        return color;
     }
   };
   
-  // Create a placeholder object to return while the image loads
-  const placeholder = {
-    left,
-    top,
+  const actualColor = carColor();
+  
+  // Calculate darker shade for roof and details
+  let roofColor;
+  let detailColor;
+  let lighterColor;
+  
+  switch (actualColor) {
+    case '#F1C40F': // Yellow
+      roofColor = '#D4AC0D';
+      detailColor = '#B7950B';
+      lighterColor = '#F3D34A';
+      break;
+    case '#33C3F0': // Blue
+      roofColor = '#2980B9';
+      detailColor = '#2471A3';
+      lighterColor = '#5DADE2';
+      break;
+    case '#E74C3C': // Red
+      roofColor = '#C0392B';
+      detailColor = '#A93226';
+      lighterColor = '#EC7063';
+      break;
+    default:
+      roofColor = '#C0392B';
+      detailColor = '#A93226';
+      lighterColor = '#EC7063';
+  }
+
+  // Enhanced car body - smoother edges
+  const body = new Rect({
+    left: left,
+    top: top,
     width: 64 * scale,
     height: 30 * scale,
-    angle: 0
-  };
+    fill: actualColor,
+    rx: 12 * scale,
+    ry: 12 * scale,
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    shadow: new Shadow({
+      color: 'rgba(0,0,0,0.3)',
+      blur: 4 * scale,
+      offsetX: 0,
+      offsetY: 1 * scale
+    })
+  });
 
-  // Fix for error TS2304: Define carImage variable
-  let carImage: any = null;
-
-  // Helper function to create the image object with proper sizing and positioning
-  const createCarImage = (fabricCanvas: any) => {
-    const imagePath = getCarImagePath();
-    
-    return new Promise<any>((resolve) => {
-      // Load car image from path - using Fabric.js v6 syntax with a callback
-      // Instead of using the options object with onComplete, use the standard callback format
-      FabricImage.fromURL(
-        imagePath,
-        (img) => {
-          if (!img) {
-            console.error("Failed to load car image");
-            resolve(null);
-            return;
-          }
-          
-          // Scale and position the car image
-          const scaleFactor = 0.15 * scale; // Adjust this based on the actual image size
-          img.scale(scaleFactor);
-          
-          // Position at the center point
-          img.set({
-            left,
-            top,
-            originX: 'center',
-            originY: 'center',
-            selectable: false,
-            // Apply a shadow for a nicer look
-            shadow: new Shadow({
-              color: 'rgba(0,0,0,0.3)',
-              blur: 4 * scale,
-              offsetX: 0,
-              offsetY: 1 * scale
-            })
-          });
-          
-          if (fabricCanvas) {
-            fabricCanvas.add(img);
-            fabricCanvas.renderAll();
-          }
-          
-          resolve(img);
-        }
-      );
-    });
-  };
+  // Improved car roof with more car-like shape
+  const roof = new Rect({
+    left: left - 2 * scale,
+    top: top - 15 * scale,
+    width: 42 * scale,
+    height: 20 * scale,
+    fill: roofColor,
+    rx: 10 * scale,
+    ry: 10 * scale,
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
   
-  // Return an object that matches the CarObject interface structure
-  // but uses a single image instead of multiple shapes
+  // Front windshield
+  const frontWindshield = new Polygon([
+    { x: left - 10 * scale, y: top - 7 * scale },
+    { x: left + 8 * scale, y: top - 7 * scale },
+    { x: left + 10 * scale, y: top - 15 * scale },
+    { x: left - 8 * scale, y: top - 15 * scale }
+  ], {
+    fill: '#a4d0ff',
+    selectable: false,
+    originX: 'center',
+    originY: 'center'
+  });
+  
+  // Car bumper/grill
+  const bumper = new Rect({
+    left: left + 28 * scale,
+    top: top + 2 * scale,
+    width: 10 * scale,
+    height: 16 * scale,
+    fill: detailColor,
+    rx: 2 * scale,
+    ry: 2 * scale,
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  // Side window 
+  const sideWindow = new Rect({
+    left: left - 15 * scale,
+    top: top - 10 * scale,
+    width: 15 * scale,
+    height: 10 * scale,
+    fill: '#a4d0ff',
+    rx: 3 * scale,
+    ry: 3 * scale,
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  // Improved car wheels with rims
+  const wheelConfig = [
+    { x: left - 20 * scale, y: top + 15 * scale }, // rear wheel
+    { x: left + 0 * scale, y: top + 16 * scale },  // middle wheel
+    { x: left + 20 * scale, y: top + 15 * scale }  // front wheel
+  ];
+  
+  // Tire outer parts
+  const wheel1 = new Circle({
+    left: wheelConfig[0].x,
+    top: wheelConfig[0].y,
+    radius: 8 * scale,
+    fill: '#333333',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  const wheel2 = new Circle({
+    left: wheelConfig[1].x,
+    top: wheelConfig[1].y,
+    radius: 8 * scale,
+    fill: '#333333',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  const wheel3 = new Circle({
+    left: wheelConfig[2].x,
+    top: wheelConfig[2].y,
+    radius: 8 * scale,
+    fill: '#333333',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  // Wheel rims
+  const rim1 = new Circle({
+    left: wheelConfig[0].x,
+    top: wheelConfig[0].y,
+    radius: 4 * scale,
+    fill: '#DDDDDD',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  const rim2 = new Circle({
+    left: wheelConfig[1].x,
+    top: wheelConfig[1].y,
+    radius: 4 * scale,
+    fill: '#DDDDDD',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  const rim3 = new Circle({
+    left: wheelConfig[2].x,
+    top: wheelConfig[2].y,
+    radius: 4 * scale,
+    fill: '#DDDDDD',
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+
+  // Improved headlight
+  const headlight = new Circle({
+    left: left + 30 * scale,
+    top: top + 4 * scale,
+    radius: 4 * scale,
+    fill: '#F9E79F', // Brighter yellow
+    stroke: '#F8C471',
+    strokeWidth: 1,
+    originX: 'center',
+    originY: 'center',
+    selectable: false,
+    shadow: new Shadow({
+      color: 'rgba(255,236,107,0.7)',
+      blur: 3 * scale,
+      offsetX: 0,
+      offsetY: 0
+    })
+  });
+  
+  // Taillight
+  const taillight = new Circle({
+    left: left - 30 * scale,
+    top: top + 4 * scale,
+    radius: 3 * scale,
+    fill: '#E74C3C', // Red light
+    stroke: '#C0392B',
+    strokeWidth: 1,
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
+  // Door handle
+  const doorHandle = new Rect({
+    left: left - 8 * scale,
+    top: top - 1 * scale,
+    width: 6 * scale,
+    height: 2 * scale,
+    fill: lighterColor,
+    rx: 1 * scale,
+    ry: 1 * scale,
+    originX: 'center',
+    originY: 'center',
+    selectable: false
+  });
+  
   return {
-    // The image will serve as the main body
-    body: {
-      ...placeholder,
-      set: (props: any) => {
-        if (carImage) {
-          carImage.set(props);
-        }
-      }
-    } as any,
-    
-    // These are placeholder objects to maintain compatibility with the existing code
-    // They won't be rendered but will update the main image position/rotation
-    roof: { ...placeholder, set: () => {} } as any,
-    wheel1: { ...placeholder, set: () => {} } as any,
-    wheel2: { ...placeholder, set: () => {} } as any,
-    wheel3: { ...placeholder, set: () => {} } as any,
-    headlight: { ...placeholder, set: () => {} } as any,
-    rim1: { ...placeholder, set: () => {} } as any,
-    rim2: { ...placeholder, set: () => {} } as any,
-    rim3: { ...placeholder, set: () => {} } as any,
-    frontWindshield: { ...placeholder, set: () => {} } as any,
-    sideWindow: { ...placeholder, set: () => {} } as any,
-    bumper: { ...placeholder, set: () => {} } as any,
-    taillight: { ...placeholder, set: () => {} } as any,
-    doorHandle: { ...placeholder, set: () => {} } as any,
-    
-    // Add the image property that will actually be used
-    image: carImage,
-    
-    // Method to initialize the car image
-    initImage: async (fabricCanvas: any) => {
-      carImage = await createCarImage(fabricCanvas);
-      return carImage;
-    }
+    body,
+    roof,
+    wheel1,
+    wheel2,
+    wheel3,
+    headlight,
+    rim1,
+    rim2, 
+    rim3,
+    frontWindshield,
+    sideWindow,
+    bumper,
+    taillight,
+    doorHandle
   };
 };
 
-// Modified end point (removing start point since we don't want it anymore)
+// Create start and end points for the path
+export const createStartPoint = (left: number, top: number) => {
+  return new Circle({
+    left,
+    top,
+    radius: 10,
+    fill: '#2ECC71', // Green color
+    stroke: '#27AE60',
+    strokeWidth: 2,
+    selectable: false
+  });
+};
+
 export const createEndPoint = (left: number, top: number) => {
   return new Circle({
     left,
@@ -133,22 +282,20 @@ export const createEndPoint = (left: number, top: number) => {
 };
 
 export interface CarObject {
-  body: any;
-  roof: any;
-  wheel1: any;
-  wheel2: any;
-  wheel3: any;
-  headlight: any;
-  rim1: any;
-  rim2: any;
-  rim3: any;
-  frontWindshield: any;
-  sideWindow: any;
-  bumper: any;
-  taillight: any;
-  doorHandle: any;
-  image?: any;
-  initImage?: (fabricCanvas: any) => Promise<any>;
+  body: Rect;
+  roof: Rect;
+  wheel1: Circle;
+  wheel2: Circle;
+  wheel3: Circle;
+  headlight: Circle;
+  rim1: Circle;
+  rim2: Circle;
+  rim3: Circle;
+  frontWindshield: Polygon;
+  sideWindow: Rect;
+  bumper: Rect;
+  taillight: Circle;
+  doorHandle: Rect;
 }
 
 export interface CarColor {
