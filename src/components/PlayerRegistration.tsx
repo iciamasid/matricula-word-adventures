@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import PlayerNameInput from "@/components/PlayerNameInput";
@@ -7,6 +8,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/LanguageContext";
+
 const PlayerRegistration: React.FC = () => {
   const {
     playerName,
@@ -17,6 +20,8 @@ const PlayerRegistration: React.FC = () => {
     setPlayerAge,
     setPlayerGender
   } = useGame();
+  
+  const { t } = useLanguage();
   const [showForm, setShowForm] = useState(!playerName || !playerAge);
   const [showCarCustomization, setShowCarCustomization] = useState(false);
 
@@ -32,12 +37,14 @@ const PlayerRegistration: React.FC = () => {
       }
     }
   }, [playerName, playerGender, setPlayerGender]);
+
   useEffect(() => {
     // If we have both name and age, hide the form
     if (playerName && playerAge) {
       setShowForm(false);
     }
   }, [playerName, playerAge]);
+
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
   };
@@ -52,6 +59,7 @@ const PlayerRegistration: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [selectedCarColor]);
+
   return <>
       {showForm ? <motion.div className="w-full max-w-md bg-purple-100/90 rounded-lg p-5 shadow-lg mb-4" initial={{
       opacity: 0,
@@ -63,17 +71,14 @@ const PlayerRegistration: React.FC = () => {
       duration: 0.5
     }}>
           <h2 className="text-xl text-purple-800 kids-text mb-4 text-center font-normal">
-            ¡Bienvenido a Matriculabra Cadabra!
+            {t('welcome_game')}
           </h2>
           <p className="text-purple-700 kids-text mb-4 text-center font-normal text-lg">
-            Por favor, dinos tu nombre y edad para comenzar a jugar.
+            {t('please_enter_info')}
           </p>
           <div className="space-y-4">
             <PlayerNameInput onSave={setPlayerName} initialName={playerName} />
             <PlayerAgeInput onSave={setPlayerAge} initialAge={playerAge} />
-            
-            {/* Replace gender selection with car selection */}
-            
           </div>
         </motion.div> : <motion.div initial={{
       opacity: 0,
@@ -85,13 +90,13 @@ const PlayerRegistration: React.FC = () => {
           {/* Player info display */}
           <motion.div className="flex justify-between items-center rounded-lg p-3 shadow-md bg-violet-200">
             <div className="flex items-center">
-              {playerGender === "niño" ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
+              {playerGender === t('boy') ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
               <span className="font-medium text-purple-800 kids-text text-3xl">
-                {playerName}, {playerAge} años
+                {playerName}, {playerAge} {t('years')}
               </span>
             </div>
             <Button size="sm" variant="outline" className="border-purple-400 text-purple-700 hover:bg-purple-100" onClick={() => setShowForm(true)}>
-              Editar
+              {t('edit')}
             </Button>
           </motion.div>
           
@@ -100,7 +105,7 @@ const PlayerRegistration: React.FC = () => {
             <div className="flex items-center">
               <Car className="h-5 w-5 mr-2 text-purple-700" />
               <span className="font-medium text-purple-800 kids-text text-xl">
-                {selectedCarColor ? "Tu coche seleccionado" : "Selecciona tu coche"}
+                {selectedCarColor ? t('car_selected') : t('select_car')}
               </span>
             </div>
             <Button size="sm" variant="outline" className="border-purple-400 text-purple-700 hover:bg-purple-100" onClick={toggleCarCustomization}>
@@ -113,4 +118,5 @@ const PlayerRegistration: React.FC = () => {
         </motion.div>}
     </>;
 };
+
 export default PlayerRegistration;

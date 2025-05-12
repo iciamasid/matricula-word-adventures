@@ -3,14 +3,13 @@ import React from "react";
 import { useLanguage } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Flag } from "lucide-react";
 
 const LanguageSelector: React.FC = () => {
   const { language, setLanguage, isSpanish, isEnglish } = useLanguage();
 
   return (
     <motion.div
-      className="fixed top-2 right-2 z-50 flex gap-2 rounded-lg p-2 bg-white/80 backdrop-blur-sm shadow-md"
+      className="fixed top-14 right-2 z-50 flex gap-2 rounded-lg p-2 bg-white/80 backdrop-blur-sm shadow-md"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}

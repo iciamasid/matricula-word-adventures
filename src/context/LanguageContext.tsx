@@ -236,7 +236,153 @@ export const translations: Record<string, Record<Language, string>> = {
   'to': {
     es: 'hasta',
     en: 'to'
-  }
+  },
+  
+  // Player Registration
+  'welcome_game': {
+    es: '¡Bienvenido a Matriculabra Cadabra!',
+    en: 'Welcome to License Plate Magic!'
+  },
+  'please_enter_info': {
+    es: 'Por favor, dinos tu nombre y edad para comenzar a jugar.',
+    en: 'Please enter your name and age to start playing.'
+  },
+  'boy': {
+    es: 'niño',
+    en: 'boy'
+  },
+  'girl': {
+    es: 'niña',
+    en: 'girl'
+  },
+  
+  // World tour progress
+  'world_tour_progress': {
+    es: 'Progreso de tu vuelta al mundo',
+    en: 'World Tour Progress'
+  },
+  'start_madrid': {
+    es: 'Inicio en Madrid',
+    en: 'Starting in Madrid'
+  },
+  'world_tour_complete': {
+    es: '¡Vuelta al mundo completada!',
+    en: 'World Tour Complete!'
+  },
+  'points_for_next_level': {
+    es: 'puntos para el siguiente nivel',
+    en: 'points for the next level'
+  },
+  'level': {
+    es: 'Nivel',
+    en: 'Level'
+  },
+  'points_total': {
+    es: 'Puntos',
+    en: 'Points'
+  },
+  'you_are_in': {
+    es: 'Estás en',
+    en: 'You are in'
+  },
+  
+  // Draw game page
+  'drive_to_destination': {
+    es: 'Conduce al país destino',
+    en: 'Drive to the destination country'
+  },
+  'origin_label': {
+    es: 'ORIGEN',
+    en: 'ORIGIN'
+  },
+  'destination_label': {
+    es: 'DESTINO',
+    en: 'DESTINATION'
+  },
+  'how_to_play': {
+    es: '¿Cómo jugar?',
+    en: 'How to play?'
+  },
+  'understood': {
+    es: '¡Entendido!',
+    en: 'Understood!'
+  },
+  'draw': {
+    es: 'Dibujar',
+    en: 'Draw'
+  },
+  
+  // Help instructions
+  'help_instruction_1': {
+    es: 'Haz clic en el botón',
+    en: 'Click the button'
+  },
+  'help_instruction_2': {
+    es: 'Esto activará el modo de dibujo',
+    en: 'This will activate drawing mode'
+  },
+  'help_instruction_3': {
+    es: 'Dibuja un camino en el tablero',
+    en: 'Draw a path on the board'
+  },
+  'help_instruction_4': {
+    es: 'Mantén pulsado y mueve el dedo o ratón para dibujar',
+    en: 'Press and hold while moving your finger or mouse to draw'
+  },
+  'help_instruction_5': {
+    es: 'Haz clic en',
+    en: 'Click on'
+  },
+  'help_instruction_6': {
+    es: 'El coche seguirá exactamente el camino que dibujaste',
+    en: 'The car will follow exactly the path you drew'
+  },
+  'help_instruction_7': {
+    es: 'Ajusta la velocidad con el control deslizante',
+    en: 'Adjust the speed with the slider'
+  },
+  'help_instruction_8': {
+    es: 'Más lento o más rápido según prefieras',
+    en: 'Slower or faster as you prefer'
+  },
+  
+  // Country page
+  'back_to_game': {
+    es: 'Volver al juego',
+    en: 'Back to game'
+  },
+  'about': {
+    es: 'Sobre',
+    en: 'About'
+  },
+  'capital': {
+    es: 'Capital:',
+    en: 'Capital:'
+  },
+  'return_to_game': {
+    es: 'Volver a jugar',
+    en: 'Return to game'
+  },
+  'unknown_country': {
+    es: 'País desconocido',
+    en: 'Unknown country'
+  },
+  'unknown_capital': {
+    es: 'Desconocida',
+    en: 'Unknown'
+  },
+  'unknown_language': {
+    es: 'Desconocido',
+    en: 'Unknown'
+  },
+  'unknown_description': {
+    es: 'Este país aún está por descubrir. ¡Sigue jugando para desbloquear más información!',
+    en: 'This country is yet to be discovered. Keep playing to unlock more information!'
+  },
+  'unknown_fact': {
+    es: '¡Este país es un misterio por descubrir!',
+    en: 'This country is a mystery waiting to be discovered!'
+  },
 };
 
 // Create the provider component

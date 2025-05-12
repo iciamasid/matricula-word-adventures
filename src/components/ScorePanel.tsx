@@ -1,17 +1,28 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { Star, Globe, Medal, Trophy } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import { useLanguage } from "@/context/LanguageContext";
+
 const ScorePanel: React.FC = () => {
   const {
     totalPoints,
     level,
     originInfo
   } = useGame();
+  
+  const { t, isEnglish } = useLanguage();
 
   // Calculate progress percentage to next level (each level is 500 points)
   const levelProgress = totalPoints % 500 / 500 * 100;
+  
+  // Change text and icon colors based on language
+  const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
+  const textColorDark = isEnglish ? "text-orange-900" : "text-purple-900";
+  const textColorLight = isEnglish ? "text-orange-600" : "text-purple-600";
+  
   return <div className="w-full grid grid-cols-2 gap-4 mb-4">
       {/* Score Panel - Changed to Total Score */}
       <motion.div initial={{
@@ -48,10 +59,10 @@ const ScorePanel: React.FC = () => {
               <Star className="h-5 w-5 text-amber-400" fill="gold" stroke="orange" />
             </div>
           </motion.div>
-          <h3 className="text-xl text-purple-800 kids-text font-normal">Puntos</h3>
+          <h3 className={`text-xl ${textColor} kids-text font-normal`}>{t('points_total')}</h3>
         </div>
         
-        <motion.p className="text-3xl text-purple-900 kids-text mt-1 font-normal" animate={totalPoints > 0 ? {
+        <motion.p className={`text-3xl ${textColorDark} kids-text mt-1 font-normal`} animate={totalPoints > 0 ? {
         scale: [1, 1.2, 1]
       } : {}} transition={{
         duration: 0.5
@@ -62,17 +73,17 @@ const ScorePanel: React.FC = () => {
         {/* Added Level Progress Bar */}
         <div className="mt-2">
           <div className="flex justify-between text-xs text-purple-700 mb-1">
-            <span>Nivel {level}</span>
-            <span>Nivel {level + 1}</span>
+            <span>{t('level')} {level}</span>
+            <span>{t('level')} {level + 1}</span>
           </div>
           <Progress value={levelProgress} className="h-2" />
-          <p className="text-purple-600 mt-1 text-lg">
-            {500 - totalPoints % 500} puntos para el siguiente nivel
+          <p className={`${textColorLight} mt-1 text-lg`}>
+            {500 - totalPoints % 500} {t('points_for_next_level')}
           </p>
         </div>
       </motion.div>
       
-      {/* Level Panel - Updated colorful trophy icon - Removed world tour progress */}
+      {/* Level Panel */}
       <motion.div className="rounded-lg p-4 bg-transparent shadow-lg text-center" initial={{
       opacity: 0,
       x: 20
@@ -106,10 +117,10 @@ const ScorePanel: React.FC = () => {
               </motion.div>
             </div>
           </motion.div>
-          <h3 className="text-xl text-purple-800 kids-text font-normal">Nivel</h3>
+          <h3 className={`text-xl ${textColor} kids-text font-normal`}>{t('level')}</h3>
         </div>
         
-        <motion.p className="text-3xl text-purple-900 kids-text mt-1 font-normal" animate={level > 0 ? {
+        <motion.p className={`text-3xl ${textColorDark} kids-text mt-1 font-normal`} animate={level > 0 ? {
         scale: [1, 1.2, 1]
       } : {}} transition={{
         duration: 0.5
@@ -126,11 +137,12 @@ const ScorePanel: React.FC = () => {
         }}>
             {originInfo.flag}
           </motion.span>
-          <p className="text-purple-600 kids-text ml-2 text-base font-normal">
-            Estás en {originInfo.city}, {originInfo.country}
+          <p className={`${textColorLight} kids-text ml-2 text-base font-normal`}>
+            {t('you_are_in')} {originInfo.city}, {originInfo.country}
           </p>
         </div>
       </motion.div>
     </div>;
 };
+
 export default ScorePanel;

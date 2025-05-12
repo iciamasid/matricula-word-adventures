@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { Progress } from '@/components/ui/progress';
 import { motion } from 'framer-motion';
+import { useLanguage } from '@/context/LanguageContext';
 
 // Function to get the flag emoji based on level
 const getLevelFlag = (level: number) => {
@@ -23,6 +24,7 @@ const getLevelFlag = (level: number) => {
 
 const WorldTourProgress = () => {
   const { level } = useGame();
+  const { t } = useLanguage();
   const [animatingLevel, setAnimatingLevel] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
 
@@ -71,7 +73,7 @@ const WorldTourProgress = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
     >
-      <h3 className="text-xl text-center text-purple-800 kids-text mb-3">Progreso de tu vuelta al mundo</h3>
+      <h3 className="text-xl text-center text-purple-800 kids-text mb-3">{t('world_tour_progress')}</h3>
       <div className="relative pt-4 pb-8">
         <Progress 
           value={animatingLevel / 10 * 100} 
@@ -107,8 +109,8 @@ const WorldTourProgress = () => {
         </div>
         
         <div className="flex justify-between text-xs text-purple-700 mt-6">
-          <span>Inicio en Madrid</span>
-          <span>¡Vuelta al mundo completada!</span>
+          <span>{t('start_madrid')}</span>
+          <span>{t('world_tour_complete')}</span>
         </div>
       </div>
     </motion.div>

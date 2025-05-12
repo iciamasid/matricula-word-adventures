@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -8,18 +9,24 @@ import { Toaster } from "@/components/ui/toaster";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useGame, GameProvider } from "@/context/GameContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 // Wrapped content component that uses useGame hook
 const DrawGameContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState<boolean>(false);
-  const {
-    toast
-  } = useToast();
-  const {
-    originInfo,
-    destinationInfo
-  } = useGame();
+  const { toast } = useToast();
+  const { originInfo, destinationInfo } = useGame();
+  const { t, isEnglish } = useLanguage();
+  
+  // Determine styling based on language
+  const bgColor = isEnglish 
+    ? "bg-orange-200" // English background
+    : "bg-bba7ca";    // Spanish background
+    
+  const textColor = isEnglish ? "text-orange-900" : "text-fuchsia-900";
+  const panelBg = isEnglish ? "bg-orange-100" : "bg-purple-100";
+  const buttonBg = isEnglish ? "bg-orange-600 hover:bg-orange-700" : "bg-purple-600 hover:bg-purple-700";
 
   // Log when component mounts to help with debugging
   useEffect(() => {
@@ -50,8 +57,9 @@ const DrawGameContent: React.FC = () => {
       variant: "destructive"
     });
   };
+  
   return <div className="min-h-screen flex flex-col items-center px-4 pt-3 pb-20 relative overflow-hidden" style={{
-    backgroundColor: "#bba7ca",
+    backgroundColor: isEnglish ? "#f8b195" : "#bba7ca", // Different bg color based on language
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
@@ -70,7 +78,7 @@ const DrawGameContent: React.FC = () => {
             repeat: Infinity,
             duration: 2
           }
-        }} className="kids-text text-fuchsia-900 text-3xl font-medium">Conduce al país destino</motion.h1>
+        }} className={`kids-text ${textColor} text-3xl font-medium`}>{t('drive_to_destination')}</motion.h1>
           
           <div className="flex items-center gap-2">
             <Link to="/">
@@ -78,13 +86,13 @@ const DrawGameContent: React.FC = () => {
             </Link>
             
             <Button variant="outline" onClick={() => setShowHelp(true)} className="text-white kids-text bg-transparent">
-              <HelpCircle className="mr-2 h-5 w-5" /> Ayuda
+              <HelpCircle className="mr-2 h-5 w-5" /> {t('help')}
             </Button>
           </div>
         </div>
         
         {/* Origin and Destination with route visualization */}
-        <div className="w-full bg-purple-100 rounded-lg p-4 shadow-md">
+        <div className={`w-full ${panelBg} rounded-lg p-4 shadow-md`}>
           <div className="grid grid-cols-5 items-center">
             {/* Origin */}
             <div className="col-span-2 text-center">
@@ -108,7 +116,7 @@ const DrawGameContent: React.FC = () => {
                 </motion.span>
                 <p className="text-xl font-bold text-purple-900 kids-text">{originInfo.city}</p>
                 <p className="text-lg text-purple-700 kids-text">{originInfo.country}</p>
-                <p className="text-base text-purple-600 kids-text">ORIGEN</p>
+                <p className="text-base text-purple-600 kids-text">{t('origin_label')}</p>
               </motion.div>
             </div>
             
@@ -148,7 +156,7 @@ const DrawGameContent: React.FC = () => {
                 </motion.span>
                 <p className="text-xl font-bold text-purple-900 kids-text">{destinationInfo.city}</p>
                 <p className="text-lg text-purple-700 kids-text">{destinationInfo.country}</p>
-                <p className="text-base text-purple-600 kids-text">DESTINO</p>
+                <p className="text-base text-purple-600 kids-text">{t('destination_label')}</p>
               </motion.div>
             </div>
           </div>
@@ -210,46 +218,46 @@ const DrawGameContent: React.FC = () => {
               
               <h2 className="text-2xl font-bold text-purple-800 kids-text mb-4 flex items-center gap-2">
                 <HelpCircle className="h-7 w-7 text-purple-600" />
-                ¿Cómo jugar?
+                {t('how_to_play')}
               </h2>
               
               <ol className="list-decimal list-inside space-y-4 text-purple-900 kids-text">
                 <li className="flex items-start gap-2">
                   <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">1</div>
                   <div>
-                    <span className="font-bold">Haz clic en el botón <span className="bg-green-100 px-2 py-1 rounded">Dibujar</span></span>
-                    <p className="text-sm text-purple-700">Esto activará el modo de dibujo</p>
+                    <span className="font-bold">{t('help_instruction_1')} <span className="bg-green-100 px-2 py-1 rounded">{t('draw')}</span></span>
+                    <p className="text-sm text-purple-700">{t('help_instruction_2')}</p>
                   </div>
                 </li>
                 
                 <li className="flex items-start gap-2">
                   <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">2</div>
                   <div>
-                    <span className="font-bold">Dibuja un camino en el tablero</span>
-                    <p className="text-sm text-purple-700">Mantén pulsado y mueve el dedo o ratón para dibujar</p>
+                    <span className="font-bold">{t('help_instruction_3')}</span>
+                    <p className="text-sm text-purple-700">{t('help_instruction_4')}</p>
                   </div>
                 </li>
                 
                 <li className="flex items-start gap-2">
                   <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">3</div>
                   <div>
-                    <span className="font-bold">Haz clic en <span className="bg-cyan-100 px-2 py-1 rounded">Conducir</span></span>
-                    <p className="text-sm text-purple-700">El coche seguirá exactamente el camino que dibujaste</p>
+                    <span className="font-bold">{t('help_instruction_5')} <span className="bg-cyan-100 px-2 py-1 rounded">{t('drive')}</span></span>
+                    <p className="text-sm text-purple-700">{t('help_instruction_6')}</p>
                   </div>
                 </li>
                 
                 <li className="flex items-start gap-2">
                   <div className="bg-green-100 rounded-full p-1 mt-1 flex-shrink-0">4</div>
                   <div>
-                    <span className="font-bold">Ajusta la velocidad con el control deslizante</span>
-                    <p className="text-sm text-purple-700">Más lento o más rápido según prefieras</p>
+                    <span className="font-bold">{t('help_instruction_7')}</span>
+                    <p className="text-sm text-purple-700">{t('help_instruction_8')}</p>
                   </div>
                 </li>
               </ol>
               
               <div className="mt-6 pt-4 border-t border-gray-200">
-                <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white kids-text text-xl py-6" onClick={() => setShowHelp(false)}>
-                  ¡Entendido!
+                <Button className={`w-full ${buttonBg} text-white kids-text text-xl py-6`} onClick={() => setShowHelp(false)}>
+                  {t('understood')}
                 </Button>
               </div>
             </motion.div>
@@ -266,4 +274,5 @@ const DrawGamePage: React.FC = () => {
       <DrawGameContent />
     </GameProvider>;
 };
+
 export default DrawGamePage;
