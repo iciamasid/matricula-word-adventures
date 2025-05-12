@@ -4,7 +4,8 @@ import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
 
 const ErrorAlert: React.FC = () => {
-  const { errorMessage, successMessage, pointsEarned, clearError, clearSuccess } = useGame();
+  const { state, clearError, clearSuccess } = useGame();
+  const { errorMessage, successMessage, pointsEarned } = state;
   
   return (
     <>

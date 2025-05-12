@@ -4,12 +4,13 @@ import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
 
 const LicensePlate: React.FC = () => {
+  const { state } = useGame();
   const {
     licensePlate,
     plateConsonants,
     isGeneratingLicensePlate,
     selectedCarColor
-  } = useGame();
+  } = state;
   
   const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
 
@@ -17,7 +18,8 @@ const LicensePlate: React.FC = () => {
   const numbers = licensePlate.substring(0, 4);
 
   // Ensure plateConsonants is treated as a string and safely convert to array
-  const consonantsArray = typeof plateConsonants === 'string' ? plateConsonants.split('') : [];
+  const consonantsArray = Array.isArray(plateConsonants) ? plateConsonants : 
+    (typeof plateConsonants === 'string' ? plateConsonants.split('') : []);
   
   return (
     <motion.div 

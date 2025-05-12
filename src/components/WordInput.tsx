@@ -8,12 +8,8 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
 const WordInput: React.FC = () => {
-  const {
-    currentWord,
-    setCurrentWord,
-    submitWord,
-    plateConsonants,
-  } = useGame();
+  const { state, submitWord, setCurrentWord } = useGame();
+  const { currentWord, plateConsonants } = state;
   
   const { t, isEnglish } = useLanguage();
   
@@ -55,7 +51,7 @@ const WordInput: React.FC = () => {
     
     // Now set the text using the simplified message
     const text = isEnglish 
-      ? `USA ESTAS LETRAS: ${consonantsText}` 
+      ? `USE THESE LETTERS: ${consonantsText}` 
       : `USA ESAS LETRAS: ${consonantsText}`;
     setFullPlaceholder(text);
   }, [plateConsonants, isEnglish]);
@@ -134,12 +130,12 @@ const WordInput: React.FC = () => {
           autoComplete="off" 
           // Adding a style prop for the placeholder to make it smaller
           style={{ 
-            "--placeholder-text-size": "0.85em", 
+            "--placeholder-text-size": "0.7em", 
           } as React.CSSProperties}
         />
         <style jsx global>{`
           input::placeholder {
-            font-size: var(--placeholder-text-size, 0.85em) !important;
+            font-size: var(--placeholder-text-size, 0.7em) !important;
           }
         `}</style>
         <motion.div 

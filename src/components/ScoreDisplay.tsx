@@ -2,7 +2,7 @@
 import React from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
-import { Route, Kilometer } from "lucide-react";
+import { Route, Milestone } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface ScoreDisplayProps {
@@ -40,7 +40,7 @@ const ScoreDisplay: React.FC<ScoreDisplayProps> = ({
       
       {showLabel && (
         <div className="flex items-center">
-          <Kilometer className={`${iconColor} ${small ? 'h-4 w-4' : 'h-5 w-5'}`} />
+          <Milestone className={`${iconColor} ${small ? 'h-4 w-4' : 'h-5 w-5'}`} />
           <span className={`${textColor} kids-text ${small ? 'text-sm' : 'text-lg'} ml-1`}>
             {isEnglish ? "Kilometers" : "Kilómetros"}
           </span>

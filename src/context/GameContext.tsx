@@ -1,3 +1,4 @@
+
 import React, {
   createContext,
   useContext,
@@ -200,7 +201,7 @@ const gameReducer = (state: GameState, action: GameAction): GameState => {
 };
 
 // Create the game context
-const GameContext = createContext<{
+interface GameContextValue {
   state: GameState;
   dispatch: React.Dispatch<GameAction>;
   generateNewPlate: () => void;
@@ -223,7 +224,10 @@ const GameContext = createContext<{
     color: string;
   } | null) => void;
   setIsGeneratingLicensePlate: (isGenerating: boolean) => void;
-}>({
+  setCurrentWord: (word: string) => void;
+}
+
+const GameContext = createContext<GameContextValue>({
   state: initialState,
   dispatch: () => null,
   generateNewPlate: () => {},
@@ -241,6 +245,7 @@ const GameContext = createContext<{
   setPlayerGender: () => {},
   setSelectedCarColor: () => {},
   setIsGeneratingLicensePlate: () => {},
+  setCurrentWord: () => {},
 });
 
 // Game context provider component
@@ -286,9 +291,12 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     state.playerGender,
     state.selectedCarColor,
     state.showCompletionBanner,
-    setIsGeneratingLicensePlate,
-    showCompletion,
   ]);
+
+  // Function to set current word
+  const setCurrentWord = (word: string) => {
+    dispatch({ type: "SET_WORD", payload: word });
+  };
 
   // Function to submit the current word
   const submitWord = () => {
@@ -401,6 +409,7 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
         setPlayerGender,
         setSelectedCarColor,
         setIsGeneratingLicensePlate,
+        setCurrentWord
       }}
     >
       {children}
