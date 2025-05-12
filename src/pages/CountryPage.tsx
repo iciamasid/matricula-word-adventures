@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -7,6 +8,7 @@ import { GameProvider } from "@/context/GameContext";
 import CountryPageIcons from "@/components/CountryPageIcons";
 import WorldMap from "@/components/WorldMap";
 import { useLanguage } from "@/context/LanguageContext";
+import Globe from "@/components/Globe";
 
 // Simplified CountryPage without MusicPlayer
 const CountryPageWrapper = () => {
@@ -209,6 +211,11 @@ const CountryPageContent = () => {
         }} transition={{
           duration: 1
         }} />
+          
+          {/* Add interactive rotating globe */}
+          <div className="flex justify-center py-4 bg-blue-50">
+            <Globe country={countryData.name} width={180} height={180} />
+          </div>
           
           {/* Add map to highlight the country */}
           <div className="h-[150px] w-full relative overflow-hidden border-t-2 border-b-2 border-purple-100">

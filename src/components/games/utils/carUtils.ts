@@ -304,3 +304,43 @@ export interface CarColor {
   image: string;
   color: string;
 }
+
+export const loadCarImage = (
+  canvas: fabric.Canvas,
+  carConfig: CarConfig
+): Promise<fabric.Image> => {
+  return new Promise((resolve, reject) => {
+    try {
+      const carImageUrl = getCarImageUrl(carConfig.color);
+      
+      // Use the proper callback approach for Fabric.js v6
+      fabric.Image.fromURL(
+        carImageUrl,
+        (img) => {
+          if (!img) {
+            reject(new Error("Failed to load car image"));
+            return;
+          }
+          
+          const scale = carConfig.size / Math.max(img.width || 1, img.height || 1);
+          img.scale(scale);
+          
+          // Set position
+          img.set({
+            left: carConfig.position.x,
+            top: carConfig.position.y,
+            originX: 'center',
+            originY: 'center',
+            angle: carConfig.rotation,
+            selectable: false,
+          });
+          
+          canvas.add(img);
+          resolve(img);
+        }
+      );
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
