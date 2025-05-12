@@ -39,9 +39,6 @@ const LicensePlate: React.FC = () => {
   // Determine if any plate generation animation should be shown
   const showGenerationAnimation = isGeneratingLicensePlate || isAutoGenerating;
   
-  // Slot machine animation for numbers and letters
-  const slotMachineChars = ["7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "X", "Y", "Z"];
-  
   return (
     <motion.div 
       className="w-full" 
@@ -93,54 +90,27 @@ const LicensePlate: React.FC = () => {
       >
         {/* License plate content - numbers and letters with space for the EU flag */}
         <div className="flex items-center justify-center space-x-2">
-          {/* Numbers part with enhanced slot machine effect */}
+          {/* Numbers part with slot machine effect - centered */}
           {numbers.split('').map((number, index) => (
             <motion.div 
               key={`number-${index}`} 
-              className="bg-gray-200 w-9 h-12 rounded-sm flex items-center justify-center shadow-inner overflow-hidden"
+              className="bg-gray-200 w-9 h-12 rounded-sm flex items-center justify-center shadow-inner"
               initial={{ rotateX: 180, opacity: 0 }}
               animate={{ 
                 rotateX: showGenerationAnimation ? [0, 180] : 0, 
                 opacity: 1 
               }}
               transition={{ 
-                delay: showGenerationAnimation ? index * 0.2 : index * 0.4, 
+                delay: showGenerationAnimation ? index * 0.5 : index * 0.4, 
                 duration: showGenerationAnimation ? 2.5 : 0.8,
                 repeat: showGenerationAnimation ? 1 : 0,
                 type: "spring",
                 stiffness: 80
               }}
             >
-              {showGenerationAnimation ? (
-                <motion.div
-                  className="flex flex-col"
-                  animate={{
-                    y: [-400, 0],
-                    transition: {
-                      duration: 2.8,
-                      delay: index * 0.15,
-                      ease: [0.8, 0.2, 0.2, 1]
-                    }
-                  }}
-                >
-                  {/* Show rapid changing characters for slot machine effect */}
-                  {slotMachineChars.map((char, charIndex) => (
-                    <span 
-                      key={charIndex} 
-                      className="text-black text-3xl kids-text font-normal h-12 flex items-center justify-center"
-                    >
-                      {char}
-                    </span>
-                  ))}
-                  <span className="text-black text-3xl kids-text font-normal h-12 flex items-center justify-center">
-                    {number}
-                  </span>
-                </motion.div>
-              ) : (
-                <span className="text-black text-3xl kids-text font-normal">
-                  {number}
-                </span>
-              )}
+              <span className="text-black text-3xl kids-text font-normal">
+                {showGenerationAnimation && index === 0 ? "?" : number}
+              </span>
             </motion.div>
           ))}
           
@@ -149,11 +119,11 @@ const LicensePlate: React.FC = () => {
             <span className="text-gray-700 text-2xl kids-text font-normal">-</span>
           </div>
           
-          {/* Consonants with enhanced slot machine effect */}
+          {/* Consonants with slot machine effect */}
           {consonantsArray.map((consonant, index) => (
             <motion.div 
               key={`consonant-${index}`} 
-              className={`${CONSONANT_COLORS[index]} w-9 h-12 rounded-sm flex items-center justify-center shadow-inner overflow-hidden`}
+              className={`${CONSONANT_COLORS[index]} w-9 h-12 rounded-sm flex items-center justify-center shadow-inner`}
               initial={{ rotateY: 180, opacity: 0 }}
               animate={{ 
                 rotateY: showGenerationAnimation ? [0, 180] : 0, 
@@ -168,36 +138,9 @@ const LicensePlate: React.FC = () => {
               }}
               whileHover={{ scale: 1.1 }}
             >
-              {showGenerationAnimation ? (
-                <motion.div
-                  className="flex flex-col"
-                  animate={{
-                    y: [-400, 0],
-                    transition: {
-                      duration: 2.5,
-                      delay: 2 + index * 0.2,
-                      ease: [0.8, 0.2, 0.2, 1]
-                    }
-                  }}
-                >
-                  {/* Show changing letters for slot machine effect */}
-                  {["B", "C", "D", "F", "G", "H", "J", "K", "L", "M", "N", "P"].map((char, charIndex) => (
-                    <span 
-                      key={charIndex} 
-                      className="text-white text-3xl kids-text font-normal h-12 flex items-center justify-center"
-                    >
-                      {char}
-                    </span>
-                  ))}
-                  <span className="text-white text-3xl kids-text font-normal h-12 flex items-center justify-center">
-                    {consonant}
-                  </span>
-                </motion.div>
-              ) : (
-                <span className="text-white text-3xl kids-text font-normal">
-                  {consonant}
-                </span>
-              )}
+              <span className="text-white text-3xl kids-text font-normal">
+                {showGenerationAnimation ? "?" : consonant}
+              </span>
             </motion.div>
           ))}
         </div>
