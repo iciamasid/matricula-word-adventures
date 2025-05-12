@@ -183,6 +183,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isGeneratingLicensePlate, setIsGeneratingLicensePlate] = useState(false);
   const [selectedCarColor, setSelectedCarColor] = useState<CarColor | null>(null);
   
+  // Add success state variables
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [successPoints, setSuccessPoints] = useState(0);
+  const [successExplanation, setSuccessExplanation] = useState<string | null>(null);
+  
   // Add the missing state variables that were causing the error
   const [prevLevel, setPrevLevel] = useState(0);
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -437,6 +442,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setErrorMessage(null);
   };
   
+  // Clear success message function
+  const clearSuccess = () => {
+    setSuccessMessage(null);
+    setSuccessPoints(0);
+    setSuccessExplanation(null);
+  };
+  
   // Submit the current word - UPDATED for success messages
   const submitWord = () => {
     if (currentWord.length < 3) {
@@ -582,29 +594,9 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return explanation;
   };
   
-  const clearSuccess = () => {
-    setSuccessMessage(null);
-    setSuccessPoints(0);
-    setSuccessExplanation(null);
-  };
-  
-  // Shuffle the consonants to help the player
-  const shuffleConsonants = () => {
-    const array = [...plateConsonants];
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array.join("");
-  };
-  
   return (
     <GameContext.Provider
       value={{
-        successMessage,
-        successPoints,
-        successExplanation,
-        clearSuccess,
         licensePlate,
         plateConsonants,
         currentWord,
@@ -626,13 +618,16 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         showCompletionBanner,
         isGeneratingLicensePlate,
         selectedCarColor,
+        successMessage,
+        successPoints,
+        successExplanation,
         generateNewPlate,
         setCurrentWord,
         submitWord,
         shuffleConsonants,
         clearError,
+        clearSuccess,
         closeBonusPopup,
-        closeAgeBonusPopup,
         closeCompletionBanner,
         resetGame,
         setPlayerName: (name: string) => setPlayerName(name),
