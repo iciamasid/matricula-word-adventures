@@ -1,15 +1,13 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
-import { Plus, Star, Loader2 } from "lucide-react";
+import { Plus, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
 
 const NewGameButton: React.FC = () => {
   const {
     generateNewPlate,
-    gamesPlayed,
     showBonusPopup,
     showAgeBonusPopup,
     showCompletionBanner,
@@ -50,7 +48,6 @@ const NewGameButton: React.FC = () => {
 
   // Determine gradient colors based on language
   const buttonGradient = isEnglish ? "from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800" : "from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800";
-  const starColor = isEnglish ? "text-orange-400" : "text-game-yellow";
   
   return (
     <motion.div 
@@ -134,11 +131,6 @@ const NewGameButton: React.FC = () => {
           </span>
         </div>
       </Button>
-      
-      <div className="flex items-center justify-center text-xs text-gray-500">
-        <Star className={`w-3 h-3 mr-1 ${starColor}`} />
-        <span>{gamesPlayed} {t("games_played")}</span>
-      </div>
     </motion.div>
   );
 };
