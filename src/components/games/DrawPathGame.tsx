@@ -1,128 +1,196 @@
 
-// This file is read-only, so we can't directly modify it.
-// Instead, let's modify the GameStatusIndicators component to ensure the speed control appears above the car.
-
-<lov-write file_path="src/components/games/GameStatusIndicators.tsx">
-import React from 'react';
-import { Progress } from "@/components/ui/progress";
-import { Trophy, AlertCircle, Globe } from "lucide-react";
-import { motion } from "framer-motion";
+import React, { useState, useRef, useEffect } from 'react';
+import { Button } from "@/components/ui/button";
 import { useLanguage } from '@/context/LanguageContext';
-import SpeedControl from "./SpeedControl";
+import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
+import { usePathAnimation } from './hooks/usePathAnimation';
+import { Point } from './utils/pathUtils';
+import { CarObject } from './utils/carUtils';
+import { Play, PenLine, RotateCcw } from "lucide-react";
+import GameStatusIndicators from './GameStatusIndicators';
 
-interface GameStatusIndicatorsProps {
-  isInitializing: boolean;
-  canvasReady: boolean;
-  isDrawing: boolean;
-  isPlaying: boolean;
-  animationProgress: number;
-  interpolatedPathLength: number;
-  animationCompleted: boolean;
-  onSpeedChange?: (value: number[]) => void;
-  isPlayDisabled?: boolean;
+interface DrawPathGameProps {
+  onError: (message: string) => void;
+  onHelp?: () => void;
 }
 
-const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
-  isInitializing,
-  canvasReady,
-  isDrawing,
-  isPlaying,
-  animationProgress,
-  interpolatedPathLength,
-  animationCompleted,
-  onSpeedChange,
-  isPlayDisabled
-}) => {
-  const { isEnglish, t } = useLanguage();
+const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
+  const { t, isEnglish } = useLanguage();
+  
+  // Refs for canvas elements
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  // Game state
+  const [isDrawing, setIsDrawing] = useState<boolean>(false);
+  const [path, setPath] = useState<Point[]>([]);
+  const [isPlayDisabled, setIsPlayDisabled] = useState<boolean>(true);
+  
+  // Canvas hook
+  const {
+    fabricCanvas,
+    startPointObj,
+    endPointObj,
+    isInitializing,
+    canvasReady,
+    carObjectsRef
+  } = useDrawPathCanvas({
+    canvasRef,
+    containerRef,
+    onPathCreated: (points) => {
+      console.log("Path created with", points.length, "points");
+      setPath(points);
+      setIsDrawing(false);
+      setIsPlayDisabled(false);
+    },
+    onError
+  });
+  
+  // Animation hook
+  const {
+    isPlaying,
+    setIsPlaying,
+    animationCompleted,
+    animationProgress,
+    interpolatedPath,
+    updatePath,
+    moveCar,
+    cancelAnimation,
+    setAnimationSpeed
+  } = usePathAnimation({
+    fabricCanvas,
+    path: path,
+    startPointObj,
+    endPointObj,
+  });
+  
+  // Process path points when path changes
+  useEffect(() => {
+    if (path.length > 0) {
+      console.log("Processing path with", path.length, "points");
+      updatePath(path);
+    }
+  }, [path, updatePath]);
+  
+  // Handle play/pause button click
+  const handlePlayClick = () => {
+    if (path.length === 0 || !fabricCanvas) {
+      onError(t('no_path_error'));
+      return;
+    }
+    
+    setIsPlaying(true);
+    setIsPlayDisabled(true);
+    
+    // Small delay to allow UI updates before animation starts
+    setTimeout(() => {
+      // Start animation at index 0
+      moveCar(0);
+    }, 100);
+  };
+  
+  // Handle draw button click
+  const handleDrawClick = () => {
+    if (!fabricCanvas) return;
+    
+    // Reset game state
+    setIsDrawing(true);
+    setPath([]);
+    setIsPlaying(false);
+    setIsPlayDisabled(true);
+    
+    // Cancel any ongoing animations
+    cancelAnimation();
+    
+    // Enable drawing mode
+    fabricCanvas.isDrawingMode = true;
+  };
+  
+  // Handle clear button click
+  const handleClearClick = () => {
+    if (!fabricCanvas) return;
+    
+    // Cancel animation and reset state
+    cancelAnimation();
+    setIsDrawing(false);
+    setIsPlaying(false);
+    setPath([]);
+    setIsPlayDisabled(true);
+    
+    // Clear canvas and disable drawing mode
+    fabricCanvas.isDrawingMode = false;
+    fabricCanvas.clear();
+    
+    // Re-add car and starting point
+    if (startPointObj && carObjectsRef.current) {
+      const car = carObjectsRef.current;
+      fabricCanvas.add(startPointObj);
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
+      fabricCanvas.renderAll();
+    }
+  };
+  
+  // Handle animation speed change
+  const handleSpeedChange = (value: number[]) => {
+    if (value.length > 0) {
+      // Convert slider value to animation speed
+      const speedValue = value[0];
+      setAnimationSpeed(speedValue);
+    }
+  };
   
   return (
-    <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4">
-      {/* Loading indicator */}
-      {isInitializing && (
-        <motion.div 
-          className="text-center p-3 bg-purple-100 rounded-lg shadow-md animate-pulse mb-4"
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-        >
-          <div className="flex items-center justify-center gap-2">
-            <div className="w-8 h-8 border-4 border-purple-800 border-t-transparent rounded-full animate-spin"></div>
-            <p className="font-bold text-purple-800 kids-text text-xl">
-              {isEnglish ? "Loading..." : "Cargando..."}
-            </p>
-          </div>
-        </motion.div>
-      )}
+    <div className="flex flex-col gap-3 w-full">
+      <GameStatusIndicators 
+        isInitializing={isInitializing}
+        canvasReady={canvasReady}
+        isDrawing={isDrawing}
+        isPlaying={isPlaying}
+        animationProgress={animationProgress}
+        interpolatedPathLength={interpolatedPath.length}
+        animationCompleted={animationCompleted}
+        onSpeedChange={handleSpeedChange}
+        isPlayDisabled={isPlayDisabled}
+      />
       
-      {/* Canvas state indicator */}
-      {!canvasReady && !isInitializing && (
-        <div className="text-center p-3 bg-red-100 rounded-lg border-2 border-red-300 shadow-md mb-4">
-          <div className="flex items-center justify-center gap-2">
-            <AlertCircle className="w-7 h-7 text-red-600" />
-            <p className="font-bold text-red-600 kids-text text-lg">
-              {isEnglish ? "Oops! The game couldn't load 🙁" : "¡Ups! No se pudo cargar el juego 🙁"}
-            </p>
-          </div>
-        </div>
-      )}
+      <div 
+        ref={containerRef} 
+        className="relative bg-white rounded-lg shadow-lg overflow-hidden w-full"
+        style={{ minHeight: '300px' }}
+      >
+        <canvas ref={canvasRef} className="w-full" style={{ touchAction: 'none' }} />
+      </div>
       
-      {/* Active drawing instructions */}
-      {isDrawing && canvasReady && (
-        <motion.div 
-          className="text-center p-3 bg-green-100 rounded-lg border-2 border-green-300 shadow-md mb-4"
-          animate={{ 
-            scale: [1, 1.03, 1],
-            transition: { repeat: Infinity, duration: 1.5 }
-          }}
+      <div className="flex flex-wrap gap-3 justify-center mt-2">
+        <Button 
+          onClick={handleDrawClick}
+          className={`${isDrawing ? 'bg-purple-700 hover:bg-purple-800' : 'bg-purple-600 hover:bg-purple-700'} text-white px-6 py-6`}
+          disabled={isInitializing || isPlaying}
         >
-          <div className="flex items-center justify-center gap-2">
-            <span role="img" aria-label="pencil" className="text-2xl">✏️</span>
-            <p className="font-bold text-green-700 kids-text text-xl">
-              {isEnglish ? "Draw a path for the car!" : "¡Dibuja un camino para el coche!"}
-            </p>
-          </div>
-        </motion.div>
-      )}
-      
-      {/* Speed Control - Moved here, before the animation completion message */}
-      {isPlaying && onSpeedChange && (
-        <motion.div 
-          className="mb-4"
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
+          <PenLine className="mr-2 h-5 w-5" />
+          <span className="text-xl kids-text">{t('draw')}</span>
+        </Button>
+        
+        <Button 
+          onClick={handlePlayClick}
+          className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-6"
+          disabled={isInitializing || isDrawing || path.length === 0 || isPlaying || isPlayDisabled}
         >
-          <SpeedControl 
-            disabled={isPlayDisabled} 
-            onValueChange={onSpeedChange}
-          />
-        </motion.div>
-      )}
-      
-      {/* Animation completion message */}
-      {animationCompleted && (
-        <motion.div 
-          className="text-center p-3 bg-yellow-100 rounded-lg border-2 border-yellow-300 shadow-md mb-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          <Play className="mr-2 h-5 w-5" />
+          <span className="text-xl kids-text">{t('drive')}</span>
+        </Button>
+        
+        <Button 
+          onClick={handleClearClick}
+          className="bg-rose-600 hover:bg-rose-700 text-white px-6 py-6"
+          disabled={isInitializing}
         >
-          <div className="flex items-center justify-center gap-2">
-            <motion.div
-              animate={{
-                rotate: [0, 360],
-                transition: { repeat: Infinity, duration: 8, ease: "linear" }
-              }}
-              className="inline-block"
-            >
-              <Globe className="w-7 h-7 text-blue-600" />
-            </motion.div>
-            <p className="font-bold text-yellow-700 kids-text text-xl">
-              {isEnglish ? "You've reached the destination! 🎉" : "¡Has llegado a la meta! 🎉"}
-            </p>
-          </div>
-        </motion.div>
-      )}
+          <RotateCcw className="mr-2 h-5 w-5" />
+          <span className="text-xl kids-text">{t('clear')}</span>
+        </Button>
+      </div>
     </div>
   );
 };
 
-export default GameStatusIndicators;
+export default DrawPathGame;
