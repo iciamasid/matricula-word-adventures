@@ -305,6 +305,29 @@ export interface CarColor {
   color: string;
 }
 
+// Add the missing CarConfig interface
+export interface CarConfig {
+  position: { x: number; y: number };
+  rotation: number;
+  color: string;
+  size: number;
+}
+
+// Function to get car image URL based on color
+const getCarImageUrl = (color: string): string => {
+  // Default car image URL
+  let imageUrl = '/lovable-uploads/cocherojo.png';
+  
+  // Select image based on color
+  if (color === 'bg-yellow-500' || color === '#F1C40F') {
+    imageUrl = '/lovable-uploads/cocheamarillo.png';
+  } else if (color === 'bg-blue-500' || color === '#33C3F0') {
+    imageUrl = '/lovable-uploads/cocheazul.png';
+  }
+  
+  return imageUrl;
+};
+
 export const loadCarImage = (
   canvas: fabric.Canvas,
   carConfig: CarConfig

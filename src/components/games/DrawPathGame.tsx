@@ -211,9 +211,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
-        // Fix type comparison by using instanceof instead of direct equality
-        if ((obj instanceof Rect && obj !== startPointObj && obj !== endPointObj) || 
-            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10) ||
+        // Fix the type comparison using instanceof
+        if ((obj instanceof Rect && !(startPointObj instanceof Rect && obj === startPointObj) && !(endPointObj instanceof Rect && obj === endPointObj)) || 
+            (obj instanceof Circle && !(startPointObj instanceof Circle && obj === startPointObj) && !(endPointObj instanceof Circle && obj === endPointObj) && obj.radius !== 10) ||
             (obj instanceof Polygon)) {
           fabricCanvas.remove(obj);
         }
