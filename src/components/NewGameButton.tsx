@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
 import { Plus, Star, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
-import { useNavigate } from "react-router-dom";
 
 const NewGameButton: React.FC = () => {
   const {
@@ -14,13 +12,11 @@ const NewGameButton: React.FC = () => {
     showBonusPopup,
     showAgeBonusPopup,
     showCompletionBanner,
-    setIsGeneratingLicensePlate,
-    level
+    setIsGeneratingLicensePlate
   } = useGame();
   const [isAnimating, setIsAnimating] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const { t, isEnglish } = useLanguage();
-  const navigate = useNavigate();
 
   // Check if any popups are open
   const popupsOpen = showBonusPopup || showAgeBonusPopup || showCompletionBanner;
@@ -37,15 +33,6 @@ const NewGameButton: React.FC = () => {
 
     // Signal that we're starting the license plate generation
     setIsGeneratingLicensePlate(true);
-
-    // If level is 5 or above, redirect to draw game
-    if (level >= 5) {
-      // Redirect to the draw game page
-      setTimeout(() => {
-        navigate("/draw-game");
-      }, 1000);
-      return;
-    }
 
     // Trigger plate generation but with a 3 second delay for the animation
     setTimeout(() => {

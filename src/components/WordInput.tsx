@@ -13,6 +13,7 @@ const WordInput: React.FC = () => {
     currentWord,
     setCurrentWord,
     submitWord,
+    generateNewPlate,
     plateConsonants,
   } = useGame();
   
@@ -103,6 +104,11 @@ const WordInput: React.FC = () => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSubmit();
+      
+      // Generate a new plate after submission
+      setTimeout(() => {
+        generateNewPlate();
+      }, 3000); // Wait a bit to show the result before generating a new plate
     }
   };
   

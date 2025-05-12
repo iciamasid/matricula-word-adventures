@@ -77,7 +77,7 @@ const LicensePlate: React.FC = () => {
               className="bg-gray-200 w-9 h-12 rounded-sm flex items-center justify-center shadow-inner"
               initial={{ rotateX: 180, opacity: 0 }}
               animate={{ 
-                rotateX: isGeneratingLicensePlate ? [180, 0, 180, 0, 180, 0] : 0, 
+                rotateX: isGeneratingLicensePlate ? [0, 180] : 0, 
                 opacity: 1 
               }}
               transition={{ 
@@ -106,7 +106,7 @@ const LicensePlate: React.FC = () => {
               className={`${CONSONANT_COLORS[index]} w-9 h-12 rounded-sm flex items-center justify-center shadow-inner`}
               initial={{ rotateY: 180, opacity: 0 }}
               animate={{ 
-                rotateY: isGeneratingLicensePlate ? [180, 0, 180, 0, 180, 0] : 0, 
+                rotateY: isGeneratingLicensePlate ? [0, 180] : 0, 
                 opacity: 1 
               }}
               transition={{ 
