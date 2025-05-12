@@ -10,6 +10,30 @@ import WorldMap from "@/components/WorldMap";
 import { useLanguage } from "@/context/LanguageContext";
 import Globe from "@/components/Globe";
 
+// Mapeo de países a imágenes de coches
+const countryCarImages: Record<string, string> = {
+  "españa": "/lovable-uploads/d3bd9703-2e29-4af9-af2b-f8d16f238978.png",
+  "spain": "/lovable-uploads/d3bd9703-2e29-4af9-af2b-f8d16f238978.png",
+  "francia": "/lovable-uploads/66c85642-bc5d-4807-bca2-64fe13a83715.png",
+  "france": "/lovable-uploads/66c85642-bc5d-4807-bca2-64fe13a83715.png",
+  "italia": "/lovable-uploads/66b6a02d-4b44-488f-9fa0-78eabbdaea18.png",
+  "italy": "/lovable-uploads/66b6a02d-4b44-488f-9fa0-78eabbdaea18.png",
+  "rusia": "/lovable-uploads/fbb92d8d-dc08-4b45-b7fa-bf946ff7f4bd.png",
+  "russia": "/lovable-uploads/fbb92d8d-dc08-4b45-b7fa-bf946ff7f4bd.png",
+  "japón": "/lovable-uploads/e53c195d-31ca-48a5-bb35-e24808c7117e.png",
+  "japon": "/lovable-uploads/e53c195d-31ca-48a5-bb35-e24808c7117e.png",
+  "japan": "/lovable-uploads/e53c195d-31ca-48a5-bb35-e24808c7117e.png",
+  "estados unidos": "/lovable-uploads/c323f59e-019c-43e4-a911-40d2050e9ff4.png",
+  "eeuu": "/lovable-uploads/c323f59e-019c-43e4-a911-40d2050e9ff4.png",
+  "usa": "/lovable-uploads/c323f59e-019c-43e4-a911-40d2050e9ff4.png",
+  "united states": "/lovable-uploads/c323f59e-019c-43e4-a911-40d2050e9ff4.png",
+  "méjico": "/lovable-uploads/73b24a95-9cb2-4d59-8119-e1fdcb80eb9a.png",
+  "mexico": "/lovable-uploads/73b24a95-9cb2-4d59-8119-e1fdcb80eb9a.png",
+  "australia": "/lovable-uploads/d91da726-b9eb-4678-be82-3b98f2a3879b.png",
+  "perú": "/lovable-uploads/fe57e8ab-1135-49e0-9afb-5453840f4c71.png",
+  "peru": "/lovable-uploads/fe57e8ab-1135-49e0-9afb-5453840f4c71.png",
+};
+
 // Simplified CountryPage without MusicPlayer
 const CountryPageWrapper = () => {
   return <GameProvider>
@@ -187,6 +211,12 @@ const CountryPageContent = () => {
   };
   const countryData = getCountryData();
 
+  // Obtener la imagen del coche correspondiente al país actual
+  const getCarImage = () => {
+    const countryKey = country?.toLowerCase() || "";
+    return countryCarImages[countryKey] || null;
+  };
+
   // Create a single-country array for highlighting in the map
   const unlockedCountries = [countryData.name];
   return <div className="min-h-screen bg-gradient-to-b from-purple-100 to-blue-100 p-4">
@@ -211,6 +241,22 @@ const CountryPageContent = () => {
         }} transition={{
           duration: 1
         }} />
+          
+          {/* Añadir imagen de coche debajo de la imagen principal */}
+          {getCarImage() && (
+            <motion.div 
+              className="flex justify-center py-4 bg-blue-50"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <img 
+                src={getCarImage()} 
+                alt={`Coche de ${countryData.name}`} 
+                className="h-32 object-contain"
+              />
+            </motion.div>
+          )}
           
           {/* Add interactive rotating globe */}
           <div className="flex justify-center py-4 bg-blue-50">
