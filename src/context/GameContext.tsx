@@ -428,6 +428,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setShowCompletionBanner(false);
   };
   
+  // Add this function to clear the submit success message
+  const clearSubmitSuccess = () => {
+    setSubmitSuccess(null);
+  };
+  
   // Generate random consonants for 6666 bonus plates
   const generateRandomConsonants = () => {
     const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
