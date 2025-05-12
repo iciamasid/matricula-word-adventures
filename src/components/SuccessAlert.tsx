@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
 
