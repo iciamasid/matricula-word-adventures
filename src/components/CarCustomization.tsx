@@ -17,8 +17,8 @@ const CarCustomization: React.FC = () => {
 
   const carOptions: CarOption[] = [
     { id: "1", name: "Coche Amarillo", image: "coche_portada.gif", color: "bg-yellow-500" },
-    { id: "2", name: "Coche Azul", image: "55d31004-3935-400c-86ab-109ede58bb78.png", color: "bg-blue-500" },
-    { id: "3", name: "Coche Rojo", image: "920a075c-83b6-41bc-9e96-fa17fa3cef19.png", color: "bg-red-500" },
+    { id: "2", name: "Coche Azul", image: "cocheazul.png", color: "bg-blue-500" },
+    { id: "3", name: "Coche Rojo", image: "cocherojo.png", color: "bg-red-500" },
   ];
 
   return (
