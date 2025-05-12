@@ -5,7 +5,6 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
 import { Point } from './utils/pathUtils';
-import { CarObject } from './utils/carUtils';
 import { Play, PenLine, RotateCcw } from "lucide-react";
 import GameStatusIndicators from './GameStatusIndicators';
 
