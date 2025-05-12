@@ -204,7 +204,7 @@ const GameContent = () => {
                   </motion.p>
                   <p className={`text-sm ${textColorLight} kids-text`}>{t("origin")}</p>
                   <Link to={`/country/${originInfo.country}`} onClick={handleNavigation}>
-                    <Button className="bg-purple-800 hover:bg-purple-700 text-xl py-[10px] font-normal text-slate-50">
+                    <Button className="bg-purple-800 hover:bg-purple-700 py-[10px] text-slate-50 font-extralight text-base">
                       {t("learn_about")} {originInfo.country}
                     </Button>
                   </Link>
