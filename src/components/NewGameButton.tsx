@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
-import { Joystick, Star } from "lucide-react";
+import { Plus, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 const NewGameButton: React.FC = () => {
@@ -23,35 +23,15 @@ const NewGameButton: React.FC = () => {
     >
       <Button
         onClick={handleClick}
-        className={`px-4 py-6 w-full ${isAnimating ? "animate-bounce" : ""}`}
-        style={{
-          background: "linear-gradient(to bottom, #8B5CF6 0%, #6E59A5 100%)",
-          boxShadow: "0 4px 0 #4C1D95",
-          borderRadius: "12px",
-          border: "2px solid #9b87f5"
-        }}
+        className={`px-4 py-4 bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 w-full ${isAnimating ? "animate-bounce" : ""}`}
       >
-        <div className="flex items-center justify-center space-x-2">
-          <motion.div
-            animate={{
-              rotate: isAnimating ? [0, 15, -15, 0] : 0,
-            }}
-            transition={{ duration: 0.5, repeat: isAnimating ? 2 : 0 }}
-          >
-            <Joystick className="mr-2 h-6 w-6 text-yellow-300" />
-          </motion.div>
-          <span className="text-xl font-bold kids-text">Nueva Matrícula</span>
-        </div>
+        <Plus className="mr-2 h-4 w-4" /> Matrículas
       </Button>
-
-      <motion.div 
-        className="flex items-center justify-center text-sm text-gray-500"
-        initial={{ opacity: 0.6 }}
-        whileHover={{ opacity: 1, scale: 1.05 }}
-      >
-        <Star className="w-4 h-4 mr-1 text-game-yellow" fill="gold" />
-        <span className="kids-text">{gamesPlayed} partidas jugadas</span>
-      </motion.div>
+      
+      <div className="flex items-center justify-center text-xs text-gray-500">
+        <Star className="w-3 h-3 mr-1 text-game-yellow" />
+        <span>{gamesPlayed} partidas jugadas</span>
+      </div>
     </motion.div>
   );
 };
