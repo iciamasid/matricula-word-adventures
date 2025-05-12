@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
 
@@ -8,25 +8,8 @@ const LicensePlate: React.FC = () => {
     licensePlate,
     plateConsonants,
     isGeneratingLicensePlate,
-    selectedCarColor,
-    submitSuccess
+    selectedCarColor
   } = useGame();
-  
-  // Add state to track if we're generating from auto-submit
-  const [isAutoGenerating, setIsAutoGenerating] = useState(false);
-  
-  // Monitor submitSuccess to trigger auto-generation animations
-  useEffect(() => {
-    if (submitSuccess) {
-      setIsAutoGenerating(true);
-      // Reset after animation completes
-      const timer = setTimeout(() => {
-        setIsAutoGenerating(false);
-      }, 4000); // Slightly longer than the 3s delay for generateNewPlate
-      
-      return () => clearTimeout(timer);
-    }
-  }, [submitSuccess]);
   
   const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
 
@@ -35,9 +18,6 @@ const LicensePlate: React.FC = () => {
 
   // Ensure plateConsonants is treated as a string and safely convert to array
   const consonantsArray = typeof plateConsonants === 'string' ? plateConsonants.split('') : [];
-  
-  // Determine if any plate generation animation should be shown
-  const showGenerationAnimation = isGeneratingLicensePlate || isAutoGenerating;
   
   return (
     <motion.div 
@@ -97,19 +77,19 @@ const LicensePlate: React.FC = () => {
               className="bg-gray-200 w-9 h-12 rounded-sm flex items-center justify-center shadow-inner"
               initial={{ rotateX: 180, opacity: 0 }}
               animate={{ 
-                rotateX: showGenerationAnimation ? [0, 180] : 0, 
+                rotateX: isGeneratingLicensePlate ? [0, 180] : 0, 
                 opacity: 1 
               }}
               transition={{ 
-                delay: showGenerationAnimation ? index * 0.5 : index * 0.4, 
-                duration: showGenerationAnimation ? 2.5 : 0.8,
-                repeat: showGenerationAnimation ? 1 : 0,
+                delay: isGeneratingLicensePlate ? index * 0.5 : index * 0.4, 
+                duration: isGeneratingLicensePlate ? 2.5 : 0.8,
+                repeat: isGeneratingLicensePlate ? 1 : 0,
                 type: "spring",
                 stiffness: 80
               }}
             >
               <span className="text-black text-3xl kids-text font-normal">
-                {showGenerationAnimation && index === 0 ? "?" : number}
+                {isGeneratingLicensePlate && index === 0 ? "?" : number}
               </span>
             </motion.div>
           ))}
@@ -126,20 +106,20 @@ const LicensePlate: React.FC = () => {
               className={`${CONSONANT_COLORS[index]} w-9 h-12 rounded-sm flex items-center justify-center shadow-inner`}
               initial={{ rotateY: 180, opacity: 0 }}
               animate={{ 
-                rotateY: showGenerationAnimation ? [0, 180] : 0, 
+                rotateY: isGeneratingLicensePlate ? [0, 180] : 0, 
                 opacity: 1 
               }}
               transition={{ 
-                delay: showGenerationAnimation ? 2 + index * 0.3 : 1.6 + index * 0.5,
-                duration: showGenerationAnimation ? 1 : 0.7,
-                repeat: showGenerationAnimation ? 2 : 0,
+                delay: isGeneratingLicensePlate ? 2 + index * 0.3 : 1.6 + index * 0.5,
+                duration: isGeneratingLicensePlate ? 1 : 0.7,
+                repeat: isGeneratingLicensePlate ? 2 : 0,
                 type: "spring",
                 stiffness: 70
               }}
               whileHover={{ scale: 1.1 }}
             >
               <span className="text-white text-3xl kids-text font-normal">
-                {showGenerationAnimation ? "?" : consonant}
+                {isGeneratingLicensePlate ? "?" : consonant}
               </span>
             </motion.div>
           ))}

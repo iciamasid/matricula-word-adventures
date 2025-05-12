@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
@@ -13,17 +12,16 @@ const NewGameButton: React.FC = () => {
     showBonusPopup,
     showAgeBonusPopup,
     showCompletionBanner,
-    setIsGeneratingLicensePlate,
-    submitSuccess
+    setIsGeneratingLicensePlate
   } = useGame();
   const [isAnimating, setIsAnimating] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const { t, isEnglish } = useLanguage();
 
-  // Check if any popups are open or if we're in the process of auto-generating after submission
-  const popupsOpen = showBonusPopup || showAgeBonusPopup || showCompletionBanner || submitSuccess;
+  // Check if any popups are open
+  const popupsOpen = showBonusPopup || showAgeBonusPopup || showCompletionBanner;
 
-  // Disable button when popups are open or during auto-generation
+  // Disable button when popups are open
   useEffect(() => {
     setButtonDisabled(popupsOpen);
   }, [popupsOpen]);
@@ -34,12 +32,10 @@ const NewGameButton: React.FC = () => {
     setButtonDisabled(true);
 
     // Signal that we're starting the license plate generation
-    // Ensure we're passing a boolean value (true) to the state setter
     setIsGeneratingLicensePlate(true);
 
     // Trigger plate generation but with a 3 second delay for the animation
     setTimeout(() => {
-      console.log("Generating new plate from button click");
       generateNewPlate();
       setButtonDisabled(false);
 

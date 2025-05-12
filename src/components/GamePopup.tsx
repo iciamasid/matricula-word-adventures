@@ -40,7 +40,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
       }));
       setStars(newStars);
       
-      // Auto-close after 2 seconds 
+      // Auto-close after 2 seconds (shortened from 3)
       const timer = setTimeout(() => {
         handleClose();
       }, 2000);
@@ -51,11 +51,9 @@ const GamePopup: React.FC<GamePopupProps> = ({
   
   // Handle proper closing with animation
   const handleClose = () => {
-    console.log("GamePopup closing");
     setIsVisible(false);
     // Wait for exit animation to finish before calling onClose
     setTimeout(() => {
-      console.log("GamePopup calling onClose");
       onClose();
     }, 300);
   };
