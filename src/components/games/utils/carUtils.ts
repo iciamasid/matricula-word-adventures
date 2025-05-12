@@ -1,4 +1,5 @@
-import { Canvas as FabricCanvas, Circle, Rect, Polygon, Shadow, Image } from 'fabric';
+
+import { Circle, Rect, Polygon, Shadow } from 'fabric';
 
 // Create a more detailed car object using Fabric.js shapes
 export const createCar = (left: number, top: number, color = '#E74C3C', scale = 1) => {
@@ -304,66 +305,3 @@ export interface CarColor {
   image: string;
   color: string;
 }
-
-// Add the missing CarConfig interface
-export interface CarConfig {
-  position: { x: number; y: number };
-  rotation: number;
-  color: string;
-  size: number;
-}
-
-// Function to get car image URL based on color
-const getCarImageUrl = (color: string): string => {
-  // Default car image URL
-  let imageUrl = '/lovable-uploads/cocherojo.png';
-  
-  // Select image based on color
-  if (color === 'bg-yellow-500' || color === '#F1C40F') {
-    imageUrl = '/lovable-uploads/cocheamarillo.png';
-  } else if (color === 'bg-blue-500' || color === '#33C3F0') {
-    imageUrl = '/lovable-uploads/cocheazul.png';
-  }
-  
-  return imageUrl;
-};
-
-export const loadCarImage = (
-  canvas: FabricCanvas,
-  carConfig: CarConfig
-): Promise<Image> => {
-  return new Promise((resolve, reject) => {
-    try {
-      const carImageUrl = getCarImageUrl(carConfig.color);
-      
-      // Use the proper approach for Fabric.js v6
-      Image.fromURL(
-        carImageUrl,
-        (img) => {
-          if (!img) {
-            reject(new Error("Failed to load car image"));
-            return;
-          }
-          
-          const scale = carConfig.size / Math.max(img.width || 1, img.height || 1);
-          img.scale(scale);
-          
-          // Set position
-          img.set({
-            left: carConfig.position.x,
-            top: carConfig.position.y,
-            originX: 'center',
-            originY: 'center',
-            angle: carConfig.rotation,
-            selectable: false,
-          });
-          
-          canvas.add(img);
-          resolve(img);
-        }
-      );
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
