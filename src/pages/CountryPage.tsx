@@ -236,7 +236,7 @@ const CountryPageContent = () => {
                 </motion.span>
                 {t('about')} {countryData.name}
               </h3>
-              <p className="kids-text text-fuchsia-600 text-lg font-normal">{countryData.description}</p>
+              <p className="kids-text text-fuchsia-600 text-lg font-light">{countryData.description}</p>
             </div>
             
             <CountryPageIcons type="fact">
