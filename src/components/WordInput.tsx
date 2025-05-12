@@ -29,9 +29,14 @@ const WordInput: React.FC = () => {
     }
     
     // Set the full placeholder text based on language
+    // Convert plateConsonants to array if it's a string
+    const consonantsArray = typeof plateConsonants === 'string' 
+      ? plateConsonants.split('') 
+      : plateConsonants;
+    
     const text = isEnglish 
-      ? `WRITE A WORD WITH THESE CONSONANTS: ${plateConsonants.join(', ')}` 
-      : `ESCRIBE UNA PALABRA CON ESTAS CONSONANTES: ${plateConsonants.join(', ')}`;
+      ? `WRITE A WORD WITH THESE CONSONANTS: ${consonantsArray.join(', ')}` 
+      : `ESCRIBE UNA PALABRA CON ESTAS CONSONANTES: ${consonantsArray.join(', ')}`;
     setFullPlaceholder(text);
   }, [plateConsonants, isEnglish]);
   
