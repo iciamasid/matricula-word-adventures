@@ -35,42 +35,48 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     
     return new Promise<any>((resolve) => {
       // Load car image from path
-      FabricImage.fromURL(imagePath, (img) => {
-        if (!img) {
-          console.error("Failed to load car image");
-          resolve(null);
-          return;
+      FabricImage.fromURL(imagePath, {
+        // This fixes TS2559: Using object with callback instead of direct callback
+        onLoad: (img) => {
+          if (!img) {
+            console.error("Failed to load car image");
+            resolve(null);
+            return;
+          }
+          
+          // Scale and position the car image
+          const scaleFactor = 0.15 * scale; // Adjust this based on the actual image size
+          img.scale(scaleFactor);
+          
+          // Position at the center point
+          img.set({
+            left,
+            top,
+            originX: 'center',
+            originY: 'center',
+            selectable: false,
+            // Apply a shadow for a nicer look
+            shadow: new Shadow({
+              color: 'rgba(0,0,0,0.3)',
+              blur: 4 * scale,
+              offsetX: 0,
+              offsetY: 1 * scale
+            })
+          });
+          
+          if (fabricCanvas) {
+            fabricCanvas.add(img);
+            fabricCanvas.renderAll();
+          }
+          
+          resolve(img);
         }
-        
-        // Scale and position the car image
-        const scaleFactor = 0.15 * scale; // Adjust this based on the actual image size
-        img.scale(scaleFactor);
-        
-        // Position at the center point
-        img.set({
-          left,
-          top,
-          originX: 'center',
-          originY: 'center',
-          selectable: false,
-          // Apply a shadow for a nicer look
-          shadow: new Shadow({
-            color: 'rgba(0,0,0,0.3)',
-            blur: 4 * scale,
-            offsetX: 0,
-            offsetY: 1 * scale
-          })
-        });
-        
-        if (fabricCanvas) {
-          fabricCanvas.add(img);
-          fabricCanvas.renderAll();
-        }
-        
-        resolve(img);
       });
     });
   };
+  
+  // Fix for error TS2304: Define carImage variable
+  let carImage: any = null;
   
   // Return an object that matches the CarObject interface structure
   // but uses a single image instead of multiple shapes
@@ -102,11 +108,11 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     doorHandle: { ...placeholder, set: () => {} } as any,
     
     // Add the image property that will actually be used
-    image: null,
+    image: carImage,
     
     // Method to initialize the car image
     initImage: async (fabricCanvas: any) => {
-      const carImage = await createCarImage(fabricCanvas);
+      carImage = await createCarImage(fabricCanvas);
       return carImage;
     }
   };
