@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
@@ -12,6 +11,7 @@ interface GamePopupProps {
   message: string;
   points?: number;
   level?: number;
+  explanation?: string; // Added explanation prop
 }
 
 const GamePopup: React.FC<GamePopupProps> = ({ 
@@ -20,7 +20,8 @@ const GamePopup: React.FC<GamePopupProps> = ({
   type, 
   message, 
   points = 0, 
-  level 
+  level,
+  explanation // Added explanation prop
 }) => {
   const { isEnglish } = useLanguage();
   const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
@@ -139,7 +140,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
               <div className={`bg-gradient-to-br ${colors.from} ${colors.via} ${colors.to} p-6 rounded-2xl border-4 ${colors.border} ${colors.shadow} relative z-10`}>
                 <div className="text-center">
                   <motion.div 
-                    animate={{ scale: [1, 1.2, 1], rotate: [0, 5, 0, -5, 0] }}
+                    animate={{ scale: [1, 1.2, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                     className="flex justify-center items-center mb-4"
                   >
@@ -158,12 +159,24 @@ const GamePopup: React.FC<GamePopupProps> = ({
                   
                   {points !== 0 && (
                     <motion.h3 
-                      className="text-2xl font-bold mb-6 text-yellow-300 kids-text"
+                      className="text-2xl font-bold mb-3 text-yellow-300 kids-text"
                       animate={{ y: [0, -10, 0] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
                       {points > 0 ? `+${points} ${isEnglish ? "POINTS" : "PUNTOS"}` : `${points} ${isEnglish ? "POINTS" : "PUNTOS"}`}
                     </motion.h3>
+                  )}
+                  
+                  {/* New explanation text for kilometers traveled */}
+                  {explanation && (
+                    <motion.div 
+                      className="text-lg font-medium mb-3 text-white kids-text bg-black bg-opacity-20 p-2 rounded-lg"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      {explanation}
+                    </motion.div>
                   )}
                   
                   {level && type === "levelUp" && (
@@ -180,7 +193,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
                           <motion.div
                             key={i}
                             animate={{ 
-                              rotate: [0, 360],
+                              rotate: 360,
                               scale: [1, 1.5, 1]
                             }}
                             transition={{ 
