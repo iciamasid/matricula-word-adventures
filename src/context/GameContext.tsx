@@ -449,6 +449,19 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSuccessExplanation(null);
   };
   
+  // Shuffle the consonants to help the player
+  const shuffleConsonants = () => {
+    if (typeof plateConsonants === 'string') {
+      const array = plateConsonants.split('');
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array.join('');
+    }
+    return '';
+  };
+  
   // Submit the current word - UPDATED for success messages
   const submitWord = () => {
     if (currentWord.length < 3) {
