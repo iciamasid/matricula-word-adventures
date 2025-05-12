@@ -131,6 +131,7 @@ interface GameContextType {
   isGeneratingLicensePlate: boolean;
   selectedCarColor: CarColor | null;
   submitSuccess: string | null;
+  showLevelUp: boolean;
   
   // Actions
   generateNewPlate: () => void;
@@ -148,6 +149,7 @@ interface GameContextType {
   setIsGeneratingLicensePlate: (isGenerating: boolean) => void;
   setSelectedCarColor: (carColor: CarColor | null) => void;
   clearSubmitSuccess: () => void;
+  clearLevelUpMessage: () => void;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
@@ -237,8 +239,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setDestinationInfo(newDestinationInfo);
       setDestination(newDestinationInfo.city);
       
-      // Only show level-up toast if it's not the initial load and level has actually increased
+      // Only show level-up toast and set showLevelUp if it's not the initial load and level has actually increased
       if (!isInitialLoad.current && newLevel > lastLevel) {
+        setShowLevelUp(true);
+        
         toast({
           title: t("new_level"),
           description: `${t("reached_level")} ${newLevel}. ${t("now_travel")} ${originDestination.city} ${t("to")} ${newDestinationInfo.city}!`,
@@ -433,6 +437,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSubmitSuccess(null);
   };
   
+  // Add this function to clear the level up message
+  const clearLevelUpMessage = () => {
+    setShowLevelUp(false);
+  };
+  
   // Generate random consonants for 6666 bonus plates
   const generateRandomConsonants = () => {
     const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
@@ -556,6 +565,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         isGeneratingLicensePlate,
         selectedCarColor,
         submitSuccess,
+        showLevelUp,
         generateNewPlate,
         setCurrentWord,
         submitWord,
@@ -570,7 +580,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setPlayerGender: (gender: "niño" | "niña") => setPlayerGender(gender),
         setIsGeneratingLicensePlate: (isGenerating: boolean) => setIsGeneratingLicensePlate(isGenerating),
         setSelectedCarColor: (carColor: CarColor | null) => setSelectedCarColor(carColor),
-        clearSubmitSuccess
+        clearSubmitSuccess,
+        clearLevelUpMessage
       }}
     >
       {children}

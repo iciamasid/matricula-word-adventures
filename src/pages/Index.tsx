@@ -4,6 +4,7 @@ import LicensePlate from "@/components/LicensePlate";
 import WordInput from "@/components/WordInput";
 import ErrorAlert from "@/components/ErrorAlert";
 import SuccessAlert from "@/components/SuccessAlert";
+import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Globe, RefreshCw, ArrowRight } from "lucide-react";
@@ -333,6 +334,9 @@ const GameContent = () => {
         
         {/* Success Alert using GamePopup */}
         <SuccessAlert />
+        
+        {/* Level Up Alert using GamePopup */}
+        <LevelUpAlert />
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
