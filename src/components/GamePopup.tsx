@@ -11,7 +11,7 @@ interface GamePopupProps {
   message: string;
   points?: number;
   level?: number;
-  explanation?: string;
+  explanation?: string; // Added explanation prop
 }
 
 const GamePopup: React.FC<GamePopupProps> = ({ 
@@ -21,11 +21,10 @@ const GamePopup: React.FC<GamePopupProps> = ({
   message, 
   points = 0, 
   level,
-  explanation
+  explanation // Added explanation prop
 }) => {
   const { isEnglish } = useLanguage();
   const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
-  const [isClosing, setIsClosing] = useState(false);
   
   // Generate random stars for background animation
   useEffect(() => {
@@ -37,26 +36,15 @@ const GamePopup: React.FC<GamePopupProps> = ({
         delay: Math.random() * 2
       }));
       setStars(newStars);
-      setIsClosing(false);
       
-      // Auto-close after 2 seconds (reduced from 3 seconds)
+      // Auto-close after 3 seconds
       const timer = setTimeout(() => {
-        handleClose();
-      }, 2000);
+        onClose();
+      }, 3000);
       
       return () => clearTimeout(timer);
     }
-  }, [open]);
-  
-  // Handle closing with a small animation delay
-  const handleClose = () => {
-    setIsClosing(true);
-    // Give time for exit animation before actually closing
-    setTimeout(() => {
-      onClose();
-      setIsClosing(false);
-    }, 300);
-  };
+  }, [open, onClose]);
 
   // Define colors and icons based on type
   const getColors = () => {
@@ -111,9 +99,9 @@ const GamePopup: React.FC<GamePopupProps> = ({
   const colors = getColors();
 
   return (
-    <AnimatePresence mode="wait">
-      {open && !isClosing && (
-        <AlertDialog open={open} onOpenChange={() => handleClose()}>
+    <AnimatePresence>
+      {open && (
+        <AlertDialog open={open}>
           <AlertDialogContent className="max-w-sm border-0 p-0 bg-transparent">
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
@@ -169,12 +157,23 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     {message}
                   </motion.h2>
                   
-                  {/* Updated points/kilometers display */}
-                  {explanation && (
-                    <motion.div 
+                  {points !== 0 && (
+                    <motion.h3 
                       className="text-2xl font-bold mb-3 text-yellow-300 kids-text"
                       animate={{ y: [0, -10, 0] }}
                       transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      {points > 0 ? `+${points} ${isEnglish ? "POINTS" : "PUNTOS"}` : `${points} ${isEnglish ? "POINTS" : "PUNTOS"}`}
+                    </motion.h3>
+                  )}
+                  
+                  {/* New explanation text for kilometers traveled */}
+                  {explanation && (
+                    <motion.div 
+                      className="text-lg font-medium mb-3 text-white kids-text bg-black bg-opacity-20 p-2 rounded-lg"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
                     >
                       {explanation}
                     </motion.div>

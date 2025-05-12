@@ -8,10 +8,10 @@ const LevelUpAlert: React.FC = () => {
   const { level, showLevelUp, clearLevelUpMessage } = useGame();
   const { isEnglish } = useLanguage();
   
-  // Create simplified level up message
+  // Create level up explanation based on language
   const explanation = isEnglish 
-    ? `Level ${level}` 
-    : `Nivel ${level}`;
+    ? `You've reached level ${level}! Continue your journey!` 
+    : `¡Has alcanzado el nivel ${level}! ¡Continúa tu viaje!`;
   
   return (
     <GamePopup

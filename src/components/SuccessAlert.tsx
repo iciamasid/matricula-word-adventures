@@ -8,10 +8,13 @@ const SuccessAlert: React.FC = () => {
   const { score, submitSuccess, clearSubmitSuccess } = useGame();
   const { isEnglish } = useLanguage();
   
-  // Create simplified message with just the kilometers (changed from points)
+  // Calculate kilometers based on score (1 point = 1 km)
+  const kilometers = score;
+  
+  // Create explanation message based on language
   const explanation = isEnglish 
-    ? `${score} Kms` 
-    : `${score} Kms`;
+    ? `You've traveled ${kilometers} km towards your destination!` 
+    : `¡Has recorrido ${kilometers} km hacia tu destino!`;
   
   return (
     <GamePopup
