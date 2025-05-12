@@ -178,6 +178,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isGeneratingLicensePlate, setIsGeneratingLicensePlate] = useState(false);
   const [selectedCarColor, setSelectedCarColor] = useState<CarColor | null>(null);
   
+  // Add the missing state variables that were causing the error
+  const [prevLevel, setPrevLevel] = useState(0);
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [showLevelUpFromNavigation, setShowLevelUpFromNavigation] = useState(false);
+  
   // Add a ref to track if this is the initial load
   const isInitialLoad = useRef(true);
   
@@ -292,7 +297,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Reset navigation flag
     setShowLevelUpFromNavigation(false);
-  }, [level]);
+  }, [level, prevLevel, showLevelUpFromNavigation]);
   
   // Reset the entire game
   const resetGame = () => {
