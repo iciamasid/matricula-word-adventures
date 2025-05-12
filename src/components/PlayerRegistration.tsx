@@ -104,7 +104,7 @@ const PlayerRegistration: React.FC = () => {
           </motion.div>
           
           {/* Car selection button */}
-          <motion.div className={`flex justify-between items-center rounded-lg p-3 shadow-md ${panelBg} cursor-pointer`} onClick={toggleCarCustomization}>
+          <motion.div onClick={toggleCarCustomization} className="">
             <div className="flex items-center">
               <Car className={`h-5 w-5 mr-2 ${isEnglish ? 'text-orange-700' : 'text-purple-700'}`} />
               <span className={`font-medium ${textColor} kids-text text-xl`}>
