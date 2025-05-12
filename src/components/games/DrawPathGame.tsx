@@ -7,7 +7,7 @@ import { toast } from '@/hooks/use-toast';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
 import { Point } from './utils/pathUtils';
-import { createCar, createEndPoint, createStartPoint } from './utils/carUtils';
+import { createCar, createEndPoint } from './utils/carUtils';
 import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
@@ -44,7 +44,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     setEndPointObj,
     isInitializing,
     canvasReady,
-    carObjectsRef
+    carObjectsRef,
+    carImageRef
   } = useDrawPathCanvas({
     canvasRef,
     containerRef,
@@ -143,21 +144,21 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       // Reset the canvas background
       fabricCanvas.backgroundColor = '#f9f2ff';
       
-      // Add start point back
-      const startPoint = createStartPoint(50, 50);
-      fabricCanvas.add(startPoint);
-      
       // Get the color from selectedCarColor
       const carColorValue = selectedCarColor ? selectedCarColor.color : '#E74C3C';
       
-      // Add car back to start with selected color
+      // Add car back to start
       const car = createCar(50, 50, carColorValue);
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
-                      car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow,
-                      car.bumper, car.taillight, car.doorHandle);
       carObjectsRef.current = car;
-      animationCarRef.current = car;
-      fabricCanvas.renderAll();
+      
+      // Initialize the car image
+      if (car.initImage) {
+        car.initImage(fabricCanvas).then((carImg) => {
+          carImageRef.current = carImg;
+          animationCarRef.current = car;
+          fabricCanvas.renderAll();
+        });
+      }
 
       // Reset states
       setPath([]);
@@ -207,14 +208,19 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = false;
       
-      // Remove previous car shapes but NOT the path trace
+      // Remove previous objects but NOT the path trace or end points
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
-        // Fix type comparison by using instanceof instead of direct equality
-        if ((obj instanceof Rect && obj !== startPointObj && obj !== endPointObj) || 
-            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10) ||
-            (obj instanceof Polygon)) {
+        
+        // Skip path objects and end points
+        if (obj instanceof Path) continue;
+        
+        // Skip end point objects
+        if (obj instanceof Circle && obj === endPointObj) continue;
+        
+        // Remove car images and other non-path objects
+        if (obj !== endPointObj) {
           fabricCanvas.remove(obj);
         }
       }
@@ -222,22 +228,27 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       // Get the color from selectedCarColor
       const carColorValue = selectedCarColor ? selectedCarColor.color : '#E74C3C';
       
-      // Re-add the car at the starting position with the selected color
+      // Add a new car at the starting position
       const car = createCar(path[0].x, path[0].y, carColorValue);
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
-                      car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow,
-                      car.bumper, car.taillight, car.doorHandle);
       animationCarRef.current = car;
-      fabricCanvas.renderAll();
       
-      // Cancel any existing animation
-      cancelAnimation();
-      
-      // Start the animation with a slight delay
-      console.log("Starting car animation sequence");
-      setTimeout(() => {
-        requestAnimationFrame(() => moveCar(0));
-      }, 500);
+      // Initialize the car image for animation
+      if (car.initImage) {
+        car.initImage(fabricCanvas).then((carImg) => {
+          if (carImg) {
+            fabricCanvas.renderAll();
+            
+            // Cancel any existing animation
+            cancelAnimation();
+            
+            // Start the animation with a slight delay
+            console.log("Starting car animation sequence");
+            setTimeout(() => {
+              requestAnimationFrame(() => moveCar(0));
+            }, 500);
+          }
+        });
+      }
     }
   };
 

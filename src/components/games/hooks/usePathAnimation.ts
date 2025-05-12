@@ -1,6 +1,5 @@
-
 import { useRef, useState, useCallback } from 'react';
-import { Canvas as FabricCanvas, Circle, Path, Rect, Polygon } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Path } from 'fabric';
 import { toast } from '@/hooks/use-toast';
 import { Point, interpolatePoints } from '../utils/pathUtils';
 import { CarObject } from '../utils/carUtils';
@@ -74,11 +73,11 @@ export const usePathAnimation = ({
     setInterpolatedPath(interpolated);
   }, [createInterpolatedPath]);
 
-  // Path trace visualization - Modificado para asegurar que el trazo permanezca visible
+  // Path trace visualization
   const updatePathTrace = useCallback((currentIndex: number) => {
     if (!fabricCanvas || interpolatedPath.length === 0) return;
     
-    // Crear la traza del camino si no existe
+    // Create the path trace if it doesn't exist
     if (!pathTraceRef.current) {
       // Create the full path trace at once
       const pathData = interpolatedPath.map((point, idx) => 
@@ -105,31 +104,20 @@ export const usePathAnimation = ({
       // Store the path trace reference
       pathTraceRef.current = trace;
       
-      // Make sure the start point is on top of the path trace
-      if (startPointObj) {
-        startPointObj.set('zIndex', 1);
-      }
-      
+      // Make sure the end point is on top of the path trace
       if (endPointObj) {
         endPointObj.set('zIndex', 1);
       }
     }
     
-    // Ensure car is on top
-    if (carObjectsRef.current) {
-      const car = carObjectsRef.current;
-      // Set higher z-index for car components
-      car.body.set('zIndex', 5);
-      car.roof.set('zIndex', 6);
-      car.wheel1.set('zIndex', 5);
-      car.wheel2.set('zIndex', 5);
-      car.wheel3.set('zIndex', 5);
-      car.headlight.set('zIndex', 6);
+    // Ensure car image is on top
+    if (carObjectsRef.current?.image) {
+      carObjectsRef.current.image.set('zIndex', 5);
     }
       
     // Re-render the canvas to apply the z-index changes
     fabricCanvas.requestRenderAll();
-  }, [fabricCanvas, interpolatedPath, startPointObj, endPointObj]);
+  }, [fabricCanvas, interpolatedPath, endPointObj]);
 
   // Move car along the path
   const moveCar = useCallback((currentIndex: number) => {
@@ -168,53 +156,44 @@ export const usePathAnimation = ({
     const newY = currentPoint.y;
     
     // Calculate rotation angle if we have previous points
-    // Look ahead a few points for smoother rotation
+    let angle = 0;
     if (currentIndex > 0) {
       // Look ahead for smoother rotation (if possible)
       const lookAheadIndex = Math.min(currentIndex + 3, interpolatedPath.length - 1);
       const lookAheadPoint = interpolatedPath[lookAheadIndex];
       const prevPoint = interpolatedPath[Math.max(0, currentIndex - 1)];
       
-      // Use the look ahead point for rotation calculation if available
-      const targetX = lookAheadPoint.x;
-      const targetY = lookAheadPoint.y;
-      
-      const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
-      
-      // Set positions with calculated angle for all car parts
-      car.body.set({ left: newX, top: newY, angle: angle });
-      car.roof.set({ left: newX, top: newY - 15, angle: angle });
-      car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
-      car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle }); 
-      car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle });
-      car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
-      
-      // New car parts
-      car.rim1.set({ left: newX - 20, top: newY + 15, angle: angle });
-      car.rim2.set({ left: newX + 0, top: newY + 15, angle: angle });
-      car.rim3.set({ left: newX + 20, top: newY + 15, angle: angle });
-      car.frontWindshield.set({ left: newX, top: newY - 11, angle: angle });
-      car.sideWindow.set({ left: newX - 15, top: newY - 10, angle: angle });
-      car.bumper.set({ left: newX + 28, top: newY + 2, angle: angle });
-      car.taillight.set({ left: newX - 30, top: newY + 4, angle: angle });
-      car.doorHandle.set({ left: newX - 8, top: newY - 1, angle: angle });
+      // Calculate angle based on direction of movement
+      angle = Math.atan2(lookAheadPoint.y - prevPoint.y, lookAheadPoint.x - prevPoint.x) * 180 / Math.PI;
+    }
+    
+    // If we have a car image, move and rotate it directly
+    if (car.image) {
+      car.image.set({ 
+        left: newX, 
+        top: newY, 
+        angle: angle 
+      });
     } else {
-      car.body.set({ left: newX, top: newY });
-      car.roof.set({ left: newX, top: newY - 15 });
-      car.wheel1.set({ left: newX - 20, top: newY + 15 });
-      car.wheel2.set({ left: newX + 0, top: newY + 15 });
-      car.wheel3.set({ left: newX + 20, top: newY + 15 });
-      car.headlight.set({ left: newX + 30, top: newY + 5 });
+      // Otherwise, use the legacy car part movement (for compatibility)
+      car.body.set({ left: newX, top: newY, angle: angle });
+      
+      // Apply the same position to all car components if they exist
+      if (typeof car.roof.set === 'function') car.roof.set({ left: newX, top: newY - 15, angle: angle });
+      if (typeof car.wheel1.set === 'function') car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
+      if (typeof car.wheel2.set === 'function') car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle });
+      if (typeof car.wheel3.set === 'function') car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle });
+      if (typeof car.headlight.set === 'function') car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
       
       // New car parts
-      car.rim1.set({ left: newX - 20, top: newY + 15 });
-      car.rim2.set({ left: newX + 0, top: newY + 15 });
-      car.rim3.set({ left: newX + 20, top: newY + 15 });
-      car.frontWindshield.set({ left: newX, top: newY - 11 });
-      car.sideWindow.set({ left: newX - 15, top: newY - 10 });
-      car.bumper.set({ left: newX + 28, top: newY + 2 });
-      car.taillight.set({ left: newX - 30, top: newY + 4 });
-      car.doorHandle.set({ left: newX - 8, top: newY - 1 });
+      if (typeof car.rim1.set === 'function') car.rim1.set({ left: newX - 20, top: newY + 15, angle: angle });
+      if (typeof car.rim2.set === 'function') car.rim2.set({ left: newX + 0, top: newY + 15, angle: angle });
+      if (typeof car.rim3.set === 'function') car.rim3.set({ left: newX + 20, top: newY + 15, angle: angle });
+      if (typeof car.frontWindshield.set === 'function') car.frontWindshield.set({ left: newX, top: newY - 11, angle: angle });
+      if (typeof car.sideWindow.set === 'function') car.sideWindow.set({ left: newX - 15, top: newY - 10, angle: angle });
+      if (typeof car.bumper.set === 'function') car.bumper.set({ left: newX + 28, top: newY + 2, angle: angle });
+      if (typeof car.taillight.set === 'function') car.taillight.set({ left: newX - 30, top: newY + 4, angle: angle });
+      if (typeof car.doorHandle.set === 'function') car.doorHandle.set({ left: newX - 8, top: newY - 1, angle: angle });
     }
     
     // Update car position state for any UI that needs it
@@ -239,10 +218,9 @@ export const usePathAnimation = ({
     setCurrentPathIndex(currentIndex);
     
     // Calculate the step size to complete animation in about 10 seconds
-    // For a typical path of around 300-500 points, we want to move every 20-30ms
     const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 500)); // Adjust step size based on path length
     
-    // Ajustar la velocidad para completar en aproximadamente 10 segundos
+    // Adjust the speed to complete in approximately 10 seconds
     const baseSpeed = 20; 
     const adjustedSpeed = Math.max(5, Math.min(50, currentAnimationSpeed / 10));
     
@@ -284,7 +262,7 @@ export const usePathAnimation = ({
     }
   }, [debugMode]);
 
-  // Añadir una función para limpiar el path trace
+  // Clear the path trace
   const clearPathTrace = useCallback(() => {
     if (pathTraceRef.current && fabricCanvas) {
       fabricCanvas.remove(pathTraceRef.current);

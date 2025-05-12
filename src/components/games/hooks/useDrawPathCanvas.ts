@@ -1,7 +1,8 @@
+
 import { useState, useEffect, useRef, RefObject } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, PencilBrush } from 'fabric';
 import { toast } from '@/hooks/use-toast';
-import { createStartPoint, createCar, CarObject } from '../utils/carUtils';
+import { createCar, CarObject } from '../utils/carUtils';
 import { Point, extractPointsFromPath } from '../utils/pathUtils';
 
 interface UseDrawPathCanvasProps {
@@ -23,6 +24,7 @@ export const useDrawPathCanvas = ({
   const [isInitializing, setIsInitializing] = useState<boolean>(true);
   const [canvasReady, setCanvasReady] = useState<boolean>(false);
   const carObjectsRef = useRef<CarObject | null>(null);
+  const carImageRef = useRef<any>(null);
   const [lastPathObject, setLastPathObject] = useState<any>(null);
 
   // Initialize canvas on component mount
@@ -58,19 +60,25 @@ export const useDrawPathCanvas = ({
       
       console.log("Drawing brush configured");
       
-      // Add car starting point
-      const startPoint = createStartPoint(50, 50);
-      canvas.add(startPoint);
-      setStartPointObj(startPoint);
-
-      // Create and add car to canvas
-      const car = createCar(50, 50);
-      // Add all car parts to the canvas
-      canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
-                 car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow, 
-                 car.bumper, car.taillight, car.doorHandle);
-                 
+      // Create and add car to canvas - we don't add the green circle anymore
+      const startPosition = { x: 50, y: 50 };
+      
+      // Create car object with the selected color
+      const car = createCar(startPosition.x, startPosition.y);
       carObjectsRef.current = car;
+      
+      // Initialize the car image
+      if (car.initImage) {
+        car.initImage(canvas).then((carImg) => {
+          if (carImg) {
+            carImageRef.current = carImg;
+            console.log("Car image initialized");
+          } else {
+            console.error("Failed to initialize car image");
+          }
+        });
+      }
+      
       canvas.renderAll();
 
       // Store the canvas
@@ -159,6 +167,7 @@ export const useDrawPathCanvas = ({
     isInitializing,
     canvasReady,
     carObjectsRef,
+    carImageRef,
     lastPathObject
   };
 };
