@@ -89,7 +89,8 @@ const GameContent = () => {
     }
   };
   
-  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
+  return (
+    <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
@@ -155,6 +156,9 @@ const GameContent = () => {
           
           {/* Score components in a single row */}
           <ScorePanel />
+          
+          {/* Reordered: World Tour Progress BEFORE "Has llegado hasta" panel */}
+          <WorldTourProgress />
           
           {/* "Has llegado hasta" panel */}
           <motion.div initial={{
@@ -273,9 +277,6 @@ const GameContent = () => {
             </div>
           </motion.div>
           
-          {/* Add World Tour Progress component */}
-          <WorldTourProgress />
-          
           {/* Drawing Game Button - After the world tour progress */}
           <motion.div className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? (isEnglish ? 'bg-gradient-to-r from-orange-200 to-orange-300/90' : 'bg-gradient-to-r from-purple-200 to-purple-300/90') : isEnglish ? 'bg-orange-200/90' : 'bg-purple-200/90'}`} initial={{
           opacity: 0,
@@ -341,6 +342,8 @@ const GameContent = () => {
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
