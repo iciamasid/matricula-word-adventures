@@ -1,4 +1,3 @@
-
 import React, {
   createContext,
   useContext,
@@ -361,11 +360,11 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     dispatch({ type: "SET_PLAYER_AGE", payload: state.playerAge || 0 });
     dispatch({ type: "SET_PLAYER_GENDER", payload: state.playerGender || "" });
     dispatch({ type: "SET_CAR_COLOR", payload: state.selectedCarColor });
-    setIsGeneratingLicensePlate(false);
+    dispatch({ type: "SET_IS_GENERATING_LICENSE_PLATE", payload: false });
 
     // Show completion banner if level is 10 or more
     if (state.level >= 10 && !state.showCompletionBanner) {
-      showCompletion();
+      dispatch({ type: "SHOW_COMPLETION_BANNER" });
     }
   }, [
     state.level,
@@ -472,9 +471,16 @@ const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       // Make sure we have origin and destination info
       if (parsedState.originInfo) {
         dispatch({ type: "SET_ORIGIN_INFO", payload: parsedState.originInfo });
+      } else {
+        // Set default origin info if not available
+        dispatch({ type: "SET_ORIGIN_INFO", payload: initialState.originInfo });
       }
+      
       if (parsedState.destinationInfo) {
         dispatch({ type: "SET_DESTINATION_INFO", payload: parsedState.destinationInfo });
+      } else {
+        // Set default destination info if not available
+        dispatch({ type: "SET_DESTINATION_INFO", payload: initialState.destinationInfo });
       }
     } else {
       generateNewPlate();

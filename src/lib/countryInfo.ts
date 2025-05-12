@@ -126,6 +126,20 @@ export function getCountryInfo(level: number, language: string) {
     }
   ];
 
+  // Default values to return if something goes wrong
+  const defaultValues = {
+    es: {
+      city: "Madrid",
+      country: "España",
+      flag: "🇪🇸"
+    },
+    en: {
+      city: "Madrid",
+      country: "Spain",
+      flag: "🇪🇸"
+    }
+  };
+
   // Make sure we don't go out of bounds and provide a default
   let index = 0;
   try {
@@ -138,13 +152,15 @@ export function getCountryInfo(level: number, language: string) {
   
   // Provide a fallback if something goes wrong
   try {
-    return countries[index][lang];
+    // Make sure we have a valid value at the index
+    if (countries[index] && countries[index][lang]) {
+      return countries[index][lang];
+    } else {
+      console.error("Country data not found at index", index);
+      return defaultValues[lang];
+    }
   } catch (error) {
     console.error("Error getting country info:", error);
-    return {
-      city: "Madrid",
-      country: "España",
-      flag: "🇪🇸"
-    };
+    return defaultValues[lang];
   }
 }
