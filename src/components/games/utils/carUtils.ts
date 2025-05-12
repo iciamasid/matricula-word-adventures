@@ -1,4 +1,4 @@
-import { Circle, Rect, Polygon, Shadow } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Rect, Polygon, Shadow, Image } from 'fabric';
 
 // Create a more detailed car object using Fabric.js shapes
 export const createCar = (left: number, top: number, color = '#E74C3C', scale = 1) => {
@@ -329,15 +329,15 @@ const getCarImageUrl = (color: string): string => {
 };
 
 export const loadCarImage = (
-  canvas: fabric.Canvas,
+  canvas: FabricCanvas,
   carConfig: CarConfig
-): Promise<fabric.Image> => {
+): Promise<Image> => {
   return new Promise((resolve, reject) => {
     try {
       const carImageUrl = getCarImageUrl(carConfig.color);
       
-      // Use the proper callback approach for Fabric.js v6
-      fabric.Image.fromURL(
+      // Use the proper approach for Fabric.js v6
+      Image.fromURL(
         carImageUrl,
         (img) => {
           if (!img) {
