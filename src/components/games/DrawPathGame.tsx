@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button"; 
@@ -152,8 +152,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
-        if ((obj instanceof Rect) || 
-            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10)) {
+        if ((obj instanceof Rect && obj !== startPointObj && obj !== endPointObj) || 
+            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10) ||
+            (obj instanceof Polygon)) {
           fabricCanvas.remove(obj);
         }
       }
@@ -163,7 +164,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       
       // Re-add the car at the starting position with the selected color
       const car = createCar(path[0].x, path[0].y, carColorValue);
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
+                      car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow,
+                      car.bumper, car.taillight, car.doorHandle);
       animationCarRef.current = car;
       fabricCanvas.renderAll();
       
@@ -206,7 +209,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       
       // Add car back to start with selected color
       const car = createCar(50, 50, carColorValue);
-      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
+      fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
+                      car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow,
+                      car.bumper, car.taillight, car.doorHandle);
       carObjectsRef.current = car;
       animationCarRef.current = car;
       fabricCanvas.renderAll();

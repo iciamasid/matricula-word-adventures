@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef, RefObject } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, PencilBrush } from 'fabric';
 import { toast } from '@/hooks/use-toast';
@@ -66,7 +65,11 @@ export const useDrawPathCanvas = ({
 
       // Create and add car to canvas
       const car = createCar(50, 50);
-      canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.headlight);
+      // Add all car parts to the canvas
+      canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
+                 car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow, 
+                 car.bumper, car.taillight, car.doorHandle);
+                 
       carObjectsRef.current = car;
       canvas.renderAll();
 

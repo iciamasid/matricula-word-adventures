@@ -1,5 +1,6 @@
+
 import { useRef, useState, useCallback } from 'react';
-import { Canvas as FabricCanvas, Circle, Path } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Path, Rect, Polygon } from 'fabric';
 import { toast } from '@/hooks/use-toast';
 import { Point, interpolatePoints } from '../utils/pathUtils';
 import { CarObject } from '../utils/carUtils';
@@ -180,13 +181,23 @@ export const usePathAnimation = ({
       
       const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
       
-      // Set positions with calculated angle
+      // Set positions with calculated angle for all car parts
       car.body.set({ left: newX, top: newY, angle: angle });
       car.roof.set({ left: newX, top: newY - 15, angle: angle });
       car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
       car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle }); 
       car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle });
       car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
+      
+      // New car parts
+      car.rim1.set({ left: newX - 20, top: newY + 15, angle: angle });
+      car.rim2.set({ left: newX + 0, top: newY + 15, angle: angle });
+      car.rim3.set({ left: newX + 20, top: newY + 15, angle: angle });
+      car.frontWindshield.set({ left: newX, top: newY - 11, angle: angle });
+      car.sideWindow.set({ left: newX - 15, top: newY - 10, angle: angle });
+      car.bumper.set({ left: newX + 28, top: newY + 2, angle: angle });
+      car.taillight.set({ left: newX - 30, top: newY + 4, angle: angle });
+      car.doorHandle.set({ left: newX - 8, top: newY - 1, angle: angle });
     } else {
       car.body.set({ left: newX, top: newY });
       car.roof.set({ left: newX, top: newY - 15 });
@@ -194,6 +205,16 @@ export const usePathAnimation = ({
       car.wheel2.set({ left: newX + 0, top: newY + 15 });
       car.wheel3.set({ left: newX + 20, top: newY + 15 });
       car.headlight.set({ left: newX + 30, top: newY + 5 });
+      
+      // New car parts
+      car.rim1.set({ left: newX - 20, top: newY + 15 });
+      car.rim2.set({ left: newX + 0, top: newY + 15 });
+      car.rim3.set({ left: newX + 20, top: newY + 15 });
+      car.frontWindshield.set({ left: newX, top: newY - 11 });
+      car.sideWindow.set({ left: newX - 15, top: newY - 10 });
+      car.bumper.set({ left: newX + 28, top: newY + 2 });
+      car.taillight.set({ left: newX - 30, top: newY + 4 });
+      car.doorHandle.set({ left: newX - 8, top: newY - 1 });
     }
     
     // Update car position state for any UI that needs it
