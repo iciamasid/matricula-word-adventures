@@ -190,9 +190,7 @@ const CountryPageContent = () => {
   return <div className="min-h-screen bg-gradient-to-b from-purple-100 to-blue-100 p-4">
       <div className="max-w-md mx-auto">
         <Link to="/">
-          <Button variant="outline" className="mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" /> {t('back_to_game')}
-          </Button>
+          
         </Link>
         
         <motion.div className="bg-white rounded-lg shadow-lg overflow-hidden" initial={{
