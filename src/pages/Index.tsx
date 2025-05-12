@@ -15,6 +15,7 @@ import GamePopup from "@/components/GamePopup";
 import ScorePanel from "@/components/ScorePanel";
 import { Progress } from "@/components/ui/progress";
 import PlayerRegistration from "@/components/PlayerRegistration";
+import NewGameButton from "@/components/NewGameButton";
 
 // Función para obtener la bandera según el nivel
 const getLevelFlag = (level: number) => {
@@ -81,6 +82,8 @@ const GameContent = () => {
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [prevLevel, setPrevLevel] = useState(level);
   const [showLevelUpFromNavigation, setShowLevelUpFromNavigation] = useState(false);
+  const [showProgress, setShowProgress] = useState(false);
+  const [animatingLevel, setAnimatingLevel] = useState(0);
 
   // Show success popup when score changes
   useEffect(() => {
@@ -135,6 +138,32 @@ const GameContent = () => {
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
+  
+  // Animation for level progress when component mounts
+  useEffect(() => {
+    if (level > 0) {
+      setAnimatingLevel(0);
+      const timer = setTimeout(() => {
+        setShowProgress(true);
+        const interval = setInterval(() => {
+          setAnimatingLevel(prev => {
+            if (prev >= level) {
+              clearInterval(interval);
+              return level;
+            }
+            return prev + 1;
+          });
+        }, 500); // 500ms between each level increment
+        
+        return () => {
+          clearInterval(interval);
+        };
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [level]);
+
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -196,62 +225,89 @@ const GameContent = () => {
           <LicensePlate />
           <WordInput />
           
+          {/* Add New Game Button with slot machine style */}
+          <NewGameButton />
+          
           {/* Score components in a single row */}
           <ScorePanel />
           
-          {/* "Has llegado hasta" panel - Updated to show origin and destination with options to explore both */}
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.3
-        }} className={`w-full rounded-lg p-5 shadow-lg py-[20px] ${level >= 10 ? 'bg-gradient-to-r from-purple-300 to-purple-200' : 'bg-purple-200'}`}>
-            <div className="text-center mb-4">
-              <h2 className="text-2xl font-normal text-purple-800 kids-text flex items-center justify-center">
-                <motion.span className="inline-block" animate={{
-                rotate: [0, 360],
-                transition: {
-                  repeat: Infinity,
-                  duration: 8,
-                  ease: "linear"
-                }
-              }}>
-                  <Globe className="h-7 w-7 text-blue-600" />
-                </motion.span>
-                <span className="mx-2 font-normal text-xl">Este nivel te permite conducir desde:</span>
-                <motion.span className="inline-block" animate={{
-                rotate: [0, 360],
-                transition: {
-                  repeat: Infinity,
-                  duration: 8,
-                  ease: "linear"
-                }
-              }}>
-                  <Globe className="h-7 w-7 text-blue-600" />
-                </motion.span>
-              </h2>
-              
-              {/* Origin and Destination with arrows */}
-              <div className="grid grid-cols-3 items-center gap-2 my-4">
-                {/* Origin */}
-                <div className="flex flex-col items-center">
-                  <motion.span className="text-4xl mb-2" animate={{
-                  rotate: [0, 10, -10, 0]
-                }} transition={{
-                  duration: 2,
-                  repeat: Infinity
+          {/* "Has llegado hasta" panel - Updated with animated progress border */}
+          <div className="w-full relative">
+            {/* Circular progress indicator around the panel */}
+            {showProgress && (
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <motion.path
+                  d={`M 0,0 L 100,0 L 100,100 L 0,100 Z`}
+                  fill="none"
+                  stroke={level >= 10 ? "#F59E0B" : "#8B5CF6"}
+                  strokeWidth="4"
+                  strokeDasharray="400"
+                  initial={{ strokeDashoffset: 400 }}
+                  animate={{ 
+                    strokeDashoffset: 400 - (400 * (animatingLevel / 10)),
+                    transition: { duration: 0.5 }
+                  }}
+                  style={{
+                    transformOrigin: 'center',
+                    transform: 'translate(2px, 2px) scale(0.96)',
+                    strokeLinecap: 'round'
+                  }}
+                />
+              </svg>
+            )}
+
+            <motion.div initial={{
+            opacity: 0,
+            y: 20
+          }} animate={{
+            opacity: 1,
+            y: 0
+          }} transition={{
+            delay: 0.3
+          }} className={`w-full rounded-lg p-5 shadow-lg py-[20px] ${level >= 10 ? 'bg-gradient-to-r from-purple-300 to-purple-200' : 'bg-purple-200'}`}>
+              <div className="text-center mb-4">
+                <h2 className="text-2xl font-normal text-purple-800 kids-text flex items-center justify-center">
+                  <motion.span className="inline-block" animate={{
+                  rotate: [0, 360],
+                  transition: {
+                    repeat: Infinity,
+                    duration: 8,
+                    ease: "linear"
+                  }
                 }}>
-                    {originInfo.flag}
+                    <Globe className="h-7 w-7 text-blue-600" />
                   </motion.span>
-                  <motion.p className="text-xl font-normal text-purple-900 kids-text" animate={{
-                  scale: [1, 1.05, 1]
-                }} transition={{
-                  duration: 2,
-                  repeat: Infinity
+                  <span className="mx-2 font-normal text-xl">Este nivel te permite conducir desde:</span>
+                  <motion.span className="inline-block" animate={{
+                  rotate: [0, 360],
+                  transition: {
+                    repeat: Infinity,
+                    duration: 8,
+                    ease: "linear"
+                  }
                 }}>
+                    <Globe className="h-7 w-7 text-blue-600" />
+                  </motion.span>
+                </h2>
+                
+                {/* Origin and Destination with arrows */}
+                <div className="grid grid-cols-3 items-center gap-2 my-4">
+                  {/* Origin */}
+                  <div className="flex flex-col items-center">
+                    <motion.span className="text-4xl mb-2" animate={{
+                    rotate: [0, 10, -10, 0]
+                  }} transition={{
+                    duration: 2,
+                    repeat: Infinity
+                  }}>
+                      {originInfo.flag}
+                    </motion.span>
+                    <motion.p className="text-xl font-normal text-purple-900 kids-text" animate={{
+                    scale: [1, 1.05, 1]
+                  }} transition={{
+                    duration: 2,
+                    repeat: Infinity
+                  }}>
                     {originInfo.city}, {originInfo.country}
                   </motion.p>
                   <p className="text-sm text-purple-700 kids-text">Origen</p>
@@ -352,8 +408,8 @@ const GameContent = () => {
             </div>
           </motion.div>
           
-          {/* Progress bar showing world tour progress */}
-          <motion.div className={`w-full p-4 rounded-lg shadow-lg ${level >= 10 ? 'bg-gradient-to-r from-yellow-100 to-amber-100' : 'bg-purple-100'}`} initial={{
+          {/* Progress bar showing world tour progress - Only visible on tablet and desktop */}
+          <motion.div className={`w-full p-4 rounded-lg shadow-lg hidden md:block ${level >= 10 ? 'bg-gradient-to-r from-yellow-100 to-amber-100' : 'bg-purple-100'}`} initial={{
           opacity: 0,
           y: 20
         }} animate={{
