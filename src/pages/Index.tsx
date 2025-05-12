@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -147,7 +148,10 @@ const GameContent = () => {
           {/* Score components in a single row */}
           <ScorePanel />
           
-          {/* "Has llegado hasta" panel */}
+          {/* Add World Tour Progress component - MOVED UP */}
+          <WorldTourProgress />
+          
+          {/* "Has llegado hasta" panel - MOVED DOWN */}
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -263,9 +267,6 @@ const GameContent = () => {
                 </motion.div>}
             </div>
           </motion.div>
-          
-          {/* Add World Tour Progress component */}
-          <WorldTourProgress />
           
           {/* Drawing Game Button - After the world tour progress */}
           <motion.div className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? isEnglish ? 'bg-gradient-to-r from-orange-200 to-orange-300/90' : 'bg-gradient-to-r from-purple-200 to-purple-300/90' : isEnglish ? 'bg-orange-200/90' : 'bg-purple-200/90'}`} initial={{
