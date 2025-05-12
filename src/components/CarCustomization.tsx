@@ -16,7 +16,7 @@ const CarCustomization: React.FC = () => {
   const { selectedCarColor, setSelectedCarColor } = useGame();
 
   const carOptions: CarOption[] = [
-    { id: "1", name: "Coche Amarillo", image: "coche_portada.gif", color: "bg-yellow-500" },
+    { id: "1", name: "Coche Amarillo", image: "cocheamarillo.png", color: "bg-yellow-500" },
     { id: "2", name: "Coche Azul", image: "cocheazul.png", color: "bg-blue-500" },
     { id: "3", name: "Coche Rojo", image: "cocherojo.png", color: "bg-red-500" },
   ];
