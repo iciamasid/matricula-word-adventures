@@ -31,6 +31,8 @@ const DrawGameContent: React.FC = () => {
   // Log when component mounts to help with debugging
   useEffect(() => {
     console.log("DrawGamePage mounted");
+    // Scroll to top when page loads to ensure title is visible
+    window.scrollTo(0, 0);
     // Set session storage flag for navigation
     return () => {
       console.log("DrawGamePage unmounted");

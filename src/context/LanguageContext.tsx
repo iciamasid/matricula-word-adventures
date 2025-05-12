@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 // Define language types
@@ -38,6 +37,10 @@ export const translations: Record<string, Record<Language, string>> = {
   'games_played': {
     es: 'partidas jugadas',
     en: 'games played'
+  },
+  'use_these_letters': {
+    es: 'USA LAS LETRAS:',
+    en: 'USE THESE LETTERS:'
   },
   
   // Player info
@@ -270,7 +273,7 @@ export const translations: Record<string, Record<Language, string>> = {
     en: 'World Tour Complete!'
   },
   'points_for_next_level': {
-    es: 'puntos para el siguiente nivel',
+    es: 'Kms. para subir de nivel',
     en: 'points for the next level'
   },
   'level': {
@@ -278,7 +281,7 @@ export const translations: Record<string, Record<Language, string>> = {
     en: 'Level'
   },
   'points_total': {
-    es: 'Puntos',
+    es: 'Kms.',
     en: 'Points'
   },
   'you_are_in': {

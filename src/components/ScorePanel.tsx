@@ -59,7 +59,7 @@ const ScorePanel: React.FC = () => {
               <Navigation className="h-5 w-5 text-blue-600" />
             </div>
           </motion.div>
-          <h3 className={`text-xl ${textColor} kids-text font-normal`}>{isEnglish ? 'total_kilometers' : 'kilómetros_total'}</h3>
+          <h3 className={`text-xl ${textColor} kids-text font-normal`}>{t('points_total')}</h3>
         </div>
         
         <motion.p className={`text-3xl ${textColorDark} kids-text mt-1 font-normal`} animate={totalPoints > 0 ? {
@@ -78,7 +78,7 @@ const ScorePanel: React.FC = () => {
           </div>
           <Progress value={levelProgress} className="h-2" />
           <p className={`${textColorLight} mt-1 text-lg`}>
-            {500 - totalPoints % 500} {isEnglish ? 'kilometers_for_next_level' : 'kilómetros_para_subir'}
+            {500 - totalPoints % 500} {t('points_for_next_level')}
           </p>
         </div>
       </motion.div>

@@ -7,9 +7,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Progress } from "@/components/ui/progress";
+import { useLanguage } from "@/context/LanguageContext";
 
 const LevelRewards: React.FC = () => {
   const { level, destination, destinationInfo } = useGame();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   
   const handleExploreCountry = () => {
@@ -150,9 +152,10 @@ const LevelRewards: React.FC = () => {
                 
                 <Button 
                   onClick={handleExploreCountry}
-                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-6 py-3 kids-text"
+                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-6 py-2 kids-text flex flex-col items-center"
                 >
-                  Conoce {destinationInfo.country} {destinationInfo.flag}
+                  <span>{t('learn_about')}</span>
+                  <span>{destinationInfo.country} {destinationInfo.flag}</span>
                 </Button>
               </motion.div>
             )}
