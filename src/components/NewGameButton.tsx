@@ -1,31 +1,81 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
 import { Plus, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 const NewGameButton: React.FC = () => {
-  const { generateNewPlate, gamesPlayed } = useGame();
+  const { generateNewPlate, gamesPlayed, showBonusPopup, showAgeBonusPopup, showCompletionBanner } = useGame();
   const [isAnimating, setIsAnimating] = useState(false);
+  const [buttonDisabled, setButtonDisabled] = useState(false);
+  
+  // Check if any popups are open
+  const popupsOpen = showBonusPopup || showAgeBonusPopup || showCompletionBanner;
+  
+  // Disable button when popups are open
+  useEffect(() => {
+    setButtonDisabled(popupsOpen);
+  }, [popupsOpen]);
   
   const handleClick = () => {
+    if (buttonDisabled) return;
+    
     setIsAnimating(true);
     generateNewPlate();
-    setTimeout(() => setIsAnimating(false), 600);
+    
+    // Keep the animation going for a bit longer to make it more noticeable
+    setTimeout(() => setIsAnimating(false), 1000);
   };
   
   return (
     <motion.div 
       className="text-center space-y-2 bg-white p-3 rounded-lg shadow-lg w-full max-w-xs mb-2"
-      whileHover={{ scale: 1.03 }}
+      whileHover={{ scale: buttonDisabled ? 1 : 1.03 }}
       transition={{ type: "spring", stiffness: 300 }}
     >
       <Button
         onClick={handleClick}
-        className={`px-4 py-4 bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 w-full ${isAnimating ? "animate-bounce" : ""}`}
+        disabled={buttonDisabled}
+        className={`px-4 py-4 ${buttonDisabled 
+          ? 'bg-gray-400 cursor-not-allowed' 
+          : 'bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800'
+        } w-full ${isAnimating ? "animate-bounce" : ""}`}
       >
-        <Plus className="mr-2 h-4 w-4" /> Matrículas
+        <div className="relative w-full flex items-center justify-center">
+          {/* Slot machine reel effect */}
+          <div className="flex gap-1 mr-2">
+            {isAnimating ? (
+              <>
+                <motion.span 
+                  className="inline-block text-lg font-bold"
+                  animate={{ y: [-20, 20], opacity: [0, 1, 0] }}
+                  transition={{ duration: 0.3, times: [0, 0.5, 1], repeat: 3 }}
+                >
+                  7
+                </motion.span>
+                <motion.span 
+                  className="inline-block text-lg font-bold"
+                  animate={{ y: [-20, 20], opacity: [0, 1, 0] }}
+                  transition={{ duration: 0.3, times: [0, 0.5, 1], repeat: 3, delay: 0.1 }}
+                >
+                  7
+                </motion.span>
+                <motion.span 
+                  className="inline-block text-lg font-bold"
+                  animate={{ y: [-20, 20], opacity: [0, 1, 0] }}
+                  transition={{ duration: 0.3, times: [0, 0.5, 1], repeat: 3, delay: 0.2 }}
+                >
+                  7
+                </motion.span>
+              </>
+            ) : (
+              <Plus className="mr-0 h-4 w-4" />
+            )}
+          </div>
+          <span className={isAnimating ? "ml-2" : ""}>
+            Nueva Matrícula
+          </span>
+        </div>
       </Button>
       
       <div className="flex items-center justify-center text-xs text-gray-500">
