@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
-import { Navigation } from "lucide-react";
+import { Navigation, Star } from "lucide-react";
 
 const TotalPointsPanel: React.FC = () => {
   const { totalPoints } = useGame();

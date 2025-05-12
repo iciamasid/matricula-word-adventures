@@ -4,6 +4,7 @@ import { useGame } from "@/context/GameContext";
 import { Plus, Star, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+
 const NewGameButton: React.FC = () => {
   const {
     generateNewPlate,
@@ -108,4 +109,5 @@ const NewGameButton: React.FC = () => {
       </div>
     </motion.div>;
 };
+
 export default NewGameButton;
