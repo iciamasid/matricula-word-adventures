@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
@@ -11,6 +12,7 @@ const NewGameButton: React.FC = () => {
     generateNewPlate,
     gamesPlayed,
     showBonusPopup,
+    showAgeBonusPopup,
     showCompletionBanner,
     setIsGeneratingLicensePlate,
     level
@@ -21,7 +23,7 @@ const NewGameButton: React.FC = () => {
   const navigate = useNavigate();
 
   // Check if any popups are open
-  const popupsOpen = showBonusPopup || showCompletionBanner;
+  const popupsOpen = showBonusPopup || showAgeBonusPopup || showCompletionBanner;
 
   // Disable button when popups are open
   useEffect(() => {

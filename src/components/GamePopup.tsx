@@ -12,7 +12,6 @@ interface GamePopupProps {
   message: string;
   points?: number;
   level?: number;
-  explanation?: string; // New prop for detailed explanation
 }
 
 const GamePopup: React.FC<GamePopupProps> = ({ 
@@ -21,8 +20,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
   type, 
   message, 
   points = 0, 
-  level,
-  explanation 
+  level 
 }) => {
   const { isEnglish } = useLanguage();
   const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
@@ -160,24 +158,12 @@ const GamePopup: React.FC<GamePopupProps> = ({
                   
                   {points !== 0 && (
                     <motion.h3 
-                      className="text-2xl font-bold mb-3 text-yellow-300 kids-text"
+                      className="text-2xl font-bold mb-6 text-yellow-300 kids-text"
                       animate={{ y: [0, -10, 0] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
                       {points > 0 ? `+${points} ${isEnglish ? "POINTS" : "PUNTOS"}` : `${points} ${isEnglish ? "POINTS" : "PUNTOS"}`}
                     </motion.h3>
-                  )}
-
-                  {/* New explanation section */}
-                  {explanation && (
-                    <motion.div 
-                      className="bg-white/20 p-3 rounded-lg mb-4"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.2 }}
-                    >
-                      <p className="text-sm text-white kids-text">{explanation}</p>
-                    </motion.div>
                   )}
                   
                   {level && type === "levelUp" && (

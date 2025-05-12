@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
-import { Star } from "lucide-react";
+import { Navigation, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 const TotalPointsPanel: React.FC = () => {
@@ -25,10 +25,10 @@ const TotalPointsPanel: React.FC = () => {
           }} 
           transition={{ duration: 3, repeat: Infinity }}
         >
-          {/* Changed to Star icon */}
+          {/* Changed to Navigation icon */}
           <div className="w-8 h-8 text-3xl text-game-green relative">
-            <Star className="absolute inset-0 text-3xl animate-pulse opacity-70 text-yellow-400" style={{ filter: 'blur(4px)' }} />
-            <Star className="relative z-10 text-yellow-500" />
+            <Navigation className="absolute inset-0 text-3xl animate-pulse opacity-70 text-blue-500" style={{ filter: 'blur(4px)' }} />
+            <Navigation className="relative z-10 text-blue-600" />
           </div>
         </motion.div>
       </div>

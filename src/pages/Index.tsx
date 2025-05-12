@@ -3,7 +3,6 @@ import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
 import WordInput from "@/components/WordInput";
 import ErrorAlert from "@/components/ErrorAlert";
-import SuccessAlert from "@/components/SuccessAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Globe, RefreshCw, ArrowRight } from "lucide-react";
@@ -328,11 +327,8 @@ const GameContent = () => {
           </motion.div>
         </div>
         
-        {/* Error Alert using GamePopup - Keep this because it handles errors */}
+        {/* Error Alert using GamePopup - Mantén esto porque maneja los errores */}
         <ErrorAlert />
-        
-        {/* Add Success Alert */}
-        <SuccessAlert />
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
