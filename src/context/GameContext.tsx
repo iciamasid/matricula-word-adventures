@@ -9,7 +9,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import BonusPopup from "@/components/BonusPopup";
-import AgeBonusPopup from "@/components/AgeBonusPopup";
 import CompletionBanner from "@/components/CompletionBanner";
 import { useLanguage, Language } from "@/context/LanguageContext";
 
@@ -125,10 +124,14 @@ interface GameContextType {
   playerName: string;
   playerAge: number;
   playerGender: "niño" | "niña" | "";
-  showAgeBonusPopup: boolean;
   showCompletionBanner: boolean;
   isGeneratingLicensePlate: boolean;
   selectedCarColor: CarColor | null;
+  
+  // Success state properties
+  successMessage: string | null;
+  successPoints: number;
+  successExplanation: string | null;
   
   // Actions
   generateNewPlate: () => void;
@@ -136,8 +139,8 @@ interface GameContextType {
   submitWord: () => void;
   shuffleConsonants: () => string;
   clearError: () => void;
+  clearSuccess: () => void; // New function
   closeBonusPopup: () => void;
-  closeAgeBonusPopup: () => void;
   closeCompletionBanner: () => void;
   resetGame: () => void;
   setPlayerName: (name: string) => void;
@@ -366,6 +369,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setPreviousScore(score);  // Store the previous round's score
     setScore(0);
     setErrorMessage(null);
+    clearSuccess();
     
     // Check if plate contains "6666" and award bonus points
     if (newPlate.substring(0, 4) === "6666") {
@@ -384,12 +388,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const ageBonusPoints = 20;
         setTotalPoints(prev => prev + ageBonusPoints);
         setBonusPoints(ageBonusPoints);
-        setShowAgeBonusPopup(true);
-        
-        toast({
-          title: "¡Bonus de edad!",
-          description: `¡Tu matrícula contiene tu edad! +${ageBonusPoints} puntos.`,
-        });
+        // Don't show separate age bonus popup anymore
       }
     }
   };
@@ -438,7 +437,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setErrorMessage(null);
   };
   
-  // Submit the current word - UPDATED for language support
+  // Submit the current word - UPDATED for success messages
   const submitWord = () => {
     if (currentWord.length < 3) {
       setErrorMessage(t("min_chars"));
@@ -462,8 +461,43 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     if (newScore > 0) {
+      // Check if there's an age match in the plate
+      const hasAgeBonusPoints = playerAge > 0 && 
+        licensePlate.substring(0, 4).includes(playerAge.toString());
+      
+      // Check if the word is in the opposite language
+      const isOppositeLanguage = (language === 'es' && newScore === 200) || 
+                               (language === 'en' && newScore === 200);
+      
       setScore(newScore);
       setTotalPoints(prev => prev + newScore);
+      
+      // Generate appropriate success message
+      let successMsg = t("word_accepted");
+      
+      if (isOppositeLanguage) {
+        successMsg = language === 'es' ? t("english_word") : "¡PALABRA EN ESPAÑOL!";
+      } else if (newScore >= 100) {
+        successMsg = t("perfect");
+      } else if (newScore >= 75) {
+        successMsg = t("excellent");
+      } else if (newScore >= 50) {
+        successMsg = t("very_good");
+      }
+      
+      // Generate detailed explanation
+      const explanation = generateExplanation(
+        currentWord,
+        newScore,
+        plateConsonants,
+        hasAgeBonusPoints,
+        isOppositeLanguage
+      );
+      
+      // Set success state
+      setSuccessMessage(successMsg);
+      setSuccessPoints(newScore);
+      setSuccessExplanation(explanation);
       
       // Update high score if needed
       if (newScore > highScore) {
@@ -476,29 +510,82 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setGamesPlayed(newGamesPlayed);
       localStorage.setItem("matriculabraCadabra_gamesPlayed", newGamesPlayed.toString());
       
-      let successMessage = t("word_accepted");
-      
-      if (newScore === 200) {
-        // For Spanish language, show "ENGLISH WORD!" and vice versa
-        successMessage = language === 'es' ? t("english_word") : "¡PALABRA EN ESPAÑOL!";
-      } else if (newScore >= 100) {
-        successMessage = t("perfect");
-      } else if (newScore >= 75) {
-        successMessage = t("excellent");
-      } else if (newScore >= 50) {
-        successMessage = t("very_good");
-      }
-      
-      toast({
-        title: successMessage,
-        description: `${t("points_earned")} ${newScore} ${t("points")}.`,
-      });
-      
       // Flag that we want to generate a new plate after popups close
       setIsGeneratingLicensePlate(true);
     } else {
       setErrorMessage(t("must_contain"));
     }
+  };
+  
+  // Generate explanation text based on score breakdown
+  const generateExplanation = (
+    word: string, 
+    score: number, 
+    plateConsonants: string,
+    hasAgeBonusPoints: boolean,
+    isOppositeLanguage: boolean
+  ): string => {
+    const uppercaseWord = word.toUpperCase();
+    let explanation = "";
+    
+    // Check each consonant from the plate
+    const consonantMatches = [];
+    const consonantIndices: number[] = [];
+    let inOrder = true;
+    let lastIndex = -1;
+    
+    for (let i = 0; i < plateConsonants.length; i++) {
+      const consonant = plateConsonants[i];
+      const index = uppercaseWord.indexOf(consonant);
+      
+      if (index !== -1) {
+        consonantMatches.push(consonant);
+        consonantIndices.push(index);
+        
+        // Check if consonants appear in order
+        if (lastIndex !== -1 && index <= lastIndex) {
+          inOrder = false;
+        }
+        lastIndex = index;
+      }
+    }
+    
+    // Determine base score explanation
+    if (isOppositeLanguage) {
+      explanation += language === 'es' 
+        ? "¡Palabra en inglés! +200 puntos. "
+        : "¡Palabra en español! +200 puntos. ";
+    } else {
+      // Consonant matching explanation
+      if (consonantMatches.length === 3) {
+        explanation += inOrder 
+          ? `Usaste las 3 letras (${consonantMatches.join(', ')}) en orden: +100 puntos. `
+          : `Usaste las 3 letras (${consonantMatches.join(', ')}) sin orden: +75 puntos. `;
+      } else if (consonantMatches.length === 2) {
+        explanation += inOrder 
+          ? `Usaste 2 letras (${consonantMatches.join(', ')}) en orden: +50 puntos. `
+          : `Usaste 2 letras (${consonantMatches.join(', ')}) sin orden: +25 puntos. `;
+      } else if (consonantMatches.length === 1) {
+        explanation += `Usaste 1 letra (${consonantMatches[0]}): +10 puntos. `;
+      }
+      
+      // Word length bonus
+      const lengthBonus = Math.min(50, word.length * 5);
+      explanation += `Longitud de palabra (${word.length} letras): +${lengthBonus} puntos. `;
+    }
+    
+    // Age bonus explanation
+    if (hasAgeBonusPoints) {
+      explanation += `¡La matrícula coincide con tu edad (${playerAge})!: +20 puntos. `;
+    }
+    
+    return explanation;
+  };
+  
+  const clearSuccess = () => {
+    setSuccessMessage(null);
+    setSuccessPoints(0);
+    setSuccessExplanation(null);
   };
   
   // Shuffle the consonants to help the player
@@ -514,6 +601,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   return (
     <GameContext.Provider
       value={{
+        successMessage,
+        successPoints,
+        successExplanation,
+        clearSuccess,
         licensePlate,
         plateConsonants,
         currentWord,
@@ -532,7 +623,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         playerName,
         playerAge,
         playerGender,
-        showAgeBonusPopup,
         showCompletionBanner,
         isGeneratingLicensePlate,
         selectedCarColor,
@@ -554,7 +644,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     >
       {children}
       {showBonusPopup && <BonusPopup open={showBonusPopup} onClose={closeBonusPopup} points={bonusPoints} />}
-      {showAgeBonusPopup && <AgeBonusPopup open={showAgeBonusPopup} onClose={closeAgeBonusPopup} points={bonusPoints} age={playerAge} />}
       {showCompletionBanner && <CompletionBanner open={showCompletionBanner} onClose={closeCompletionBanner} />}
     </GameContext.Provider>
   );
