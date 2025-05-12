@@ -37,46 +37,43 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
     const imagePath = getCarImagePath();
     
     return new Promise<any>((resolve) => {
-      // Load car image from path - using correct Fabric.js v6 syntax
+      // Load car image from path - using Fabric.js v6 syntax with a callback
+      // Instead of using the options object with onComplete, use the standard callback format
       FabricImage.fromURL(
-        imagePath, 
-        {
-          // This syntax matches the LoadImageOptions interface in Fabric.js v6
-          // When the image loads, this callback will be executed
-          onComplete: (img) => {
-            if (!img) {
-              console.error("Failed to load car image");
-              resolve(null);
-              return;
-            }
-            
-            // Scale and position the car image
-            const scaleFactor = 0.15 * scale; // Adjust this based on the actual image size
-            img.scale(scaleFactor);
-            
-            // Position at the center point
-            img.set({
-              left,
-              top,
-              originX: 'center',
-              originY: 'center',
-              selectable: false,
-              // Apply a shadow for a nicer look
-              shadow: new Shadow({
-                color: 'rgba(0,0,0,0.3)',
-                blur: 4 * scale,
-                offsetX: 0,
-                offsetY: 1 * scale
-              })
-            });
-            
-            if (fabricCanvas) {
-              fabricCanvas.add(img);
-              fabricCanvas.renderAll();
-            }
-            
-            resolve(img);
+        imagePath,
+        (img) => {
+          if (!img) {
+            console.error("Failed to load car image");
+            resolve(null);
+            return;
           }
+          
+          // Scale and position the car image
+          const scaleFactor = 0.15 * scale; // Adjust this based on the actual image size
+          img.scale(scaleFactor);
+          
+          // Position at the center point
+          img.set({
+            left,
+            top,
+            originX: 'center',
+            originY: 'center',
+            selectable: false,
+            // Apply a shadow for a nicer look
+            shadow: new Shadow({
+              color: 'rgba(0,0,0,0.3)',
+              blur: 4 * scale,
+              offsetX: 0,
+              offsetY: 1 * scale
+            })
+          });
+          
+          if (fabricCanvas) {
+            fabricCanvas.add(img);
+            fabricCanvas.renderAll();
+          }
+          
+          resolve(img);
         }
       );
     });
