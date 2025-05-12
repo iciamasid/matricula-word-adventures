@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { User, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface PlayerNameInputProps {
   onSave: (name: string) => void;
@@ -15,6 +16,19 @@ const PlayerNameInput: React.FC<PlayerNameInputProps> = ({ onSave, initialName =
   const [name, setName] = useState(initialName);
   const [isEditing, setIsEditing] = useState(!initialName);
   const { toast } = useToast();
+  const { t, isEnglish } = useLanguage();
+
+  // Determine theme colors based on language
+  const buttonTheme = isEnglish 
+    ? "bg-game-orange hover:bg-game-orange/90" 
+    : "bg-game-purple hover:bg-game-purple/90";
+  
+  const borderColor = isEnglish
+    ? "border-orange-400 text-orange-700 hover:bg-orange-100"
+    : "border-purple-400 text-purple-700 hover:bg-purple-100";
+  
+  const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
+  const iconColor = isEnglish ? "text-orange-600" : "text-purple-600";
 
   // Load saved name from localStorage on component mount
   useEffect(() => {
@@ -29,8 +43,8 @@ const PlayerNameInput: React.FC<PlayerNameInputProps> = ({ onSave, initialName =
   const handleSave = () => {
     if (name.trim() === "") {
       toast({
-        title: "Nombre no válido",
-        description: "Por favor, introduce tu nombre para continuar."
+        title: t("invalid_name"),
+        description: t("please_enter_name")
       });
       return;
     }
@@ -40,8 +54,8 @@ const PlayerNameInput: React.FC<PlayerNameInputProps> = ({ onSave, initialName =
     onSave(name);
     
     toast({
-      title: "¡Nombre guardado!",
-      description: `Tus puntos serán guardados como ${name}.`
+      title: t("name_saved"),
+      description: `${t("points_saved_as")} ${name}.`
     });
   };
 
@@ -62,16 +76,16 @@ const PlayerNameInput: React.FC<PlayerNameInputProps> = ({ onSave, initialName =
         {!isEditing ? (
           <>
             <div className="flex items-center flex-grow">
-              <User className="w-5 h-5 text-purple-600 mr-2" />
-              <span className="text-lg font-medium text-purple-800 kids-text">{name}</span>
+              <User className={`w-5 h-5 ${iconColor} mr-2`} />
+              <span className={`text-lg font-medium ${textColor} kids-text`}>{name}</span>
             </div>
             <Button
               size="sm"
               variant="outline"
-              className="border-purple-400 text-purple-700 hover:bg-purple-100"
+              className={borderColor}
               onClick={() => setIsEditing(true)}
             >
-              Cambiar
+              {t("edit")}
             </Button>
           </>
         ) : (
@@ -80,7 +94,7 @@ const PlayerNameInput: React.FC<PlayerNameInputProps> = ({ onSave, initialName =
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Tu nombre"
+              placeholder={t("your_name")}
               className="flex-grow kids-text"
               autoFocus
             />
@@ -88,7 +102,7 @@ const PlayerNameInput: React.FC<PlayerNameInputProps> = ({ onSave, initialName =
               onClick={handleSave}
               size="sm" 
               variant="default"
-              className="bg-game-purple hover:bg-game-purple/90"
+              className={buttonTheme}
             >
               <Check className="w-4 h-4" />
             </Button>

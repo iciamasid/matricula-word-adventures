@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { User, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface PlayerAgeInputProps {
   onSave: (age: number) => void;
@@ -15,6 +16,19 @@ const PlayerAgeInput: React.FC<PlayerAgeInputProps> = ({ onSave, initialAge }) =
   const [age, setAge] = useState<string>(initialAge?.toString() || "");
   const [isEditing, setIsEditing] = useState(!initialAge);
   const { toast } = useToast();
+  const { t, isEnglish } = useLanguage();
+
+  // Determine theme colors based on language
+  const buttonTheme = isEnglish 
+    ? "bg-game-orange hover:bg-game-orange/90" 
+    : "bg-game-purple hover:bg-game-purple/90";
+  
+  const borderColor = isEnglish
+    ? "border-orange-400 text-orange-700 hover:bg-orange-100"
+    : "border-purple-400 text-purple-700 hover:bg-purple-100";
+  
+  const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
+  const iconColor = isEnglish ? "text-orange-600" : "text-purple-600";
 
   // Load saved age from localStorage on component mount
   useEffect(() => {
@@ -30,8 +44,8 @@ const PlayerAgeInput: React.FC<PlayerAgeInputProps> = ({ onSave, initialAge }) =
     const ageNum = parseInt(age);
     if (isNaN(ageNum) || ageNum < 1 || ageNum > 120) {
       toast({
-        title: "Edad no válida",
-        description: "Por favor, introduce una edad entre 1 y 120 años."
+        title: t("invalid_age"),
+        description: t("please_enter_age")
       });
       return;
     }
@@ -41,8 +55,8 @@ const PlayerAgeInput: React.FC<PlayerAgeInputProps> = ({ onSave, initialAge }) =
     onSave(ageNum);
     
     toast({
-      title: "¡Edad guardada!",
-      description: `Tu edad (${ageNum}) ha sido guardada.`
+      title: t("age_saved"),
+      description: `${t("your_age_has_been_saved")}`
     });
   };
 
@@ -63,16 +77,16 @@ const PlayerAgeInput: React.FC<PlayerAgeInputProps> = ({ onSave, initialAge }) =
         {!isEditing ? (
           <>
             <div className="flex items-center flex-grow">
-              <User className="w-5 h-5 text-purple-600 mr-2" />
-              <span className="text-lg font-medium text-purple-800 kids-text">{age} años</span>
+              <User className={`w-5 h-5 ${iconColor} mr-2`} />
+              <span className={`text-lg font-medium ${textColor} kids-text`}>{age} {t("years")}</span>
             </div>
             <Button
               size="sm"
               variant="outline"
-              className="border-purple-400 text-purple-700 hover:bg-purple-100"
+              className={borderColor}
               onClick={() => setIsEditing(true)}
             >
-              Cambiar
+              {t("edit")}
             </Button>
           </>
         ) : (
@@ -84,7 +98,7 @@ const PlayerAgeInput: React.FC<PlayerAgeInputProps> = ({ onSave, initialAge }) =
               value={age}
               onChange={(e) => setAge(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Tu edad"
+              placeholder={t("your_age")}
               className="flex-grow kids-text"
               autoFocus
             />
@@ -92,7 +106,7 @@ const PlayerAgeInput: React.FC<PlayerAgeInputProps> = ({ onSave, initialAge }) =
               onClick={handleSave}
               size="sm" 
               variant="default"
-              className="bg-game-purple hover:bg-game-purple/90"
+              className={buttonTheme}
             >
               <Check className="w-4 h-4" />
             </Button>

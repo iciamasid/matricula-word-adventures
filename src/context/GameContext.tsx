@@ -11,6 +11,7 @@ import { motion } from "framer-motion";
 import BonusPopup from "@/components/BonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 import CompletionBanner from "@/components/CompletionBanner";
+import { useLanguage, Language } from "@/context/LanguageContext";
 
 // Ciudades del mundo con datos interesantes para niños - Updated with Spain as level 0
 const WORLD_DESTINATIONS = [
@@ -150,6 +151,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 
 export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { toast } = useToast();
+  const { language, t } = useLanguage();
   
   // Game state
   const [licensePlate, setLicensePlate] = useState("");
@@ -235,8 +237,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Only show level-up toast if it's not the initial load and level has actually increased
       if (!isInitialLoad.current && newLevel > lastLevel) {
         toast({
-          title: "¡Nivel nuevo!",
-          description: `Has alcanzado el nivel ${newLevel}. ¡Ahora viajas desde ${originDestination.city} hasta ${newDestinationInfo.city}!`,
+          title: t("new_level"),
+          description: `${t("reached_level")} ${newLevel}. ${t("now_travel")} ${originDestination.city} ${t("to")} ${newDestinationInfo.city}!`,
         });
       }
       
@@ -254,7 +256,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Save to localStorage
     localStorage.setItem("matriculabraCadabra_totalPoints", totalPoints.toString());
-  }, [totalPoints, level, toast]);
+  }, [totalPoints, level, toast, t]);
   
   // Clear error after 5 seconds
   useEffect(() => {
@@ -436,24 +438,25 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setErrorMessage(null);
   };
   
-  // Submit the current word
+  // Submit the current word - UPDATED for language support
   const submitWord = () => {
     if (currentWord.length < 3) {
-      setErrorMessage("Introduce una palabra de al menos 3 letras");
+      setErrorMessage(t("min_chars"));
       return;
     }
     
-    // Check if the word exists in our dictionary
-    if (!wordExists(currentWord)) {
-      setErrorMessage(`"${currentWord}" no es una palabra válida. Se restan 20 puntos.`);
+    // Check if the word exists in our dictionary based on the current language
+    if (!wordExists(currentWord, language)) {
+      setErrorMessage(`"${currentWord}" ${t("invalid_word")}`);
       setTotalPoints(prev => Math.max(0, prev - 20));
       return;
     }
     
-    const newScore = calculateScore(currentWord, plateConsonants);
+    // Calculate score considering the current language
+    const newScore = calculateScore(currentWord, plateConsonants, language);
     
     if (newScore < 0) {
-      setErrorMessage(`La palabra no contiene ninguna de las consonantes. Se restan ${Math.abs(newScore)} puntos.`);
+      setErrorMessage(`${t("no_consonants")} ${Math.abs(newScore)} ${t("points")}.`);
       setTotalPoints(prev => Math.max(0, prev + newScore)); // Adding negative score
       return;
     }
@@ -473,27 +476,28 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setGamesPlayed(newGamesPlayed);
       localStorage.setItem("matriculabraCadabra_gamesPlayed", newGamesPlayed.toString());
       
-      let successMessage = "¡Palabra aceptada!";
+      let successMessage = t("word_accepted");
       
       if (newScore === 200) {
-        successMessage = "¡PALABRA EN INGLÉS!";
+        // For Spanish language, show "ENGLISH WORD!" and vice versa
+        successMessage = language === 'es' ? t("english_word") : "¡PALABRA EN ESPAÑOL!";
       } else if (newScore >= 100) {
-        successMessage = "¡PERFECTO!";
+        successMessage = t("perfect");
       } else if (newScore >= 75) {
-        successMessage = "¡EXCELENTE!";
+        successMessage = t("excellent");
       } else if (newScore >= 50) {
-        successMessage = "¡MUY BIEN!";
+        successMessage = t("very_good");
       }
       
       toast({
         title: successMessage,
-        description: `Has ganado ${newScore} puntos.`,
+        description: `${t("points_earned")} ${newScore} ${t("points")}.`,
       });
       
       // Flag that we want to generate a new plate after popups close
       setIsGeneratingLicensePlate(true);
     } else {
-      setErrorMessage("La palabra debe contener al menos una consonante de la matrícula.");
+      setErrorMessage(t("must_contain"));
     }
   };
   

@@ -22,8 +22,8 @@ export function getConsonantsFromPlate(plate: string): string {
 // Get a list of possible Spanish vowels
 export const vowels = "AEIOUÁÉÍÓÚ";
 
-// Calculate score based on the word and license plate consonants
-export function calculateScore(word: string, plateConsonants: string): number {
+// Calculate score based on the word and license plate consonants, considering language
+export function calculateScore(word: string, plateConsonants: string, language: 'es' | 'en'): number {
   const uppercaseWord = word.toUpperCase();
   let score = 0;
   let foundConsonants = 0;
@@ -64,17 +64,20 @@ export function calculateScore(word: string, plateConsonants: string): number {
     score += Math.min(50, word.length * 5);
   }
   
-  // Bonus for English words
-  if (score > 0 && isEnglishWord(word)) {
-    score = 200;
+  // Bonus for words in the opposite language
+  if (score > 0) {
+    if ((language === 'es' && isEnglishWord(word)) || 
+        (language === 'en' && isSpanishWord(word))) {
+      score = 200;
+    }
   }
 
   return score;
 }
 
-// Basic check if a word might be English (simplified)
-function isEnglishWord(word: string): boolean {
-  // This is a very simplified check that considers words ending in typical English suffixes
+// Check if a word might be English (simplified)
+export function isEnglishWord(word: string): boolean {
+  // This is a simplified check that considers words ending in typical English suffixes
   // or containing typical English letter combinations
   const englishPatterns = [
     /ing$/, /tion$/, /th/, /wh/, /ph/, /gh/, /sh/, /ght$/, /ought$/, /y$/,
@@ -83,8 +86,31 @@ function isEnglishWord(word: string): boolean {
   
   const uppercaseWord = word.toUpperCase();
   
+  // Check against English word list first
+  if (ENGLISH_WORDS.has(uppercaseWord)) {
+    return true;
+  }
+  
   // Check against common English patterns
   return englishPatterns.some(pattern => pattern.test(uppercaseWord));
+}
+
+// Check if a word might be Spanish (complementary to isEnglishWord)
+export function isSpanishWord(word: string): boolean {
+  const spanishPatterns = [
+    /ón$/, /ción$/, /sión$/, /ado$/, /ido$/, /ada$/, /ida$/, /mente$/, /idad$/,
+    /aba$/, /ía$/, /ar$/, /er$/, /ir$/, /ñ/, /rr/
+  ];
+  
+  const uppercaseWord = word.toUpperCase();
+  
+  // Check against Spanish word list first
+  if (SPANISH_WORDS.has(uppercaseWord)) {
+    return true;
+  }
+  
+  // Check against common Spanish patterns
+  return spanishPatterns.some(pattern => pattern.test(uppercaseWord));
 }
 
 // Get game level from points
@@ -128,8 +154,8 @@ export function isValidWord(word: string, plateConsonants: string): boolean {
   return false;
 }
 
-// Word validation function - UPDATED to be more permissive
-export function wordExists(word: string): boolean {
+// Word validation function - UPDATED to consider language
+export function wordExists(word: string, language: 'es' | 'en'): boolean {
   // First check if word length is sufficient
   if (word.length < 3) {
     return false;
@@ -137,27 +163,43 @@ export function wordExists(word: string): boolean {
   
   const uppercaseWord = word.toUpperCase();
   
-  // Check against our dictionary first
-  if (SPANISH_WORDS.has(uppercaseWord)) {
+  // Check against our dictionaries based on language
+  if (language === 'es' && SPANISH_WORDS.has(uppercaseWord)) {
+    return true;
+  } else if (language === 'en' && ENGLISH_WORDS.has(uppercaseWord)) {
     return true;
   }
   
-  // More permissive validation - basic Spanish word structure check
-  // Check if the word has at least one vowel
-  const spanishVowels = "AEIOUÁÉÍÓÚ";
-  const hasVowel = [...uppercaseWord].some(char => spanishVowels.includes(char));
-  
-  // Common Spanish word endings
-  const commonEndings = ["AR", "ER", "IR", "ADO", "IDO", "ADA", "IDA", "MENTE", "CIÓN", "DAD", "TAD", "AL", "EZ"];
-  const hasCommonEnding = commonEndings.some(ending => uppercaseWord.endsWith(ending));
-  
-  // Common Spanish prefixes
-  const commonPrefixes = ["DES", "RE", "IN", "CON", "SUB", "SUPER", "PRE", "POST"];
-  const hasCommonPrefix = commonPrefixes.some(prefix => uppercaseWord.startsWith(prefix));
-  
-  // Accept words that have vowels and look like Spanish structure
-  // or have common Spanish word endings or prefixes
-  return hasVowel && (hasCommonEnding || hasCommonPrefix || word.length >= 4);
+  // More permissive validation based on language
+  if (language === 'es') {
+    // Spanish word structure check
+    const spanishVowels = "AEIOUÁÉÍÓÚ";
+    const hasVowel = [...uppercaseWord].some(char => spanishVowels.includes(char));
+    
+    // Common Spanish word endings
+    const commonEndings = ["AR", "ER", "IR", "ADO", "IDO", "ADA", "IDA", "MENTE", "CIÓN", "DAD", "TAD", "AL", "EZ"];
+    const hasCommonEnding = commonEndings.some(ending => uppercaseWord.endsWith(ending));
+    
+    // Common Spanish prefixes
+    const commonPrefixes = ["DES", "RE", "IN", "CON", "SUB", "SUPER", "PRE", "POST"];
+    const hasCommonPrefix = commonPrefixes.some(prefix => uppercaseWord.startsWith(prefix));
+    
+    return hasVowel && (hasCommonEnding || hasCommonPrefix || word.length >= 4);
+  } else {
+    // English word structure check
+    const englishVowels = "AEIOUY";
+    const hasVowel = [...uppercaseWord].some(char => englishVowels.includes(char));
+    
+    // Common English word endings
+    const commonEndings = ["ING", "ED", "LY", "TION", "MENT", "NESS", "FUL", "LESS", "ABLE"];
+    const hasCommonEnding = commonEndings.some(ending => uppercaseWord.endsWith(ending));
+    
+    // Common English prefixes
+    const commonPrefixes = ["RE", "UN", "IN", "DIS", "EN", "EM", "NON", "DE", "OVER"];
+    const hasCommonPrefix = commonPrefixes.some(prefix => uppercaseWord.startsWith(prefix));
+    
+    return hasVowel && (hasCommonEnding || hasCommonPrefix || word.length >= 4);
+  }
 }
 
 // Keep the existing SPANISH_WORDS set for reference
@@ -203,4 +245,28 @@ const SPANISH_WORDS = new Set([
   "TORTUGA", "COCODRILO", "PEZ", "TIBURON", "BALLENA", "DELFIN", "AGUILA", "PALOMA",
   "PINGUINO", "PULPO", "CALAMAR", "ARAÑA", "MOSCA", "ABEJA", "MARIPOSA", "HORMIGA",
   "verano", "loro"
+]);
+
+// Add ENGLISH_WORDS set
+const ENGLISH_WORDS = new Set([
+  "HOUSE", "DOG", "CAT", "TABLE", "CHAIR", "BOOK", "PAPER", "PEN", "CAR",
+  "WORLD", "TIME", "COLOR", "FOOD", "WATER", "EARTH", "FIRE", "AIR", "LIFE",
+  "LOVE", "HATE", "HAPPY", "SAD", "BIG", "SMALL", "TALL", "SHORT", "GOOD",
+  "BAD", "BLACK", "WHITE", "RED", "GREEN", "BLUE", "YELLOW", "SUN", "MOON",
+  "STAR", "SKY", "SEA", "RIVER", "MOUNTAIN", "FOREST", "TREE", "FLOWER", "FRUIT",
+  "ROAD", "STREET", "CITY", "COUNTRY", "WORLD", "MAN", "WOMAN", "BOY", "GIRL",
+  "HAND", "FOOT", "HEAD", "EYE", "NOSE", "MOUTH", "EAR", "HAIR", "TOOTH", "BOAT",
+  "TRAIN", "PLANE", "BIKE", "TRUCK", "DOOR", "WINDOW", "ROOF", "WALL",
+  "FLOOR", "KITCHEN", "BATHROOM", "ROOM", "BEDROOM", "COLD", "HOT", "SNOW", "RAIN",
+  "WIND", "CLOUD", "DAY", "NIGHT", "MORNING", "AFTERNOON", "HOUR", "MINUTE", "SECOND",
+  "WEEK", "MONTH", "YEAR", "CENTURY", "JOB", "SCHOOL", "UNIVERSITY", "STORE",
+  "HOSPITAL", "BANK", "LETTER", "PHONE", "TELEVISION", "COMPUTER", "INTERNET",
+  "MUSIC", "MOVIE", "SPORT", "FOOTBALL", "BASKETBALL", "TENNIS", "SWIMMING", "FAMILY",
+  "FRIEND", "NEIGHBOR", "BOSS", "COLLEAGUE", "TEACHER", "STUDENT", "DOCTOR", "PATIENT",
+  "POLICE", "THIEF", "JUDGE", "LAWYER", "COOK", "WAITER", "SUMMER", "PARROT",
+  "LIKE", "WANT", "MAKE", "HAVE", "BE", "EAT", "DRINK", "SLEEP", "TALK",
+  "SING", "DANCE", "JUMP", "RUN", "WALK", "PLAY", "READ", "WRITE", "LOOK",
+  "LISTEN", "THINK", "DREAM", "WORK", "STUDY", "TEACH", "LEARN", "TRAVEL", "DRIVE",
+  "SWIM", "COOK", "CLEAN", "BUY", "SELL", "PAY", "WIN", "LOSE", "SEARCH",
+  "FIND", "OPEN", "CLOSE", "START", "END", "ENTER", "EXIT", "CLIMB", "DESCEND"
 ]);

@@ -3,19 +3,20 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useGame } from "@/context/GameContext";
-import { ArrowRight, Check } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
-// Array of colors for the consonant squares with more game-themed colors
-const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
 const WordInput: React.FC = () => {
   const {
     currentWord,
     setCurrentWord,
     submitWord,
     plateConsonants,
-    score
   } = useGame();
+  
+  const { t, isEnglish } = useLanguage();
+  
   const inputRef = useRef<HTMLInputElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   
@@ -42,6 +43,16 @@ const WordInput: React.FC = () => {
     setTimeout(() => setIsAnimating(false), 500);
   };
   
+  // Determine border color based on language
+  const borderColor = isEnglish 
+    ? "border-orange-400" 
+    : "border-purple-400";
+  
+  // Determine gradient colors for button based on language
+  const buttonGradient = isEnglish
+    ? "from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800"
+    : "from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800";
+  
   return (
     <div className="w-full max-w-xs relative">      
       <div className="flex gap-2">
@@ -51,8 +62,8 @@ const WordInput: React.FC = () => {
           value={currentWord} 
           onChange={handleInputChange} 
           onKeyDown={handleKeyDown} 
-          placeholder="Escribe aquí" 
-          className="flex-1 text-center font-bold text-3xl py-6 uppercase border-2 border-purple-400 shadow-md kids-text" 
+          placeholder={t("type_here")} 
+          className={`flex-1 text-center font-bold text-3xl py-6 uppercase border-2 ${borderColor} shadow-md kids-text`} 
           autoComplete="off" 
         />
         <motion.div 
@@ -65,7 +76,7 @@ const WordInput: React.FC = () => {
         >
           <Button 
             onClick={handleSubmit} 
-            className={`h-full bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-2xl ${isAnimating ? "animate-bounce" : ""}`} 
+            className={`h-full bg-gradient-to-r ${buttonGradient} text-2xl ${isAnimating ? "animate-bounce" : ""}`} 
             disabled={currentWord.trim().length < 3} 
             size="lg"
           >

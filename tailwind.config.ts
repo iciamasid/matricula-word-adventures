@@ -67,6 +67,7 @@ export default {
 					gray: '#95A5A6',
 					dark: '#34495E'
 				},
+				bba7ca: '#bba7ca', // Adding the specific purple background color as a named color
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

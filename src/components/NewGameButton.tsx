@@ -1,13 +1,16 @@
+
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
 import { Plus, Star, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/context/LanguageContext";
 
 const NewGameButton: React.FC = () => {
   const { generateNewPlate, gamesPlayed, showBonusPopup, showAgeBonusPopup, showCompletionBanner, setIsGeneratingLicensePlate } = useGame();
   const [isAnimating, setIsAnimating] = useState(false);
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const { t, isEnglish } = useLanguage();
   
   // Check if any popups are open
   const popupsOpen = showBonusPopup || showAgeBonusPopup || showCompletionBanner;
@@ -36,6 +39,13 @@ const NewGameButton: React.FC = () => {
     }, 3000);
   };
   
+  // Determine gradient colors based on language
+  const buttonGradient = isEnglish
+    ? "from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800"
+    : "from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800";
+  
+  const starColor = isEnglish ? "text-orange-400" : "text-game-yellow";
+  
   return (
     <motion.div 
       className="text-center space-y-2 bg-white p-3 rounded-lg shadow-lg w-full max-w-xs mb-2"
@@ -47,7 +57,7 @@ const NewGameButton: React.FC = () => {
         disabled={buttonDisabled}
         className={`px-4 py-4 ${buttonDisabled 
           ? 'bg-gray-400 cursor-not-allowed' 
-          : 'bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800'
+          : `bg-gradient-to-r ${buttonGradient}`
         } w-full ${isAnimating ? "animate-bounce" : ""}`}
       >
         <div className="relative w-full flex items-center justify-center">
@@ -84,19 +94,19 @@ const NewGameButton: React.FC = () => {
           <span className={isAnimating ? "ml-2" : ""}>
             {isAnimating ? (
               <div className="flex items-center">
-                <span>Generando</span>
+                <span>{t("generating")}</span>
                 <Loader2 className="ml-2 h-4 w-4 animate-spin" />
               </div>
             ) : (
-              "Nueva Matrícula"
+              t("new_plate")
             )}
           </span>
         </div>
       </Button>
       
       <div className="flex items-center justify-center text-xs text-gray-500">
-        <Star className="w-3 h-3 mr-1 text-game-yellow" />
-        <span>{gamesPlayed} partidas jugadas</span>
+        <Star className={`w-3 h-3 mr-1 ${starColor}`} />
+        <span>{gamesPlayed} {t("games_played")}</span>
       </div>
     </motion.div>
   );
