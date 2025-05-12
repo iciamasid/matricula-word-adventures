@@ -1,4 +1,3 @@
-
 import { Circle, Rect, Polygon, Shadow } from 'fabric';
 
 // Create a more detailed car object using Fabric.js shapes

@@ -184,7 +184,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     }
   };
 
-  // Start animation along the path
+  // Handle Play button click - Start animation along the path
   const handlePlay = () => {
     if (path.length === 0) {
       toast({
@@ -213,8 +213,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
         const obj = objects[i];
         // Fix type comparison by using instanceof instead of direct equality
         if ((obj instanceof Rect && obj !== startPointObj && obj !== endPointObj) || 
-            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && 
-             obj instanceof Circle && obj.radius !== 10) ||
+            (obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10) ||
             (obj instanceof Polygon)) {
           fabricCanvas.remove(obj);
         }
