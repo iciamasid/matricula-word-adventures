@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import PlayerNameInput from "@/components/PlayerNameInput";
@@ -8,7 +7,6 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-
 const PlayerRegistration: React.FC = () => {
   const {
     playerName,
@@ -27,27 +25,19 @@ const PlayerRegistration: React.FC = () => {
     if (playerName && !playerGender) {
       // Simple Spanish name gender detection (not comprehensive)
       const nameToCheck = playerName.trim().toLowerCase();
-      if (nameToCheck.endsWith('a') || 
-          nameToCheck === 'mercedes' || 
-          nameToCheck === 'dolores' || 
-          nameToCheck === 'ines' || 
-          nameToCheck === 'inés' ||
-          nameToCheck === 'beatriz' ||
-          nameToCheck === 'elena') {
+      if (nameToCheck.endsWith('a') || nameToCheck === 'mercedes' || nameToCheck === 'dolores' || nameToCheck === 'ines' || nameToCheck === 'inés' || nameToCheck === 'beatriz' || nameToCheck === 'elena') {
         setPlayerGender('niña');
       } else {
         setPlayerGender('niño');
       }
     }
   }, [playerName, playerGender, setPlayerGender]);
-
   useEffect(() => {
     // If we have both name and age, hide the form
     if (playerName && playerAge) {
       setShowForm(false);
     }
   }, [playerName, playerAge]);
-
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
   };
@@ -62,16 +52,16 @@ const PlayerRegistration: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [selectedCarColor]);
-
-  return (
-    <>
-      {showForm ? (
-        <motion.div
-          className="w-full max-w-md bg-purple-100/90 rounded-lg p-5 shadow-lg mb-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+  return <>
+      {showForm ? <motion.div className="w-full max-w-md bg-purple-100/90 rounded-lg p-5 shadow-lg mb-4" initial={{
+      opacity: 0,
+      y: -20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.5
+    }}>
           <h2 className="text-xl text-purple-800 kids-text mb-4 text-center font-normal">
             ¡Bienvenido a Matriculabra Cadabra!
           </h2>
@@ -83,27 +73,15 @@ const PlayerRegistration: React.FC = () => {
             <PlayerAgeInput onSave={setPlayerAge} initialAge={playerAge} />
             
             {/* Replace gender selection with car selection */}
-            <motion.div
-              className="bg-white/90 rounded-lg p-4 shadow-md"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <p className="text-lg font-medium text-purple-800 kids-text mb-2">Selecciona tu coche</p>
-              <CarCustomization 
-                isOpen={true} 
-                onToggle={() => {}} 
-                embedded={true}
-              />
-            </motion.div>
+            
           </div>
-        </motion.div>
-      ) : (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md flex flex-col gap-3 mb-4"
-        >
+        </motion.div> : <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} className="w-full max-w-md flex flex-col gap-3 mb-4">
           {/* Player info display */}
           <motion.div className="flex justify-between items-center rounded-lg p-3 shadow-md bg-violet-200">
             <div className="flex items-center">
@@ -112,43 +90,27 @@ const PlayerRegistration: React.FC = () => {
                 {playerName}, {playerAge} años
               </span>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-purple-400 text-purple-700 hover:bg-purple-100"
-              onClick={() => setShowForm(true)}
-            >
+            <Button size="sm" variant="outline" className="border-purple-400 text-purple-700 hover:bg-purple-100" onClick={() => setShowForm(true)}>
               Editar
             </Button>
           </motion.div>
           
           {/* Car selection button */}
-          <motion.div 
-            className="flex justify-between items-center rounded-lg p-3 shadow-md bg-violet-200 cursor-pointer"
-            onClick={toggleCarCustomization}
-          >
+          <motion.div className="flex justify-between items-center rounded-lg p-3 shadow-md bg-violet-200 cursor-pointer" onClick={toggleCarCustomization}>
             <div className="flex items-center">
               <Car className="h-5 w-5 mr-2 text-purple-700" />
               <span className="font-medium text-purple-800 kids-text text-xl">
                 {selectedCarColor ? "Tu coche seleccionado" : "Selecciona tu coche"}
               </span>
             </div>
-            <Button
-              size="sm"
-              variant="outline"
-              className="border-purple-400 text-purple-700 hover:bg-purple-100"
-              onClick={toggleCarCustomization}
-            >
+            <Button size="sm" variant="outline" className="border-purple-400 text-purple-700 hover:bg-purple-100" onClick={toggleCarCustomization}>
               {showCarCustomization ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             </Button>
           </motion.div>
           
           {/* Car customization panel */}
           <CarCustomization isOpen={showCarCustomization} onToggle={toggleCarCustomization} />
-        </motion.div>
-      )}
-    </>
-  );
+        </motion.div>}
+    </>;
 };
-
 export default PlayerRegistration;
