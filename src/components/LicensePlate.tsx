@@ -26,15 +26,22 @@ const LicensePlate: React.FC = () => {
       animate={{ scale: 1, opacity: 1 }} 
       transition={{ duration: 0.5 }}
     >
-      {/* Car image centered above the license plate */}
-      <div className="flex justify-center w-full mb-3">
+      {/* Car image centered above the license plate with horizontal loop animation */}
+      <div className="flex justify-center w-full mb-3 relative h-16 overflow-hidden">
         {selectedCarColor && (
           <motion.img 
             src={`/lovable-uploads/${selectedCarColor.image}`} 
             alt="Coche personalizado" 
-            animate={{ y: [0, -3, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="h-16 w-auto"
+            initial={{ x: -200 }}
+            animate={{ 
+              x: ["-100%", "100%"] 
+            }}
+            transition={{ 
+              duration: 6, 
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="h-16 w-auto absolute"
           />
         )}
         
@@ -42,9 +49,16 @@ const LicensePlate: React.FC = () => {
           <motion.img 
             src="/lovable-uploads/coche_portada.gif" 
             alt="Coche predeterminado" 
-            animate={{ y: [0, -3, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="h-16 w-auto"
+            initial={{ x: -200 }}
+            animate={{ 
+              x: ["-100%", "100%"] 
+            }}
+            transition={{ 
+              duration: 6, 
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="h-16 w-auto absolute"
           />
         )}
       </div>

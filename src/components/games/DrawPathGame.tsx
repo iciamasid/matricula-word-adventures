@@ -12,6 +12,7 @@ import { createCar, createEndPoint, createStartPoint } from './utils/carUtils';
 import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
+import { useGame } from '@/context/GameContext';
 
 interface DrawPathGameProps {
   onError?: (message: string) => void;
@@ -19,6 +20,7 @@ interface DrawPathGameProps {
 }
 
 const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
+  const { selectedCarColor } = useGame();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -156,8 +158,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
         }
       }
       
-      // Re-add the car at the starting position
-      const car = createCar(path[0].x, path[0].y); // Start exactly at the first point of the path
+      // Get the color from selectedCarColor
+      const carColorValue = selectedCarColor ? selectedCarColor.color : '#E74C3C';
+      
+      // Re-add the car at the starting position with the selected color
+      const car = createCar(path[0].x, path[0].y, carColorValue);
       fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
       animationCarRef.current = car;
       fabricCanvas.renderAll();
@@ -196,8 +201,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       const startPoint = createStartPoint(50, 50);
       fabricCanvas.add(startPoint);
       
-      // Add car back to start - ahora con color rojo
-      const car = createCar(50, 50);
+      // Get the color from selectedCarColor
+      const carColorValue = selectedCarColor ? selectedCarColor.color : '#E74C3C';
+      
+      // Add car back to start with selected color
+      const car = createCar(50, 50, carColorValue);
       fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight);
       carObjectsRef.current = car;
       animationCarRef.current = car;
