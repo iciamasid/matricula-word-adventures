@@ -3,6 +3,7 @@ import React from 'react';
 import { Progress } from "@/components/ui/progress";
 import { Trophy, AlertCircle, Globe } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from '@/context/LanguageContext';
 
 interface GameStatusIndicatorsProps {
   isInitializing: boolean;
@@ -23,6 +24,8 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
   interpolatedPathLength,
   animationCompleted
 }) => {
+  const { isEnglish } = useLanguage();
+  
   return (
     <>
       {/* Loading indicator */}
@@ -34,7 +37,9 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
         >
           <div className="flex items-center justify-center gap-2">
             <div className="w-8 h-8 border-4 border-purple-800 border-t-transparent rounded-full animate-spin"></div>
-            <p className="font-bold text-purple-800 kids-text text-xl">Cargando...</p>
+            <p className="font-bold text-purple-800 kids-text text-xl">
+              {isEnglish ? "Loading..." : "Cargando..."}
+            </p>
           </div>
         </motion.div>
       )}
@@ -44,7 +49,9 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
         <div className="text-center p-3 bg-red-100 rounded-lg border-2 border-red-300 shadow-md">
           <div className="flex items-center justify-center gap-2">
             <AlertCircle className="w-7 h-7 text-red-600" />
-            <p className="font-bold text-red-600 kids-text text-lg">¡Ups! No se pudo cargar el juego 🙁</p>
+            <p className="font-bold text-red-600 kids-text text-lg">
+              {isEnglish ? "Oops! The game couldn't load 🙁" : "¡Ups! No se pudo cargar el juego 🙁"}
+            </p>
           </div>
         </div>
       )}
@@ -60,7 +67,9 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
         >
           <div className="flex items-center justify-center gap-2">
             <span role="img" aria-label="pencil" className="text-2xl">✏️</span>
-            <p className="font-bold text-green-700 kids-text text-xl">¡Dibuja un camino para el coche!</p>
+            <p className="font-bold text-green-700 kids-text text-xl">
+              {isEnglish ? "Draw a path for the car!" : "¡Dibuja un camino para el coche!"}
+            </p>
           </div>
         </motion.div>
       )}
@@ -83,7 +92,9 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
             >
               <Globe className="w-7 h-7 text-blue-600" />
             </motion.div>
-            <p className="font-bold text-yellow-700 kids-text text-xl">¡Has llegado a la meta! 🎉</p>
+            <p className="font-bold text-yellow-700 kids-text text-xl">
+              {isEnglish ? "You've reached the destination! 🎉" : "¡Has llegado a la meta! 🎉"}
+            </p>
           </div>
         </motion.div>
       )}

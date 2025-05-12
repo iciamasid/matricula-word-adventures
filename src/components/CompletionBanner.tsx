@@ -6,6 +6,7 @@ import { Trophy, Star, Rocket, Globe, PartyPopper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
 import confetti from "canvas-confetti";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CompletionBannerProps {
   open: boolean;
@@ -17,6 +18,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
   onClose
 }) => {
   const { playerName, playerGender, totalPoints } = useGame();
+  const { t, isEnglish } = useLanguage();
   const [confettiLaunched, setConfettiLaunched] = useState(false);
   
   // Create confetti effect
@@ -69,7 +71,11 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
     }
   }, [open, onClose]);
   
-  const name = playerName || (playerGender === "niño" ? "campeón" : playerGender === "niña" ? "campeona" : "campeón/a");
+  const name = playerName || (
+    playerGender === "niño" ? (isEnglish ? "champion" : "campeón") : 
+    playerGender === "niña" ? (isEnglish ? "champion" : "campeona") : 
+    (isEnglish ? "champion" : "campeón/a")
+  );
   
   return (
     <AnimatePresence>
@@ -119,7 +125,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                     >
                       <img 
                         src="/lovable-uploads/fiesta.gif" 
-                        alt="Celebración" 
+                        alt={isEnglish ? "Celebration" : "Celebración"}
                         className="w-32 h-32 object-contain"
                       />
                     </motion.div>
@@ -129,7 +135,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                       animate={{ scale: [1, 1.05, 1] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      ¡FELICIDADES {name.toUpperCase()}!
+                      {isEnglish ? `CONGRATULATIONS ${name.toUpperCase()}!` : `¡FELICIDADES ${name.toUpperCase()}!`}
                     </motion.h2>
                     
                     <motion.div
@@ -139,7 +145,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                     >
                       <Trophy className="h-8 w-8 text-yellow-300" />
                       <h3 className="text-3xl font-bold text-yellow-300 kids-text">
-                        ¡HAS COMPLETADO LA VUELTA AL MUNDO!
+                        {isEnglish ? "YOU'VE COMPLETED THE WORLD TOUR!" : "¡HAS COMPLETADO LA VUELTA AL MUNDO!"}
                       </h3>
                       <Trophy className="h-8 w-8 text-yellow-300" />
                     </motion.div>
@@ -149,11 +155,13 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                       animate={{ y: [0, 5, 0] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      <p className="text-2xl text-white kids-text mb-2">Has conseguido un total de</p>
+                      <p className="text-2xl text-white kids-text mb-2">
+                        {isEnglish ? "You've earned a total of" : "Has conseguido un total de"}
+                      </p>
                       <div className="flex items-center justify-center gap-2">
                         <Star className="h-6 w-6 text-yellow-300" />
                         <span className="text-4xl font-bold text-yellow-300 kids-text">
-                          {totalPoints} PUNTOS
+                          {totalPoints} {isEnglish ? "POINTS" : "PUNTOS"}
                         </span>
                         <Star className="h-6 w-6 text-yellow-300" />
                       </div>
@@ -191,7 +199,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                         onClick={onClose}
                         className="bg-blue-600 hover:bg-blue-700 text-white text-xl px-8 py-3 rounded-full kids-text"
                       >
-                        ¡Seguir jugando!
+                        {isEnglish ? "Keep playing!" : "¡Seguir jugando!"}
                       </Button>
                     </motion.div>
                   </div>

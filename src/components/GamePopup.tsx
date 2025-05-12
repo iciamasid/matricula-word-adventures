@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import { Award, Gift, Star, Check, X, Trophy } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface GamePopupProps {
   open: boolean;
@@ -21,6 +22,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
   points = 0, 
   level 
 }) => {
+  const { isEnglish } = useLanguage();
   const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
   
   // Generate random stars for background animation
@@ -160,7 +162,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
                       animate={{ y: [0, -10, 0] }}
                       transition={{ duration: 2, repeat: Infinity }}
                     >
-                      {points > 0 ? `+${points} PUNTOS` : `${points} PUNTOS`}
+                      {points > 0 ? `+${points} ${isEnglish ? "POINTS" : "PUNTOS"}` : `${points} ${isEnglish ? "POINTS" : "PUNTOS"}`}
                     </motion.h3>
                   )}
                   
@@ -171,7 +173,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
                         animate={{ scale: [1, 1.2, 1] }}
                         transition={{ duration: 1, repeat: Infinity }}
                       >
-                        ¡NIVEL {level}!
+                        {isEnglish ? `LEVEL ${level}!` : `¡NIVEL ${level}!`}
                       </motion.div>
                       <div className="flex justify-center space-x-2 mt-2">
                         {[1, 2, 3].map((i) => (

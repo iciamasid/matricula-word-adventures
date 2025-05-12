@@ -169,7 +169,7 @@ export const translations: Record<string, Record<Language, string>> = {
   },
   'english_word': {
     es: '¡PALABRA EN INGLÉS!',
-    en: 'ENGLISH WORD!'
+    en: 'SPANISH WORD!'
   },
   'perfect': {
     es: '¡PERFECTO!',
@@ -383,6 +383,28 @@ export const translations: Record<string, Record<Language, string>> = {
     es: '¡Este país es un misterio por descubrir!',
     en: 'This country is a mystery waiting to be discovered!'
   },
+  
+  // Success banners
+  'success_great_job': {
+    es: '¡BUEN TRABAJO!',
+    en: 'GREAT JOB!'
+  },
+  'success_well_done': {
+    es: '¡MUY BIEN!',
+    en: 'WELL DONE!'
+  },
+  'success_fantastic': {
+    es: '¡FANTÁSTICO!',
+    en: 'FANTASTIC!'
+  },
+  'success_amazing': {
+    es: '¡INCREÍBLE!',
+    en: 'AMAZING!'
+  },
+  'success_bonus': {
+    es: '¡BONUS!',
+    en: 'BONUS!'
+  }
 };
 
 // Create the provider component

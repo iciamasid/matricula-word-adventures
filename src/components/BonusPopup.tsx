@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Award, Gift, Star } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface BonusPopupProps {
   open: boolean;
@@ -13,6 +14,7 @@ interface BonusPopupProps {
 
 const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
   const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
+  const { language, isEnglish } = useLanguage();
   
   // Generate random stars for background animation
   useEffect(() => {
@@ -33,6 +35,16 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
       return () => clearTimeout(timer);
     }
   }, [open, onClose]);
+
+  const colorTheme = isEnglish ? {
+    gradient: "from-orange-700 via-orange-600 to-orange-800",
+    border: "border-yellow-400",
+    button: "bg-yellow-400 hover:bg-yellow-300 text-orange-900"
+  } : {
+    gradient: "from-purple-700 via-purple-600 to-purple-800",
+    border: "border-yellow-400",
+    button: "bg-yellow-400 hover:bg-yellow-300 text-purple-900"
+  };
 
   return (
     <AnimatePresence>
@@ -73,7 +85,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
               </div>
               
               {/* Main bonus content */}
-              <div className="bg-gradient-to-br from-purple-700 via-purple-600 to-purple-800 p-8 rounded-2xl border-4 border-yellow-400 shadow-[0_0_30px_rgba(168,85,247,0.7)] relative z-10">
+              <div className={`bg-gradient-to-br ${colorTheme.gradient} p-8 rounded-2xl border-4 ${colorTheme.border} shadow-[0_0_30px_rgba(168,85,247,0.7)] relative z-10`}>
                 <div className="text-center">
                   <motion.div 
                     animate={{ scale: [1, 1.2, 1], rotate: [0, 5, 0, -5, 0] }}
@@ -90,7 +102,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   >
-                    ¡NÚMERO DE LA SUERTE!
+                    {isEnglish ? "LUCKY NUMBER!" : "¡NÚMERO DE LA SUERTE!"}
                   </motion.h2>
                   
                   <div className="flex justify-center items-center my-4">
@@ -131,7 +143,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    ¡BONUS DE {points} PUNTOS!
+                    {isEnglish ? `BONUS OF ${points} POINTS!` : `¡BONUS DE ${points} PUNTOS!`}
                   </motion.h3>
                   
                   <div className="flex justify-center space-x-2 mb-4">
@@ -158,10 +170,10 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 400, damping: 10 }}
                     onClick={onClose}
-                    className="bg-yellow-400 hover:bg-yellow-300 text-purple-900 font-bold py-3 px-8 rounded-full shadow-lg mt-4 flex items-center mx-auto"
+                    className={`${colorTheme.button} font-bold py-3 px-8 rounded-full shadow-lg mt-4 flex items-center mx-auto`}
                   >
                     <Award className="mr-2" />
-                    ¡Fantástico!
+                    {isEnglish ? "Great!" : "¡Fantástico!"}
                   </motion.button>
                 </div>
               </div>

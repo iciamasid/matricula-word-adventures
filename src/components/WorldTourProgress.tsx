@@ -24,7 +24,7 @@ const getLevelFlag = (level: number) => {
 
 const WorldTourProgress = () => {
   const { level } = useGame();
-  const { t } = useLanguage();
+  const { t, isEnglish } = useLanguage();
   const [animatingLevel, setAnimatingLevel] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
 
@@ -65,15 +65,20 @@ const WorldTourProgress = () => {
       clearInterval(loopTimer);
     };
   }, [level]);
+
+  // Set background color based on language
+  const bgColor = isEnglish ? "bg-orange-100" : "bg-purple-100";
+  const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
+  const subtextColor = isEnglish ? "text-orange-700" : "text-purple-700";
   
   return (
     <motion.div 
-      className="w-full p-4 rounded-lg shadow-lg bg-purple-100"
+      className={`w-full p-4 rounded-lg shadow-lg ${bgColor}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
     >
-      <h3 className="text-xl text-center text-purple-800 kids-text mb-3">{t('world_tour_progress')}</h3>
+      <h3 className={`text-xl text-center ${textColor} kids-text mb-3`}>{t('world_tour_progress')}</h3>
       <div className="relative pt-4 pb-8">
         <Progress 
           value={animatingLevel / 10 * 100} 
