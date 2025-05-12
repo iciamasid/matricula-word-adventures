@@ -2,16 +2,12 @@
 import React from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
-import { useLanguage } from "@/context/LanguageContext";
 
 const SuccessAlert: React.FC = () => {
   const { score, submitSuccess, clearSubmitSuccess } = useGame();
-  const { isEnglish } = useLanguage();
   
   // Only show the kilometers value
-  const explanation = isEnglish 
-    ? `${score} Kms` 
-    : `${score} Kms`;
+  const explanation = `${score} Kms`;
   
   return (
     <GamePopup

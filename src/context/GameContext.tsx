@@ -185,6 +185,12 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isGeneratingLicensePlate, setIsGeneratingLicensePlate] = useState(false);
   const [selectedCarColor, setSelectedCarColor] = useState<CarColor | null>(null);
   
+  // Add these state variables to track potential bonuses
+  const [hasPotentialBonusPlate, setHasPotentialBonusPlate] = useState(false);
+  const [potentialBonusPoints, setPotentialBonusPoints] = useState(0);
+  const [hasPotentialAgeBonusPlate, setHasPotentialAgeBonusPlate] = useState(false);
+  const [potentialAgeBonusPoints, setPotentialAgeBonusPoints] = useState(0);
+  
   // Add the missing state variables that were causing the error
   const [prevLevel, setPrevLevel] = useState(0);
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -225,8 +231,11 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (savedAge) setPlayerAge(parseInt(savedAge));
     if (savedGender) setPlayerGender(savedGender);
     
-    // Only generate a new plate if we're not navigating between pages
-    if (!isNavigating.current) {
+    // Always generate a new plate on initial app load
+    const lastPlate = localStorage.getItem("matriculabraCadabra_plate");
+    
+    if (!lastPlate || !isNavigating.current) {
+      // Generate a new license plate on first access or if explicitly requested
       doGenerateNewPlate();
     } else {
       // Just load the last known plate without generating a new one
@@ -355,7 +364,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     generateNewPlate();
   };
   
-  // Actual plate generation logic
+  // Actual plate generation logic - UPDATED to track potential bonuses instead of showing them
   const doGenerateNewPlate = () => {
     let newPlate = "";
     // Increase bonus counter with each game
@@ -366,12 +375,20 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const newAgeCounter = ageCounter + 1;
     setAgeCounter(newAgeCounter);
     
+    // Reset potential bonus flags
+    setHasPotentialBonusPlate(false);
+    setHasPotentialAgeBonusPlate(false);
+    
     // Check if it's time for a bonus (6666) plate - every 5-10 games
     if (newBonusCounter >= 5 && newBonusCounter <= 10) {
       // Generate a plate with "6666" in it
       newPlate = "6666" + generateRandomConsonants();
       // Reset the counter
       setBonusCounter(0);
+      
+      // Set potential bonus flag instead of showing popup immediately
+      setHasPotentialBonusPlate(true);
+      setPotentialBonusPoints(500);
     }
     // Check if it's time for an age bonus - every 8-10 games
     else if (playerAge > 0 && newAgeCounter >= 8 && newAgeCounter <= 10) {
@@ -386,6 +403,10 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       newPlate = ageString + randomDigits + generateRandomConsonants();
       // Reset the age counter
       setAgeCounter(0);
+      
+      // Set potential age bonus flag instead of showing popup immediately
+      setHasPotentialAgeBonusPlate(true);
+      setPotentialAgeBonusPoints(20);
     } else {
       // Generate a normal plate
       newPlate = generateLicensePlate();
@@ -403,32 +424,6 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Save plate and consonants to localStorage for retrieval after navigation
     localStorage.setItem("matriculabraCadabra_plate", newPlate);
     localStorage.setItem("matriculabraCadabra_plateConsonants", newPlateConsonants);
-    
-    // Check if plate contains "6666" and award bonus points
-    if (newPlate.substring(0, 4) === "6666") {
-      const bonusPointsValue = 500;
-      setTotalPoints(prev => prev + bonusPointsValue);
-      setBonusPoints(bonusPointsValue);
-      setShowBonusPopup(true);
-    }
-    
-    // Check if plate contains player's age and award bonus points
-    if (playerAge > 0) {
-      const ageString = playerAge.toString();
-      const plateNumbers = newPlate.substring(0, 4);
-      
-      if (plateNumbers.includes(ageString)) {
-        const ageBonusPoints = 20;
-        setTotalPoints(prev => prev + ageBonusPoints);
-        setBonusPoints(ageBonusPoints);
-        setShowAgeBonusPopup(true);
-        
-        toast({
-          title: "¡Bonus de edad!",
-          description: `¡Tu matrícula contiene tu edad! +${ageBonusPoints} puntos.`,
-        });
-      }
-    }
   };
   
   // Generate a new license plate - now just sets a flag when we're ready to generate
@@ -481,7 +476,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setErrorMessage(null);
   };
   
-  // Submit the current word - UPDATED for language support
+  // Submit the current word - UPDATED to handle bonuses after submission
   const submitWord = () => {
     if (currentWord.length < 3) {
       setErrorMessage(t("min_chars"));
@@ -532,7 +527,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         successMessage = t("very_good");
       }
       
-      // Establecer el mensaje de éxito para mostrar el popup
+      // Set the success message to show the popup
       setSubmitSuccess(successMessage);
       
       toast({
@@ -540,14 +535,30 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         description: `${t("points_earned")} ${newScore} ${t("points")}.`,
       });
       
-      // Auto-cerrar el popup de éxito después de 3 segundos
+      // ONLY NOW, after a successful word submission, check if we have potential bonuses to award
+      if (hasPotentialBonusPlate) {
+        setTotalPoints(prev => prev + potentialBonusPoints);
+        setBonusPoints(potentialBonusPoints);
+        setShowBonusPopup(true);
+        setHasPotentialBonusPlate(false);
+      }
+      
+      if (hasPotentialAgeBonusPlate) {
+        setTotalPoints(prev => prev + potentialAgeBonusPoints);
+        setBonusPoints(potentialAgeBonusPoints);
+        setShowAgeBonusPopup(true);
+        setHasPotentialAgeBonusPlate(false);
+        
+        toast({
+          title: "¡Bonus de edad!",
+          description: `¡Tu matrícula contiene tu edad! +${potentialAgeBonusPoints} puntos.`,
+        });
+      }
+      
+      // Auto-close the success popup after 3 seconds
       setTimeout(() => {
         setSubmitSuccess(null);
       }, 3000);
-      
-      // Flag that we want to generate a new plate only after successfully submitting a word
-      // But don't automatically generate a new plate - wait for user to click the button
-      // setIsGeneratingLicensePlate(true); -- REMOVED to prevent automatic generation
     } else {
       setErrorMessage(t("must_contain"));
     }
@@ -563,7 +574,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return array.join("");
   };
   
-  // Nuevo estado para manejar el éxito al enviar una palabra
+  // State for handling submit success
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   
   return (
