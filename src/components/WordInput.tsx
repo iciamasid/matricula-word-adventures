@@ -2,10 +2,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ArrowRight, Send } from "lucide-react";
 import { useGame } from "@/context/GameContext";
-import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const WordInput: React.FC = () => {
   const {
@@ -16,6 +17,7 @@ const WordInput: React.FC = () => {
   } = useGame();
   
   const { t, isEnglish } = useLanguage();
+  const isMobile = useIsMobile();
   
   const inputRef = useRef<HTMLInputElement>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -120,6 +122,9 @@ const WordInput: React.FC = () => {
     ? "from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800"
     : "from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800";
   
+  // Set font size based on mobile view
+  const fontSize = isMobile ? "text-xl" : "text-3xl";
+  
   return (
     <div className="w-full max-w-xs relative">      
       <div className="flex gap-2">
@@ -130,7 +135,7 @@ const WordInput: React.FC = () => {
           onChange={handleInputChange} 
           onKeyDown={handleKeyDown} 
           placeholder={placeholderText || " "} 
-          className={`flex-1 text-center font-bold text-3xl py-6 uppercase border-2 ${borderColor} shadow-md kids-text`} 
+          className={`flex-1 text-center font-bold py-6 uppercase border-2 ${borderColor} shadow-md kids-text ${fontSize}`} 
           autoComplete="off" 
         />
         <motion.div 
@@ -143,7 +148,7 @@ const WordInput: React.FC = () => {
         >
           <Button 
             onClick={handleSubmit} 
-            className={`h-full bg-gradient-to-r ${buttonGradient} text-2xl ${isAnimating ? "animate-bounce" : ""}`} 
+            className={`h-full bg-gradient-to-r ${buttonGradient} ${isMobile ? "text-xl" : "text-2xl"} ${isAnimating ? "animate-bounce" : ""}`} 
             disabled={currentWord.trim().length < 3} 
             size="lg"
           >

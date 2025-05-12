@@ -2,7 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
-import { Award } from "lucide-react";
+import { Navigation } from "lucide-react";
 
 const TotalPointsPanel: React.FC = () => {
   const { totalPoints } = useGame();
@@ -23,10 +23,10 @@ const TotalPointsPanel: React.FC = () => {
           }} 
           transition={{ duration: 3, repeat: Infinity }}
         >
-          {/* Medal emoji with glow effect */}
+          {/* Changed to Navigation icon */}
           <div className="w-8 h-8 text-3xl text-game-green relative">
-            <span className="absolute inset-0 text-3xl animate-pulse opacity-70" style={{ filter: 'blur(4px)' }}>🏅</span>
-            <span className="relative z-10">🏅</span>
+            <Navigation className="absolute inset-0 text-3xl animate-pulse opacity-70 text-blue-500" style={{ filter: 'blur(4px)' }} />
+            <Navigation className="relative z-10 text-blue-600" />
           </div>
         </motion.div>
       </div>

@@ -1,8 +1,7 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
-import { Star, Globe, Medal, Trophy } from "lucide-react";
+import { Navigation, Route, MapPin, Trophy } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/context/LanguageContext";
 
@@ -24,7 +23,7 @@ const ScorePanel: React.FC = () => {
   const textColorLight = isEnglish ? "text-orange-600" : "text-purple-600";
   
   return <div className="w-full grid grid-cols-2 gap-4 mb-4">
-      {/* Score Panel - Changed to Total Score */}
+      {/* Score Panel - Changed to Total Kilometers */}
       <motion.div initial={{
       opacity: 0,
       x: -20
@@ -44,9 +43,9 @@ const ScorePanel: React.FC = () => {
           duration: 1,
           repeat: totalPoints > 0 ? 1 : 0
         }}>
-            {/* Colorful medal icon with animations */}
+            {/* Changed to Route icon (road/path icon) */}
             <div className="h-14 w-14 flex items-center justify-center relative">
-              <Medal className="h-12 w-12 text-yellow-500 absolute" strokeWidth={1.5} fill="rgba(245, 158, 11, 0.2)" />
+              <Route className="h-12 w-12 text-blue-500 absolute" strokeWidth={1.5} />
               <motion.div className="absolute inset-0" animate={{
               scale: [1, 1.2, 1],
               opacity: [0.7, 1, 0.7]
@@ -54,12 +53,12 @@ const ScorePanel: React.FC = () => {
               repeat: Infinity,
               duration: 2
             }}>
-                <Medal className="h-12 w-12 text-yellow-400" strokeWidth={1} fill="rgba(252, 211, 77, 0.3)" />
+                <Route className="h-12 w-12 text-blue-400" strokeWidth={1} />
               </motion.div>
-              <Star className="h-5 w-5 text-amber-400" fill="gold" stroke="orange" />
+              <Navigation className="h-5 w-5 text-blue-600" />
             </div>
           </motion.div>
-          <h3 className={`text-xl ${textColor} kids-text font-normal`}>{t('points_total')}</h3>
+          <h3 className={`text-xl ${textColor} kids-text font-normal`}>{isEnglish ? 'total_kilometers' : 'kilómetros_total'}</h3>
         </div>
         
         <motion.p className={`text-3xl ${textColorDark} kids-text mt-1 font-normal`} animate={totalPoints > 0 ? {
@@ -78,7 +77,7 @@ const ScorePanel: React.FC = () => {
           </div>
           <Progress value={levelProgress} className="h-2" />
           <p className={`${textColorLight} mt-1 text-lg`}>
-            {500 - totalPoints % 500} {t('points_for_next_level')}
+            {500 - totalPoints % 500} {isEnglish ? 'kilometers_for_next_level' : 'kilómetros_para_subir'}
           </p>
         </div>
       </motion.div>

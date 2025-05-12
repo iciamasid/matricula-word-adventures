@@ -96,29 +96,30 @@ const PlayerRegistration: React.FC = () => {
       y: 0
     }} className="w-full max-w-md flex flex-col gap-3 mb-4">
           {/* Player info display */}
-          <motion.div className="flex flex-col items-center">
-            <div className="flex items-center justify-center mb-2">
+          <motion.div className="flex items-center justify-center mb-2">
+            <div className="flex items-center justify-center">
               {playerGender === t('boy') ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
               <span className={`font-medium ${textColor} kids-text text-3xl`}>
                 {playerName} {playerAge} {t('years')}
               </span>
             </div>
-            <Button size="sm" variant="outline" className={btnColor} onClick={() => setShowForm(true)}>
+            <Button size="sm" variant="outline" className={`${btnColor} ml-2`} onClick={() => setShowForm(true)}>
               {t('edit')}
             </Button>
           </motion.div>
           
-          {/* Car selection button */}
-          <motion.div onClick={toggleCarCustomization} className="flex flex-col items-center">
-            <div className="flex items-center justify-center mb-2">
+          {/* Car selection button - Moved to right of text */}
+          <motion.div className="flex items-center justify-center">
+            <div className="flex items-center">
               <Car className={`h-5 w-5 mr-2 ${isEnglish ? 'text-orange-700' : 'text-purple-700'}`} />
               <span className={`font-medium ${textColor} kids-text text-xl`}>
                 {selectedCarColor ? t('car_selected') : t('select_car')}
               </span>
+              {/* Button moved here to be inline with text */}
+              <Button size="sm" variant="outline" className={`${btnColor} ml-2`} onClick={toggleCarCustomization}>
+                {showCarCustomization ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
             </div>
-            <Button size="sm" variant="outline" className={btnColor} onClick={toggleCarCustomization}>
-              {showCarCustomization ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
           </motion.div>
           
           {/* Car customization panel */}
