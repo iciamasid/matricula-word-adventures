@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface PlayerAgeInputProps {
-  onSave: (age: number) => void;
+  onSave?: (age: number) => void; // Make onSave optional
   initialAge?: number;
 }
 
@@ -36,7 +36,13 @@ const PlayerAgeInput: React.FC<PlayerAgeInputProps> = ({ onSave, initialAge }) =
     if (savedAge) {
       setAge(savedAge);
       setIsEditing(false);
-      onSave(parseInt(savedAge));
+      // Only call onSave if it's actually a function
+      if (onSave && typeof onSave === 'function') {
+        onSave(parseInt(savedAge));
+      } else {
+        // If no onSave function is provided, just save to localStorage
+        localStorage.setItem("matriculabraCadabra_playerAge", savedAge);
+      }
     }
   }, [onSave]);
 
@@ -52,7 +58,11 @@ const PlayerAgeInput: React.FC<PlayerAgeInputProps> = ({ onSave, initialAge }) =
     
     localStorage.setItem("matriculabraCadabra_playerAge", ageNum.toString());
     setIsEditing(false);
-    onSave(ageNum);
+    
+    // Only call onSave if it's actually a function
+    if (onSave && typeof onSave === 'function') {
+      onSave(ageNum);
+    }
     
     toast({
       title: t("age_saved"),
