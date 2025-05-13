@@ -236,7 +236,13 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     if (!lastPlate || !isNavigating.current) {
       // Generate a new license plate on first access or if explicitly requested
+      setIsGeneratingLicensePlate(true); // Set flag to true before generating
       doGenerateNewPlate();
+      
+      // Reset the flag after a delay to allow animation to complete
+      setTimeout(() => {
+        setIsGeneratingLicensePlate(false);
+      }, 2500);
     } else {
       // Just load the last known plate without generating a new one
       const savedPlate = localStorage.getItem("matriculabraCadabra_plate");
@@ -426,7 +432,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem("matriculabraCadabra_plateConsonants", newPlateConsonants);
   };
   
-  // Generate a new license plate - now just sets a flag when we're ready to generate
+  // Generate a new license plate - now ensures the animation flag is set correctly
   const generateNewPlate = () => {
     // Start the animation
     setIsGeneratingLicensePlate(true);
@@ -436,9 +442,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     
-    // Otherwise generate immediately
-    doGenerateNewPlate();
-    setIsGeneratingLicensePlate(false);
+    // Otherwise generate immediately with a small delay to ensure animation renders
+    setTimeout(() => {
+      doGenerateNewPlate();
+      
+      // Reset the flag after animation completes
+      setTimeout(() => {
+        setIsGeneratingLicensePlate(false);
+      }, 2500);
+    }, 100);
   };
   
   const closeBonusPopup = () => {
