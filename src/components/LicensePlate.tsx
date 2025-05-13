@@ -35,12 +35,12 @@ const LicensePlate: React.FC = () => {
   
   // Create arrays of random numbers and letters for the slot machine effect
   const getRandomDigits = () => {
-    return Array(10).fill(0).map(() => Math.floor(Math.random() * 10));
+    return Array(15).fill(0).map(() => Math.floor(Math.random() * 10));
   };
   
   const getRandomConsonants = () => {
     const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
-    return Array(10).fill('').map(() => consonants[Math.floor(Math.random() * consonants.length)]);
+    return Array(15).fill('').map(() => consonants[Math.floor(Math.random() * consonants.length)]);
   };
   
   return (
@@ -105,22 +105,22 @@ const LicensePlate: React.FC = () => {
                 opacity: 1 
               }}
               transition={{ 
-                delay: isGeneratingLicensePlate ? index * 0.2 : index * 0.4, 
-                duration: isGeneratingLicensePlate ? 1.5 : 0.8,
+                delay: isGeneratingLicensePlate ? index * 0.3 : index * 0.5, 
+                duration: isGeneratingLicensePlate ? 2.5 : 1.2,
                 repeat: isGeneratingLicensePlate ? 2 : 0,
                 type: "spring",
-                stiffness: 80
+                stiffness: 70
               }}
             >
               {isGeneratingLicensePlate ? (
                 <motion.div 
                   className="flex flex-col items-center"
                   animate={{ 
-                    y: [0, -300],
+                    y: [0, -450],
                   }}
                   transition={{ 
-                    duration: 1.5, 
-                    repeat: 4, 
+                    duration: 3.5, 
+                    repeat: 2, 
                     ease: [0.45, 0.05, 0.55, 0.95],
                     repeatType: "loop"
                   }}
@@ -158,11 +158,11 @@ const LicensePlate: React.FC = () => {
                 opacity: 1 
               }}
               transition={{ 
-                delay: isGeneratingLicensePlate ? 1 + index * 0.3 : 1.6 + index * 0.5,
-                duration: isGeneratingLicensePlate ? 1 : 0.7,
+                delay: isGeneratingLicensePlate ? 1.5 + index * 0.4 : 1.6 + index * 0.5,
+                duration: isGeneratingLicensePlate ? 2 : 1,
                 repeat: isGeneratingLicensePlate ? 2 : 0,
                 type: "spring",
-                stiffness: 70
+                stiffness: 60
               }}
               whileHover={{ scale: 1.1 }}
             >
@@ -170,14 +170,14 @@ const LicensePlate: React.FC = () => {
                 <motion.div 
                   className="flex flex-col items-center"
                   animate={{ 
-                    y: [0, -300],
+                    y: [0, -450],
                   }}
                   transition={{ 
-                    duration: 1.5, 
-                    repeat: 4, 
+                    duration: 3.5, 
+                    repeat: 2, 
                     ease: [0.45, 0.05, 0.55, 0.95],
                     repeatType: "loop",
-                    delay: index * 0.2
+                    delay: index * 0.3
                   }}
                 >
                   {getRandomConsonants().map((letter, i) => (
