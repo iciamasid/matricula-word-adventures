@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
 
@@ -8,7 +8,9 @@ const LicensePlate: React.FC = () => {
     licensePlate,
     plateConsonants,
     isGeneratingLicensePlate,
-    selectedCarColor
+    selectedCarColor,
+    submitSuccess,
+    generateNewPlate
   } = useGame();
   
   const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
@@ -18,6 +20,28 @@ const LicensePlate: React.FC = () => {
 
   // Ensure plateConsonants is treated as a string and safely convert to array
   const consonantsArray = typeof plateConsonants === 'string' ? plateConsonants.split('') : [];
+  
+  // Automatically generate new plate when a word is submitted successfully
+  useEffect(() => {
+    if (submitSuccess) {
+      // Wait a bit to show success message, then generate new plate
+      const timer = setTimeout(() => {
+        generateNewPlate();
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [submitSuccess, generateNewPlate]);
+  
+  // Create arrays of random numbers and letters for the slot machine effect
+  const getRandomDigits = () => {
+    return Array(10).fill(0).map(() => Math.floor(Math.random() * 10));
+  };
+  
+  const getRandomConsonants = () => {
+    const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
+    return Array(10).fill('').map(() => consonants[Math.floor(Math.random() * consonants.length)]);
+  };
   
   return (
     <motion.div 
@@ -70,27 +94,51 @@ const LicensePlate: React.FC = () => {
       >
         {/* License plate content - numbers and letters with space for the EU flag */}
         <div className="flex items-center justify-center space-x-2">
-          {/* Numbers part with slot machine effect - centered */}
+          {/* Numbers part with enhanced slot machine effect */}
           {numbers.split('').map((number, index) => (
             <motion.div 
               key={`number-${index}`} 
-              className="bg-gray-200 w-9 h-12 rounded-sm flex items-center justify-center shadow-inner"
+              className="bg-gray-200 w-9 h-12 rounded-sm flex items-center justify-center shadow-inner overflow-hidden"
               initial={{ rotateX: 180, opacity: 0 }}
               animate={{ 
-                rotateX: isGeneratingLicensePlate ? [0, 180] : 0, 
+                rotateX: isGeneratingLicensePlate ? [0, 180, 0] : 0, 
                 opacity: 1 
               }}
               transition={{ 
-                delay: isGeneratingLicensePlate ? index * 0.5 : index * 0.4, 
-                duration: isGeneratingLicensePlate ? 2.5 : 0.8,
-                repeat: isGeneratingLicensePlate ? 1 : 0,
+                delay: isGeneratingLicensePlate ? index * 0.2 : index * 0.4, 
+                duration: isGeneratingLicensePlate ? 1.5 : 0.8,
+                repeat: isGeneratingLicensePlate ? 2 : 0,
                 type: "spring",
                 stiffness: 80
               }}
             >
-              <span className="text-black text-3xl kids-text font-normal">
-                {isGeneratingLicensePlate && index === 0 ? "?" : number}
-              </span>
+              {isGeneratingLicensePlate ? (
+                <motion.div 
+                  className="flex flex-col items-center"
+                  animate={{ 
+                    y: [0, -300],
+                  }}
+                  transition={{ 
+                    duration: 1.5, 
+                    repeat: 4, 
+                    ease: [0.45, 0.05, 0.55, 0.95],
+                    repeatType: "loop"
+                  }}
+                >
+                  {getRandomDigits().map((digit, i) => (
+                    <span key={i} className="text-black text-3xl kids-text font-normal h-12 flex items-center">
+                      {digit}
+                    </span>
+                  ))}
+                  <span className="text-black text-3xl kids-text font-normal h-12 flex items-center">
+                    {number}
+                  </span>
+                </motion.div>
+              ) : (
+                <span className="text-black text-3xl kids-text font-normal">
+                  {number}
+                </span>
+              )}
             </motion.div>
           ))}
           
@@ -99,18 +147,18 @@ const LicensePlate: React.FC = () => {
             <span className="text-gray-700 text-2xl kids-text font-normal">-</span>
           </div>
           
-          {/* Consonants with slot machine effect */}
+          {/* Consonants with enhanced slot machine effect */}
           {consonantsArray.map((consonant, index) => (
             <motion.div 
               key={`consonant-${index}`} 
-              className={`${CONSONANT_COLORS[index]} w-9 h-12 rounded-sm flex items-center justify-center shadow-inner`}
+              className={`${CONSONANT_COLORS[index]} w-9 h-12 rounded-sm flex items-center justify-center shadow-inner overflow-hidden`}
               initial={{ rotateY: 180, opacity: 0 }}
               animate={{ 
-                rotateY: isGeneratingLicensePlate ? [0, 180] : 0, 
+                rotateY: isGeneratingLicensePlate ? [0, 180, 0] : 0, 
                 opacity: 1 
               }}
               transition={{ 
-                delay: isGeneratingLicensePlate ? 2 + index * 0.3 : 1.6 + index * 0.5,
+                delay: isGeneratingLicensePlate ? 1 + index * 0.3 : 1.6 + index * 0.5,
                 duration: isGeneratingLicensePlate ? 1 : 0.7,
                 repeat: isGeneratingLicensePlate ? 2 : 0,
                 type: "spring",
@@ -118,9 +166,34 @@ const LicensePlate: React.FC = () => {
               }}
               whileHover={{ scale: 1.1 }}
             >
-              <span className="text-white text-3xl kids-text font-normal">
-                {isGeneratingLicensePlate ? "?" : consonant}
-              </span>
+              {isGeneratingLicensePlate ? (
+                <motion.div 
+                  className="flex flex-col items-center"
+                  animate={{ 
+                    y: [0, -300],
+                  }}
+                  transition={{ 
+                    duration: 1.5, 
+                    repeat: 4, 
+                    ease: [0.45, 0.05, 0.55, 0.95],
+                    repeatType: "loop",
+                    delay: index * 0.2
+                  }}
+                >
+                  {getRandomConsonants().map((letter, i) => (
+                    <span key={i} className="text-white text-3xl kids-text font-normal h-12 flex items-center">
+                      {letter}
+                    </span>
+                  ))}
+                  <span className="text-white text-3xl kids-text font-normal h-12 flex items-center">
+                    {consonant}
+                  </span>
+                </motion.div>
+              ) : (
+                <span className="text-white text-3xl kids-text font-normal">
+                  {consonant}
+                </span>
+              )}
             </motion.div>
           ))}
         </div>

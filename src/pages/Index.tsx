@@ -16,10 +16,10 @@ import { Link } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
-import NewGameButton from "@/components/NewGameButton";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
+
 const Index = () => {
   return <GameProvider>
       <GameContent />
@@ -77,6 +77,7 @@ const GameContent = () => {
     if (level >= 10) countries.push(language === 'es' ? "España (vuelta completa)" : "Spain (full tour)");
     return countries;
   }, [level, language]);
+  
   const handleResetGame = () => {
     if (confirm(t("reset_confirm"))) {
       resetGame();
@@ -86,6 +87,7 @@ const GameContent = () => {
       });
     }
   };
+  
   return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
@@ -142,16 +144,13 @@ const GameContent = () => {
           <LicensePlate />
           <WordInput />
           
-          {/* Add New Game Button with slot machine style */}
-          <NewGameButton />
-          
           {/* Score components in a single row */}
           <ScorePanel />
           
-          {/* Add World Tour Progress component - MOVED UP */}
+          {/* Add World Tour Progress component */}
           <WorldTourProgress />
           
-          {/* "Has llegado hasta" panel - MOVED DOWN */}
+          {/* "Has llegado hasta" panel */}
           <motion.div initial={{
           opacity: 0,
           y: 20
