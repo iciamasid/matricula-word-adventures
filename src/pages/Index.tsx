@@ -185,7 +185,7 @@ const GameContent = () => {
                 </motion.span>
               </h2>
               
-              {/* Origin and Destination with arrows */}
+              {/* Origin and Destination with arrows - Modified for better mobile layout */}
               <div className="grid grid-cols-3 items-center gap-2 my-4">
                 {/* Origin */}
                 <div className="flex flex-col items-center">
@@ -206,11 +206,13 @@ const GameContent = () => {
                     {originInfo.city}, {originInfo.country}
                   </motion.p>
                   <p className={`text-sm ${textColorLight} kids-text`}>{t("origin")}</p>
-                  <Link to={`/country/${originInfo.country}`} onClick={handleNavigation}>
-                    <Button className="bg-purple-800 hover:bg-purple-700 py-[10px] text-slate-50 font-extralight text-base">
-                      {t("learn_about")} {originInfo.country}
-                    </Button>
-                  </Link>
+                  <div className="w-full flex justify-center">
+                    <Link to={`/country/${originInfo.country}`} onClick={handleNavigation}>
+                      <Button className="bg-purple-800 hover:bg-purple-700 py-[10px] text-slate-50 font-extralight text-base mt-2 w-full max-w-[120px] px-2 sm:px-4">
+                        {t("learn_about")} {originInfo.country}
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
                 
                 {/* Arrow */}
@@ -245,11 +247,13 @@ const GameContent = () => {
                     {destinationInfo.city}, {destinationInfo.country}
                   </motion.p>
                   <p className={`text-sm ${textColorLight} kids-text`}>{t("destination")}</p>
-                  <Link to={`/country/${destinationInfo.country}`} onClick={handleNavigation}>
-                    <Button className="bg-purple-800 hover:bg-purple-700 text-slate-50 font-normal text-base">
-                      {t("learn_about")} {destinationInfo.country}
-                    </Button>
-                  </Link>
+                  <div className="w-full flex justify-center">
+                    <Link to={`/country/${destinationInfo.country}`} onClick={handleNavigation}>
+                      <Button className="bg-purple-800 hover:bg-purple-700 text-slate-50 font-normal text-base mt-2 w-full max-w-[120px] px-2 sm:px-4">
+                        {t("learn_about")} {destinationInfo.country}
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               </div>
               
@@ -283,7 +287,7 @@ const GameContent = () => {
               <h2 className={`text-2xl ${textColor} kids-text mb-3 font-normal`}>{t("drive_car")}</h2>
               <p className={`${textColorLight} kids-text mb-4 text-xl font-normal`}>{t("draw_path")}</p>
               
-              <Link to="/draw-game" onClick={handleNavigation}>
+              <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
                 <Button className={`${buttonBgColor} text-white text-xl kids-text px-6 py-3 font-normal relative`}>
                   <div className="flex items-center">
                     <motion.div animate={{

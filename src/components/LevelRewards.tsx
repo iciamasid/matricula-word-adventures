@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/context/LanguageContext";
 
 const LevelRewards: React.FC = () => {
-  const { level, destination, destinationInfo } = useGame();
+  const { level, destinationInfo } = useGame();
   const { t } = useLanguage();
   const navigate = useNavigate();
   
@@ -62,7 +62,7 @@ const LevelRewards: React.FC = () => {
             Estás en la ciudad de {destinationInfo.city}, {destinationInfo.country}
           </p>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 px-4">
           <motion.div 
             className="flex items-center justify-center gap-3"
             whileHover={{ scale: 1.02 }}
@@ -81,7 +81,7 @@ const LevelRewards: React.FC = () => {
               <div className="flex items-center gap-2">
                 <AnimatePresence mode="wait">
                   <motion.p 
-                    key={destination}
+                    key={destinationInfo.city}
                     className="text-3xl font-bold text-purple-900 kids-text"
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -150,13 +150,15 @@ const LevelRewards: React.FC = () => {
                   </motion.p>
                 </div>
                 
-                <Button 
-                  onClick={handleExploreCountry}
-                  className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-6 py-2 kids-text flex flex-col items-center"
-                >
-                  <span>{t('learn_about')}</span>
-                  <span>{destinationInfo.country} {destinationInfo.flag}</span>
-                </Button>
+                <div className="flex justify-center w-full px-2">
+                  <Button 
+                    onClick={handleExploreCountry}
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-4 py-2 kids-text flex flex-col items-center max-w-[200px] mx-auto"
+                  >
+                    <span>{t('learn_about')}</span>
+                    <span>{destinationInfo.country} {destinationInfo.flag}</span>
+                  </Button>
+                </div>
               </motion.div>
             )}
           </div>
