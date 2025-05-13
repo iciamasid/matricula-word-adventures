@@ -1,11 +1,13 @@
-import React, { useEffect } from "react";
+
+import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { GameProvider } from "@/context/GameContext";
 import CountryPageIcons from "@/components/CountryPageIcons";
-import WorldMap from "@/components/WorldMap";
+import MapDisplay from "@/components/map/MapDisplay";
+import ZoomControls from "@/components/map/ZoomControls";
 import { useLanguage } from "@/context/LanguageContext";
 
 // Simplified CountryPage without MusicPlayer
@@ -25,6 +27,9 @@ const CountryPageContent = () => {
     language,
     isEnglish
   } = useLanguage();
+  
+  // Add zoom state for the map
+  const [mapZoom, setMapZoom] = useState(1);
 
   // Button classes based on language
   const buttonClasses = isEnglish ? "bg-orange-600 hover:bg-orange-700 text-white kids-text" : "bg-game-purple hover:bg-game-purple/90 kids-text";
@@ -187,6 +192,16 @@ const CountryPageContent = () => {
 
   // Create a single-country array for highlighting in the map
   const unlockedCountries = [countryData.name];
+  
+  // Handle zoom controls
+  const handleZoomIn = () => {
+    setMapZoom(prev => Math.min(prev + 0.2, 2));
+  };
+  
+  const handleZoomOut = () => {
+    setMapZoom(prev => Math.max(prev - 0.2, 0.8));
+  };
+
   return <div className="min-h-screen bg-gradient-to-b from-purple-100 to-blue-100 p-4">
       <div className="max-w-md mx-auto">
         <Link to="/">
@@ -212,9 +227,17 @@ const CountryPageContent = () => {
           duration: 1
         }} />
           
-          {/* Add map to highlight the country */}
-          <div className="h-[150px] w-full relative overflow-hidden border-t-2 border-b-2 border-purple-100">
-            <WorldMap highlightCountry={countryData.name} unlockedCountries={unlockedCountries} />
+          {/* Replace the old map with MapDisplay component */}
+          <div className="h-[200px] w-full relative overflow-hidden border-t-2 border-b-2 border-purple-100">
+            <MapDisplay 
+              zoom={mapZoom}
+              highlightCountry={countryData.name} 
+              unlockedCountries={unlockedCountries} 
+            />
+            <ZoomControls 
+              onZoomIn={handleZoomIn}
+              onZoomOut={handleZoomOut}
+            />
           </div>
           
           <div className="p-6">

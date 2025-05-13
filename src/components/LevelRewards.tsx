@@ -20,7 +20,7 @@ const LevelRewards: React.FC = () => {
   
   return (
     <motion.div 
-      className="w-full max-w-md mt-2"
+      className="w-full max-w-md mt-2 px-2 mx-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
@@ -150,13 +150,13 @@ const LevelRewards: React.FC = () => {
                   </motion.p>
                 </div>
                 
-                <div className="flex justify-center w-full px-2">
+                <div className="flex justify-center w-full px-4">
                   <Button 
                     onClick={handleExploreCountry}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-4 py-2 kids-text flex flex-col items-center max-w-[200px] mx-auto"
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-6 py-3 kids-text flex flex-col items-center w-full max-w-[220px] mx-auto break-words text-center"
                   >
-                    <span>{t('learn_about')}</span>
-                    <span>{destinationInfo.country} {destinationInfo.flag}</span>
+                    <span className="whitespace-nowrap">{t('learn_about')}</span>
+                    <span className="whitespace-normal">{destinationInfo.country} {destinationInfo.flag}</span>
                   </Button>
                 </div>
               </motion.div>
