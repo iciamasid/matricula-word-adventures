@@ -10,7 +10,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 const WordInput: React.FC = () => {
   const {
-    currentWord = "",  // Provide default empty string
+    currentWord,
     setCurrentWord,
     submitWord,
     generateNewPlate,
@@ -112,9 +112,7 @@ const WordInput: React.FC = () => {
   }, [submitSuccess, generateNewPlate]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (setCurrentWord) {
-      setCurrentWord(e.target.value.toUpperCase());
-    }
+    setCurrentWord(e.target.value.toUpperCase());
   };
   
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -125,9 +123,7 @@ const WordInput: React.FC = () => {
   
   const handleSubmit = () => {
     setIsAnimating(true);
-    if (submitWord) {
-      submitWord();
-    }
+    submitWord();
     setTimeout(() => setIsAnimating(false), 500);
   };
   
@@ -144,16 +140,13 @@ const WordInput: React.FC = () => {
   // Set font size based on mobile view
   const fontSize = isMobile ? "text-xl" : "text-3xl";
   
-  // Safe access to currentWord with fallback to empty string
-  const safeCurrentWord = currentWord || "";
-  
   return (
     <div className="w-full max-w-xs relative">      
       <div className="flex gap-2">
         <Input 
           ref={inputRef} 
           type="text" 
-          value={safeCurrentWord} 
+          value={currentWord} 
           onChange={handleInputChange} 
           onKeyDown={handleKeyDown} 
           placeholder={placeholderText || " "} 
@@ -171,7 +164,7 @@ const WordInput: React.FC = () => {
           <Button 
             onClick={handleSubmit} 
             className={`h-full bg-gradient-to-r ${buttonGradient} ${isMobile ? "text-xl" : "text-2xl"} ${isAnimating ? "animate-bounce" : ""}`} 
-            disabled={!safeCurrentWord || safeCurrentWord.trim().length < 3} 
+            disabled={currentWord.trim().length < 3} 
             size="lg"
           >
             <ArrowRight className="w-7 h-7" />
@@ -183,4 +176,3 @@ const WordInput: React.FC = () => {
 };
 
 export default WordInput;
-

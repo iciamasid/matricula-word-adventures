@@ -13,20 +13,17 @@ import { useLanguage } from "@/context/LanguageContext";
 const PlayerRegistration: React.FC = () => {
   const {
     playerName,
+    playerAge,
+    playerGender,
     selectedCarColor,
-    setPlayerName
+    setPlayerName,
+    setPlayerAge,
+    setPlayerGender
   } = useGame();
-  
-  // Since we can't directly access playerAge and setPlayerAge from GameContext,
-  // we'll use local state and localStorage
-  const [playerAge, setPlayerAge] = useState<number | undefined>();
-  const [playerGender, setPlayerGender] = useState<string>("");
-  
   const {
     t,
     isEnglish
   } = useLanguage();
-  
   const [showForm, setShowForm] = useState(!playerName || !playerAge);
   const [showCarCustomization, setShowCarCustomization] = useState(false);
 
@@ -36,19 +33,6 @@ const PlayerRegistration: React.FC = () => {
   const panelBg = isEnglish ? "bg-orange-200/80 backdrop-blur-sm" : "bg-violet-200/80 backdrop-blur-sm";
   const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
 
-  // Load saved age from localStorage
-  useEffect(() => {
-    const savedAge = localStorage.getItem("matriculabraCadabra_playerAge");
-    if (savedAge) {
-      setPlayerAge(parseInt(savedAge));
-    }
-    
-    const savedGender = localStorage.getItem("matriculabraCadabra_playerGender");
-    if (savedGender) {
-      setPlayerGender(savedGender);
-    }
-  }, []);
-
   // Auto-detect gender based on common Spanish name endings
   useEffect(() => {
     if (playerName && !playerGender) {
@@ -56,13 +40,11 @@ const PlayerRegistration: React.FC = () => {
       const nameToCheck = playerName.trim().toLowerCase();
       if (nameToCheck.endsWith('a') || nameToCheck === 'mercedes' || nameToCheck === 'dolores' || nameToCheck === 'ines' || nameToCheck === 'inés' || nameToCheck === 'beatriz' || nameToCheck === 'elena') {
         setPlayerGender('niña');
-        localStorage.setItem("matriculabraCadabra_playerGender", 'niña');
       } else {
         setPlayerGender('niño');
-        localStorage.setItem("matriculabraCadabra_playerGender", 'niño');
       }
     }
-  }, [playerName, playerGender]);
+  }, [playerName, playerGender, setPlayerGender]);
   
   useEffect(() => {
     // If we have both name and age, hide the form
@@ -73,12 +55,6 @@ const PlayerRegistration: React.FC = () => {
   
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
-  };
-
-  // Handle age updates
-  const handleAgeChange = (age: number) => {
-    setPlayerAge(age);
-    localStorage.setItem("matriculabraCadabra_playerAge", age.toString());
   };
 
   // Auto-hide car customization when a car is selected
@@ -110,7 +86,7 @@ const PlayerRegistration: React.FC = () => {
           </p>
           <div className="space-y-4">
             <PlayerNameInput onSave={setPlayerName} initialName={playerName} />
-            <PlayerAgeInput onSave={handleAgeChange} initialAge={playerAge} />
+            <PlayerAgeInput onSave={setPlayerAge} initialAge={playerAge} />
           </div>
         </motion.div> : <motion.div initial={{
       opacity: 0,
