@@ -1,24 +1,40 @@
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import HighlightedCountry from './map/HighlightedCountry';
 import UnlockedCountries from './map/UnlockedCountries';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 interface WorldMapProps {
   highlightCountry: string;
   unlockedCountries: string[];
 }
 
-// Fixed the return type by making it explicitly return JSX.Element
 const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries }) => {
   return (
-    <div className="relative w-full">
-      <div className="max-w-3xl mx-auto">
-        <svg viewBox="0 0 1000 500" className="w-full h-auto">
-          <UnlockedCountries countries={unlockedCountries} />
-          <HighlightedCountry country={highlightCountry} />
-        </svg>
-      </div>
-    </div>
+    <motion.div 
+      className="relative w-full rounded-lg overflow-hidden shadow-md"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <AspectRatio ratio={2 / 1} className="bg-blue-50">
+        <div className="relative w-full h-full">
+          {/* World Map Background */}
+          <img 
+            src="/lovable-uploads/310987b9-7b6d-48c9-8dec-f37f4487ca8c.png" 
+            alt="World Map" 
+            className="w-full h-full object-cover"
+          />
+          
+          {/* Country Markers */}
+          <UnlockedCountries countries={unlockedCountries} highlightCountry={highlightCountry} />
+          
+          {/* Highlighted Country */}
+          {highlightCountry && <HighlightedCountry country={highlightCountry} />}
+        </div>
+      </AspectRatio>
+    </motion.div>
   );
 };
 

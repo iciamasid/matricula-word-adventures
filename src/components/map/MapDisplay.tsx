@@ -1,6 +1,6 @@
 
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import CountryMarkers from './CountryMarkers';
 
 interface MapDisplayProps {
@@ -14,6 +14,14 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
   highlightCountry,
   unlockedCountries = []
 }) => {
+  // Add auto-zoom effect when country changes
+  const [currentZoom, setCurrentZoom] = useState(zoom);
+  
+  useEffect(() => {
+    // Set initial zoom from props
+    setCurrentZoom(zoom);
+  }, [zoom]);
+
   return (
     <motion.div 
       initial={{
@@ -29,31 +37,36 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
       }} 
       className="relative w-full h-full overflow-hidden py-0"
     >
-      <motion.div 
-        className="w-full h-full relative" 
-        style={{
-          scale: zoom,
-          transformOrigin: "center",
-          marginLeft: "4mm" // Shift the map 4mm to the right as requested
-        }}
-      >
-        {/* Base map image */}
-        <img 
-          src="/lovable-uploads/310987b9-7b6d-48c9-8dec-f37f4487ca8c.png" 
-          alt="World Map" 
+      <AnimatePresence>
+        <motion.div 
+          key={`map-${highlightCountry}`}
+          className="w-full h-full relative" 
           style={{
-            minWidth: "100%",
-            minHeight: "100%"
-          }} 
-          className="w-full h-full object-cover" 
-        />
+            scale: currentZoom,
+            transformOrigin: "center"
+          }}
+          initial={{ scale: currentZoom * 0.9 }}
+          animate={{ scale: currentZoom }}
+          transition={{ duration: 0.5 }}
+        >
+          {/* Base map image with improved styling */}
+          <motion.img 
+            src="/lovable-uploads/310987b9-7b6d-48c9-8dec-f37f4487ca8c.png" 
+            alt="World Map" 
+            style={{
+              minWidth: "100%",
+              minHeight: "100%"
+            }} 
+            className="w-full h-full object-cover rounded-md" 
+          />
 
-        {/* Country markers component */}
-        <CountryMarkers 
-          highlightCountry={highlightCountry} 
-          unlockedCountries={unlockedCountries} 
-        />
-      </motion.div>
+          {/* Enhanced country markers component */}
+          <CountryMarkers 
+            highlightCountry={highlightCountry} 
+            unlockedCountries={unlockedCountries} 
+          />
+        </motion.div>
+      </AnimatePresence>
     </motion.div>
   );
 };

@@ -1,8 +1,5 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { getCountryPosition, getCountryImage } from '@/utils/mapData';
 import CountryMarker from './CountryMarker';
 
 interface UnlockedCountriesProps {
@@ -15,7 +12,7 @@ const UnlockedCountries: React.FC<UnlockedCountriesProps> = ({ countries, highli
     <>
       {countries.map((country, index) => (
         <CountryMarker 
-          key={country} 
+          key={`${country}-${index}`}
           country={country} 
           index={index} 
           isHighlighted={highlightCountry === country} 

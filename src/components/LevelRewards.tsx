@@ -150,13 +150,18 @@ const LevelRewards: React.FC = () => {
                   </motion.p>
                 </div>
                 
+                {/* Improved button container with better text wrapping */}
                 <div className="flex justify-center w-full px-4">
                   <Button 
                     onClick={handleExploreCountry}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-6 py-3 kids-text flex flex-col items-center w-full max-w-[220px] mx-auto break-words text-center"
+                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xl px-4 py-3 kids-text flex items-center justify-center w-full max-w-[250px] mx-auto"
                   >
-                    <span className="whitespace-nowrap">{t('learn_about')}</span>
-                    <span className="whitespace-normal">{destinationInfo.country} {destinationInfo.flag}</span>
+                    <div className="flex flex-col items-center">
+                      <span className="whitespace-nowrap">{t('learn_about')}</span>
+                      <span className="whitespace-normal text-center truncate max-w-[200px]">
+                        {destinationInfo.country} {destinationInfo.flag}
+                      </span>
+                    </div>
                   </Button>
                 </div>
               </motion.div>
