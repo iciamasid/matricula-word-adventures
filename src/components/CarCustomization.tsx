@@ -30,14 +30,14 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
   
   // Auto-close after selection with a slight delay to show the selection animation
   useEffect(() => {
-    if (selectedCarColor && open && !embedded) {
+    if (selectedCarColor && open) {
       const timer = setTimeout(() => {
         setOpen(false);
       }, 500);
       
       return () => clearTimeout(timer);
     }
-  }, [selectedCarColor, open, embedded]);
+  }, [selectedCarColor, open]);
   
   const handleToggle = () => {
     if (embedded) {
@@ -51,12 +51,14 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
   const handleSelectCar = (car: CarColor) => {
     setSelectedCarColor(car);
     
-    // Auto-close after selection if embedded (to hide dropdown)
-    if (embedded) {
-      setTimeout(() => {
+    // Auto-close after selection
+    setTimeout(() => {
+      if (embedded) {
         if (onToggle) onToggle();
-      }, 500);
-    }
+      } else {
+        setOpen(false);
+      }
+    }, 500);
   };
   
   if (embedded) {
@@ -79,9 +81,7 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
                 alt={car.name}
                 className="h-12 w-auto mb-1"
               />
-              <span className={`text-xs px-2 py-1 rounded-full ${car.color} text-white`}>
-                {car.name}
-              </span>
+              {/* Remove the text labels as requested */}
             </motion.div>
           ))}
         </div>
@@ -98,7 +98,8 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
           className="flex items-center gap-2 bg-white hover:bg-gray-100"
         >
           <Car size={18} />
-          {selectedCarColor?.name || "Selecciona tu coche"}
+          {/* Show only "Selecciona tu coche" instead of the selected car name */}
+          Selecciona tu coche
           <ChevronDown size={16} className={open ? "rotate-180" : ""} />
         </Button>
       </DrawerTrigger>
@@ -119,11 +120,9 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
               <img
                 src={`/lovable-uploads/${car.image}`}
                 alt={car.name}
-                className="h-16 w-auto mb-2"
+                className="h-16 w-auto"
               />
-              <div className={`text-sm px-3 py-1 rounded-full ${car.color} text-white`}>
-                {car.name}
-              </div>
+              {/* Remove text labels in drawer as well */}
             </motion.div>
           ))}
         </div>

@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,11 @@ const CountryPageContent = () => {
 
   // Add zoom state for the map
   const [mapZoom, setMapZoom] = useState(1);
+
+  useEffect(() => {
+    // Scroll to top when component mounts
+    window.scrollTo(0, 0);
+  }, []);
 
   // Button classes based on language
   const buttonClasses = isEnglish ? "bg-orange-600 hover:bg-orange-700 text-white kids-text" : "bg-game-purple hover:bg-game-purple/90 kids-text";
@@ -199,28 +205,42 @@ const CountryPageContent = () => {
   const handleZoomOut = () => {
     setMapZoom(prev => Math.max(prev - 0.2, 0.8));
   };
-  return <div className="min-h-screen bg-gradient-to-b from-purple-100 to-blue-100 p-4">
+  
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-purple-100 to-blue-100 p-4 pt-0">
       <div className="max-w-md mx-auto">
-        <Link to="/">
+        {/* Back button and title at top */}
+        <div className="sticky top-0 z-10 bg-gradient-to-b from-purple-100 to-purple-100/95 pt-2 pb-2">
+          <Link to="/">
+            <Button variant="outline" className="mb-2">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              {t('return_to_game')}
+            </Button>
+          </Link>
           
-        </Link>
+          {/* Country title moved to top */}
+          <h1 className="text-3xl font-normal kids-text flex items-center mb-2">
+            {countryData.name} {countryData.flag}
+          </h1>
+          <p className="text-gray-600 kids-text">{t('capital')} {countryData.capital}</p>
+        </div>
         
-        <motion.div className="bg-white rounded-lg shadow-lg overflow-hidden" initial={{
-        opacity: 0,
-        y: 20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        duration: 0.5
-      }}>
-          <motion.img src={countryData.image} alt={countryData.imageAlt} className="w-full h-48 object-cover" initial={{
-          scale: 1.1
+        <motion.div className="bg-white rounded-lg shadow-lg overflow-hidden mt-2" initial={{
+          opacity: 0,
+          y: 20
         }} animate={{
-          scale: 1
+          opacity: 1,
+          y: 0
         }} transition={{
-          duration: 1
-        }} />
+          duration: 0.5
+        }}>
+          <motion.img src={countryData.image} alt={countryData.imageAlt} className="w-full h-48 object-cover" initial={{
+            scale: 1.1
+          }} animate={{
+            scale: 1
+          }} transition={{
+            duration: 1
+          }} />
           
           {/* Replace the old map with MapDisplay component */}
           <div className="h-[200px] w-full relative overflow-hidden border-t-2 border-b-2 border-purple-100">
@@ -229,11 +249,6 @@ const CountryPageContent = () => {
           </div>
           
           <div className="p-6">
-            <h1 className="text-3xl font-normal kids-text flex items-center mb-2">
-              {countryData.name} {countryData.flag}
-            </h1>
-            <p className="text-gray-600 mb-4 kids-text">{t('capital')} {countryData.capital}</p>
-            
             {/* Added country description - moved from main page */}
             <div className={`${panelClasses} rounded-lg p-4 mb-4`}>
               <h3 className="text-xl font-normal text-purple-800 kids-text mb-2 flex items-center">
@@ -270,6 +285,7 @@ const CountryPageContent = () => {
           </div>
         </motion.div>
       </div>
-    </div>;
+    </div>
+  );
 };
 export default CountryPageWrapper;

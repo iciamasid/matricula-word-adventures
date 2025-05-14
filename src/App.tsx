@@ -33,7 +33,7 @@ const App = () => {
                   </Routes>
                 </BrowserRouter>
                 
-                {/* Bonus popup for 6666 license plate */}
+                {/* Bonus popup for 6666 license plate - increased z-index to make sure it's visible */}
                 <BonusPopup
                   open={showBonusPopup}
                   onClose={() => setShowBonusPopup(false)}
