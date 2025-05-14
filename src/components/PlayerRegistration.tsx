@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import PlayerNameInput from "@/components/PlayerNameInput";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
+
 const PlayerRegistration: React.FC = () => {
   const {
     playerName,
@@ -23,7 +25,6 @@ const PlayerRegistration: React.FC = () => {
     isEnglish
   } = useLanguage();
   const [showForm, setShowForm] = useState(!playerName || !playerAge);
-  const [showCarCustomization, setShowCarCustomization] = useState(false);
 
   // Set color theme based on language
   const bgColor = isEnglish ? "bg-orange-100/70 backdrop-blur-sm" : "bg-purple-100/70 backdrop-blur-sm";
@@ -43,26 +44,14 @@ const PlayerRegistration: React.FC = () => {
       }
     }
   }, [playerName, playerGender, setPlayerGender]);
+
   useEffect(() => {
     // If we have both name and age, hide the form
     if (playerName && playerAge) {
       setShowForm(false);
     }
   }, [playerName, playerAge]);
-  const toggleCarCustomization = () => {
-    setShowCarCustomization(!showCarCustomization);
-  };
 
-  // Auto-hide car customization when a car is selected
-  useEffect(() => {
-    if (selectedCarColor) {
-      // Add a small delay before closing to let the user see the selection
-      const timer = setTimeout(() => {
-        setShowCarCustomization(false);
-      }, 500);
-      return () => clearTimeout(timer);
-    }
-  }, [selectedCarColor]);
   return <>
       {showForm ? <motion.div className={`w-full max-w-md ${bgColor} rounded-lg p-5 shadow-lg mb-4`} initial={{
       opacity: 0,
@@ -102,13 +91,8 @@ const PlayerRegistration: React.FC = () => {
               {t('edit')}
             </Button>
           </motion.div>
-          
-          {/* Car selection button - Moved to right of text */}
-          
-          
-          {/* Car customization panel */}
-          <CarCustomization isOpen={showCarCustomization} onToggle={toggleCarCustomization} />
         </motion.div>}
     </>;
 };
+
 export default PlayerRegistration;

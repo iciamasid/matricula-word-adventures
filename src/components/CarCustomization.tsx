@@ -52,18 +52,13 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
       const timer = setTimeout(() => {
         setOpen(false);
         if (onToggle) onToggle();
-      }, 300);
+      }, 1000); // Increased delay to 1 second to ensure user sees the selection
       return () => clearTimeout(timer);
     }
   }, [selectedCarColor, open, onToggle]);
 
   const handleSelectCar = (car: CarColor) => {
     setSelectedCarColor(car);
-
-    // Auto-close after selection
-    setTimeout(() => {
-      setOpen(false);
-    }, 300);
   };
 
   return (
