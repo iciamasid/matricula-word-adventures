@@ -202,6 +202,19 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     setShowCompletionBanner(false);
     // Reset previous destination
     setPreviousDestination(null);
+    // Reset origin and destination to defaults (Spain -> France for level 1)
+    setOriginInfo({ 
+      city: 'Madrid', 
+      country: 'España', 
+      flag: '🇪🇸',
+      fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
+    });
+    setDestinationInfo({ 
+      city: 'París', 
+      country: 'Francia', 
+      flag: '🇫🇷',
+      fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
+    });
     // Generate new plate after reset
     generateNewPlateImpl();
   };
@@ -285,7 +298,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
                       { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
     }
     
-    // Get a destination based on level
+    // Set the origin to the previous destination
+    setOriginInfo(originCountry);
+    
+    // Get destination based on the level
     let destinationCountry;
     
     switch(currentLevel) {
@@ -335,9 +351,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       };
     }
     
-    // Update origin and destination
-    setOriginInfo(originCountry);
+    // Update destination
     setDestinationInfo(destinationCountry);
+    
+    console.log(`Updated destinations for level ${currentLevel}: Origin=${originCountry.country}, Destination=${destinationCountry.country}`);
   };
   
   // Generate a new license plate using the utility functions
@@ -375,48 +392,50 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
     
-    // Check if the word contains required consonants
-    if (!isValidWord(currentWord, plateConsonants)) {
-      setErrorMessage('La palabra debe incluir al menos una consonante de la matrícula');
-      return;
-    }
-    
-    // Check if word exists
-    import('@/utils/gameUtils').then(({ wordExists }) => {
+    // Check if word is valid
+    import('@/utils/gameUtils').then(({ wordExists, isValidWord, calculateScore }) => {
+      // First check if the word contains at least one consonant from the license plate
+      if (!isValidWord(currentWord, plateConsonants)) {
+        setErrorMessage('La palabra debe incluir al menos una consonante de la matrícula');
+        return;
+      }
+      
+      // Then check if the word exists in our dictionary
       if (!wordExists(currentWord, 'es')) {
         setErrorMessage('Palabra no válida: no existe esta palabra');
         return;
       }
       
       // Calculate score based on word and current license plate
-      import('@/utils/gameUtils').then(({ calculateScore }) => {
-        const calculatedScore = calculateScore(currentWord, plateConsonants, 'es');
-        
-        if (calculatedScore < 0) {
-          // Word is invalid
-          setErrorMessage('Palabra no válida o no contiene las consonantes requeridas');
-          return;
-        }
-        
-        // Word is valid, update score
-        setPreviousScore(score);
-        setScore(calculatedScore);
-        setTotalPoints(prev => prev + calculatedScore);
-        
-        if (calculatedScore > 75) {
-          setSubmitSuccess(`¡${currentWord} es correcta! +${calculatedScore} puntos`);
-        } else {
-          setSubmitSuccess(`¡Palabra correcta! +${calculatedScore} puntos`);
-        }
-        
-        // Track high score
-        if (calculatedScore > highScore) {
-          setHighScore(calculatedScore);
-        }
-        
-        // Reset current word
-        setCurrentWord('');
-      });
+      const calculatedScore = calculateScore(currentWord, plateConsonants, 'es');
+      
+      if (calculatedScore < 0) {
+        // Word is invalid
+        setErrorMessage('Palabra no válida o no contiene las consonantes requeridas');
+        return;
+      }
+      
+      // Word is valid, update score
+      setPreviousScore(score);
+      setScore(calculatedScore);
+      setTotalPoints(prev => prev + calculatedScore);
+      
+      if (calculatedScore > 75) {
+        setSubmitSuccess(`¡${currentWord} es correcta! +${calculatedScore} puntos`);
+      } else {
+        setSubmitSuccess(`¡Palabra correcta! +${calculatedScore} puntos`);
+      }
+      
+      // Track high score
+      if (calculatedScore > highScore) {
+        setHighScore(calculatedScore);
+      }
+      
+      // Reset current word
+      setCurrentWord('');
+      
+      // Check if it's time to generate a special license plate
+      console.log(`Games played: ${gamesPlayed}. Every 5 games, we'll add a 6666 plate.`);
     });
   };
 
@@ -427,21 +446,20 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [licensePlate]);
   
-  // Helper function to check if word contains at least one consonant from the plate
-  const isValidWord = (word: string, plateConsonants: string): boolean => {
-    if (!word || word.length < 3) return false;
-    
-    const upperWord = word.toUpperCase();
-    
-    // Check if the word contains at least one of the consonants
-    for (const consonant of plateConsonants) {
-      if (upperWord.includes(consonant)) {
-        return true;
-      }
+  // Initial setup - ensure Level 1 has correct origin/destination
+  useEffect(() => {
+    if (level === 1) {
+      // Ensure level 1 always has Spain -> France
+      const spainOrigin = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+      
+      const franceDestination = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
+                      { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!' };
+      
+      setOriginInfo(spainOrigin);
+      setDestinationInfo(franceDestination);
     }
-    
-    return false;
-  };
+  }, []);
 
   return (
     <GameContext.Provider value={{

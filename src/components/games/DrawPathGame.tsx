@@ -20,6 +20,7 @@ interface DrawPathGameProps {
   onError?: (message: string) => void;
   onHelp?: () => void;
 }
+
 const DrawPathGame: React.FC<DrawPathGameProps> = ({
   onError,
   onHelp
@@ -373,12 +374,23 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     return isEnglish ? "Arriving at destination..." : "Llegando a tu destino...";
   };
 
-  return <div className="flex flex-col w-full gap-4">
+  return (
+    <div className="flex flex-col w-full gap-4">
       {/* Speed control slider - MOVED UP */}
       <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
       
       {/* Game controls - MOVED UP */}
-      <DrawControls isPlaying={isPlaying} isDrawing={isDrawing} pathExists={pathExists} canvasReady={canvasReady} isInitializing={isInitializing} onDraw={handleDrawMode} onPlay={handlePlay} onClear={handleClear} onHelp={handleHelp} />
+      <DrawControls 
+        isPlaying={isPlaying} 
+        isDrawing={isDrawing} 
+        pathExists={pathExists} 
+        canvasReady={canvasReady} 
+        isInitializing={isInitializing} 
+        onDraw={handleDrawMode} 
+        onPlay={handlePlay} 
+        onClear={handleClear} 
+        onHelp={handleHelp} 
+      />
       
       {/* Game canvas with much thicker purple border - 8px border (approx 3mm) */}
       <Card className="border-8 border-purple-300 shadow-lg overflow-hidden" style={{ borderStyle: 'solid' }}>
@@ -387,47 +399,67 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
             <canvas ref={canvasRef} />
             
             {/* Overlay car image on top of the drawn car - Made bigger and smoother transitions */}
-            {selectedCarColor && showCarImage && <div className="absolute pointer-events-none" style={{
-              width: '140px',
-              // Increased size for better visibility
-              height: '110px',
-              // Increased height proportionally
-              left: `${carPosition.x - 70}px`,
-              // Centered horizontally (half of width)
-              top: `${carPosition.y - 55}px`,
-              // Centered vertically with adjustment
-              transform: `rotate(${carRotation}deg)`,
-              transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
-              // Smoother transitions
-              zIndex: 100
-            }}>
-                <img src={getSelectedCarImage()} alt="Selected car" className="w-full h-full object-contain" />
-              </div>}
+            {selectedCarColor && showCarImage && (
+              <div 
+                className="absolute pointer-events-none" 
+                style={{
+                  width: '140px', // Increased size for better visibility
+                  height: '110px', // Increased height proportionally
+                  left: `${carPosition.x - 70}px`, // Centered horizontally (half of width)
+                  top: `${carPosition.y - 55}px`, // Centered vertically with adjustment
+                  transform: `rotate(${carRotation}deg)`,
+                  transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear', // Smoother transitions
+                  zIndex: 100
+                }}
+              >
+                <img 
+                  src={getSelectedCarImage()} 
+                  alt="Selected car" 
+                  className="w-full h-full object-contain" 
+                />
+              </div>
+            )}
             
             {/* Drawing mode indicator */}
-            {isDrawing && <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md kids-text">
+            {isDrawing && (
+              <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md kids-text">
                 ¡Dibuja ahora el camino!
-              </div>}
+              </div>
+            )}
             
             {/* Improved Progress indicator for animation */}
-            {isPlaying && interpolatedPath.length > 0 && <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
+            {isPlaying && interpolatedPath.length > 0 && (
+              <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
                 <div className="flex flex-col items-center gap-1 px-4">
                   <span className="text-xs font-medium kids-text">{getDestinationText()}</span>
                   <Progress value={animationProgress} className="h-3 w-full" />
                   <span className="text-xs kids-text">{animationProgress}%</span>
                 </div>
-              </div>}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
       
       {/* Game status indicators */}
-      <GameStatusIndicators isInitializing={isInitializing} canvasReady={canvasReady} isDrawing={isDrawing} isPlaying={isPlaying} animationProgress={animationProgress} interpolatedPathLength={interpolatedPath.length} animationCompleted={animationCompleted} />
+      <GameStatusIndicators 
+        isInitializing={isInitializing} 
+        canvasReady={canvasReady} 
+        isDrawing={isDrawing} 
+        isPlaying={isPlaying} 
+        animationProgress={animationProgress} 
+        interpolatedPathLength={interpolatedPath.length} 
+        animationCompleted={animationCompleted} 
+      />
       
       {/* Debug button (only visible during development) */}
-      {process.env.NODE_ENV !== 'production' && <div className="flex justify-end">
+      {process.env.NODE_ENV !== 'production' && (
+        <div className="flex justify-end">
           
-        </div>}
-    </div>;
+        </div>
+      )}
+    </div>
+  );
 };
+
 export default DrawPathGame;

@@ -35,8 +35,8 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   let foundConsonants = 0;
   let inOrder = true;
   let lastIndex = -1;
-  const foundIndices: number[] = [];
-
+  let lastFoundConsonantIndex = -1;
+  
   // Check if word has minimum length
   if (word.trim().length < 3) {
     return -20; // Return negative score for short words
@@ -49,13 +49,12 @@ export function calculateScore(word: string, plateConsonants: string, language: 
     
     if (index !== -1) {
       foundConsonants++;
-      foundIndices.push(index);
       
-      // Check if consonants appear in order
-      if (lastIndex !== -1 && index <= lastIndex) {
+      // Check if consonants appear in order in the word
+      if (lastFoundConsonantIndex !== -1 && index <= lastFoundConsonantIndex) {
         inOrder = false;
       }
-      lastIndex = index;
+      lastFoundConsonantIndex = index;
     }
   }
 
@@ -187,8 +186,11 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
   const uppercaseWord = word.toUpperCase();
   
   // Check against our dictionaries based on language
-  if (language === 'es' && SPANISH_WORDS.has(uppercaseWord)) {
-    return true;
+  if (language === 'es') {
+    // Add 'HEREDERO' to the Spanish word list
+    if (uppercaseWord === 'HEREDERO' || SPANISH_WORDS.has(uppercaseWord)) {
+      return true;
+    }
   } else if (language === 'en' && ENGLISH_WORDS.has(uppercaseWord)) {
     return true;
   }
@@ -245,7 +247,7 @@ const SPANISH_WORDS = new Set([
   "POLLO", "OVEJA", "CABRA", "CONEJO", "RATON", "ARDILLA", "SERPIENTE", "LAGARTO",
   "TORTUGA", "COCODRILO", "PEZ", "TIBURON", "BALLENA", "DELFIN", "AGUILA", "PALOMA",
   "PINGUINO", "PULPO", "CALAMAR", "ARAÑA", "MOSCA", "ABEJA", "MARIPOSA", "HORMIGA",
-  "verano", "loro"
+  "VERANO", "LORO", "HEREDERO", "HERIDA", "HERMANO", "HERMANA", "HERRAMIENTA", "HIERRO"
 ]);
 
 // Add ENGLISH_WORDS set
@@ -296,5 +298,6 @@ const ENGLISH_WORDS = new Set([
   "INCLUDE", "EXCLUDE", "SURVIVE", "EXIST", "LIVE", "GROW", "DEVELOP", "INCREASE",
   "DECREASE", "EXPAND", "EXTEND", "REDUCE", "SHRINK", "BEGIN", "START", "CONTINUE",
   "PROCEED", "PROGRESS", "FINISH", "END", "COMPLETE", "SUCCEED", "ACCOMPLISH",
-  "ACHIEVE", "ATTEMPT", "TRY", "ENDEAVOR", "EFFORT", "STRUGGLE", "STRIVE"
+  "ACHIEVE", "ATTEMPT", "TRY", "ENDEAVOR", "EFFORT", "STRUGGLE", "STRIVE",
+  "HERO", "HERITAGE", "HERMIT"
 ]);
