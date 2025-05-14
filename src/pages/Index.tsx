@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -20,7 +19,6 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
 import CarCustomization from "@/components/CarCustomization";
-
 const Index = () => {
   return <GameProvider>
       <GameContent />
@@ -80,7 +78,6 @@ const GameContent = () => {
     if (level >= 10) countries.push(language === 'es' ? "España (vuelta completa)" : "Spain (full tour)");
     return countries;
   }, [level, language]);
-  
   const handleResetGame = () => {
     if (confirm(t("reset_confirm"))) {
       resetGame();
@@ -90,12 +87,11 @@ const GameContent = () => {
       });
     }
   };
-  
+
   // Toggle car customization panel
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
   };
-  
   return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
