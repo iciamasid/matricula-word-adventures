@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -141,7 +140,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const [originWord, setOriginWord] = useState<string>('');
   const [destinationWord, setDestinationWord] = useState<string>('');
   // Set the default selected car to the blue one (id: "2")
-  const [selectedCarColor, setSelectedCarColor] = useState<CarColor>({ 
+  const [selectedCarColor, setSelectedCarColor] = useState<CarColor | null>({ 
     id: "2", 
     name: "Coche Azul", 
     image: "cocheazul.png", 
@@ -227,7 +226,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     // If level has increased, show level up message
     if (newLevel > level) {
       // Save current destination as previous before updating
-      setPreviousDestination(destinationInfo);
+      setPreviousDestination({...destinationInfo});
       
       setLevel(newLevel);
       setShowLevelUp(true);
@@ -246,6 +245,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         clearLevelUpMessage();
       }, 5000);
       
+      console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
       // Update destinations for the new level
       updateDestinations(newLevel);
     }
@@ -295,8 +295,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     
     // If we have a previous destination, set it as the origin
     if (previousDestination) {
-      setOriginInfo(previousDestination);
-      console.log(`Setting origin to previous destination: ${previousDestination.country}`);
+      console.log(`Setting origin to previous destination: ${previousDestination.city}, ${previousDestination.country}`);
+      setOriginInfo({...previousDestination});
     } else {
       // Default to Madrid if no previous destination (should only happen at game start)
       const spainOrigin = { 
@@ -373,7 +373,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
     
     // Update destination
-    setDestinationInfo(destinationCountry);
+    setDestinationInfo({...destinationCountry});
     
     console.log(`Updated destinations for level ${currentLevel}: Origin=${originInfo.country}, Destination=${destinationCountry.country}`);
   };

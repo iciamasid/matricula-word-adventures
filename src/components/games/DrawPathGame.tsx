@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -7,7 +8,7 @@ import { toast } from '@/hooks/use-toast';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
 import { Point } from './utils/pathUtils';
-import { createCar, createEndPoint, createStartPoint } from './utils/carUtils';
+import { createCar, createEndPoint, createStartPoint, CarColor } from './utils/carUtils';
 import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
@@ -24,7 +25,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   onError,
   onHelp
 }) => {
-  const { selectedCarColor } = useGame();
+  const { selectedCarColor, setSelectedCarColor } = useGame();
   const { t, isEnglish } = useLanguage();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -41,6 +42,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
   const [carRotation, setCarRotation] = useState<number>(0); // Track car rotation angle
   const [showCarImage, setShowCarImage] = useState<boolean>(true); // Show car image by default
+  const [showCarSelector, setShowCarSelector] = useState<boolean>(false);
   const [carPosition, setCarPosition] = useState<{
     x: number;
     y: number;
@@ -48,6 +50,13 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     x: 50,
     y: 50
   }); // Initial car position
+  
+  // Available car colors
+  const carColors: CarColor[] = [
+    { id: "1", name: "Coche Rojo", image: "cocherojo.png", color: "bg-red-500" },
+    { id: "2", name: "Coche Azul", image: "cocheazul.png", color: "bg-blue-500" },
+    { id: "3", name: "Coche Amarillo", image: "cocheamarillo.png", color: "bg-yellow-500" }
+  ];
 
   // Handle errors
   const handleError = (message: string) => {
@@ -133,6 +142,21 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       setCarPosition(position);
     }
   });
+
+  // Toggle car selector
+  const toggleCarSelector = () => {
+    setShowCarSelector(!showCarSelector);
+  };
+
+  // Handle car selection
+  const handleSelectCar = (car: CarColor) => {
+    setSelectedCarColor(car);
+    setShowCarSelector(false);
+    toast({
+      title: "¡Coche seleccionado!",
+      description: `Has seleccionado el ${car.name}.`
+    });
+  };
 
   // Update interpolated path when original path changes
   useEffect(() => {
@@ -375,6 +399,43 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
 
   return (
     <div className="flex flex-col w-full gap-4">
+      {/* Car selector button */}
+      <div className="flex justify-center mb-2">
+        <Button 
+          onClick={toggleCarSelector} 
+          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+        >
+          Cambiar Coche
+        </Button>
+      </div>
+      
+      {/* Car selector popup */}
+      {showCarSelector && (
+        <Card className="border-2 border-purple-300 shadow-lg overflow-hidden mb-4">
+          <CardContent className="p-4">
+            <h3 className="text-lg font-bold mb-2 text-center kids-text">Elige tu coche</h3>
+            <div className="flex justify-center space-x-4">
+              {carColors.map((car) => (
+                <div 
+                  key={car.id} 
+                  className={`p-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
+                    selectedCarColor?.id === car.id ? "border-4 border-green-500" : "border border-gray-300"
+                  }`}
+                  onClick={() => handleSelectCar(car)}
+                >
+                  <img 
+                    src={`/lovable-uploads/${car.image}`} 
+                    alt={car.name} 
+                    className="w-24 h-20 object-contain" 
+                  />
+                  <p className="text-center font-medium text-sm mt-1 kids-text">{car.name}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+      
       {/* Speed control slider - MOVED UP */}
       <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
       
