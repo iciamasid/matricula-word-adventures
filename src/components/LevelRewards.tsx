@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/context/LanguageContext";
 
 const LevelRewards: React.FC = () => {
-  const { level, destinationInfo } = useGame();
+  const { level, destinationInfo, originInfo } = useGame();
   const { t, isEnglish, language } = useLanguage();
   const navigate = useNavigate();
   
@@ -27,7 +27,8 @@ const LevelRewards: React.FC = () => {
       case "Japón": return "Japan";
       case "Australia": return "Australia"; // Same in both languages
       case "Estados Unidos": return "United States";
-      case "Méjico": return "Mexico";
+      case "Méjico": 
+      case "México": return "Mexico";
       case "Perú": return "Peru";
       case "Argentina": return "Argentina"; // Same in both languages
       default: return country;
@@ -49,7 +50,7 @@ const LevelRewards: React.FC = () => {
         <CardHeader className="pb-2">
           <CardTitle className="text-2xl text-purple-800 flex items-center justify-center kids-text">
             <Sparkles className="h-6 w-6 text-yellow-500 mr-2" />
-            {/* Show Level number with flag next to it */}
+            {/* Show Level number with origin country flag next to it */}
             <div className="flex items-center">
               <span>Nivel {level}</span>
               <motion.span 
@@ -63,7 +64,7 @@ const LevelRewards: React.FC = () => {
                   repeat: Infinity
                 }}
               >
-                {destinationInfo.flag}
+                {originInfo.flag}
               </motion.span>
             </div>
             <motion.div
@@ -79,8 +80,8 @@ const LevelRewards: React.FC = () => {
           
           {/* Text below the level number */}
           <p className="text-center text-purple-700 kids-text">
-            {isEnglish ? `You are in the city of ${destinationInfo.city}, ${getLocalizedCountry(destinationInfo.country)}` : 
-              `Estás en la ciudad de ${destinationInfo.city}, ${destinationInfo.country}`}
+            {isEnglish ? `You are in the city of ${originInfo.city}, ${getLocalizedCountry(originInfo.country)}` : 
+              `Estás en la ciudad de ${originInfo.city}, ${originInfo.country}`}
           </p>
         </CardHeader>
         <CardContent className="space-y-4 px-4">

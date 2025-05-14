@@ -30,7 +30,7 @@ const WorldTourProgress = () => {
   const [progressValue, setProgressValue] = useState(0);
   const [animationState, setAnimationState] = useState('initial');
 
-  // Modified simplified animation to always start from Spain (left)
+  // Modified animation to always start from Spain (left) and progress to current level
   useEffect(() => {
     const targetValue = (level - 1) / 10 * 100;
     let animationActive = true;

@@ -2,6 +2,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Globe, Star, Info } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CountryPageIconsProps {
   type: "fact" | "language" | "famousFor";
@@ -9,6 +10,8 @@ interface CountryPageIconsProps {
 }
 
 const CountryPageIcons: React.FC<CountryPageIconsProps> = ({ type, children }) => {
+  const { isEnglish } = useLanguage();
+  
   const getIcon = () => {
     switch (type) {
       case "fact":
@@ -17,7 +20,7 @@ const CountryPageIcons: React.FC<CountryPageIconsProps> = ({ type, children }) =
           color: "text-yellow-500",
           bgColor: "bg-yellow-100",
           borderColor: "border-yellow-300",
-          title: "Dato curioso"
+          title: isEnglish ? "Fun Fact" : "Dato curioso"
         };
       case "language":
         return {
@@ -25,7 +28,7 @@ const CountryPageIcons: React.FC<CountryPageIconsProps> = ({ type, children }) =
           color: "text-blue-500",
           bgColor: "bg-blue-100",
           borderColor: "border-blue-300",
-          title: "Idioma"
+          title: isEnglish ? "Language" : "Idioma"
         };
       case "famousFor":
         return {
@@ -33,7 +36,7 @@ const CountryPageIcons: React.FC<CountryPageIconsProps> = ({ type, children }) =
           color: "text-purple-500",
           bgColor: "bg-purple-100",
           borderColor: "border-purple-300",
-          title: "Famoso por"
+          title: isEnglish ? "Famous For" : "Famoso por"
         };
       default:
         return {
@@ -41,7 +44,7 @@ const CountryPageIcons: React.FC<CountryPageIconsProps> = ({ type, children }) =
           color: "text-blue-500",
           bgColor: "bg-blue-100",
           borderColor: "border-blue-300",
-          title: "Información"
+          title: isEnglish ? "Information" : "Información"
         };
     }
   };
