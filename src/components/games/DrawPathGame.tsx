@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,18 +14,22 @@ import SpeedControl from './SpeedControl';
 import { useGame } from '@/context/GameContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLanguage } from '@/context/LanguageContext';
-
 interface DrawPathGameProps {
   onError?: (message: string) => void;
   onHelp?: () => void;
 }
-
 const DrawPathGame: React.FC<DrawPathGameProps> = ({
   onError,
   onHelp
 }) => {
-  const { selectedCarColor, setSelectedCarColor } = useGame();
-  const { t, isEnglish } = useLanguage();
+  const {
+    selectedCarColor,
+    setSelectedCarColor
+  } = useGame();
+  const {
+    t,
+    isEnglish
+  } = useLanguage();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -50,13 +53,24 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     x: 50,
     y: 50
   }); // Initial car position
-  
+
   // Available car colors
-  const carColors: CarColor[] = [
-    { id: "1", name: "Coche Rojo", image: "cocherojo.png", color: "bg-red-500" },
-    { id: "2", name: "Coche Azul", image: "cocheazul.png", color: "bg-blue-500" },
-    { id: "3", name: "Coche Amarillo", image: "cocheamarillo.png", color: "bg-yellow-500" }
-  ];
+  const carColors: CarColor[] = [{
+    id: "1",
+    name: "Coche Rojo",
+    image: "cocherojo.png",
+    color: "bg-red-500"
+  }, {
+    id: "2",
+    name: "Coche Azul",
+    image: "cocheazul.png",
+    color: "bg-blue-500"
+  }, {
+    id: "3",
+    name: "Coche Amarillo",
+    image: "cocheamarillo.png",
+    color: "bg-yellow-500"
+  }];
 
   // Handle errors
   const handleError = (message: string) => {
@@ -367,7 +381,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     // Add event handlers to prevent default touch behaviors on the canvas
     const canvasElement = canvasRef.current;
     if (!canvasElement) return;
-
     const preventScroll = (e: TouchEvent) => {
       // Prevent scrolling only when in drawing mode
       if (isDrawing) {
@@ -376,9 +389,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     };
 
     // Add touch event listeners with passive: false to allow preventDefault
-    canvasElement.addEventListener('touchmove', preventScroll, { passive: false });
-    canvasElement.addEventListener('touchstart', preventScroll, { passive: false });
-    
+    canvasElement.addEventListener('touchmove', preventScroll, {
+      passive: false
+    });
+    canvasElement.addEventListener('touchstart', preventScroll, {
+      passive: false
+    });
     return () => {
       // Clean up event listeners
       canvasElement.removeEventListener('touchmove', preventScroll);
@@ -396,130 +412,81 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   const getDestinationText = () => {
     return isEnglish ? "Arriving at destination..." : "Llegando a tu destino...";
   };
-
-  return (
-    <div className="flex flex-col w-full gap-4">
+  return <div className="flex flex-col w-full gap-4">
       {/* Car selector button */}
       <div className="flex justify-center mb-2">
-        <Button 
-          onClick={toggleCarSelector} 
-          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-        >
-          Cambiar Coche
-        </Button>
+        
       </div>
       
       {/* Car selector popup */}
-      {showCarSelector && (
-        <Card className="border-2 border-purple-300 shadow-lg overflow-hidden mb-4">
+      {showCarSelector && <Card className="border-2 border-purple-300 shadow-lg overflow-hidden mb-4">
           <CardContent className="p-4">
             <h3 className="text-lg font-bold mb-2 text-center kids-text">Elige tu coche</h3>
             <div className="flex justify-center space-x-4">
-              {carColors.map((car) => (
-                <div 
-                  key={car.id} 
-                  className={`p-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${
-                    selectedCarColor?.id === car.id ? "border-4 border-green-500" : "border border-gray-300"
-                  }`}
-                  onClick={() => handleSelectCar(car)}
-                >
-                  <img 
-                    src={`/lovable-uploads/${car.image}`} 
-                    alt={car.name} 
-                    className="w-24 h-20 object-contain" 
-                  />
+              {carColors.map(car => <div key={car.id} className={`p-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${selectedCarColor?.id === car.id ? "border-4 border-green-500" : "border border-gray-300"}`} onClick={() => handleSelectCar(car)}>
+                  <img src={`/lovable-uploads/${car.image}`} alt={car.name} className="w-24 h-20 object-contain" />
                   <p className="text-center font-medium text-sm mt-1 kids-text">{car.name}</p>
-                </div>
-              ))}
+                </div>)}
             </div>
           </CardContent>
-        </Card>
-      )}
+        </Card>}
       
       {/* Speed control slider - MOVED UP */}
       <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
       
       {/* Game controls - MOVED UP */}
-      <DrawControls 
-        isPlaying={isPlaying} 
-        isDrawing={isDrawing} 
-        pathExists={pathExists} 
-        canvasReady={canvasReady} 
-        isInitializing={isInitializing} 
-        onDraw={handleDrawMode} 
-        onPlay={handlePlay} 
-        onClear={handleClear} 
-        onHelp={handleHelp} 
-      />
+      <DrawControls isPlaying={isPlaying} isDrawing={isDrawing} pathExists={pathExists} canvasReady={canvasReady} isInitializing={isInitializing} onDraw={handleDrawMode} onPlay={handlePlay} onClear={handleClear} onHelp={handleHelp} />
       
       {/* Game canvas with much thicker purple border - 8px border (approx 3mm) */}
-      <Card className="border-8 border-purple-300 shadow-lg overflow-hidden" style={{ borderStyle: 'solid' }}>
+      <Card className="border-8 border-purple-300 shadow-lg overflow-hidden" style={{
+      borderStyle: 'solid'
+    }}>
         <CardContent className="p-0 touch-none">
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
             
             {/* Overlay car image on top of the drawn car - Made bigger and smoother transitions */}
-            {selectedCarColor && showCarImage && (
-              <div 
-                className="absolute pointer-events-none" 
-                style={{
-                  width: '140px', // Increased size for better visibility
-                  height: '110px', // Increased height proportionally
-                  left: `${carPosition.x - 70}px`, // Centered horizontally (half of width)
-                  top: `${carPosition.y - 55}px`, // Centered vertically with adjustment
-                  transform: `rotate(${carRotation}deg)`,
-                  transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear', // Smoother transitions
-                  zIndex: 100
-                }}
-              >
-                <img 
-                  src={getSelectedCarImage()} 
-                  alt="Selected car" 
-                  className="w-full h-full object-contain" 
-                />
-              </div>
-            )}
+            {selectedCarColor && showCarImage && <div className="absolute pointer-events-none" style={{
+            width: '140px',
+            // Increased size for better visibility
+            height: '110px',
+            // Increased height proportionally
+            left: `${carPosition.x - 70}px`,
+            // Centered horizontally (half of width)
+            top: `${carPosition.y - 55}px`,
+            // Centered vertically with adjustment
+            transform: `rotate(${carRotation}deg)`,
+            transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
+            // Smoother transitions
+            zIndex: 100
+          }}>
+                <img src={getSelectedCarImage()} alt="Selected car" className="w-full h-full object-contain" />
+              </div>}
             
             {/* Drawing mode indicator */}
-            {isDrawing && (
-              <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md kids-text">
+            {isDrawing && <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md kids-text">
                 ¡Dibuja ahora el camino!
-              </div>
-            )}
+              </div>}
             
             {/* Improved Progress indicator for animation - Updated text */}
-            {isPlaying && interpolatedPath.length > 0 && (
-              <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
+            {isPlaying && interpolatedPath.length > 0 && <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
                 <div className="flex flex-col items-center gap-1 px-4">
                   <span className="text-xs font-medium kids-text">{getDestinationText()}</span>
                   <Progress value={animationProgress} className="h-3 w-full" />
                   <span className="text-xs kids-text">{animationProgress}%</span>
                 </div>
-              </div>
-            )}
+              </div>}
           </div>
         </CardContent>
       </Card>
       
       {/* Game status indicators */}
-      <GameStatusIndicators 
-        isInitializing={isInitializing} 
-        canvasReady={canvasReady} 
-        isDrawing={isDrawing} 
-        isPlaying={isPlaying} 
-        animationProgress={animationProgress} 
-        interpolatedPathLength={interpolatedPath.length} 
-        animationCompleted={animationCompleted} 
-      />
+      <GameStatusIndicators isInitializing={isInitializing} canvasReady={canvasReady} isDrawing={isDrawing} isPlaying={isPlaying} animationProgress={animationProgress} interpolatedPathLength={interpolatedPath.length} animationCompleted={animationCompleted} />
       
       {/* Debug button (only visible during development) */}
-      {process.env.NODE_ENV !== 'production' && (
-        <div className="flex justify-end">
+      {process.env.NODE_ENV !== 'production' && <div className="flex justify-end">
           
-        </div>
-      )}
-    </div>
-  );
+        </div>}
+    </div>;
 };
-
 export default DrawPathGame;
