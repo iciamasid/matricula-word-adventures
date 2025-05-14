@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -128,8 +129,38 @@ const DrawGameContent: React.FC = () => {
             </motion.div>}
         </AnimatePresence>
         
-        {/* Origin and Destination with route visualization */}
-        <div className={`w-full ${panelBg} rounded-lg p-4 shadow-md`}>
+        {/* MOVED UP: Game Components - Speed Control and Draw Controls */}
+        <motion.div className="w-full" initial={{
+        y: 20,
+        opacity: 0
+      }} animate={{
+        y: 0,
+        opacity: 1
+      }} transition={{
+        delay: 0.2
+      }}>
+          <DrawPathGame onError={handleError} onHelp={() => setShowHelp(true)} />
+        </motion.div>
+        
+        {/* Error Display */}
+        {error && <motion.div initial={{
+        opacity: 0,
+        y: -20
+      }} animate={{
+        opacity: 1,
+        y: 0
+      }} exit={{
+        opacity: 0,
+        y: -20
+      }} className="w-full">
+            <Alert variant="destructive" className="border-red-500 bg-red-100">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          </motion.div>}
+        
+        {/* MOVED DOWN: Origin and Destination with route visualization */}
+        <div className={`w-full ${panelBg} rounded-lg p-4 shadow-md mt-3`}>
           <div className="grid grid-cols-5 items-center">
             {/* Origin */}
             <div className="col-span-2 text-center">
@@ -203,36 +234,6 @@ const DrawGameContent: React.FC = () => {
         {selectedCarColor && <div className="w-full flex justify-center items-center">
             
           </div>}
-        
-        {/* Error Display */}
-        {error && <motion.div initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} exit={{
-        opacity: 0,
-        y: -20
-      }} className="w-full">
-            <Alert variant="destructive" className="border-red-500 bg-red-100">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          </motion.div>}
-        
-        {/* Game Component */}
-        <motion.div className="w-full" initial={{
-        y: 20,
-        opacity: 0
-      }} animate={{
-        y: 0,
-        opacity: 1
-      }} transition={{
-        delay: 0.2
-      }}>
-          <DrawPathGame onError={handleError} onHelp={() => setShowHelp(true)} />
-        </motion.div>
       </motion.div>
       
       {/* Help Instructions Modal */}

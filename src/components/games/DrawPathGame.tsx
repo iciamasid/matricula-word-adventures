@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -341,6 +342,13 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     return `/lovable-uploads/${selectedCarColor.image}`;
   };
   return <div className="flex flex-col w-full gap-4">
+      {/* Speed control slider - MOVED UP */}
+      <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
+      
+      {/* Game controls - MOVED UP */}
+      <DrawControls isPlaying={isPlaying} isDrawing={isDrawing} pathExists={pathExists} canvasReady={canvasReady} isInitializing={isInitializing} onDraw={handleDrawMode} onPlay={handlePlay} onClear={handleClear} onHelp={handleHelp} />
+      
+      {/* Game canvas with purple border instead of white */}
       <Card className="border-4 border-purple-300 shadow-lg overflow-hidden">
         <CardContent className="p-4">
           <div ref={containerRef} className="w-full relative">
@@ -383,12 +391,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       
       {/* Game status indicators */}
       <GameStatusIndicators isInitializing={isInitializing} canvasReady={canvasReady} isDrawing={isDrawing} isPlaying={isPlaying} animationProgress={animationProgress} interpolatedPathLength={interpolatedPath.length} animationCompleted={animationCompleted} />
-      
-      {/* Speed control slider */}
-      <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
-      
-      {/* Game controls */}
-      <DrawControls isPlaying={isPlaying} isDrawing={isDrawing} pathExists={pathExists} canvasReady={canvasReady} isInitializing={isInitializing} onDraw={handleDrawMode} onPlay={handlePlay} onClear={handleClear} onHelp={handleHelp} />
       
       {/* Debug button (only visible during development) */}
       {process.env.NODE_ENV !== 'production' && <div className="flex justify-end">
