@@ -336,17 +336,17 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
             
-            {/* Overlay car image on top of the drawn car */}
+            {/* Overlay car image on top of the drawn car - Made bigger and smoother transitions */}
             {selectedCarColor && (isPlaying || showCarImage) && (
               <div 
                 className="absolute pointer-events-none"
                 style={{
-                  width: '70px', // Increased size for better visibility
-                  height: '50px',
-                  left: `${carPosition.x - 35}px`, // Centered horizontally (half of width)
-                  top: `${carPosition.y - 30}px`,  // Centered vertically with adjustment
+                  width: '120px', // Increased size for better visibility and to cover drawn car
+                  height: '90px', // Increased height proportionally
+                  left: `${carPosition.x - 60}px`, // Centered horizontally (half of width)
+                  top: `${carPosition.y - 45}px`,  // Centered vertically with adjustment
                   transform: `rotate(${carRotation}deg)`,
-                  transition: 'transform 0.1s ease',
+                  transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear', // Smoother transitions
                   zIndex: 100
                 }}
               >

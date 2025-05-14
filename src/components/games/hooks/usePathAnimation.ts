@@ -36,6 +36,9 @@ export const usePathAnimation = ({
   const carObjectsRef = useRef<CarObject | null>(null);
   const [debugMode, setDebugMode] = useState<boolean>(false);
   const [currentAnimationSpeed, setCurrentAnimationSpeed] = useState<number>(animationSpeed);
+  
+  // Add previous point reference for smoother angle calculations
+  const previousPointRef = useRef<Point | null>(null);
 
   // Create interpolated path when original path changes
   const createInterpolatedPath = useCallback((originalPath: Point[]) => {
@@ -57,9 +60,8 @@ export const usePathAnimation = ({
         Math.pow(point2.y - point1.y, 2)
       );
       
-      // Reduce the number of interpolation points for faster animation
-      // Adjusting the divisor to create fewer interpolation points
-      const steps = Math.max(10, Math.ceil(distance / 2)); // Less dense interpolation for faster movement
+      // Create more interpolation points for smoother movement
+      const steps = Math.max(15, Math.ceil(distance / 3)); // Increased density for smoother movement
       
       // Skip the first point as it's already added
       const betweenPoints = interpolatePoints(point1, point2, steps).slice(1);
@@ -133,6 +135,11 @@ export const usePathAnimation = ({
     fabricCanvas.requestRenderAll();
   }, [fabricCanvas, interpolatedPath, startPointObj, endPointObj]);
 
+  // Calculate angle between two points - Smoother rotation
+  const calculateAngle = (prevPoint: Point, nextPoint: Point): number => {
+    return Math.atan2(nextPoint.y - prevPoint.y, nextPoint.x - prevPoint.x) * 180 / Math.PI;
+  };
+  
   // Move car along the path
   const moveCar = useCallback((currentIndex: number) => {
     if (!fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) {
@@ -169,19 +176,21 @@ export const usePathAnimation = ({
     const newX = currentPoint.x;
     const newY = currentPoint.y;
     
-    // Calculate rotation angle if we have previous points
-    // Look ahead a few points for smoother rotation
+    // Calculate rotation angle with look-ahead and smoothing
     if (currentIndex > 0) {
-      // Look ahead for smoother rotation (if possible)
-      const lookAheadIndex = Math.min(currentIndex + 3, interpolatedPath.length - 1);
+      // Look further ahead for smoother rotation (if possible)
+      const lookAheadIndex = Math.min(currentIndex + 10, interpolatedPath.length - 1); 
       const lookAheadPoint = interpolatedPath[lookAheadIndex];
-      const prevPoint = interpolatedPath[Math.max(0, currentIndex - 1)];
       
-      // Use the look ahead point for rotation calculation if available
-      const targetX = lookAheadPoint.x;
-      const targetY = lookAheadPoint.y;
+      // Get previous point for angle calculation
+      // Use stored previous point for smoother transitions
+      const prevPoint = previousPointRef.current || interpolatedPath[Math.max(0, currentIndex - 1)];
       
-      const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
+      // Calculate angle to the look ahead point
+      const angle = calculateAngle(prevPoint, lookAheadPoint);
+      
+      // Store current point for next iteration
+      previousPointRef.current = currentPoint;
       
       // Update rotation callback if provided
       if (onCarRotationUpdate) {
@@ -206,9 +215,12 @@ export const usePathAnimation = ({
       car.taillight.set({ left: newX - 30, top: newY + 4, angle: angle });
       car.doorHandle.set({ left: newX - 8, top: newY - 1, angle: angle });
     } else {
+      // Initial position
       if (onCarRotationUpdate) {
         onCarRotationUpdate(0); // Default angle for starting position
       }
+      
+      previousPointRef.current = currentPoint;
       
       car.body.set({ left: newX, top: newY });
       car.roof.set({ left: newX, top: newY - 15 });
@@ -249,9 +261,8 @@ export const usePathAnimation = ({
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
     
-    // Calculate the step size to complete animation in about 10 seconds
-    // For a typical path of around 300-500 points, we want to move every 20-30ms
-    const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 500)); // Adjust step size based on path length
+    // Use larger step size for smoother movement
+    const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 800)); 
     
     // Ajustar la velocidad para completar en aproximadamente 10 segundos
     const baseSpeed = 20; 
@@ -262,7 +273,7 @@ export const usePathAnimation = ({
       animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
     }, adjustedSpeed);
     
-    // Skip points for faster animation
+    // Skip points for smoother animation
     const nextIndex = currentIndex + stepSize;
   }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed, onCarRotationUpdate]);
 
@@ -276,6 +287,8 @@ export const usePathAnimation = ({
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
+    // Clear previous point reference
+    previousPointRef.current = null;
   }, []);
 
   // Toggle debug mode
@@ -295,12 +308,14 @@ export const usePathAnimation = ({
     }
   }, [debugMode]);
 
-  // Añadir una función para limpiar el path trace
+  // Clean up path trace
   const clearPathTrace = useCallback(() => {
     if (pathTraceRef.current && fabricCanvas) {
       fabricCanvas.remove(pathTraceRef.current);
       pathTraceRef.current = null;
     }
+    // Also clear the previous point reference
+    previousPointRef.current = null;
   }, [fabricCanvas]);
 
   return {

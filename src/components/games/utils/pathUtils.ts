@@ -1,13 +1,59 @@
 
-export interface Point {
+import { Path } from 'fabric';
+
+interface Point {
   x: number;
   y: number;
 }
 
-// Enhanced interpolation function for smoother curves
-export const interpolatePoints = (point1: Point, point2: Point, steps: number): Point[] => {
+/**
+ * Extracts points from a Fabric.js path object
+ * @param pathObj The Fabric.js path object
+ * @returns Array of points (x,y coordinates)
+ */
+const extractPointsFromPath = (pathObj: Path): Point[] => {
+  if (!pathObj || !pathObj.path) {
+    return [];
+  }
+
   const points: Point[] = [];
-  
+  const path = pathObj.path;
+
+  // Handle different path data formats
+  path.forEach((item: any) => {
+    // Each item has format [command, x, y, x2, y2, ...]
+    // M = move to, L = line to, Q = quadratic curve to
+    const command = item[0];
+    
+    if (command === 'M' || command === 'L') {
+      // Move to or Line to commands have format [command, x, y]
+      points.push({ x: item[1], y: item[2] });
+    } 
+    else if (command === 'Q') {
+      // Quadratic curves have control point and end point
+      // Format: [command, control_x, control_y, end_x, end_y]
+      points.push({ x: item[3], y: item[4] }); // Add end point
+    }
+    else if (command === 'C') {
+      // Cubic curves have two control points and end point
+      // Format: [command, control1_x, control1_y, control2_x, control2_y, end_x, end_y]
+      points.push({ x: item[5], y: item[6] }); // Add end point
+    }
+  });
+
+  return points;
+};
+
+/**
+ * Interpolate between two points
+ * @param point1 Starting point
+ * @param point2 Ending point
+ * @param steps Number of points to generate
+ * @returns Array of interpolated points
+ */
+const interpolatePoints = (point1: Point, point2: Point, steps: number): Point[] => {
+  const points: Point[] = [];
+
   for (let i = 0; i <= steps; i++) {
     const t = i / steps;
     points.push({
@@ -15,89 +61,57 @@ export const interpolatePoints = (point1: Point, point2: Point, steps: number): 
       y: point1.y + (point2.y - point1.y) * t
     });
   }
-  
+
   return points;
 };
 
-// Helper function to extract points from all path commands
-export const extractPointsFromPath = (pathObj: any): Point[] => {
-  if (!pathObj || !pathObj.path || !Array.isArray(pathObj.path)) {
-    console.error("Invalid path object:", pathObj);
-    return [];
-  }
+/**
+ * Calculate angle between two points
+ * @param prevPoint Previous point
+ * @param nextPoint Next point
+ * @returns Angle in degrees
+ */
+const calculateAngle = (prevPoint: Point, nextPoint: Point): number => {
+  return Math.atan2(nextPoint.y - prevPoint.y, nextPoint.x - prevPoint.x) * 180 / Math.PI;
+};
 
-  const rawPath = pathObj.path;
-  const points: Point[] = [];
-  let lastControl: Point | null = null;
+/**
+ * Generate a smoother path from original path points
+ * @param originalPath Original path points
+ * @param smoothFactor How much smoothing to apply (higher = smoother)
+ * @returns Smoothed path points
+ */
+const generateSmoothPath = (originalPath: Point[], smoothFactor: number = 3): Point[] => {
+  if (originalPath.length <= 2) return originalPath;
   
-  try {
-    for (let i = 0; i < rawPath.length; i++) {
-      const cmd = rawPath[i];
-      
-      if (!cmd || !Array.isArray(cmd)) {
-        console.log("Skipping invalid command:", cmd);
-        continue;
-      }
-      
-      console.log("Processing command:", cmd[0]);
-      
-      // Handle different path commands
-      switch (cmd[0]) {
-        case 'M': // Move to
-        case 'L': // Line to
-          points.push({ x: cmd[1], y: cmd[2] });
-          break;
-          
-        case 'Q': // Quadratic curve
-          // Add the control point
-          points.push({ x: cmd[1], y: cmd[2] });
-          // Add several points along the curve for smoother interpolation
-          for (let t = 0.2; t <= 0.8; t += 0.2) {
-            const x = (1-t)*(1-t)*points[points.length-2].x + 2*(1-t)*t*cmd[1] + t*t*cmd[3];
-            const y = (1-t)*(1-t)*points[points.length-2].y + 2*(1-t)*t*cmd[2] + t*t*cmd[4];
-            points.push({ x, y });
-          }
-          // Add the end point
-          points.push({ x: cmd[3], y: cmd[4] });
-          break;
-          
-        case 'C': // Cubic curve
-          // Add both control points and several points along the curve
-          points.push({ x: cmd[1], y: cmd[2] }); // First control point
-          lastControl = { x: cmd[3], y: cmd[4] }; // Second control point
-          
-          // Add several points along the curve for smoother interpolation
-          for (let t = 0.2; t <= 0.8; t += 0.2) {
-            const mt = 1-t;
-            const x = mt*mt*mt*points[points.length-2].x + 
-                    3*mt*mt*t*cmd[1] + 
-                    3*mt*t*t*cmd[3] + 
-                    t*t*t*cmd[5];
-            const y = mt*mt*mt*points[points.length-2].y + 
-                    3*mt*mt*t*cmd[2] + 
-                    3*mt*t*t*cmd[4] + 
-                    t*t*t*cmd[6];
-            points.push({ x, y });
-          }
-          
-          // Add the end point
-          points.push({ x: cmd[5], y: cmd[6] });
-          break;
-          
-        case 'Z': // Close path
-          // If we have points and the first point is different from the last, close the path
-          if (points.length > 1 && 
-            (points[0].x !== points[points.length-1].x || points[0].y !== points[points.length-1].y)) {
-            points.push({ ...points[0] });
-          }
-          break;
-      }
-    }
+  const smoothedPath: Point[] = [];
+  
+  // Add first point
+  smoothedPath.push(originalPath[0]);
+  
+  // Apply smoothing to middle points
+  for (let i = 1; i < originalPath.length - 1; i++) {
+    const prevPoint = originalPath[i - 1];
+    const currentPoint = originalPath[i];
+    const nextPoint = originalPath[i + 1];
     
-    console.log(`Extracted ${points.length} points from path`);
-    return points;
-  } catch (error) {
-    console.error("Error extracting points from path:", error);
-    return points;
+    // Average the positions for smoothing
+    const smoothedX = (prevPoint.x + currentPoint.x * smoothFactor + nextPoint.x) / (smoothFactor + 2);
+    const smoothedY = (prevPoint.y + currentPoint.y * smoothFactor + nextPoint.y) / (smoothFactor + 2);
+    
+    smoothedPath.push({ x: smoothedX, y: smoothedY });
   }
+  
+  // Add last point
+  smoothedPath.push(originalPath[originalPath.length - 1]);
+  
+  return smoothedPath;
+};
+
+export { 
+  Point, 
+  extractPointsFromPath, 
+  interpolatePoints,
+  calculateAngle,
+  generateSmoothPath
 };
