@@ -8,17 +8,18 @@ import { useLanguage } from '@/context/LanguageContext';
 // Function to get the flag emoji based on level
 const getLevelFlag = (level: number) => {
   switch (level) {
-    case 1: return "🇫🇷"; // Francia
-    case 2: return "🇮🇹"; // Italia
-    case 3: return "🇷🇺"; // Rusia
-    case 4: return "🇯🇵"; // Japón
-    case 5: return "🇦🇺"; // Australia
-    case 6: return "🇺🇸"; // Estados Unidos
-    case 7: return "🇲🇽"; // México
-    case 8: return "🇵🇪"; // Perú
-    case 9: return "🇦🇷"; // Argentina
-    case 10: return "🇪🇸"; // España de vuelta
-    default: return "🇪🇸"; // España
+    case 1: return "🇪🇸"; // Origen España
+    case 2: return "🇫🇷"; // Origen Francia
+    case 3: return "🇮🇹"; // Origen Italia
+    case 4: return "🇷🇺"; // Origen Rusia
+    case 5: return "🇯🇵"; // Origen Japón
+    case 6: return "🇦🇺"; // Origen Australia
+    case 7: return "🇺🇸"; // Origen EEUU
+    case 8: return "🇲🇽"; // Origen México
+    case 9: return "🇵🇪"; // Origen Perú
+    case 10: return "🇦🇷"; // Origen Argentina
+    case 11: return "🇪🇸"; // Vuelta a España
+    default: return "🇪🇸"; // Default España
   }
 };
 
@@ -71,6 +72,23 @@ const WorldTourProgress = () => {
   const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
   const subtextColor = isEnglish ? "text-orange-700" : "text-purple-700";
   
+  // Get destination flag for current level
+  const getDestinationFlag = (level: number) => {
+    switch (level) {
+      case 1: return "🇫🇷"; // Destino Francia
+      case 2: return "🇮🇹"; // Destino Italia
+      case 3: return "🇷🇺"; // Destino Rusia
+      case 4: return "🇯🇵"; // Destino Japón
+      case 5: return "🇦🇺"; // Destino Australia
+      case 6: return "🇺🇸"; // Destino EEUU
+      case 7: return "🇲🇽"; // Destino México
+      case 8: return "🇵🇪"; // Destino Perú
+      case 9: return "🇦🇷"; // Destino Argentina
+      case 10: return "🇪🇸"; // Destino España (vuelta completa)
+      default: return "🇫🇷"; // Default Francia
+    }
+  };
+  
   return (
     <motion.div 
       className={`w-full p-4 rounded-lg shadow-lg ${bgColor}`}
@@ -81,36 +99,42 @@ const WorldTourProgress = () => {
       <h3 className={`text-xl text-center ${textColor} kids-text mb-3`}>{t('world_tour_progress')}</h3>
       <div className="relative pt-4 pb-8">
         <Progress 
-          value={animatingLevel / 10 * 100} 
+          value={(level - 1) / 10 * 100} 
           className={`h-4 ${level >= 10 ? 'bg-amber-200' : ''}`} 
         />
         
         {/* Country markers on progress bar */}
         <div className="absolute top-0 left-0 w-full flex justify-between px-1">
-          {[...Array(11)].map((_, i) => (
-            <div key={i} className="relative flex flex-col items-center">
-              <motion.div 
-                className={`w-3 h-3 rounded-full ${animatingLevel >= i ? 'bg-green-500' : 'bg-gray-300'}`}
-                animate={{ scale: animatingLevel === i ? [1, 1.3, 1] : 1 }}
-                transition={{ duration: 0.5 }}
-              />
-              <div 
-                className="absolute top-4 transform -translate-x-1/2" 
-                style={{ left: '50%' }}
-              >
-                <motion.span 
-                  className="text-xs"
-                  animate={{ 
-                    scale: animatingLevel === i ? [1, 1.3, 1] : 1,
-                    y: animatingLevel === i ? [0, -3, 0] : 0
-                  }}
+          {[...Array(11)].map((_, i) => {
+            // Adjust index to match level 1-11 (where 11 is completion)
+            const levelIndex = i + 1;
+            const flag = levelIndex <= 10 ? getLevelFlag(levelIndex) : "🇪🇸";
+            
+            return (
+              <div key={i} className="relative flex flex-col items-center">
+                <motion.div 
+                  className={`w-3 h-3 rounded-full ${level >= levelIndex ? 'bg-green-500' : 'bg-gray-300'}`}
+                  animate={{ scale: animatingLevel === levelIndex ? [1, 1.3, 1] : 1 }}
                   transition={{ duration: 0.5 }}
+                />
+                <div 
+                  className="absolute top-4 transform -translate-x-1/2" 
+                  style={{ left: '50%' }}
                 >
-                  {getLevelFlag(i)}
-                </motion.span>
+                  <motion.span 
+                    className="text-xs"
+                    animate={{ 
+                      scale: animatingLevel === levelIndex ? [1, 1.3, 1] : 1,
+                      y: animatingLevel === levelIndex ? [0, -3, 0] : 0
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {flag}
+                  </motion.span>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
         
         <div className="flex justify-between text-xs text-purple-700 mt-6">
@@ -118,6 +142,15 @@ const WorldTourProgress = () => {
           <span>{t('world_tour_complete')}</span>
         </div>
       </div>
+      
+      {/* Current destination indicator */}
+      {level <= 10 && (
+        <div className="mt-2 text-center">
+          <span className={`text-sm ${subtextColor}`}>
+            {isEnglish ? "Next destination:" : "Próximo destino:"} {getDestinationFlag(level)}
+          </span>
+        </div>
+      )}
     </motion.div>
   );
 };

@@ -32,6 +32,15 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
         onClose();
       }, 5000);
       
+      // Play bonus sound
+      try {
+        const audio = new Audio('/lovable-uploads/level-up.mp3');
+        audio.volume = 0.7;
+        audio.play();
+      } catch (e) {
+        console.error("Could not play bonus sound", e);
+      }
+      
       return () => clearTimeout(timer);
     }
   }, [open, onClose]);
@@ -49,7 +58,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
   return (
     <AnimatePresence>
       {open && (
-        <AlertDialog open={open}>
+        <AlertDialog open={open} onOpenChange={() => onClose()}>
           <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
             <AlertDialogTitle className="sr-only">Bonus Points</AlertDialogTitle>
             <motion.div
@@ -113,7 +122,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
                         scale: [1, 1.2, 1]
                       }}
                       transition={{ duration: 4, repeat: Infinity }}
-                      className="text-5xl font-bold text-red-500 mx-2"
+                      className="text-5xl font-bold text-yellow-300 mx-2"
                     >
                       6
                     </motion.div>
@@ -123,7 +132,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
                         scale: [1, 1.2, 1]
                       }}
                       transition={{ duration: 4, delay: 0.3, repeat: Infinity }}
-                      className="text-5xl font-bold text-red-500 mx-2"
+                      className="text-5xl font-bold text-yellow-300 mx-2"
                     >
                       6
                     </motion.div>
@@ -133,7 +142,17 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
                         scale: [1, 1.2, 1]
                       }}
                       transition={{ duration: 4, delay: 0.6, repeat: Infinity }}
-                      className="text-5xl font-bold text-red-500 mx-2"
+                      className="text-5xl font-bold text-yellow-300 mx-2"
+                    >
+                      6
+                    </motion.div>
+                    <motion.div
+                      animate={{ 
+                        rotateY: [0, 360],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{ duration: 4, delay: 0.9, repeat: Infinity }}
+                      className="text-5xl font-bold text-yellow-300 mx-2"
                     >
                       6
                     </motion.div>
