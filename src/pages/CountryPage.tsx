@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,7 @@ const CountryPageContent = () => {
     language,
     isEnglish
   } = useLanguage();
-  
+
   // Add zoom state for the map
   const [mapZoom, setMapZoom] = useState(1);
 
@@ -192,22 +191,18 @@ const CountryPageContent = () => {
 
   // Create a single-country array for highlighting in the map
   const unlockedCountries = [countryData.name];
-  
+
   // Handle zoom controls
   const handleZoomIn = () => {
     setMapZoom(prev => Math.min(prev + 0.2, 2));
   };
-  
   const handleZoomOut = () => {
     setMapZoom(prev => Math.max(prev - 0.2, 0.8));
   };
-
   return <div className="min-h-screen bg-gradient-to-b from-purple-100 to-blue-100 p-4">
       <div className="max-w-md mx-auto">
         <Link to="/">
-          <Button variant="outline" className="mb-4">
-            <ArrowLeft className="mr-2 h-4 w-4" /> {t('back_to_game')}
-          </Button>
+          
         </Link>
         
         <motion.div className="bg-white rounded-lg shadow-lg overflow-hidden" initial={{
@@ -229,15 +224,8 @@ const CountryPageContent = () => {
           
           {/* Replace the old map with MapDisplay component */}
           <div className="h-[200px] w-full relative overflow-hidden border-t-2 border-b-2 border-purple-100">
-            <MapDisplay 
-              zoom={mapZoom}
-              highlightCountry={countryData.name} 
-              unlockedCountries={unlockedCountries} 
-            />
-            <ZoomControls 
-              onZoomIn={handleZoomIn}
-              onZoomOut={handleZoomOut}
-            />
+            <MapDisplay zoom={mapZoom} highlightCountry={countryData.name} unlockedCountries={unlockedCountries} />
+            <ZoomControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} />
           </div>
           
           <div className="p-6">
