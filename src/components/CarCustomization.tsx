@@ -46,19 +46,21 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
     ? `/lovable-uploads/${selectedCarColor.image}` 
     : null;
 
-  // Auto-close after selection with a slight delay to show the selection animation
+  // Auto-close after selection with a sufficient delay to allow user selection
   useEffect(() => {
+    // Only close if a car has been selected AND the user has clicked on it (not on initial render)
     if (selectedCarColor && open) {
       const timer = setTimeout(() => {
         setOpen(false);
         if (onToggle) onToggle();
-      }, 1000); // Increased delay to 1 second to ensure user sees the selection
+      }, 2000); // 2 seconds delay to ensure user has time to see the selection
       return () => clearTimeout(timer);
     }
   }, [selectedCarColor, open, onToggle]);
 
   const handleSelectCar = (car: CarColor) => {
     setSelectedCarColor(car);
+    // No auto-close here, the effect will handle it with a delay
   };
 
   return (
