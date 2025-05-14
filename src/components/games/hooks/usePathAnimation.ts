@@ -11,7 +11,8 @@ interface UsePathAnimationProps {
   startPointObj: Circle | null;
   endPointObj: Circle | null;
   animationSpeed?: number;
-  onCarRotationUpdate?: (angle: number) => void; // New callback for rotation updates
+  onCarRotationUpdate?: (angle: number) => void; // Callback for rotation updates
+  onCarPositionUpdate?: (position: {x: number, y: number}) => void; // Added callback for position updates
 }
 
 export const usePathAnimation = ({
@@ -20,7 +21,8 @@ export const usePathAnimation = ({
   startPointObj,
   endPointObj,
   animationSpeed = 180,
-  onCarRotationUpdate
+  onCarRotationUpdate,
+  onCarPositionUpdate
 }: UsePathAnimationProps) => {
   const [interpolatedPath, setInterpolatedPath] = useState<Point[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -176,6 +178,14 @@ export const usePathAnimation = ({
     const newX = currentPoint.x;
     const newY = currentPoint.y;
     
+    // Update position state for car image overlay
+    setCarPosition({ x: newX, y: newY });
+    
+    // Notify parent component through callback
+    if (onCarPositionUpdate) {
+      onCarPositionUpdate({ x: newX, y: newY });
+    }
+    
     // Calculate rotation angle with look-ahead and smoothing
     if (currentIndex > 0) {
       // Look further ahead for smoother rotation (if possible)
@@ -240,9 +250,6 @@ export const usePathAnimation = ({
       car.doorHandle.set({ left: newX - 8, top: newY - 1 });
     }
     
-    // Update car position state for any UI that needs it
-    setCarPosition({ x: newX, y: newY });
-    
     // Always update the path trace to show progress
     updatePathTrace(currentIndex);
     
@@ -275,7 +282,7 @@ export const usePathAnimation = ({
     
     // Skip points for smoother animation
     const nextIndex = currentIndex + stepSize;
-  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed, onCarRotationUpdate]);
+  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed, onCarRotationUpdate, onCarPositionUpdate]);
 
   // Cancel any ongoing animation
   const cancelAnimation = useCallback(() => {

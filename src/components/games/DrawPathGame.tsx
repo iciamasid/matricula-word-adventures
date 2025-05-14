@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -29,7 +28,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
   const [endPosition, setEndPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
   const [carRotation, setCarRotation] = useState<number>(0); // Track car rotation angle
-  const [showCarImage, setShowCarImage] = useState<boolean>(false); // Control car image visibility
+  const [showCarImage, setShowCarImage] = useState<boolean>(true); // CHANGED: Show car image by default
+  const [carPosition, setCarPosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 }); // Initial car position
 
   // Handle errors
   const handleError = (message: string) => {
@@ -80,10 +80,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
         fabricCanvas.isDrawingMode = false;
       }
     },
-    onError: handleError
+    onError: handleError,
+    backgroundColor: '#f9f2ff', // Make sure background color is passed consistently
+    showCarImage: showCarImage  // Pass the flag to show car image from the beginning
   });
 
-  // Path animation - Nota: ahora incluye clearPathTrace
+  // Path animation
   const {
     interpolatedPath,
     isPlaying,
@@ -100,15 +102,17 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     toggleDebugMode,
     setAnimationSpeed: setPathAnimationSpeed,
     clearPathTrace,
-    carPosition,
-    setCarPosition
+    setCarPosition: updateCarPosition
   } = usePathAnimation({
     fabricCanvas,
     path,
     startPointObj,
     endPointObj,
     animationSpeed,
-    onCarRotationUpdate: (angle) => setCarRotation(angle)
+    onCarRotationUpdate: (angle) => setCarRotation(angle),
+    onCarPositionUpdate: (position) => {
+      setCarPosition(position);
+    }
   });
 
   // Update interpolated path when original path changes
@@ -153,10 +157,10 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       const startPoint = createStartPoint(50, 50);
       fabricCanvas.add(startPoint);
       
-      // Get the color from selectedCarColor
-      const carColorValue = selectedCarColor ? selectedCarColor.color : '#E74C3C';
+      // Get the color from selectedCarColor - CHANGED: Make it same as background color
+      const carColorValue = '#f9f2ff';  // Use background color for the drawn car
       
-      // Add car back to start with selected color
+      // Add car back to start with background color (invisible)
       const car = createCar(50, 50, carColorValue);
       fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
                       car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow,
@@ -176,7 +180,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       setCurrentPathIndex(0);
       setCarRotation(0); // Reset rotation
       setCarPosition({ x: 50, y: 50 }); // Reset car position
-      setShowCarImage(false); // Hide car image overlay
+      setShowCarImage(true); // CHANGED: Always show car image overlay
       fabricCanvas.isDrawingMode = false;
       
       toast({
@@ -213,7 +217,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     setAnimationCompleted(false);
     setCurrentPathIndex(0);
     setCarRotation(0); // Reset rotation
-    setShowCarImage(true); // Show car image overlay during animation
+    setShowCarImage(true); // Always show car image overlay
     
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = false;
@@ -237,10 +241,10 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
         }
       }
       
-      // Get the color from selectedCarColor
-      const carColorValue = selectedCarColor ? selectedCarColor.color : '#E74C3C';
+      // CHANGED: Use background color for the drawn car to make it invisible
+      const carColorValue = '#f9f2ff';
       
-      // Re-add the car at the starting position with the selected color
+      // Re-add the car at the starting position with the background color (making it invisible)
       const car = createCar(path[0].x, path[0].y, carColorValue);
       fabricCanvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
                       car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow,
@@ -274,7 +278,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     try {
       console.log("Activating drawing mode");
       setIsDrawing(true);
-      setShowCarImage(false); // Hide car image overlay during drawing
+      // CHANGED: Keep car image overlay visible even during drawing
+      setShowCarImage(true);
       
       // Ensure the brush is set correctly
       if (!fabricCanvas.freeDrawingBrush) {
@@ -337,14 +342,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
             <canvas ref={canvasRef} />
             
             {/* Overlay car image on top of the drawn car - Made bigger and smoother transitions */}
-            {selectedCarColor && (isPlaying || showCarImage) && (
+            {selectedCarColor && showCarImage && (
               <div 
                 className="absolute pointer-events-none"
                 style={{
-                  width: '120px', // Increased size for better visibility and to cover drawn car
-                  height: '90px', // Increased height proportionally
-                  left: `${carPosition.x - 60}px`, // Centered horizontally (half of width)
-                  top: `${carPosition.y - 45}px`,  // Centered vertically with adjustment
+                  width: '140px', // Increased size even more for better visibility
+                  height: '110px', // Increased height proportionally
+                  left: `${carPosition.x - 70}px`, // Centered horizontally (half of width)
+                  top: `${carPosition.y - 55}px`,  // Centered vertically with adjustment
                   transform: `rotate(${carRotation}deg)`,
                   transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear', // Smoother transitions
                   zIndex: 100

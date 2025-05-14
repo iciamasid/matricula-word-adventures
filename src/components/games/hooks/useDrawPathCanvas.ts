@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef, RefObject } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, PencilBrush } from 'fabric';
 import { toast } from '@/hooks/use-toast';
@@ -9,13 +10,17 @@ interface UseDrawPathCanvasProps {
   containerRef: RefObject<HTMLDivElement>;
   onPathCreated: (points: Point[]) => void;
   onError: (message: string) => void;
+  backgroundColor?: string; // Added parameter for background color
+  showCarImage?: boolean; // Added parameter to control car image visibility
 }
 
 export const useDrawPathCanvas = ({
   canvasRef,
   containerRef,
   onPathCreated,
-  onError
+  onError,
+  backgroundColor = '#f9f2ff', // Default background color
+  showCarImage = false // Default to not showing car image
 }: UseDrawPathCanvasProps) => {
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [startPointObj, setStartPointObj] = useState<Circle | null>(null);
@@ -42,7 +47,7 @@ export const useDrawPathCanvas = ({
       const canvas = new FabricCanvas(canvasRef.current, {
         width: containerWidth,
         height: containerHeight,
-        backgroundColor: '#f9f2ff',
+        backgroundColor: backgroundColor, // Use the provided background color
         isDrawingMode: false // Start with drawing mode off until user clicks "Draw Path"
       });
       
@@ -63,8 +68,8 @@ export const useDrawPathCanvas = ({
       canvas.add(startPoint);
       setStartPointObj(startPoint);
 
-      // Create and add car to canvas
-      const car = createCar(50, 50);
+      // Create and add car to canvas with background color to make it invisible
+      const car = createCar(50, 50, backgroundColor); // Use background color for drawn car
       // Add all car parts to the canvas
       canvas.add(car.body, car.roof, car.wheel1, car.wheel2, car.wheel3, car.headlight,
                  car.rim1, car.rim2, car.rim3, car.frontWindshield, car.sideWindow, 
