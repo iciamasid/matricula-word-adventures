@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -240,14 +241,14 @@ const CountryPageContent = () => {
           </div>
           
           <div className="p-6">
-            <h1 className="text-3xl font-bold kids-text flex items-center mb-2">
+            <h1 className="text-3xl font-normal kids-text flex items-center mb-2">
               {countryData.name} {countryData.flag}
             </h1>
             <p className="text-gray-600 mb-4 kids-text">{t('capital')} {countryData.capital}</p>
             
             {/* Added country description - moved from main page */}
             <div className={`${panelClasses} rounded-lg p-4 mb-4`}>
-              <h3 className="text-xl font-bold text-purple-800 kids-text mb-2 flex items-center">
+              <h3 className="text-xl font-normal text-purple-800 kids-text mb-2 flex items-center">
                 <motion.span className="mr-2" animate={{
                 rotate: [0, 10, -10, 0]
               }} transition={{
@@ -258,7 +259,7 @@ const CountryPageContent = () => {
                 </motion.span>
                 {t('about')} {countryData.name}
               </h3>
-              <p className="kids-text text-fuchsia-600 text-lg font-light">{countryData.description}</p>
+              <p className="kids-text text-fuchsia-600 text-lg font-normal">{countryData.description}</p>
             </div>
             
             <CountryPageIcons type="fact">

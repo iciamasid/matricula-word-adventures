@@ -1,8 +1,7 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import HighlightedCountry from './map/HighlightedCountry';
-import UnlockedCountries from './map/UnlockedCountries';
+import CountryMarkers from './map/CountryMarkers';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 
 interface WorldMapProps {
@@ -27,11 +26,11 @@ const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries
             className="w-full h-full object-cover"
           />
           
-          {/* Country Markers */}
-          <UnlockedCountries countries={unlockedCountries} highlightCountry={highlightCountry} />
-          
-          {/* Highlighted Country */}
-          {highlightCountry && <HighlightedCountry country={highlightCountry} />}
+          {/* Country Markers - Now using the CountryMarkers component */}
+          <CountryMarkers 
+            highlightCountry={highlightCountry} 
+            unlockedCountries={unlockedCountries} 
+          />
         </div>
       </AspectRatio>
     </motion.div>
