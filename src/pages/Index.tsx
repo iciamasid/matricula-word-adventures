@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -147,13 +148,10 @@ const GameContent = () => {
         {/* Player Registration Form and Car Customization */}
         <PlayerRegistration />
         
-        {/* Car selection on the initial screen */}
+        {/* Car selection using the collapsible component */}
         <div className="w-full max-w-md mb-4">
           <div className="bg-white/80 rounded-lg p-4 shadow-md mb-2">
-            <h3 className="text-center text-lg font-medium mb-3 kids-text">
-              {isEnglish ? "Select your car" : "Selecciona tu coche"}
-            </h3>
-            <CarCustomization isOpen={true} onToggle={toggleCarCustomization} embedded={true} />
+            <CarCustomization />
           </div>
         </div>
         
