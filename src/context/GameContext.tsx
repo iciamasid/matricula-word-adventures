@@ -260,9 +260,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       if (numbers === "6666" && !showBonusPopup) {
         setShowBonusPopup(true);
         
-        // Add bonus points - increased to 200
-        const bonusPoints = 200;
+        // Add bonus points - increased to 500
+        const bonusPoints = 500;
         setTotalPoints(prev => prev + bonusPoints);
+        console.log(`🎉 Special 6666 license plate bonus! +${bonusPoints} points!`);
         
         // Auto-hide bonus popup after 4 seconds
         setTimeout(() => {
@@ -274,9 +275,10 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       if (playerAge !== null && parseInt(numbers) === playerAge && !showAgeBonusPopup) {
         setShowAgeBonusPopup(true);
         
-        // Add age bonus points
-        const ageBonusPoints = 50;
+        // Add age bonus points (20 points)
+        const ageBonusPoints = 20;
         setTotalPoints(prev => prev + ageBonusPoints);
+        console.log(`🎂 Age match bonus! License plate matches your age (${playerAge})! +${ageBonusPoints} points!`);
         
         // Auto-hide age bonus popup after 4 seconds
         setTimeout(() => {
@@ -288,57 +290,75 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   
   // Function to get destinations based on level, using previous destination as new origin
   const updateDestinations = (currentLevel: number) => {
-    // If we have a previous destination, set it as the origin
-    let originCountry;
-    if (previousDestination) {
-      originCountry = previousDestination;
-    } else {
-      // Default to Madrid if no previous destination
-      originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
-                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
-    }
+    console.log(`Updating destinations for level ${currentLevel}`);
+    console.log(`Previous destination: ${previousDestination?.country || 'None'}`);
     
-    // Set the origin to the previous destination
-    setOriginInfo(originCountry);
+    // If we have a previous destination, set it as the origin
+    if (previousDestination) {
+      setOriginInfo(previousDestination);
+      console.log(`Setting origin to previous destination: ${previousDestination.country}`);
+    } else {
+      // Default to Madrid if no previous destination (should only happen at game start)
+      const spainOrigin = { 
+        city: 'Madrid', 
+        country: 'España', 
+        flag: '🇪🇸', 
+        fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' 
+      };
+      setOriginInfo(spainOrigin);
+      console.log(`No previous destination, setting origin to default: ${spainOrigin.country}`);
+    }
     
     // Get destination based on the level
     let destinationCountry;
     
+    // Setting destinations based on level according to specified progression
     switch(currentLevel) {
       case 1:
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia');
+        console.log("Level 1: Destination set to France");
         break;
       case 2:
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Italia');
+        console.log("Level 2: Destination set to Italy");
         break;
       case 3:
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Rusia');
+        console.log("Level 3: Destination set to Russia");
         break;
       case 4:
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Japón');
+        console.log("Level 4: Destination set to Japan");
         break;
       case 5:
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Australia');
+        console.log("Level 5: Destination set to Australia");
         break;
       case 6:
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Estados Unidos');
+        console.log("Level 6: Destination set to United States");
         break;
       case 7:
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México');
+        console.log("Level 7: Destination set to Mexico");
         break;
       case 8:
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Perú');
+        console.log("Level 8: Destination set to Peru");
         break;
       case 9:
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina');
+        console.log("Level 9: Destination set to Argentina");
         break;
       case 10:
         // Back to Spain for completing the world tour
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España');
+        console.log("Level 10: Destination set to Spain (completed world tour)");
         break;
       default:
         // Default to France for any other level
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia');
+        console.log(`Unknown level ${currentLevel}: Defaulting destination to France`);
     }
     
     // Fallback if not found
@@ -349,17 +369,20 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         flag: '🇫🇷',
         fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
       };
+      console.log("Destination not found in WORLD_DESTINATIONS, using fallback");
     }
     
     // Update destination
     setDestinationInfo(destinationCountry);
     
-    console.log(`Updated destinations for level ${currentLevel}: Origin=${originCountry.country}, Destination=${destinationCountry.country}`);
+    console.log(`Updated destinations for level ${currentLevel}: Origin=${originInfo.country}, Destination=${destinationCountry.country}`);
   };
   
   // Generate a new license plate using the utility functions
   const generateNewPlateImpl = () => {
     let newPlate;
+    setIsGeneratingLicensePlate(true);
+    
     // Every 5th game, generate a special 6666 plate for bonus
     if ((gamesPlayed + 1) % 5 === 0) {
       // Create a plate that starts with 6666
@@ -370,12 +393,17 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
         .join("");
       
       newPlate = `6666${randomConsonants}`;
+      console.log(`Generated special 6666 plate: ${newPlate} (Game ${gamesPlayed + 1})`);
     } else {
       newPlate = generateLicensePlate();
+      console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
     }
     
     setLicensePlate(newPlate);
-    setPlateConsonants(getConsonantsFromPlate(newPlate));
+    const extractedConsonants = getConsonantsFromPlate(newPlate);
+    setPlateConsonants(extractedConsonants);
+    console.log(`Extracted consonants: ${extractedConsonants}`);
+    
     setIsGeneratingLicensePlate(false);
     setGamesPlayed(prevGamesPlayed => prevGamesPlayed + 1);
   };
@@ -392,26 +420,32 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
     
+    console.log(`Submitting word: ${currentWord}`);
+    
     // Check if word is valid
     import('@/utils/gameUtils').then(({ wordExists, isValidWord, calculateScore }) => {
       // First check if the word contains at least one consonant from the license plate
       if (!isValidWord(currentWord, plateConsonants)) {
         setErrorMessage('La palabra debe incluir al menos una consonante de la matrícula');
+        console.log(`Word rejected: ${currentWord} (doesn't contain any consonant from ${plateConsonants})`);
         return;
       }
       
       // Then check if the word exists in our dictionary
       if (!wordExists(currentWord, 'es')) {
         setErrorMessage('Palabra no válida: no existe esta palabra');
+        console.log(`Word rejected: ${currentWord} (not in dictionary)`);
         return;
       }
       
       // Calculate score based on word and current license plate
       const calculatedScore = calculateScore(currentWord, plateConsonants, 'es');
+      console.log(`Score calculated for ${currentWord}: ${calculatedScore}`);
       
       if (calculatedScore < 0) {
         // Word is invalid
         setErrorMessage('Palabra no válida o no contiene las consonantes requeridas');
+        console.log(`Word rejected: ${currentWord} (negative score ${calculatedScore})`);
         return;
       }
       
@@ -419,6 +453,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       setPreviousScore(score);
       setScore(calculatedScore);
       setTotalPoints(prev => prev + calculatedScore);
+      console.log(`Word accepted: ${currentWord} (+${calculatedScore} points, total: ${totalPoints + calculatedScore})`);
       
       if (calculatedScore > 75) {
         setSubmitSuccess(`¡${currentWord} es correcta! +${calculatedScore} puntos`);
@@ -429,13 +464,11 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       // Track high score
       if (calculatedScore > highScore) {
         setHighScore(calculatedScore);
+        console.log(`New high score: ${calculatedScore}`);
       }
       
       // Reset current word
       setCurrentWord('');
-      
-      // Check if it's time to generate a special license plate
-      console.log(`Games played: ${gamesPlayed}. Every 5 games, we'll add a 6666 plate.`);
     });
   };
 
@@ -448,6 +481,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   
   // Initial setup - ensure Level 1 has correct origin/destination
   useEffect(() => {
+    console.log(`Initial setup for level ${level}`);
     if (level === 1) {
       // Ensure level 1 always has Spain -> France
       const spainOrigin = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
@@ -458,6 +492,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       
       setOriginInfo(spainOrigin);
       setDestinationInfo(franceDestination);
+      console.log("Level 1 setup: Origin=Spain, Destination=France");
     }
   }, []);
 

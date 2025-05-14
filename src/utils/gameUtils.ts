@@ -1,4 +1,3 @@
-
 // Generates a random license plate with 4 numbers and 3 consonants
 export function generateLicensePlate(): string {
   const numbers = Array(4)
@@ -32,65 +31,86 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   
   const uppercaseWord = word.toUpperCase();
   let score = 0;
-  let foundConsonants = 0;
-  let inOrder = true;
-  let lastIndex = -1;
-  let lastFoundConsonantIndex = -1;
   
   // Check if word has minimum length
   if (word.trim().length < 3) {
     return -20; // Return negative score for short words
   }
 
+  // Check for consonant matches and their order
+  // We need to know:
+  // 1. How many consonants from the plate are in the word
+  // 2. If they appear in the same order as in the plate
+  
+  // Initialize variables to track consonant matching
+  const foundConsonantIndices = [];
+  let lastFoundIndex = -1;
+  let inOrder = true;
+  
   // Check each consonant from the plate
   for (let i = 0; i < plateConsonants.length; i++) {
     const consonant = plateConsonants[i];
     const index = uppercaseWord.indexOf(consonant);
     
     if (index !== -1) {
-      foundConsonants++;
+      // Found this consonant in the word
+      foundConsonantIndices.push(index);
       
-      // Check if consonants appear in order in the word
-      if (lastFoundConsonantIndex !== -1 && index <= lastFoundConsonantIndex) {
+      // Check if consonants maintain order (each subsequent consonant should 
+      // appear later in the word than the previous one)
+      if (foundConsonantIndices.length > 1 && index < lastFoundIndex) {
         inOrder = false;
       }
-      lastFoundConsonantIndex = index;
+      
+      // Update the last found index
+      lastFoundIndex = index;
     }
   }
-
-  // Calculate score based on found consonants and order
-  if (foundConsonants === 3) {
-    score = inOrder ? 100 : 75;  // 3 consonantes en orden: 100 puntos; no ordenadas: 75 puntos
-  } else if (foundConsonants === 2) {
-    score = inOrder ? 50 : 25;   // 2 consonantes en orden: 50 puntos; no ordenadas: 25 puntos
-  } else if (foundConsonants === 1) {
-    score = 10;                  // 1 consonante: 10 puntos
-  } else if (foundConsonants === 0) {
-    score = -20;                 // Palabra incorrecta: -20 puntos
+  
+  // Apply scoring rules based on number of consonants found and their order
+  const foundCount = foundConsonantIndices.length;
+  
+  if (foundCount === 3) {
+    // All 3 consonants found
+    score = inOrder ? 100 : 75;  // 3 consonants in order: 100 points; not in order: 75 points
+  } else if (foundCount === 2) {
+    // 2 consonants found
+    score = inOrder ? 50 : 25;   // 2 consonants in order: 50 points; not in order: 25 points
+  } else if (foundCount === 1) {
+    // 1 consonant found
+    score = 10;                  // 1 consonant: 10 points
+  } else {
+    // No consonants found
+    score = -20;                 // Invalid word: -20 points
   }
+  
+  console.log(`Word: ${word}, Consonants: ${plateConsonants}, Found: ${foundCount}, In order: ${inOrder}, Base score: ${score}`);
 
   // Bonus for longer words
   if (score > 0 && word.length > 4) {
     score += Math.min(50, word.length * 5);
+    console.log(`Length bonus: +${Math.min(50, word.length * 5)} points`);
   }
   
-  // Special license plate number checks
-  if (plateConsonants && word.length > 0) {
-    // Check for 6666 pattern in the license plate
-    const licensePlateNumbers = plateConsonants.substring(0, 4);
-    if (licensePlateNumbers === "6666") {
-      score = Math.max(score, 0) + 200; // Add 200 points bonus for 6666 (increased from 66)
-    }
-  }
-  
-  // Bonus for words in the opposite language
+  // Bonus for words in the opposite language (200 points)
   if (score > 0) {
     if ((language === 'es' && isEnglishWord(word)) || 
         (language === 'en' && isSpanishWord(word))) {
-      score = Math.max(score, 0) + 100; // Add 100 points bonus for foreign language
+      score = Math.max(score, 0) + 200;
+      console.log(`Foreign language bonus: +200 points`);
     }
   }
 
+  // Special license plate bonus checks (must be done after we've validated the word contains consonants)
+  if (score > 0) {
+    // Check for 6666 pattern in the license plate
+    if (plateConsonants.startsWith("6666")) {
+      score += 500; // Add 500 points bonus for 6666
+      console.log(`License plate 6666 bonus: +500 points`);
+    }
+  }
+  
+  console.log(`Final score for ${word}: ${score}`);
   return score;
 }
 
@@ -176,7 +196,7 @@ export function isValidWord(word: string, plateConsonants: string): boolean {
   return false;
 }
 
-// Word validation function - Stricter to ensure words actually exist
+// Word validation function - Enhanced to accept words in the Spanish dictionary
 export function wordExists(word: string, language: 'es' | 'en'): boolean {
   // First check if word length is sufficient
   if (word.length < 3) {
@@ -185,23 +205,49 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
   
   const uppercaseWord = word.toUpperCase();
   
-  // Check against our dictionaries based on language
+  // For Spanish words, we're more permissive to accept valid Spanish words
   if (language === 'es') {
-    // Add 'HEREDERO' to the Spanish word list
-    if (uppercaseWord === 'HEREDERO' || SPANISH_WORDS.has(uppercaseWord)) {
+    if (SPANISH_WORDS.has(uppercaseWord)) {
+      console.log(`Word ${word} found in Spanish dictionary`);
       return true;
     }
-  } else if (language === 'en' && ENGLISH_WORDS.has(uppercaseWord)) {
-    return true;
+    // Add specific words that should be valid but might not be in our dictionary
+    const additionalSpanishWords = [
+      "MANTENIMIENTO", "HEREDERO", "HERIDA", "HERMANO", "HERMANA", "HERRAMIENTA", 
+      "HIERRO", "HARINA", "HELADERIA", "HELADO"
+    ];
+    if (additionalSpanishWords.includes(uppercaseWord)) {
+      console.log(`Word ${word} found in additional Spanish words list`);
+      return true;
+    }
+    
+    // Extended validation for Spanish words using patterns
+    if (isSpanishWord(word)) {
+      console.log(`Word ${word} validated by Spanish patterns`);
+      return true;
+    }
+    
+    // If the word is long enough and contains multiple consonants, it's likely valid
+    if (word.length > 5 && /[bcdfghjklmnpqrstvwxyz]{3,}/i.test(word)) {
+      console.log(`Word ${word} validated by length and consonant pattern`);
+      return true;
+    }
   }
   
-  // If not found in dictionaries, use pattern matching as a fallback
-  if (language === 'es' && isSpanishWord(word)) {
-    return true;
-  } else if (language === 'en' && isEnglishWord(word)) {
-    return true;
+  // For English, check against our dictionary
+  if (language === 'en') {
+    if (ENGLISH_WORDS.has(uppercaseWord)) {
+      console.log(`Word ${word} found in English dictionary`);
+      return true;
+    }
+    
+    if (isEnglishWord(word)) {
+      console.log(`Word ${word} validated by English patterns`);
+      return true;
+    }
   }
   
+  console.log(`Word ${word} not found in any dictionary`);
   return false;
 }
 
@@ -247,7 +293,25 @@ const SPANISH_WORDS = new Set([
   "POLLO", "OVEJA", "CABRA", "CONEJO", "RATON", "ARDILLA", "SERPIENTE", "LAGARTO",
   "TORTUGA", "COCODRILO", "PEZ", "TIBURON", "BALLENA", "DELFIN", "AGUILA", "PALOMA",
   "PINGUINO", "PULPO", "CALAMAR", "ARAÑA", "MOSCA", "ABEJA", "MARIPOSA", "HORMIGA",
-  "VERANO", "LORO", "HEREDERO", "HERIDA", "HERMANO", "HERMANA", "HERRAMIENTA", "HIERRO"
+  "VERANO", "LORO", "HEREDERO", "HERIDA", "HERMANO", "HERMANA", "HERRAMIENTA", "HIERRO",
+  "MANTENIMIENTO", "MANTENEDOR", "MANTEL", "MANTENER", "MANZANA", "MAPA", "MAR", "MARAVILLA",
+  "MARCO", "MAREAR", "MARGEN", "MARIDO", "MARIPOSA", "MARMOL", "MARRON", "MARTILLO",
+  "MARZO", "MAS", "MASA", "MASCARA", "MASCAR", "MASCULINO", "MASIVO", "MATAR",
+  "MATE", "MATERIAL", "MATERNO", "MATRIZ", "MATRIMONIO", "MAXIMO", "MAYO", "MAYOR",
+  "MEDALLA", "MEDIA", "MEDIANO", "MEDICO", "MEDIDA", "MEDIO", "MEDIOCRE", "MEDIR",
+  "MEJOR", "MELANCOLIA", "MELON", "MEMORIA", "MENOR", "MENSAJE", "MENTIR", "MENU",
+  "MERECER", "MES", "MESA", "META", "METER", "METODO", "METRO", "MIEDO", "MIEL",
+  "MIEMBRO", "MIENTRAS", "MIERCOLES", "MIL", "MILAGRO", "MILITAR", "MILLON", "MINIMO",
+  "MINISTERIO", "MINUTO", "MIRAR", "MISMO", "MITAD", "MITO", "MOCHILA", "MODA",
+  "MODELO", "MODERNO", "MODO", "MOLESTAR", "MOMENTO", "MONEDA", "MONSTRUO", "MONTE",
+  "MORAL", "MORAR", "MORDER", "MORENO", "MORIR", "MOSCA", "MOSTRAR", "MOTIVO",
+  "MOTOR", "MOVER", "MOVIL", "MUCHACHA", "MUCHACHO", "MUCHO", "MUEBLE", "MUERTE",
+  "MUJER", "MUNDIAL", "MUNDO", "MUNICIPAL", "MURAL", "MURO", "MUSICA", "MUSCULO",
+  "MUSEO", "MUSICA", "MUSLO", "MUY", "NACER", "NACIONAL", "NADA", "NADAR", "NADIE",
+  "NAIPE", "NARANJA", "NARIZ", "NARRAR", "NASAL", "NATURALEZA", "NATURAL", "NAVAL",
+  "NAVEGAR", "NAVIO", "NECESARIO", "NECESIDAD", "NECESITAR", "NEGATIVO", "NEGOCIAR",
+  "NEGOCIO", "NEGRO", "NERVIO", "NERVIOSO", "NETO", "NEUTRAL", "NEUTRO", "NEVAR",
+  "NIDO", "NIEBLA", "NIEVE", "NINGUNO", "NIÑO", "NIVEL", "NOBLE", "NOCHE", "NOMBRE"
 ]);
 
 // Add ENGLISH_WORDS set
@@ -299,5 +363,5 @@ const ENGLISH_WORDS = new Set([
   "DECREASE", "EXPAND", "EXTEND", "REDUCE", "SHRINK", "BEGIN", "START", "CONTINUE",
   "PROCEED", "PROGRESS", "FINISH", "END", "COMPLETE", "SUCCEED", "ACCOMPLISH",
   "ACHIEVE", "ATTEMPT", "TRY", "ENDEAVOR", "EFFORT", "STRUGGLE", "STRIVE",
-  "HERO", "HERITAGE", "HERMIT"
+  "HERO", "HERITAGE", "HERMIT", "MAINTENANCE"
 ]);

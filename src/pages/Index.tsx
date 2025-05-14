@@ -18,6 +18,7 @@ import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
+import CarCustomization from "@/components/CarCustomization";
 
 const Index = () => {
   return <GameProvider>
@@ -28,6 +29,7 @@ const Index = () => {
 // Componente para manejar el contenido del juego
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showCarCustomization, setShowCarCustomization] = useState(false);
   const isMobile = useIsMobile();
   const {
     language,
@@ -42,7 +44,8 @@ const GameContent = () => {
     resetGame,
     plateConsonants,
     score,
-    previousScore
+    previousScore,
+    selectedCarColor
   } = useGame();
 
   // Determine the color theme based on language
@@ -85,6 +88,11 @@ const GameContent = () => {
         description: t("reset_points")
       });
     }
+  };
+  
+  // Toggle car customization panel
+  const toggleCarCustomization = () => {
+    setShowCarCustomization(!showCarCustomization);
   };
   
   return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
@@ -138,6 +146,16 @@ const GameContent = () => {
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
         {/* Player Registration Form and Car Customization */}
         <PlayerRegistration />
+        
+        {/* Car selection on the initial screen */}
+        <div className="w-full max-w-md mb-4">
+          <div className="bg-white/80 rounded-lg p-4 shadow-md mb-2">
+            <h3 className="text-center text-lg font-medium mb-3 kids-text">
+              {isEnglish ? "Select your car" : "Selecciona tu coche"}
+            </h3>
+            <CarCustomization isOpen={true} onToggle={toggleCarCustomization} embedded={true} />
+          </div>
+        </div>
         
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
           <LicensePlate />

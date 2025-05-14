@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -427,7 +426,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
               </div>
             )}
             
-            {/* Improved Progress indicator for animation */}
+            {/* Improved Progress indicator for animation - Updated text */}
             {isPlaying && interpolatedPath.length > 0 && (
               <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
                 <div className="flex flex-col items-center gap-1 px-4">

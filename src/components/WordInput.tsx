@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, Send } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
@@ -41,17 +41,7 @@ const WordInput: React.FC = () => {
       consonantsText = plateConsonants.join(', ');
     } else if (typeof plateConsonants === 'string') {
       // If it's a string, convert to array if possible or use as is
-      try {
-        const parsedArray = JSON.parse(plateConsonants);
-        if (Array.isArray(parsedArray)) {
-          consonantsText = parsedArray.join(', ');
-        } else {
-          consonantsText = plateConsonants;
-        }
-      } catch {
-        // If parsing fails, use the string directly
-        consonantsText = plateConsonants;
-      }
+      consonantsText = plateConsonants;
     } else if (plateConsonants) {
       // If it's another truthy value, convert to string
       consonantsText = String(plateConsonants);
