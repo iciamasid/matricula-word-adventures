@@ -66,6 +66,9 @@ interface GameContextType {
   
   // Game control
   resetGame: () => void;
+  
+  // Adding the missing updateDestinations function
+  updateDestinations: (currentLevel: number) => void;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -624,6 +627,9 @@ export const GameProvider: React.FC<{
     
     // Game control
     resetGame,
+    
+    // Expose updateDestinations function
+    updateDestinations,
   };
 
   // Check if children is a function to pass bonus popup state
