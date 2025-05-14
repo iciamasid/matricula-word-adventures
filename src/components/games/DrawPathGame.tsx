@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -27,6 +28,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
   const [pathExists, setPathExists] = useState<boolean>(false);
   const [endPosition, setEndPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
+  const [carRotation, setCarRotation] = useState<number>(0); // Track car rotation angle
 
   // Handle errors
   const handleError = (message: string) => {
@@ -96,13 +98,16 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     cancelAnimation,
     toggleDebugMode,
     setAnimationSpeed: setPathAnimationSpeed,
-    clearPathTrace
+    clearPathTrace,
+    carPosition,  // <-- Make sure we use carPosition from hook
+    setCarPosition // <-- Allow setting car position from here if needed
   } = usePathAnimation({
     fabricCanvas,
     path,
     startPointObj,
     endPointObj,
-    animationSpeed
+    animationSpeed,
+    onCarRotationUpdate: (angle) => setCarRotation(angle) // <-- New callback for rotation updates
   });
 
   // Update interpolated path when original path changes
@@ -168,6 +173,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       setEndPointObj(null);
       setAnimationCompleted(false);
       setCurrentPathIndex(0);
+      setCarRotation(0); // Reset rotation
+      setCarPosition({ x: 50, y: 50 }); // Reset car position
       fabricCanvas.isDrawingMode = false;
       
       toast({
@@ -203,6 +210,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     setIsDrawing(false);
     setAnimationCompleted(false);
     setCurrentPathIndex(0);
+    setCarRotation(0); // Reset rotation
     
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = false;
@@ -311,12 +319,43 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     }
   };
 
+  // Get the selected car image URL
+  const getSelectedCarImage = () => {
+    if (!selectedCarColor) return "";
+    return `/lovable-uploads/${selectedCarColor.image}`;
+  };
+
   return (
     <div className="flex flex-col w-full gap-4">
       <Card className="border-4 border-purple-300 shadow-lg overflow-hidden">
         <CardContent className="p-4">
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
+            
+            {/* Overlay car image on top of the drawn car */}
+            {isPlaying && selectedCarColor && (
+              <div 
+                className="absolute pointer-events-none"
+                style={{
+                  width: '60px',
+                  height: '40px',
+                  left: `${carPosition.x - 30}px`, // Center horizontally
+                  top: `${carPosition.y - 25}px`,  // Center vertically with slight offset
+                  transform: `rotate(${carRotation}deg)`,
+                  transition: 'transform 0.1s ease',
+                  zIndex: 100
+                }}
+              >
+                <img 
+                  src={getSelectedCarImage()} 
+                  alt="Selected car" 
+                  className="w-full h-full object-contain"
+                  style={{
+                    transform: 'scaleX(-1)', // Flip horizontally to match direction
+                  }}
+                />
+              </div>
+            )}
             
             {/* Drawing mode indicator */}
             {isDrawing && (

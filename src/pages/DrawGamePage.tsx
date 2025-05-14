@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, AlertCircle, HelpCircle, X, ArrowRight } from "lucide-react";
+import { ArrowLeft, AlertCircle, HelpCircle, X, ArrowRight, Car } from "lucide-react";
 import { Link } from "react-router-dom";
 import DrawPathGame from "@/components/games/DrawPathGame";
 import { Toaster } from "@/components/ui/toaster";
@@ -10,13 +10,15 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useGame, GameProvider } from "@/context/GameContext";
 import { useLanguage } from "@/context/LanguageContext";
+import CarCustomization from "@/components/CarCustomization";
 
 // Wrapped content component that uses useGame hook
 const DrawGameContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState<boolean>(false);
+  const [showCarSelection, setShowCarSelection] = useState<boolean>(false);
   const { toast } = useToast();
-  const { originInfo, destinationInfo } = useGame();
+  const { originInfo, destinationInfo, selectedCarColor } = useGame();
   const { t, isEnglish } = useLanguage();
   
   // Determine styling based on language
@@ -87,11 +89,53 @@ const DrawGameContent: React.FC = () => {
               
             </Link>
             
+            <Button 
+              variant="outline" 
+              onClick={() => setShowCarSelection(!showCarSelection)} 
+              className="mr-2 text-white kids-text bg-transparent"
+            >
+              <Car className="mr-2 h-5 w-5" /> {t('select_car')}
+            </Button>
+            
             <Button variant="outline" onClick={() => setShowHelp(true)} className="text-white kids-text bg-transparent">
               <HelpCircle className="mr-2 h-5 w-5" /> {t('help')}
             </Button>
           </div>
         </div>
+        
+        {/* Car selection panel */}
+        <AnimatePresence>
+          {showCarSelection && (
+            <motion.div 
+              className="w-full"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className={`w-full ${panelBg} rounded-lg p-4 shadow-md mb-3`}>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-lg font-medium kids-text text-purple-700 flex items-center">
+                    <Car className="mr-2 h-5 w-5" /> {t('select_your_car')}
+                  </h3>
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    onClick={() => setShowCarSelection(false)}
+                    className="h-7 w-7"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <CarCustomization 
+                  isOpen={true} 
+                  onToggle={() => {}} 
+                  embedded={true}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Origin and Destination with route visualization */}
         <div className={`w-full ${panelBg} rounded-lg p-4 shadow-md`}>
@@ -163,6 +207,21 @@ const DrawGameContent: React.FC = () => {
             </div>
           </div>
         </div>
+        
+        {/* Car type indicator */}
+        {selectedCarColor && (
+          <div className="w-full flex justify-center items-center">
+            <motion.div 
+              className={`${panelBg} rounded-full px-4 py-1 shadow-md flex items-center gap-2`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className={`w-3 h-3 rounded-full ${selectedCarColor.color}`}></div>
+              <span className="text-sm kids-text text-purple-700">{t('driving')} {selectedCarColor.name}</span>
+            </motion.div>
+          </div>
+        )}
         
         {/* Error Display */}
         {error && <motion.div initial={{

@@ -11,6 +11,7 @@ interface UsePathAnimationProps {
   startPointObj: Circle | null;
   endPointObj: Circle | null;
   animationSpeed?: number;
+  onCarRotationUpdate?: (angle: number) => void; // New callback for rotation updates
 }
 
 export const usePathAnimation = ({
@@ -18,7 +19,8 @@ export const usePathAnimation = ({
   path,
   startPointObj,
   endPointObj,
-  animationSpeed = 180
+  animationSpeed = 180,
+  onCarRotationUpdate
 }: UsePathAnimationProps) => {
   const [interpolatedPath, setInterpolatedPath] = useState<Point[]>([]);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -181,6 +183,11 @@ export const usePathAnimation = ({
       
       const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
       
+      // Update rotation callback if provided
+      if (onCarRotationUpdate) {
+        onCarRotationUpdate(angle);
+      }
+      
       // Set positions with calculated angle for all car parts
       car.body.set({ left: newX, top: newY, angle: angle });
       car.roof.set({ left: newX, top: newY - 15, angle: angle });
@@ -199,6 +206,10 @@ export const usePathAnimation = ({
       car.taillight.set({ left: newX - 30, top: newY + 4, angle: angle });
       car.doorHandle.set({ left: newX - 8, top: newY - 1, angle: angle });
     } else {
+      if (onCarRotationUpdate) {
+        onCarRotationUpdate(0); // Default angle for starting position
+      }
+      
       car.body.set({ left: newX, top: newY });
       car.roof.set({ left: newX, top: newY - 15 });
       car.wheel1.set({ left: newX - 20, top: newY + 15 });
@@ -253,7 +264,7 @@ export const usePathAnimation = ({
     
     // Skip points for faster animation
     const nextIndex = currentIndex + stepSize;
-  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed]);
+  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed, onCarRotationUpdate]);
 
   // Cancel any ongoing animation
   const cancelAnimation = useCallback(() => {
@@ -302,6 +313,7 @@ export const usePathAnimation = ({
     setCurrentPathIndex,
     animationProgress,
     carPosition,
+    setCarPosition,
     showPath,
     carObjectsRef,
     pathTraceRef,
