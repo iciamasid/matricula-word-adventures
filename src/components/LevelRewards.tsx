@@ -11,8 +11,28 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const LevelRewards: React.FC = () => {
   const { level, destinationInfo } = useGame();
-  const { t, isEnglish } = useLanguage();
+  const { t, isEnglish, language } = useLanguage();
   const navigate = useNavigate();
+  
+  // Get proper language country names
+  const getLocalizedCountry = (country: string) => {
+    if (!isEnglish) return country;
+    
+    // Map Spanish country names to English
+    switch(country) {
+      case "España": return "Spain";
+      case "Francia": return "France";
+      case "Italia": return "Italy";
+      case "Rusia": return "Russia";
+      case "Japón": return "Japan";
+      case "Australia": return "Australia"; // Same in both languages
+      case "Estados Unidos": return "United States";
+      case "Méjico": return "Mexico";
+      case "Perú": return "Peru";
+      case "Argentina": return "Argentina"; // Same in both languages
+      default: return country;
+    }
+  };
   
   const handleExploreCountry = () => {
     navigate(`/country/${destinationInfo.country}`);
@@ -59,7 +79,8 @@ const LevelRewards: React.FC = () => {
           
           {/* Text below the level number */}
           <p className="text-center text-purple-700 kids-text">
-            Estás en la ciudad de {destinationInfo.city}, {destinationInfo.country}
+            {isEnglish ? `You are in the city of ${destinationInfo.city}, ${getLocalizedCountry(destinationInfo.country)}` : 
+              `Estás en la ciudad de ${destinationInfo.city}, ${destinationInfo.country}`}
           </p>
         </CardHeader>
         <CardContent className="space-y-4 px-4">
@@ -106,7 +127,7 @@ const LevelRewards: React.FC = () => {
                   {destinationInfo.flag}
                 </motion.span>
               </div>
-              <p className="text-2xl text-purple-700 font-medium kids-text">{destinationInfo.country}</p>
+              <p className="text-2xl text-purple-700 font-medium kids-text">{getLocalizedCountry(destinationInfo.country)}</p>
             </div>
           </motion.div>
           
@@ -146,7 +167,7 @@ const LevelRewards: React.FC = () => {
                     }}
                     transition={{ duration: 3, repeat: Infinity }}
                   >
-                    ¡Has desbloqueado {destinationInfo.city}!
+                    {isEnglish ? `You've unlocked ${destinationInfo.city}!` : `¡Has desbloqueado ${destinationInfo.city}!`}
                   </motion.p>
                 </div>
                 
@@ -159,7 +180,7 @@ const LevelRewards: React.FC = () => {
                     <div className="flex flex-col items-center">
                       <span className="whitespace-nowrap">{t('learn_about')}</span>
                       <span className="whitespace-normal text-center truncate max-w-[200px]">
-                        {isEnglish ? destinationInfo.country : destinationInfo.country} {destinationInfo.flag}
+                        {getLocalizedCountry(destinationInfo.country)} {destinationInfo.flag}
                       </span>
                     </div>
                   </Button>

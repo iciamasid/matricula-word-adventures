@@ -30,45 +30,41 @@ const WorldTourProgress = () => {
   const [progressValue, setProgressValue] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
 
-  // Animation for level progress with looping effect
+  // New simplified animation for level progress with smooth looping effect
   useEffect(() => {
-    const startAnimation = () => {
-      setAnimatingLevel(0);
-      setProgressValue(0);
-      
-      // Animate progress bar from 0 to current level
-      const totalSteps = 100;
-      const targetValue = (level - 1) / 10 * 100;
-      let step = 0;
-      
-      const interval = setInterval(() => {
-        step++;
-        // Calculate progress as percentage of total steps
-        const newProgress = (step / totalSteps) * targetValue;
-        setProgressValue(newProgress);
+    const targetValue = (level - 1) / 10 * 100;
+    let animationActive = true;
+
+    const runAnimation = async () => {
+      while (animationActive) {
+        // Animate from 0 to target
+        setProgressValue(0);
+        setAnimatingLevel(1);
         
-        // Update current animating level based on progress
-        const currentLevelBasedOnProgress = Math.ceil((newProgress / 100) * 10) + 1;
-        setAnimatingLevel(Math.min(currentLevelBasedOnProgress, level));
-        
-        if (step >= totalSteps) {
-          clearInterval(interval);
-          // Pause at the end before restarting
-          setTimeout(() => {
-            startAnimation(); // Restart the animation
-          }, 2000);
+        // Smoothly increase to target value
+        for (let i = 0; i <= 100; i += 2) {
+          if (!animationActive) break;
+          
+          const currentProgress = (i / 100) * targetValue;
+          setProgressValue(currentProgress);
+          
+          // Update current animating level based on progress
+          const currentLevelBasedOnProgress = Math.ceil((currentProgress / 100) * 10) + 1;
+          setAnimatingLevel(Math.min(currentLevelBasedOnProgress, level));
+          
+          // Slow down animation with a small delay
+          await new Promise(resolve => setTimeout(resolve, 40));
         }
-      }, 30); // Smoother animation with more frequent updates
-      
-      return interval;
+        
+        // Hold at the target value
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
     };
     
-    // Start the animation initially
-    let interval = startAnimation();
-    setIsLooping(true);
+    runAnimation();
     
     return () => {
-      clearInterval(interval);
+      animationActive = false;
     };
   }, [level]);
 

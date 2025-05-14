@@ -61,6 +61,26 @@ const GameContent = () => {
   const handleNavigation = () => {
     sessionStorage.setItem('navigatingBack', 'true');
   };
+  
+  // Helper function to get localized country names
+  const getLocalizedCountry = (country: string) => {
+    if (!isEnglish) return country;
+    
+    // Map Spanish country names to English
+    switch(country) {
+      case "España": return "Spain";
+      case "Francia": return "France";
+      case "Italia": return "Italy";
+      case "Rusia": return "Russia";
+      case "Japón": return "Japan";
+      case "Australia": return "Australia"; // Same in both languages
+      case "Estados Unidos": return "United States";
+      case "Méjico": return "Mexico";
+      case "Perú": return "Peru";
+      case "Argentina": return "Argentina"; // Same in both languages
+      default: return country;
+    }
+  };
 
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
@@ -214,13 +234,13 @@ const GameContent = () => {
                   duration: 2,
                   repeat: Infinity
                 }}>
-                    {originInfo.city}, {originInfo.country}
+                    {originInfo.city}, {getLocalizedCountry(originInfo.country)}
                   </motion.p>
                   <p className={`text-sm ${textColorLight} kids-text`}>{t("origin")}</p>
                   <div className="w-full flex justify-center">
                     <Link to={`/country/${originInfo.country}`} onClick={handleNavigation}>
                       <Button className="bg-purple-800 hover:bg-purple-700 py-[10px] text-slate-50 font-extralight text-base mt-2 w-full max-w-[120px] px-2 sm:px-4">
-                        {isEnglish ? "Visit" : t("learn_about")} {originInfo.country}
+                        {isEnglish ? "Visit" : t("learn_about")} {getLocalizedCountry(originInfo.country)}
                       </Button>
                     </Link>
                   </div>
@@ -255,13 +275,13 @@ const GameContent = () => {
                   duration: 2,
                   repeat: Infinity
                 }}>
-                    {destinationInfo.city}, {destinationInfo.country}
+                    {destinationInfo.city}, {getLocalizedCountry(destinationInfo.country)}
                   </motion.p>
                   <p className={`text-sm ${textColorLight} kids-text`}>{t("destination")}</p>
                   <div className="w-full flex justify-center">
                     <Link to={`/country/${destinationInfo.country}`} onClick={handleNavigation}>
                       <Button className="bg-purple-800 hover:bg-purple-700 text-slate-50 font-normal text-base mt-2 w-full max-w-[120px] px-2 sm:px-4">
-                        {isEnglish ? "Visit" : t("learn_about")} {destinationInfo.country}
+                        {isEnglish ? "Visit" : t("learn_about")} {getLocalizedCountry(destinationInfo.country)}
                       </Button>
                     </Link>
                   </div>
