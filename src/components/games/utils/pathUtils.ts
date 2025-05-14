@@ -108,10 +108,12 @@ const generateSmoothPath = (originalPath: Point[], smoothFactor: number = 3): Po
   return smoothedPath;
 };
 
+// Here's the fixed export - changing "export { Point }" to "export type { Point }"
 export { 
-  Point, 
   extractPointsFromPath, 
   interpolatePoints,
   calculateAngle,
   generateSmoothPath
 };
+
+export type { Point };
