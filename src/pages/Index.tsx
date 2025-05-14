@@ -8,7 +8,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Globe, RefreshCw, ArrowRight, Car } from "lucide-react";
+import { Globe, RefreshCw, ArrowRight } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -19,7 +19,6 @@ import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
-import CarCustomization from "@/components/CarCustomization";
 
 const Index = () => {
   return <GameProvider>
@@ -30,7 +29,6 @@ const Index = () => {
 // Componente para manejar el contenido del juego
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
-  const [showCarSelection, setShowCarSelection] = useState(false);
   const isMobile = useIsMobile();
   const {
     language,
@@ -141,36 +139,6 @@ const GameContent = () => {
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
         {/* Player Registration Form and Car Customization */}
         <PlayerRegistration />
-        
-        {/* Car Selection Button */}
-        <motion.div 
-          className={`w-full mb-4 ${panelBgColor} rounded-lg p-4 shadow-md`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-medium kids-text text-purple-700 flex items-center">
-              <Car className="mr-2 h-5 w-5" /> {t('select_your_car')}
-            </h3>
-            <Button 
-              size="sm" 
-              variant={showCarSelection ? "outline" : "default"}
-              onClick={() => setShowCarSelection(!showCarSelection)}
-              className={isEnglish ? "bg-orange-600 hover:bg-orange-700 text-white" : "bg-purple-600 hover:bg-purple-700 text-white"}
-            >
-              {showCarSelection ? t('hide_cars') : t('show_cars')}
-            </Button>
-          </div>
-          
-          {showCarSelection && (
-            <CarCustomization 
-              isOpen={showCarSelection} 
-              onToggle={() => setShowCarSelection(!showCarSelection)}
-              embedded={true}
-            />
-          )}
-        </motion.div>
         
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
           <LicensePlate />

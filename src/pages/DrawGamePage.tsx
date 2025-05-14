@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -16,6 +15,7 @@ import CarCustomization from "@/components/CarCustomization";
 const DrawGameContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState<boolean>(false);
+  const [showCarSelection, setShowCarSelection] = useState<boolean>(false);
   const { toast } = useToast();
   const { originInfo, destinationInfo, selectedCarColor } = useGame();
   const { t, isEnglish } = useLanguage();
@@ -84,11 +84,53 @@ const DrawGameContent: React.FC = () => {
         }} className={`kids-text ${textColor} text-3xl font-medium`}>{t('drive_to_destination')}</motion.h1>
           
           <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setShowCarSelection(!showCarSelection)} 
+              className="mr-2 text-white kids-text bg-purple-600 hover:bg-purple-700"
+            >
+              <Car className="mr-2 h-5 w-5" /> {t('select_car')}
+            </Button>
+            
             <Button variant="outline" onClick={() => setShowHelp(true)} className="text-white kids-text bg-transparent">
               <HelpCircle className="mr-2 h-5 w-5" /> {t('help')}
             </Button>
           </div>
         </div>
+        
+        {/* Car selection panel */}
+        <AnimatePresence>
+          {showCarSelection && (
+            <motion.div 
+              className="w-full"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className={`w-full ${panelBg} rounded-lg p-4 shadow-md mb-3`}>
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-lg font-medium kids-text text-purple-700 flex items-center">
+                    <Car className="mr-2 h-5 w-5" /> {t('select_your_car')}
+                  </h3>
+                  <Button 
+                    size="icon" 
+                    variant="ghost" 
+                    onClick={() => setShowCarSelection(false)}
+                    className="h-7 w-7"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+                <CarCustomization 
+                  isOpen={true} 
+                  onToggle={() => {}} 
+                  embedded={true}
+                />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Origin and Destination with route visualization */}
         <div className={`w-full ${panelBg} rounded-lg p-4 shadow-md`}>

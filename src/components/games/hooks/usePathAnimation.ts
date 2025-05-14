@@ -1,14 +1,17 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Canvas as FabricCanvas, Circle } from 'fabric';
-import { Point, calculateAngle, generateSmoothPath } from '../utils/pathUtils';
 
-interface PathAnimationProps {
+import { useRef, useState, useCallback } from 'react';
+import { Canvas as FabricCanvas, Circle, Path, Rect, Polygon } from 'fabric';
+import { toast } from '@/hooks/use-toast';
+import { Point, interpolatePoints } from '../utils/pathUtils';
+import { CarObject } from '../utils/carUtils';
+
+interface UsePathAnimationProps {
   fabricCanvas: FabricCanvas | null;
   path: Point[];
   startPointObj: Circle | null;
   endPointObj: Circle | null;
   animationSpeed?: number;
-  onCarRotationUpdate?: (angle: number) => void;
+  onCarRotationUpdate?: (angle: number) => void; // New callback for rotation updates
 }
 
 export const usePathAnimation = ({
@@ -16,218 +19,289 @@ export const usePathAnimation = ({
   path,
   startPointObj,
   endPointObj,
-  animationSpeed = 180, // Default animation speed (higher = slower)
+  animationSpeed = 180,
   onCarRotationUpdate
-}: PathAnimationProps) => {
+}: UsePathAnimationProps) => {
   const [interpolatedPath, setInterpolatedPath] = useState<Point[]>([]);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [animationCompleted, setAnimationCompleted] = useState(false);
-  const [currentPathIndex, setCurrentPathIndex] = useState(0);
-  const [debugMode, setDebugMode] = useState(false);
-  const [animationProgress, setAnimationProgress] = useState(0);
-  const requestRef = useRef<number | null>(null);
-  const prevTimeRef = useRef<number | null>(null);
-  const carObjectsRef = useRef<any>(null);
-  const [animationSpeed_, setAnimationSpeed] = useState(animationSpeed);
-  const [lastUpdateTime, setLastUpdateTime] = useState(0);
-  const [carPosition, setCarPosition] = useState({ x: 50, y: 50 });
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+  const [animationCompleted, setAnimationCompleted] = useState<boolean>(false);
+  const [currentPathIndex, setCurrentPathIndex] = useState<number>(0);
+  const [animationProgress, setAnimationProgress] = useState<number>(0);
+  const [carPosition, setCarPosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
+  const [showPath, setShowPath] = useState<boolean>(true);
   
-  // Additional state for smoother car movement
-  const [smoothedPosition, setSmoothedPosition] = useState({ x: 50, y: 50 });
-  const positionHistoryRef = useRef<Array<{x: number, y: number}>>([]);
-  const averagePositionWindow = 3; // Number of positions to average for smoothing
-  
-  // Add car path trace
-  const clearPathTrace = useCallback(() => {
-    if (!fabricCanvas) return;
+  const animationRef = useRef<number | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const pathTraceRef = useRef<Path | null>(null);
+  const carObjectsRef = useRef<CarObject | null>(null);
+  const [debugMode, setDebugMode] = useState<boolean>(false);
+  const [currentAnimationSpeed, setCurrentAnimationSpeed] = useState<number>(animationSpeed);
+
+  // Create interpolated path when original path changes
+  const createInterpolatedPath = useCallback((originalPath: Point[]) => {
+    if (!originalPath.length) return [];
     
-    // Remove only the path trace objects (those with the "path-trace" property)
-    const objects = fabricCanvas.getObjects();
-    for (let i = objects.length - 1; i >= 0; i--) {
-      const obj = objects[i];
-      if (obj.data && obj.data.isPathTrace) {
-        fabricCanvas.remove(obj);
+    const interpolated: Point[] = [];
+    
+    // Add the first point
+    interpolated.push(originalPath[0]);
+    
+    // Interpolate between each pair of consecutive points with higher density
+    for (let i = 0; i < originalPath.length - 1; i++) {
+      const point1 = originalPath[i];
+      const point2 = originalPath[i + 1];
+      
+      // Calculate distance between points to determine number of interpolation steps
+      const distance = Math.sqrt(
+        Math.pow(point2.x - point1.x, 2) + 
+        Math.pow(point2.y - point1.y, 2)
+      );
+      
+      // Reduce the number of interpolation points for faster animation
+      // Adjusting the divisor to create fewer interpolation points
+      const steps = Math.max(10, Math.ceil(distance / 2)); // Less dense interpolation for faster movement
+      
+      // Skip the first point as it's already added
+      const betweenPoints = interpolatePoints(point1, point2, steps).slice(1);
+      interpolated.push(...betweenPoints);
+    }
+    
+    console.log(`Original path: ${originalPath.length} points, Interpolated: ${interpolated.length} points`);
+    return interpolated;
+  }, []);
+
+  // Update path with interpolation when the original path changes
+  const updatePath = useCallback((newPath: Point[]) => {
+    const interpolated = createInterpolatedPath(newPath);
+    setInterpolatedPath(interpolated);
+  }, [createInterpolatedPath]);
+
+  // Path trace visualization - Modificado para asegurar que el trazo permanezca visible
+  const updatePathTrace = useCallback((currentIndex: number) => {
+    if (!fabricCanvas || interpolatedPath.length === 0) return;
+    
+    // Crear la traza del camino si no existe
+    if (!pathTraceRef.current) {
+      // Create the full path trace at once
+      const pathData = interpolatedPath.map((point, idx) => 
+        idx === 0 ? `M ${point.x} ${point.y}` : `L ${point.x} ${point.y}`
+      ).join(' ');
+      
+      const trace = new Path(pathData, {
+        fill: '',
+        stroke: '#9B59B6', // Purple color matching the car
+        strokeWidth: 6, // Thicker line
+        strokeLineCap: 'round',
+        strokeLineJoin: 'round',
+        selectable: false,
+        evented: false,
+        opacity: 0.8, // Slightly transparent
+      });
+      
+      // Add the trace to the canvas
+      fabricCanvas.add(trace);
+      
+      // Update z-index directly
+      trace.set('zIndex', 0);
+      
+      // Store the path trace reference
+      pathTraceRef.current = trace;
+      
+      // Make sure the start point is on top of the path trace
+      if (startPointObj) {
+        startPointObj.set('zIndex', 1);
+      }
+      
+      if (endPointObj) {
+        endPointObj.set('zIndex', 1);
       }
     }
     
-    fabricCanvas.renderAll();
-  }, [fabricCanvas]);
+    // Ensure car is on top
+    if (carObjectsRef.current) {
+      const car = carObjectsRef.current;
+      // Set higher z-index for car components
+      car.body.set('zIndex', 5);
+      car.roof.set('zIndex', 6);
+      car.wheel1.set('zIndex', 5);
+      car.wheel2.set('zIndex', 5);
+      car.wheel3.set('zIndex', 5);
+      car.headlight.set('zIndex', 6);
+    }
+      
+    // Re-render the canvas to apply the z-index changes
+    fabricCanvas.requestRenderAll();
+  }, [fabricCanvas, interpolatedPath, startPointObj, endPointObj]);
 
-  // Generate interpolated path from original path
-  const updatePath = useCallback((newPath: Point[]) => {
-    if (newPath && newPath.length > 0) {
-      console.log("Generating smoothed path from", newPath.length, "points");
-      const smoothedPath = generateSmoothPath(newPath);
-      setInterpolatedPath(smoothedPath);
-      console.log("Generated interpolated path with", smoothedPath.length, "points");
-      
-      // Reset animation state
-      setCurrentPathIndex(0);
-      setAnimationProgress(0);
-      setAnimationCompleted(false);
-    }
-  }, []);
-  
-  // Calculate smoothed position from history
-  const updateSmoothedPosition = useCallback((newPosition: {x: number, y: number}) => {
-    // Add new position to history
-    positionHistoryRef.current.push(newPosition);
-    
-    // Keep only the most recent positions for averaging
-    if (positionHistoryRef.current.length > averagePositionWindow) {
-      positionHistoryRef.current.shift();
+  // Move car along the path
+  const moveCar = useCallback((currentIndex: number) => {
+    if (!fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) {
+      console.log("Missing required objects for animation", {
+        canvas: !!fabricCanvas,
+        pathLength: interpolatedPath.length,
+        car: !!carObjectsRef.current
+      });
+      return;
     }
     
-    // Calculate average position if we have enough points
-    if (positionHistoryRef.current.length > 0) {
-      const avgX = positionHistoryRef.current.reduce((sum, pos) => sum + pos.x, 0) / positionHistoryRef.current.length;
-      const avgY = positionHistoryRef.current.reduce((sum, pos) => sum + pos.y, 0) / positionHistoryRef.current.length;
-      
-      setSmoothedPosition({ x: avgX, y: avgY });
-      setCarPosition({ x: avgX, y: avgY }); // Update the car position with smoothed value
+    const car = carObjectsRef.current;
+    
+    // Check if animation is complete
+    if (currentIndex >= interpolatedPath.length) {
+      // Animation is complete
+      setIsPlaying(false);
+      setAnimationCompleted(true);
+      setAnimationProgress(100); // Set progress to 100% when complete
+      toast({
+        title: "¡Muy bien!",
+        description: "¡El coche ha llegado a su destino!"
+      });
+      return;
     }
-  }, []);
-  
+    
+    // Safety check for valid currentIndex
+    if (currentIndex < 0 || !interpolatedPath[currentIndex]) {
+      console.log("Invalid current index:", currentIndex);
+      return;
+    }
+    
+    const currentPoint = interpolatedPath[currentIndex];
+    const newX = currentPoint.x;
+    const newY = currentPoint.y;
+    
+    // Calculate rotation angle if we have previous points
+    // Look ahead a few points for smoother rotation
+    if (currentIndex > 0) {
+      // Look ahead for smoother rotation (if possible)
+      const lookAheadIndex = Math.min(currentIndex + 3, interpolatedPath.length - 1);
+      const lookAheadPoint = interpolatedPath[lookAheadIndex];
+      const prevPoint = interpolatedPath[Math.max(0, currentIndex - 1)];
+      
+      // Use the look ahead point for rotation calculation if available
+      const targetX = lookAheadPoint.x;
+      const targetY = lookAheadPoint.y;
+      
+      const angle = Math.atan2(targetY - prevPoint.y, targetX - prevPoint.x) * 180 / Math.PI;
+      
+      // Update rotation callback if provided
+      if (onCarRotationUpdate) {
+        onCarRotationUpdate(angle);
+      }
+      
+      // Set positions with calculated angle for all car parts
+      car.body.set({ left: newX, top: newY, angle: angle });
+      car.roof.set({ left: newX, top: newY - 15, angle: angle });
+      car.wheel1.set({ left: newX - 20, top: newY + 15, angle: angle });
+      car.wheel2.set({ left: newX + 0, top: newY + 15, angle: angle }); 
+      car.wheel3.set({ left: newX + 20, top: newY + 15, angle: angle });
+      car.headlight.set({ left: newX + 30, top: newY + 5, angle: angle });
+      
+      // New car parts
+      car.rim1.set({ left: newX - 20, top: newY + 15, angle: angle });
+      car.rim2.set({ left: newX + 0, top: newY + 15, angle: angle });
+      car.rim3.set({ left: newX + 20, top: newY + 15, angle: angle });
+      car.frontWindshield.set({ left: newX, top: newY - 11, angle: angle });
+      car.sideWindow.set({ left: newX - 15, top: newY - 10, angle: angle });
+      car.bumper.set({ left: newX + 28, top: newY + 2, angle: angle });
+      car.taillight.set({ left: newX - 30, top: newY + 4, angle: angle });
+      car.doorHandle.set({ left: newX - 8, top: newY - 1, angle: angle });
+    } else {
+      if (onCarRotationUpdate) {
+        onCarRotationUpdate(0); // Default angle for starting position
+      }
+      
+      car.body.set({ left: newX, top: newY });
+      car.roof.set({ left: newX, top: newY - 15 });
+      car.wheel1.set({ left: newX - 20, top: newY + 15 });
+      car.wheel2.set({ left: newX + 0, top: newY + 15 });
+      car.wheel3.set({ left: newX + 20, top: newY + 15 });
+      car.headlight.set({ left: newX + 30, top: newY + 5 });
+      
+      // New car parts
+      car.rim1.set({ left: newX - 20, top: newY + 15 });
+      car.rim2.set({ left: newX + 0, top: newY + 15 });
+      car.rim3.set({ left: newX + 20, top: newY + 15 });
+      car.frontWindshield.set({ left: newX, top: newY - 11 });
+      car.sideWindow.set({ left: newX - 15, top: newY - 10 });
+      car.bumper.set({ left: newX + 28, top: newY + 2 });
+      car.taillight.set({ left: newX - 30, top: newY + 4 });
+      car.doorHandle.set({ left: newX - 8, top: newY - 1 });
+    }
+    
+    // Update car position state for any UI that needs it
+    setCarPosition({ x: newX, y: newY });
+    
+    // Always update the path trace to show progress
+    updatePathTrace(currentIndex);
+    
+    // Update progress state
+    const progress = Math.round((currentIndex / interpolatedPath.length) * 100);
+    setAnimationProgress(progress);
+    
+    // Debug info for every 100th point
+    if (debugMode && currentIndex % 100 === 0) {
+      console.log(`Animation at point: ${currentIndex} of ${interpolatedPath.length}, progress: ${progress}%, position: ${newX},${newY}`);
+    }
+    
+    // Update the canvas
+    fabricCanvas.renderAll();
+    
+    // Update progress in the interface
+    setCurrentPathIndex(currentIndex);
+    
+    // Calculate the step size to complete animation in about 10 seconds
+    // For a typical path of around 300-500 points, we want to move every 20-30ms
+    const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 500)); // Adjust step size based on path length
+    
+    // Ajustar la velocidad para completar en aproximadamente 10 segundos
+    const baseSpeed = 20; 
+    const adjustedSpeed = Math.max(5, Math.min(50, currentAnimationSpeed / 10));
+    
+    timeoutRef.current = setTimeout(() => {
+      // Use requestAnimationFrame to optimize animation
+      animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
+    }, adjustedSpeed);
+    
+    // Skip points for faster animation
+    const nextIndex = currentIndex + stepSize;
+  }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed, onCarRotationUpdate]);
+
   // Cancel any ongoing animation
   const cancelAnimation = useCallback(() => {
-    if (requestRef.current !== null) {
-      cancelAnimationFrame(requestRef.current);
-      requestRef.current = null;
-      prevTimeRef.current = null;
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
     }
-    setIsPlaying(false);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
   }, []);
 
-  // Toggle debug mode (visualize path)
+  // Toggle debug mode
   const toggleDebugMode = useCallback(() => {
-    setDebugMode(!debugMode);
+    setDebugMode((prev) => !prev);
+    toast({
+      title: debugMode ? "Modo depuración desactivado" : "Modo depuración activado",
+      description: debugMode ? "Los mensajes de depuración ya no se mostrarán" : "Se mostrarán mensajes detallados de depuración"
+    });
   }, [debugMode]);
-  
-  // Move the car along the path
-  const moveCar = useCallback((timestamp: number) => {
-    if (!isPlaying || !fabricCanvas || !interpolatedPath.length || !carObjectsRef.current) {
-      return;
-    }
-    
-    // Throttle updates to reduce jerkiness
-    if (timestamp - lastUpdateTime < 16) { // Limit to roughly 60fps
-      requestRef.current = requestAnimationFrame(moveCar);
-      return;
-    }
-    
-    setLastUpdateTime(timestamp);
-    
-    // Initialize prevTimeRef on first frame
-    if (prevTimeRef.current === null) {
-      prevTimeRef.current = timestamp;
-      requestRef.current = requestAnimationFrame(moveCar);
-      return;
-    }
-    
-    const deltaTime = timestamp - prevTimeRef.current;
-    const stepSize = Math.max(1, Math.floor(deltaTime / animationSpeed_));
-    
-    // Only update if we have a reasonable step size
-    if (stepSize >= 1) {
-      // Update previous time
-      prevTimeRef.current = timestamp;
-      
-      let nextIndex = currentPathIndex + stepSize;
-      
-      // Check if we've reached the end of the path
-      if (nextIndex >= interpolatedPath.length) {
-        nextIndex = interpolatedPath.length - 1;
-        
-        // Animation completed
-        if (currentPathIndex === nextIndex) {
-          setAnimationCompleted(true);
-          setIsPlaying(false);
-          console.log("Animation completed");
-          return;
-        }
-      }
-      
-      // Get next position
-      const nextPoint = interpolatedPath[nextIndex];
-      
-      if (nextPoint) {
-        // Calculate progress percentage
-        const progress = Math.floor((nextIndex / (interpolatedPath.length - 1)) * 100);
-        setAnimationProgress(progress);
-        
-        // Calculate rotation angle using a window of points for smoother rotation
-        const lookAheadIndex = Math.min(nextIndex + 3, interpolatedPath.length - 1);
-        const currentPoint = interpolatedPath[nextIndex];
-        const lookAheadPoint = interpolatedPath[lookAheadIndex];
-        
-        let rotationAngle = 0;
-        
-        if (lookAheadPoint && currentPoint) {
-          rotationAngle = calculateAngle(
-            currentPoint.x, 
-            currentPoint.y, 
-            lookAheadPoint.x, 
-            lookAheadPoint.y
-          );
-          
-          // Notify parent about rotation update
-          if (onCarRotationUpdate) {
-            onCarRotationUpdate(rotationAngle);
-          }
-        }
-        
-        // Update the car position smoothly
-        updateSmoothedPosition({ x: nextPoint.x, y: nextPoint.y });
-        
-        // Draw path trace if in debug mode
-        if (debugMode && fabricCanvas) {
-          const traceCircle = new Circle({
-            left: nextPoint.x - 2,
-            top: nextPoint.y - 2,
-            radius: 2,
-            fill: 'rgba(255, 0, 0, 0.5)',
-            selectable: false,
-            evented: false,
-            data: { isPathTrace: true }
-          });
-          
-          fabricCanvas.add(traceCircle);
-        }
-        
-        // Update current index
-        setCurrentPathIndex(nextIndex);
-      }
-    }
-    
-    // Continue animation
-    requestRef.current = requestAnimationFrame(moveCar);
-  }, [isPlaying, fabricCanvas, interpolatedPath, currentPathIndex, animationSpeed_, debugMode, onCarRotationUpdate, updateSmoothedPosition, lastUpdateTime]);
 
-  // Clean up animation frame on unmount
-  useEffect(() => {
-    return () => {
-      if (requestRef.current) {
-        cancelAnimationFrame(requestRef.current);
-      }
-    };
-  }, []);
-  
-  // Stop animation when reaching the end point
-  useEffect(() => {
-    if (animationCompleted && isPlaying) {
-      setIsPlaying(false);
+  // Set animation speed
+  const setAnimationSpeed = useCallback((speed: number) => {
+    setCurrentAnimationSpeed(speed);
+    if (debugMode) {
+      console.log(`Animation speed updated to: ${speed}ms`);
     }
-  }, [animationCompleted, isPlaying]);
+  }, [debugMode]);
 
-  // Reset animation state when path changes
-  useEffect(() => {
-    // Initialize position history with starting position
-    if (path.length > 0) {
-      positionHistoryRef.current = Array(averagePositionWindow).fill({ x: path[0].x, y: path[0].y });
-      setSmoothedPosition({ x: path[0].x, y: path[0].y });
-      setCarPosition({ x: path[0].x, y: path[0].y });
+  // Añadir una función para limpiar el path trace
+  const clearPathTrace = useCallback(() => {
+    if (pathTraceRef.current && fabricCanvas) {
+      fabricCanvas.remove(pathTraceRef.current);
+      pathTraceRef.current = null;
     }
-  }, [path]);
+  }, [fabricCanvas]);
 
   return {
     interpolatedPath,
@@ -238,14 +312,18 @@ export const usePathAnimation = ({
     currentPathIndex,
     setCurrentPathIndex,
     animationProgress,
+    carPosition,
+    setCarPosition,
+    showPath,
     carObjectsRef,
+    pathTraceRef,
+    debugMode,
     updatePath,
     moveCar,
     cancelAnimation,
     toggleDebugMode,
     setAnimationSpeed,
-    clearPathTrace,
-    carPosition,
-    setCarPosition
+    currentAnimationSpeed,
+    clearPathTrace
   };
 };
