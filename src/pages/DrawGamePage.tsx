@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -85,14 +84,10 @@ const DrawGameContent: React.FC = () => {
         }} className={`kids-text ${textColor} text-3xl font-medium`}>{t('drive_to_destination')}</motion.h1>
           
           <div className="flex items-center gap-2">
-            <Link to="/">
-              
-            </Link>
-            
             <Button 
               variant="outline" 
               onClick={() => setShowCarSelection(!showCarSelection)} 
-              className="mr-2 text-white kids-text bg-transparent"
+              className="mr-2 text-white kids-text bg-purple-600 hover:bg-purple-700"
             >
               <Car className="mr-2 h-5 w-5" /> {t('select_car')}
             </Button>

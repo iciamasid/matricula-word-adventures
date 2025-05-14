@@ -29,6 +29,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
   const [endPosition, setEndPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
   const [carRotation, setCarRotation] = useState<number>(0); // Track car rotation angle
+  const [showCarImage, setShowCarImage] = useState<boolean>(false); // Control car image visibility
 
   // Handle errors
   const handleError = (message: string) => {
@@ -99,15 +100,15 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     toggleDebugMode,
     setAnimationSpeed: setPathAnimationSpeed,
     clearPathTrace,
-    carPosition,  // <-- Make sure we use carPosition from hook
-    setCarPosition // <-- Allow setting car position from here if needed
+    carPosition,
+    setCarPosition
   } = usePathAnimation({
     fabricCanvas,
     path,
     startPointObj,
     endPointObj,
     animationSpeed,
-    onCarRotationUpdate: (angle) => setCarRotation(angle) // <-- New callback for rotation updates
+    onCarRotationUpdate: (angle) => setCarRotation(angle)
   });
 
   // Update interpolated path when original path changes
@@ -175,6 +176,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
       setCurrentPathIndex(0);
       setCarRotation(0); // Reset rotation
       setCarPosition({ x: 50, y: 50 }); // Reset car position
+      setShowCarImage(false); // Hide car image overlay
       fabricCanvas.isDrawingMode = false;
       
       toast({
@@ -211,6 +213,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     setAnimationCompleted(false);
     setCurrentPathIndex(0);
     setCarRotation(0); // Reset rotation
+    setShowCarImage(true); // Show car image overlay during animation
     
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = false;
@@ -271,6 +274,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
     try {
       console.log("Activating drawing mode");
       setIsDrawing(true);
+      setShowCarImage(false); // Hide car image overlay during drawing
       
       // Ensure the brush is set correctly
       if (!fabricCanvas.freeDrawingBrush) {
@@ -333,14 +337,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
             <canvas ref={canvasRef} />
             
             {/* Overlay car image on top of the drawn car */}
-            {isPlaying && selectedCarColor && (
+            {selectedCarColor && (isPlaying || showCarImage) && (
               <div 
                 className="absolute pointer-events-none"
                 style={{
-                  width: '60px',
-                  height: '40px',
-                  left: `${carPosition.x - 30}px`, // Center horizontally
-                  top: `${carPosition.y - 25}px`,  // Center vertically with slight offset
+                  width: '70px', // Increased size for better visibility
+                  height: '50px',
+                  left: `${carPosition.x - 35}px`, // Centered horizontally (half of width)
+                  top: `${carPosition.y - 30}px`,  // Centered vertically with adjustment
                   transform: `rotate(${carRotation}deg)`,
                   transition: 'transform 0.1s ease',
                   zIndex: 100
@@ -350,9 +354,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
                   src={getSelectedCarImage()} 
                   alt="Selected car" 
                   className="w-full h-full object-contain"
-                  style={{
-                    transform: 'scaleX(-1)', // Flip horizontally to match direction
-                  }}
                 />
               </div>
             )}
