@@ -30,9 +30,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
   const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
   const [carRotation, setCarRotation] = useState<number>(0); // Track car rotation angle
   const [showCarImage, setShowCarImage] = useState<boolean>(false); // Control car image visibility
-  
-  // Para suavizar el movimiento, mantendremos un estado separado para la posición de la imagen
-  const [smoothCarPosition, setSmoothCarPosition] = useState<{ x: number; y: number }>({ x: 50, y: 50 });
 
   // Handle errors
   const handleError = (message: string) => {
@@ -132,18 +129,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
   useEffect(() => {
     setPathAnimationSpeed(animationSpeed);
   }, [animationSpeed]);
-
-  // Efecto para suavizar el movimiento del coche
-  useEffect(() => {
-    if (isPlaying) {
-      const timer = setTimeout(() => {
-        setSmoothCarPosition(carPosition);
-      }, 30); // pequeño retraso para suavizar
-      return () => clearTimeout(timer);
-    } else {
-      setSmoothCarPosition(carPosition);
-    }
-  }, [carPosition, isPlaying]);
 
   // Clear canvas and reset
   const handleClear = () => {
@@ -351,17 +336,17 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({ onError, onHelp }) => {
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
             
-            {/* Overlay car image on top of the drawn car - ahora más grande y con movimientos suavizados */}
+            {/* Overlay car image on top of the drawn car */}
             {selectedCarColor && (isPlaying || showCarImage) && (
               <div 
                 className="absolute pointer-events-none"
                 style={{
-                  width: '100px', // Aumentado a 100px para mayor visibilidad
-                  height: '70px',  // Aumentado proporcionalmente
-                  left: `${smoothCarPosition.x - 50}px`, // Centrado (mitad del ancho)
-                  top: `${smoothCarPosition.y - 40}px`,  // Centrado con ajuste vertical
+                  width: '70px', // Increased size for better visibility
+                  height: '50px',
+                  left: `${carPosition.x - 35}px`, // Centered horizontally (half of width)
+                  top: `${carPosition.y - 30}px`,  // Centered vertically with adjustment
                   transform: `rotate(${carRotation}deg)`,
-                  transition: 'transform 0.1s ease, left 0.1s ease-out, top 0.1s ease-out', // Transiciones suaves
+                  transition: 'transform 0.1s ease',
                   zIndex: 100
                 }}
               >
