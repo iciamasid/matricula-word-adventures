@@ -31,9 +31,9 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   let lastIndex = -1;
   const foundIndices: number[] = [];
 
-  // First check if word exists in the dictionary
-  if (!wordExists(word, language)) {
-    return -20; // Return negative score immediately for non-existent words
+  // Check if word has minimum length
+  if (word.trim().length < 3) {
+    return -20; // Return negative score for short words
   }
 
   // Check each consonant from the plate
@@ -71,6 +71,7 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   
   // Special license plate number checks
   if (plateConsonants && word.length > 0) {
+    // Extract the first 4 characters (numbers) from the plate
     const licensePlateNumbers = plateConsonants.substring(0, 4);
     if (licensePlateNumbers === "6666") {
       score = Math.max(score, 0) + 66; // Add 66 points bonus for 6666
@@ -160,6 +161,7 @@ export function isValidWord(word: string, plateConsonants: string): boolean {
   
   const uppercaseWord = word.toUpperCase();
   
+  // Check if the word contains at least one consonant from the plate
   for (const consonant of plateConsonants) {
     if (uppercaseWord.includes(consonant)) {
       return true;
@@ -169,7 +171,7 @@ export function isValidWord(word: string, plateConsonants: string): boolean {
   return false;
 }
 
-// Word validation function - Improved for better accuracy
+// Word validation function - Modified to be more permissive
 export function wordExists(word: string, language: 'es' | 'en'): boolean {
   // First check if word length is sufficient
   if (word.length < 3) {
@@ -185,7 +187,19 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
     return true;
   }
   
-  // More stringent validation - default to false if not in dictionary
+  // If not found in dictionaries, use pattern matching as a fallback
+  if (language === 'es' && isSpanishWord(word)) {
+    return true;
+  } else if (language === 'en' && isEnglishWord(word)) {
+    return true;
+  }
+  
+  // Be more permissive - if word has minimum length and contains vowels, consider it valid
+  const hasVowels = [...vowels].some(vowel => uppercaseWord.includes(vowel));
+  if (word.length >= 3 && hasVowels) {
+    return true;
+  }
+  
   return false;
 }
 

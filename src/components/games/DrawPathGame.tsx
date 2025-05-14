@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +14,7 @@ import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
 import { useGame } from '@/context/GameContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface DrawPathGameProps {
   onError?: (message: string) => void;
@@ -22,9 +24,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   onError,
   onHelp
 }) => {
-  const {
-    selectedCarColor
-  } = useGame();
+  const { selectedCarColor } = useGame();
+  const { t, isEnglish } = useLanguage();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -367,6 +368,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     return `/lovable-uploads/${selectedCarColor.image}`;
   };
 
+  // Get destination text based on language
+  const getDestinationText = () => {
+    return isEnglish ? "Arriving at destination..." : "Llegando a tu destino...";
+  };
+
   return <div className="flex flex-col w-full gap-4">
       {/* Speed control slider - MOVED UP */}
       <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
@@ -406,7 +412,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
             {/* Improved Progress indicator for animation */}
             {isPlaying && interpolatedPath.length > 0 && <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
                 <div className="flex flex-col items-center gap-1 px-4">
-                  <span className="text-xs font-medium kids-text">Animación en progreso</span>
+                  <span className="text-xs font-medium kids-text">{getDestinationText()}</span>
                   <Progress value={animationProgress} className="h-3 w-full" />
                   <span className="text-xs kids-text">{animationProgress}%</span>
                 </div>

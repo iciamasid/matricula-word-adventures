@@ -108,7 +108,7 @@ const DrawGameContent: React.FC = () => {
               <div className={`w-full ${panelBg} rounded-lg p-4 shadow-md mb-3`}>
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-lg font-medium kids-text text-purple-700 flex items-center">
-                    <Car className="mr-2 h-5 w-5" /> {t('select_your_car')}
+                    <Car className="mr-2 h-5 w-5" />
                   </h3>
                   <Button size="icon" variant="ghost" onClick={() => setShowCarSelection(false)} className="h-7 w-7">
                     <X className="h-4 w-4" />
