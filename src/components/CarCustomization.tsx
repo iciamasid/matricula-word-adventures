@@ -25,7 +25,7 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
   onToggle = () => {},
   embedded = false
 }) => {
-  const [open, setOpen] = useState(isOpen);
+  const [open, setOpen] = useState(false); // Always start closed
   const { selectedCarColor, setSelectedCarColor } = useGame();
   
   // Auto-close after selection with a slight delay to show the selection animation
@@ -33,11 +33,12 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
     if (selectedCarColor && open) {
       const timer = setTimeout(() => {
         setOpen(false);
-      }, 500);
+        if (onToggle) onToggle();
+      }, 300);
       
       return () => clearTimeout(timer);
     }
-  }, [selectedCarColor, open]);
+  }, [selectedCarColor, open, onToggle]);
   
   const handleToggle = () => {
     if (embedded) {
@@ -58,7 +59,7 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
       } else {
         setOpen(false);
       }
-    }, 500);
+    }, 300);
   };
   
   if (embedded) {
@@ -81,7 +82,7 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
                 alt={car.name}
                 className="h-12 w-auto mb-1"
               />
-              {/* Remove the text labels as requested */}
+              {/* No text labels */}
             </motion.div>
           ))}
         </div>
@@ -122,7 +123,7 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
                 alt={car.name}
                 className="h-16 w-auto"
               />
-              {/* Remove text labels in drawer as well */}
+              {/* No text labels */}
             </motion.div>
           ))}
         </div>

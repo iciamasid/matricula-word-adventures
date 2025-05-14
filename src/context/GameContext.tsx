@@ -70,6 +70,9 @@ interface GameContextType {
 
 const GameContext = createContext<GameContextType | null>(null);
 
+// Create a key for localStorage to store game state
+const GAME_STATE_KEY = 'matriculabra_game_state';
+
 export const GameProvider: React.FC<{
   children: React.ReactNode | ((props: { 
     showBonusPopup: boolean;
@@ -140,23 +143,122 @@ export const GameProvider: React.FC<{
   const clearError = () => setErrorMessage(null);
   const clearLevelUpMessage = () => setShowLevelUp(false);
   
+  // Load game state from localStorage on initial mount
+  useEffect(() => {
+    try {
+      const savedState = localStorage.getItem(GAME_STATE_KEY);
+      if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        
+        // Restore game state
+        if (parsedState.level) setLevel(parsedState.level);
+        if (parsedState.totalPoints) setTotalPoints(parsedState.totalPoints);
+        if (parsedState.gamesPlayed) setGamesPlayed(parsedState.gamesPlayed);
+        if (parsedState.highScore) setHighScore(parsedState.highScore);
+        if (parsedState.playerName) setPlayerName(parsedState.playerName);
+        if (parsedState.playerAge) setPlayerAge(parsedState.playerAge);
+        if (parsedState.playerGender) setPlayerGender(parsedState.playerGender);
+        if (parsedState.selectedCarColor) setSelectedCarColor(parsedState.selectedCarColor);
+        
+        console.log('Game state loaded from localStorage:', parsedState);
+        
+        // Generate level appropriate destinations
+        if (parsedState.level) {
+          updateDestinations(parsedState.level);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading game state:', error);
+    }
+  }, []);
+  
+  // Save game state to localStorage whenever important state changes
+  useEffect(() => {
+    try {
+      const gameState = {
+        level,
+        totalPoints,
+        gamesPlayed,
+        highScore,
+        playerName,
+        playerAge,
+        playerGender,
+        selectedCarColor,
+      };
+      
+      localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
+      console.log('Game state saved to localStorage');
+    } catch (error) {
+      console.error('Error saving game state:', error);
+    }
+  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor]);
+  
   // Game control functions
   const resetGame = () => {
+    // Initialize with default country information
+    setOriginInfo({ 
+      city: 'Madrid', 
+      country: 'España', 
+      flag: '🇪🇸',
+      fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
+    });
+    
+    setDestinationInfo({ 
+      city: 'París', 
+      country: 'Francia', 
+      flag: '🇫🇷',
+      fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
+    });
+    
+    setOriginWord('');
+    setDestinationWord('');
+    setSelectedCarColor({ 
+      id: "2", 
+      name: "Coche Azul", 
+      image: "cocheazul.png", 
+      color: "bg-blue-500" 
+    });
+    
+    setPlayerName('');
+    setPlayerAge(null);
+    setPlayerGender('');
+    
     setLevel(1);
     setScore(0);
     setPreviousScore(0);
     setTotalPoints(0);
+    setHighScore(0);
     setGamesPlayed(0);
+    
+    setLicensePlate('');
+    setPlateConsonants('');
+    setCurrentWord('');
+    setIsGeneratingLicensePlate(false);
+    
+    setSubmitSuccess(null);
+    setErrorMessage(null);
+    setShowLevelUp(false);
+    
+    setShowBonusPopup(false);
+    setBonusPoints(500);
+    setShowAgeBonusPopup(false);
+    setShowCompletionBanner(false);
+    
+    setPreviousDestination(null);
+    
     // Clear any active messages
     clearSubmitSuccess();
     clearError();
     clearLevelUpMessage();
+    
     // Reset popup states
     setShowBonusPopup(false);
     setShowAgeBonusPopup(false);
     setShowCompletionBanner(false);
+    
     // Reset previous destination
     setPreviousDestination(null);
+    
     // Reset origin and destination to defaults (Spain -> France for level 1)
     setOriginInfo({ 
       city: 'Madrid', 
@@ -170,6 +272,7 @@ export const GameProvider: React.FC<{
       flag: '🇫🇷',
       fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
     });
+    
     // Generate new plate after reset
     generateNewPlateImpl();
   };
@@ -348,10 +451,11 @@ export const GameProvider: React.FC<{
     // Every 5th game, generate a special 6666 plate for bonus
     if ((gamesPlayed + 1) % 5 === 0) {
       // Create a plate that starts with 6666
-      const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
+      // More Spanish-friendly consonants (weighted)
+      const spanishConsonants = "BCDFGHJKLMNPQRSTVZRRSTDLNC";
       const randomConsonants = Array(3)
         .fill("")
-        .map(() => consonants.charAt(Math.floor(Math.random() * consonants.length)))
+        .map(() => spanishConsonants.charAt(Math.floor(Math.random() * spanishConsonants.length)))
         .join("");
       
       newPlate = `6666${randomConsonants}`;
@@ -359,6 +463,20 @@ export const GameProvider: React.FC<{
       
       // Ensure bonus popup appears with the special plate
       setShowBonusPopup(true);
+      
+      // Add bonus points
+      const bonusAmount = 500;
+      setBonusPoints(bonusAmount);
+      setTotalPoints(prev => prev + bonusAmount);
+      
+      // Play bonus sound
+      try {
+        const audio = new Audio('/lovable-uploads/level-up.mp3');
+        audio.volume = 0.6;
+        audio.play();
+      } catch (e) {
+        console.error("Could not play bonus sound", e);
+      }
     } else {
       newPlate = generateLicensePlate();
       console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);

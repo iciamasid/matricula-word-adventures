@@ -27,26 +27,38 @@ const WorldTourProgress = () => {
   const { level } = useGame();
   const { t, isEnglish } = useLanguage();
   const [animatingLevel, setAnimatingLevel] = useState(0);
+  const [progressValue, setProgressValue] = useState(0);
   const [isLooping, setIsLooping] = useState(false);
 
   // Animation for level progress with looping effect
   useEffect(() => {
     const startAnimation = () => {
       setAnimatingLevel(0);
+      setProgressValue(0);
+      
+      // Animate progress bar from 0 to current level
+      const totalSteps = 100;
+      const targetValue = (level - 1) / 10 * 100;
+      let step = 0;
       
       const interval = setInterval(() => {
-        setAnimatingLevel(prev => {
-          const nextLevel = prev + 1;
-          if (nextLevel > level) {
-            setTimeout(() => {
-              setAnimatingLevel(0); // Reset to start the animation again
-            }, 1500); // Pause at the end before restarting
-            clearInterval(interval);
-            return level;
-          }
-          return nextLevel;
-        });
-      }, 500); // 500ms between each level increment
+        step++;
+        // Calculate progress as percentage of total steps
+        const newProgress = (step / totalSteps) * targetValue;
+        setProgressValue(newProgress);
+        
+        // Update current animating level based on progress
+        const currentLevelBasedOnProgress = Math.ceil((newProgress / 100) * 10) + 1;
+        setAnimatingLevel(Math.min(currentLevelBasedOnProgress, level));
+        
+        if (step >= totalSteps) {
+          clearInterval(interval);
+          // Pause at the end before restarting
+          setTimeout(() => {
+            startAnimation(); // Restart the animation
+          }, 2000);
+        }
+      }, 30); // Smoother animation with more frequent updates
       
       return interval;
     };
@@ -55,15 +67,8 @@ const WorldTourProgress = () => {
     let interval = startAnimation();
     setIsLooping(true);
     
-    // Set up the loop
-    const loopTimer = setInterval(() => {
-      clearInterval(interval);
-      interval = startAnimation();
-    }, (level + 1) * 500 + 2000); // Total animation time plus pause
-    
     return () => {
       clearInterval(interval);
-      clearInterval(loopTimer);
     };
   }, [level]);
 
@@ -99,7 +104,7 @@ const WorldTourProgress = () => {
       <h3 className={`text-xl text-center ${textColor} kids-text mb-3`}>{t('world_tour_progress')}</h3>
       <div className="relative pt-4 pb-8">
         <Progress 
-          value={(level - 1) / 10 * 100} 
+          value={progressValue} 
           className={`h-4 ${level >= 10 ? 'bg-amber-200' : ''}`} 
         />
         
@@ -113,7 +118,7 @@ const WorldTourProgress = () => {
             return (
               <div key={i} className="relative flex flex-col items-center">
                 <motion.div 
-                  className={`w-3 h-3 rounded-full ${level >= levelIndex ? 'bg-green-500' : 'bg-gray-300'}`}
+                  className={`w-3 h-3 rounded-full ${animatingLevel >= levelIndex ? 'bg-blue-500' : 'bg-gray-300'}`}
                   animate={{ scale: animatingLevel === levelIndex ? [1, 1.3, 1] : 1 }}
                   transition={{ duration: 0.5 }}
                 />
