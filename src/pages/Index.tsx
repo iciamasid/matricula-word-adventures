@@ -144,9 +144,9 @@ const GameContent = () => {
         {/* Player Registration Form and Car Customization */}
         <PlayerRegistration />
         
-        {/* Car selection using the collapsible component */}
+        {/* Car selection using the collapsible component - WITH TRANSPARENT BACKGROUND */}
         <div className="w-full max-w-md mb-4">
-          <div className="bg-white/80 rounded-lg p-4 shadow-md mb-2">
+          <div className="bg-transparent rounded-lg p-4 shadow-md mb-2">
             <CarCustomization />
           </div>
         </div>

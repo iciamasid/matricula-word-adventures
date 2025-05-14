@@ -11,7 +11,7 @@ import { useLanguage } from "@/context/LanguageContext";
 
 const LevelRewards: React.FC = () => {
   const { level, destinationInfo } = useGame();
-  const { t } = useLanguage();
+  const { t, isEnglish } = useLanguage();
   const navigate = useNavigate();
   
   const handleExploreCountry = () => {
@@ -159,7 +159,7 @@ const LevelRewards: React.FC = () => {
                     <div className="flex flex-col items-center">
                       <span className="whitespace-nowrap">{t('learn_about')}</span>
                       <span className="whitespace-normal text-center truncate max-w-[200px]">
-                        {destinationInfo.country} {destinationInfo.flag}
+                        {isEnglish ? destinationInfo.country : destinationInfo.country} {destinationInfo.flag}
                       </span>
                     </div>
                   </Button>

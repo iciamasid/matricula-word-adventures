@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -86,7 +87,7 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
             scale: 0.95
           }} className={`
                   cursor-pointer rounded-md p-2 flex flex-col items-center 
-                  ${selectedCarColor?.id === car.id ? 'ring-2 ring-purple-500 bg-purple-100' : 'bg-white'}
+                  ${selectedCarColor?.id === car.id ? 'ring-2 ring-purple-500 bg-purple-100/50' : 'bg-transparent'}
                 `} onClick={() => handleSelectCar(car)}>
                 <img src={`/lovable-uploads/${car.image}`} alt={car.name} className="h-12 w-auto mb-1" />
                 {/* No text labels for cleaner UI */}
