@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -67,7 +68,7 @@ interface GameContextType {
   // Game control
   resetGame: () => void;
   
-  // Adding the missing updateDestinations function
+  // Add updateDestinations function
   updateDestinations: (currentLevel: number) => void;
 }
 
@@ -187,6 +188,9 @@ export const GameProvider: React.FC<{
         playerAge,
         playerGender,
         selectedCarColor,
+        // Save origin and destination info to persist between page navigations
+        originInfo,
+        destinationInfo
       };
       
       localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
@@ -194,7 +198,7 @@ export const GameProvider: React.FC<{
     } catch (error) {
       console.error('Error saving game state:', error);
     }
-  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor]);
+  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor, originInfo, destinationInfo]);
   
   // Game control functions
   const resetGame = () => {
@@ -350,18 +354,6 @@ export const GameProvider: React.FC<{
       }
     }
   }, [licensePlate, playerAge]);
-  
-  // Country progression for the world tour
-  // Level 1: Spain -> France
-  // Level 2: France -> Italy
-  // Level 3: Italy -> Russia
-  // Level 4: Russia -> Japan
-  // Level 5: Japan -> Australia
-  // Level 6: Australia -> USA
-  // Level 7: USA -> Mexico
-  // Level 8: Mexico -> Peru
-  // Level 9: Peru -> Argentina
-  // Level 10: Argentina -> Spain
   
   // Function to get destinations based on level, using previous destination as new origin
   const updateDestinations = (currentLevel: number) => {
