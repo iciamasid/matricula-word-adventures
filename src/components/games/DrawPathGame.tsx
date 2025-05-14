@@ -14,10 +14,12 @@ import SpeedControl from './SpeedControl';
 import { useGame } from '@/context/GameContext';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useLanguage } from '@/context/LanguageContext';
+
 interface DrawPathGameProps {
   onError?: (message: string) => void;
   onHelp?: () => void;
 }
+
 const DrawPathGame: React.FC<DrawPathGameProps> = ({
   onError,
   onHelp
@@ -412,6 +414,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   const getDestinationText = () => {
     return isEnglish ? "Arriving at destination..." : "Llegando a tu destino...";
   };
+
   return <div className="flex flex-col w-full gap-4">
       {/* Car selector button */}
       <div className="flex justify-center mb-2">
@@ -445,20 +448,16 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
             
-            {/* Overlay car image on top of the drawn car - Made bigger and smoother transitions */}
+            {/* Overlay car image on top of the drawn car - Made bigger and smoother transitions
+                Added lower z-index (50) so it appears behind the help popup */}
             {selectedCarColor && showCarImage && <div className="absolute pointer-events-none" style={{
             width: '140px',
-            // Increased size for better visibility
             height: '110px',
-            // Increased height proportionally
             left: `${carPosition.x - 70}px`,
-            // Centered horizontally (half of width)
             top: `${carPosition.y - 55}px`,
-            // Centered vertically with adjustment
             transform: `rotate(${carRotation}deg)`,
             transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
-            // Smoother transitions
-            zIndex: 100
+            zIndex: 50 // Changed from 100 to 50 so it appears behind help popup
           }}>
                 <img src={getSelectedCarImage()} alt="Selected car" className="w-full h-full object-contain" />
               </div>}
@@ -480,7 +479,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
         </CardContent>
       </Card>
       
-      {/* Game status indicators */}
+      {/* Game status indicators with higher z-index to appear above car */}
       <GameStatusIndicators isInitializing={isInitializing} canvasReady={canvasReady} isDrawing={isDrawing} isPlaying={isPlaying} animationProgress={animationProgress} interpolatedPathLength={interpolatedPath.length} animationCompleted={animationCompleted} />
       
       {/* Debug button (only visible during development) */}
@@ -489,4 +488,5 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
         </div>}
     </div>;
 };
+
 export default DrawPathGame;

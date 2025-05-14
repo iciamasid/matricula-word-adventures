@@ -28,16 +28,16 @@ const WorldTourProgress = () => {
   const { t, isEnglish } = useLanguage();
   const [animatingLevel, setAnimatingLevel] = useState(0);
   const [progressValue, setProgressValue] = useState(0);
-  const [isLooping, setIsLooping] = useState(false);
+  const [animationState, setAnimationState] = useState('initial');
 
-  // New simplified animation for level progress with smooth looping effect
+  // Modified simplified animation to always start from Spain (left)
   useEffect(() => {
     const targetValue = (level - 1) / 10 * 100;
     let animationActive = true;
 
     const runAnimation = async () => {
       while (animationActive) {
-        // Animate from 0 to target
+        // Always start from the beginning (Spain)
         setProgressValue(0);
         setAnimatingLevel(1);
         
@@ -56,7 +56,7 @@ const WorldTourProgress = () => {
           await new Promise(resolve => setTimeout(resolve, 40));
         }
         
-        // Hold at the target value
+        // Hold at the target value for 2 seconds
         await new Promise(resolve => setTimeout(resolve, 2000));
       }
     };

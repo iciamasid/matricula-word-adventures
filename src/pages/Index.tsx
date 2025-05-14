@@ -19,6 +19,7 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
 import CarCustomization from "@/components/CarCustomization";
+
 const Index = () => {
   return <GameProvider>
       <GameContent />
@@ -44,8 +45,20 @@ const GameContent = () => {
     plateConsonants,
     score,
     previousScore,
-    selectedCarColor
+    selectedCarColor,
+    updateDestinations
   } = useGame();
+  
+  // Check if we're navigating back from another page and restore proper destinations
+  useEffect(() => {
+    const isNavigatingBack = sessionStorage.getItem('navigatingBack');
+    if (isNavigatingBack) {
+      // Clear the navigation flag
+      sessionStorage.removeItem('navigatingBack');
+      // Restore proper destinations based on current level
+      updateDestinations(level);
+    }
+  }, []);
 
   // Determine the color theme based on language
   const bgColor = isEnglish ? "bg-orange-100" : "bg-bba7ca";
@@ -75,7 +88,8 @@ const GameContent = () => {
       case "Japón": return "Japan";
       case "Australia": return "Australia"; // Same in both languages
       case "Estados Unidos": return "United States";
-      case "Méjico": return "Mexico";
+      case "Méjico": 
+      case "México": return "Mexico";
       case "Perú": return "Peru";
       case "Argentina": return "Argentina"; // Same in both languages
       default: return country;
@@ -98,6 +112,7 @@ const GameContent = () => {
     if (level >= 10) countries.push(language === 'es' ? "España (vuelta completa)" : "Spain (full tour)");
     return countries;
   }, [level, language]);
+
   const handleResetGame = () => {
     if (confirm(t("reset_confirm"))) {
       resetGame();
