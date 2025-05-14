@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +12,8 @@ import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
 import { useGame } from '@/context/GameContext';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
 interface DrawPathGameProps {
   onError?: (message: string) => void;
   onHelp?: () => void;
@@ -336,11 +337,36 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     }
   };
 
+  // Prevent touch events from causing scrolling when interacting with canvas
+  useEffect(() => {
+    // Add event handlers to prevent default touch behaviors on the canvas
+    const canvasElement = canvasRef.current;
+    if (!canvasElement) return;
+
+    const preventScroll = (e: TouchEvent) => {
+      // Prevent scrolling only when in drawing mode
+      if (isDrawing) {
+        e.preventDefault();
+      }
+    };
+
+    // Add touch event listeners with passive: false to allow preventDefault
+    canvasElement.addEventListener('touchmove', preventScroll, { passive: false });
+    canvasElement.addEventListener('touchstart', preventScroll, { passive: false });
+    
+    return () => {
+      // Clean up event listeners
+      canvasElement.removeEventListener('touchmove', preventScroll);
+      canvasElement.removeEventListener('touchstart', preventScroll);
+    };
+  }, [isDrawing, canvasRef.current]);
+
   // Get the selected car image URL
   const getSelectedCarImage = () => {
     if (!selectedCarColor) return "";
     return `/lovable-uploads/${selectedCarColor.image}`;
   };
+
   return <div className="flex flex-col w-full gap-4">
       {/* Speed control slider - MOVED UP */}
       <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
@@ -348,9 +374,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       {/* Game controls - MOVED UP */}
       <DrawControls isPlaying={isPlaying} isDrawing={isDrawing} pathExists={pathExists} canvasReady={canvasReady} isInitializing={isInitializing} onDraw={handleDrawMode} onPlay={handlePlay} onClear={handleClear} onHelp={handleHelp} />
       
-      {/* Game canvas with purple border instead of white */}
-      <Card className="border-4 border-purple-300 shadow-lg overflow-hidden">
-        <CardContent className="p-4">
+      {/* Game canvas with much thicker purple border - 8px border (approx 3mm) */}
+      <Card className="border-8 border-purple-300 shadow-lg overflow-hidden">
+        <CardContent className="p-4 touch-none">
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
             

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -11,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useGame, GameProvider } from "@/context/GameContext";
 import { useLanguage } from "@/context/LanguageContext";
 import CarCustomization from "@/components/CarCustomization";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Wrapped content component that uses useGame hook
 const DrawGameContent: React.FC = () => {
@@ -314,7 +314,10 @@ const DrawGameContent: React.FC = () => {
 // Main component wrapped in GameProvider
 const DrawGamePage: React.FC = () => {
   return <GameProvider>
-      <DrawGameContent />
+      <ScrollArea className="h-[100dvh]">
+        <DrawGameContent />
+      </ScrollArea>
     </GameProvider>;
 };
+
 export default DrawGamePage;
