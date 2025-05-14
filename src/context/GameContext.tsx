@@ -1,12 +1,13 @@
 
 import React, { createContext, useState, useContext } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
+import { generateLicensePlate, getConsonantsFromPlate } from '@/utils/gameUtils';
 
 interface CountryInfo {
   city: string;
   country: string;
   flag: string;
-  fact?: string; // Add fact property that was missing
+  fact?: string;
 }
 
 interface GameContextType {
@@ -178,15 +179,22 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     clearSubmitSuccess();
     clearError();
     clearLevelUpMessage();
+    // Generate new plate after reset
+    generateNewPlateImpl();
+  };
+  
+  // Generate a new license plate using the utility functions
+  const generateNewPlateImpl = () => {
+    const newPlate = generateLicensePlate(); 
+    setLicensePlate(newPlate);
+    setPlateConsonants(getConsonantsFromPlate(newPlate));
+    setIsGeneratingLicensePlate(false);
+    setGamesPlayed(prevGamesPlayed => prevGamesPlayed + 1);
   };
   
   // License plate functions
   const generateNewPlate = () => {
-    // This is a placeholder - in a real implementation, this would generate a new license plate
-    setLicensePlate('1234ABC');
-    setPlateConsonants('ABC');
-    setIsGeneratingLicensePlate(false);
-    setGamesPlayed(gamesPlayed + 1);
+    generateNewPlateImpl();
   };
   
   const submitWord = () => {
@@ -196,6 +204,13 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     setTotalPoints(totalPoints + 50);
     setCurrentWord('');
   };
+
+  // Generate a plate on initial load if there isn't one already
+  React.useEffect(() => {
+    if (!licensePlate) {
+      generateNewPlateImpl();
+    }
+  }, [licensePlate]);
 
   return (
     <GameContext.Provider value={{

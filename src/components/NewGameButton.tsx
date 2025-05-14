@@ -32,7 +32,7 @@ const NewGameButton: React.FC = () => {
     setIsAnimating(true);
     setButtonDisabled(true);
 
-    // Signal that we're starting the license plate generation - fixed the type error here
+    // Signal that we're starting the license plate generation
     setIsGeneratingLicensePlate(true);
 
     // Trigger plate generation but with a 3 second delay for the animation
