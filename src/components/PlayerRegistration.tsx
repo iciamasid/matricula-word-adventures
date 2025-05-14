@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import PlayerNameInput from "@/components/PlayerNameInput";
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
-
 const PlayerRegistration: React.FC = () => {
   const {
     playerName,
@@ -45,14 +43,12 @@ const PlayerRegistration: React.FC = () => {
       }
     }
   }, [playerName, playerGender, setPlayerGender]);
-  
   useEffect(() => {
     // If we have both name and age, hide the form
     if (playerName && playerAge) {
       setShowForm(false);
     }
   }, [playerName, playerAge]);
-  
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
   };
@@ -67,7 +63,6 @@ const PlayerRegistration: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [selectedCarColor]);
-  
   return <>
       {showForm ? <motion.div className={`w-full max-w-md ${bgColor} rounded-lg p-5 shadow-lg mb-4`} initial={{
       opacity: 0,
@@ -109,23 +104,11 @@ const PlayerRegistration: React.FC = () => {
           </motion.div>
           
           {/* Car selection button - Moved to right of text */}
-          <motion.div className="flex items-center justify-center">
-            <div className="flex items-center">
-              <Car className={`h-5 w-5 mr-2 ${isEnglish ? 'text-orange-700' : 'text-purple-700'}`} />
-              <span className={`font-medium ${textColor} kids-text text-xl`}>
-                {selectedCarColor ? t('car_selected') : t('select_car')}
-              </span>
-              {/* Button moved here to be inline with text */}
-              <Button size="sm" variant="outline" className={`${btnColor} ml-2`} onClick={toggleCarCustomization}>
-                {showCarCustomization ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </Button>
-            </div>
-          </motion.div>
+          
           
           {/* Car customization panel */}
           <CarCustomization isOpen={showCarCustomization} onToggle={toggleCarCustomization} />
         </motion.div>}
     </>;
 };
-
 export default PlayerRegistration;
