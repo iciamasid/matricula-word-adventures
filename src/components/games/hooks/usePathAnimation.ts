@@ -1,5 +1,6 @@
+
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { Canvas as FabricCanvas, Circle } from 'fabric';
+import { Canvas as FabricCanvas, Circle, Object as FabricObject } from 'fabric';
 import { Point, calculateAngle, generateSmoothPath } from '../utils/pathUtils';
 
 interface PathAnimationProps {
@@ -45,7 +46,10 @@ export const usePathAnimation = ({
     const objects = fabricCanvas.getObjects();
     for (let i = objects.length - 1; i >= 0; i--) {
       const obj = objects[i];
-      if (obj.data && obj.data.isPathTrace) {
+      // Use a custom property to identify path trace objects
+      // Safely access custom properties using type assertion
+      const objWithCustomData = obj as FabricObject & { data?: { isPathTrace?: boolean } };
+      if (objWithCustomData.data && objWithCustomData.data.isPathTrace) {
         fabricCanvas.remove(obj);
       }
     }
@@ -188,7 +192,8 @@ export const usePathAnimation = ({
             fill: 'rgba(255, 0, 0, 0.5)',
             selectable: false,
             evented: false,
-            data: { isPathTrace: true }
+            // Add a custom property to identify this as a path trace object
+            data: { isPathTrace: true } as any
           });
           
           fabricCanvas.add(traceCircle);

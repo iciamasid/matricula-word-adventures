@@ -11,12 +11,47 @@ export const interpolatePoints = (point1: Point, point2: Point, steps: number): 
   for (let i = 0; i <= steps; i++) {
     const t = i / steps;
     points.push({
-      x: point1.x + (point2.x - point1.x) * t,
-      y: point1.y + (point2.y - point1.y) * t
+      x: point1.x + (point1.x - point2.x) * -t,
+      y: point1.y + (point1.y - point2.y) * -t
     });
   }
   
   return points;
+};
+
+// Calculate the angle between two points in degrees
+export const calculateAngle = (x1: number, y1: number, x2: number, y2: number): number => {
+  const radians = Math.atan2(y2 - y1, x2 - x1);
+  return radians * (180 / Math.PI);
+};
+
+// Generate a smooth path from original points
+export const generateSmoothPath = (points: Point[]): Point[] => {
+  if (points.length <= 2) return points;
+  
+  const smoothedPath: Point[] = [];
+  
+  // Add the first point
+  smoothedPath.push(points[0]);
+  
+  // For each segment, interpolate points
+  for (let i = 0; i < points.length - 1; i++) {
+    const current = points[i];
+    const next = points[i + 1];
+    
+    // Add interpolated points between current and next
+    // More points = smoother path
+    const interpolationPoints = 5; // Adjust for desired smoothness
+    const interpolated = interpolatePoints(current, next, interpolationPoints);
+    
+    // Add all interpolated points except the last one (which will be added in next iteration)
+    // Skip first point to avoid duplication with previous segment's end
+    for (let j = 1; j < interpolated.length; j++) {
+      smoothedPath.push(interpolated[j]);
+    }
+  }
+  
+  return smoothedPath;
 };
 
 // Helper function to extract points from all path commands
