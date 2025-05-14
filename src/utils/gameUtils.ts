@@ -1,3 +1,4 @@
+
 // Generates a random license plate with 4 numbers and 3 consonants
 export function generateLicensePlate(): string {
   const numbers = Array(4)
@@ -24,6 +25,11 @@ export const vowels = "AEIOUÁÉÍÓÚ";
 
 // Calculate score based on the word and license plate consonants, considering language
 export function calculateScore(word: string, plateConsonants: string, language: 'es' | 'en'): number {
+  // First check if word exists in the dictionary
+  if (!wordExists(word, language)) {
+    return -20; // Return negative score immediately for non-existent words
+  }
+  
   const uppercaseWord = word.toUpperCase();
   let score = 0;
   let foundConsonants = 0;
@@ -71,10 +77,10 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   
   // Special license plate number checks
   if (plateConsonants && word.length > 0) {
-    // Extract the first 4 characters (numbers) from the plate
+    // Check for 6666 pattern in the license plate
     const licensePlateNumbers = plateConsonants.substring(0, 4);
     if (licensePlateNumbers === "6666") {
-      score = Math.max(score, 0) + 66; // Add 66 points bonus for 6666
+      score = Math.max(score, 0) + 200; // Add 200 points bonus for 6666 (increased from 66)
     }
   }
   
@@ -171,7 +177,7 @@ export function isValidWord(word: string, plateConsonants: string): boolean {
   return false;
 }
 
-// Word validation function - Modified to be more permissive
+// Word validation function - Stricter to ensure words actually exist
 export function wordExists(word: string, language: 'es' | 'en'): boolean {
   // First check if word length is sufficient
   if (word.length < 3) {
@@ -191,12 +197,6 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
   if (language === 'es' && isSpanishWord(word)) {
     return true;
   } else if (language === 'en' && isEnglishWord(word)) {
-    return true;
-  }
-  
-  // Be more permissive - if word has minimum length and contains vowels, consider it valid
-  const hasVowels = [...vowels].some(vowel => uppercaseWord.includes(vowel));
-  if (word.length >= 3 && hasVowels) {
     return true;
   }
   

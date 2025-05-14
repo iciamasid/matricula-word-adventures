@@ -177,6 +177,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState<boolean>(false);
   const [showCompletionBanner, setShowCompletionBanner] = useState<boolean>(false);
   
+  // Track previous destination to set as origin when leveling up
+  const [previousDestination, setPreviousDestination] = useState<CountryInfo | null>(null);
+  
   // Clear feedback functions
   const clearSubmitSuccess = () => setSubmitSuccess(null);
   const clearError = () => setErrorMessage(null);
@@ -197,6 +200,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     setShowBonusPopup(false);
     setShowAgeBonusPopup(false);
     setShowCompletionBanner(false);
+    // Reset previous destination
+    setPreviousDestination(null);
     // Generate new plate after reset
     generateNewPlateImpl();
   };
@@ -208,6 +213,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     
     // If level has increased, show level up message
     if (newLevel > level) {
+      // Save current destination as previous before updating
+      setPreviousDestination(destinationInfo);
+      
       setLevel(newLevel);
       setShowLevelUp(true);
       
@@ -239,8 +247,8 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       if (numbers === "6666" && !showBonusPopup) {
         setShowBonusPopup(true);
         
-        // Add bonus points
-        const bonusPoints = 66;
+        // Add bonus points - increased to 200
+        const bonusPoints = 200;
         setTotalPoints(prev => prev + bonusPoints);
         
         // Auto-hide bonus popup after 4 seconds
@@ -265,11 +273,17 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [licensePlate, playerAge]);
   
-  // Function to get random destinations based on level
+  // Function to get destinations based on level, using previous destination as new origin
   const updateDestinations = (currentLevel: number) => {
-    // Always start from Madrid
-    const originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
-                          { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+    // If we have a previous destination, set it as the origin
+    let originCountry;
+    if (previousDestination) {
+      originCountry = previousDestination;
+    } else {
+      // Default to Madrid if no previous destination
+      originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+    }
     
     // Get a destination based on level
     let destinationCountry;
@@ -321,25 +335,32 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       };
     }
     
+    // Update origin and destination
     setOriginInfo(originCountry);
     setDestinationInfo(destinationCountry);
   };
   
-  // Update destinations whenever level changes
-  useEffect(() => {
-    updateDestinations(level);
-  }, [level]);
-  
   // Generate a new license plate using the utility functions
   const generateNewPlateImpl = () => {
-    const newPlate = generateLicensePlate(); 
+    let newPlate;
+    // Every 5th game, generate a special 6666 plate for bonus
+    if ((gamesPlayed + 1) % 5 === 0) {
+      // Create a plate that starts with 6666
+      const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
+      const randomConsonants = Array(3)
+        .fill("")
+        .map(() => consonants.charAt(Math.floor(Math.random() * consonants.length)))
+        .join("");
+      
+      newPlate = `6666${randomConsonants}`;
+    } else {
+      newPlate = generateLicensePlate();
+    }
+    
     setLicensePlate(newPlate);
     setPlateConsonants(getConsonantsFromPlate(newPlate));
     setIsGeneratingLicensePlate(false);
     setGamesPlayed(prevGamesPlayed => prevGamesPlayed + 1);
-    
-    // Also update the destinations if level has changed
-    updateDestinations(level);
   };
   
   // License plate functions
@@ -354,34 +375,48 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       return;
     }
     
-    // Calculate score based on word and current license plate
-    import('@/utils/gameUtils').then(({ calculateScore }) => {
-      const calculatedScore = calculateScore(currentWord, plateConsonants, 'es');
-      
-      if (calculatedScore < 0) {
-        // Word is invalid
-        setErrorMessage('Palabra no válida o no contiene las consonantes requeridas');
+    // Check if the word contains required consonants
+    if (!isValidWord(currentWord, plateConsonants)) {
+      setErrorMessage('La palabra debe incluir al menos una consonante de la matrícula');
+      return;
+    }
+    
+    // Check if word exists
+    import('@/utils/gameUtils').then(({ wordExists }) => {
+      if (!wordExists(currentWord, 'es')) {
+        setErrorMessage('Palabra no válida: no existe esta palabra');
         return;
       }
       
-      // Word is valid, update score
-      setPreviousScore(score);
-      setScore(calculatedScore);
-      setTotalPoints(prev => prev + calculatedScore);
-      
-      if (calculatedScore > 75) {
-        setSubmitSuccess(`¡${currentWord} es correcta! +${calculatedScore} puntos`);
-      } else {
-        setSubmitSuccess(`¡Palabra correcta! +${calculatedScore} puntos`);
-      }
-      
-      // Track high score
-      if (calculatedScore > highScore) {
-        setHighScore(calculatedScore);
-      }
-      
-      // Reset current word
-      setCurrentWord('');
+      // Calculate score based on word and current license plate
+      import('@/utils/gameUtils').then(({ calculateScore }) => {
+        const calculatedScore = calculateScore(currentWord, plateConsonants, 'es');
+        
+        if (calculatedScore < 0) {
+          // Word is invalid
+          setErrorMessage('Palabra no válida o no contiene las consonantes requeridas');
+          return;
+        }
+        
+        // Word is valid, update score
+        setPreviousScore(score);
+        setScore(calculatedScore);
+        setTotalPoints(prev => prev + calculatedScore);
+        
+        if (calculatedScore > 75) {
+          setSubmitSuccess(`¡${currentWord} es correcta! +${calculatedScore} puntos`);
+        } else {
+          setSubmitSuccess(`¡Palabra correcta! +${calculatedScore} puntos`);
+        }
+        
+        // Track high score
+        if (calculatedScore > highScore) {
+          setHighScore(calculatedScore);
+        }
+        
+        // Reset current word
+        setCurrentWord('');
+      });
     });
   };
 
@@ -391,6 +426,22 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       generateNewPlateImpl();
     }
   }, [licensePlate]);
+  
+  // Helper function to check if word contains at least one consonant from the plate
+  const isValidWord = (word: string, plateConsonants: string): boolean => {
+    if (!word || word.length < 3) return false;
+    
+    const upperWord = word.toUpperCase();
+    
+    // Check if the word contains at least one of the consonants
+    for (const consonant of plateConsonants) {
+      if (upperWord.includes(consonant)) {
+        return true;
+      }
+    }
+    
+    return false;
+  };
 
   return (
     <GameContext.Provider value={{
