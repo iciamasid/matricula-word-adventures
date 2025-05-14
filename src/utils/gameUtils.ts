@@ -5,11 +5,25 @@ export function generateLicensePlate(): string {
     .map(() => Math.floor(Math.random() * 10))
     .join("");
   
-  const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
+  // Spanish-friendly consonant distribution - higher weights for common Spanish consonants
+  // B, C, D, F, G, J, L, M, N, P, R, S, T have higher frequency
+  const spanishConsonantWeights = {
+    'B': 3, 'C': 4, 'D': 4, 'F': 3, 'G': 3, 'H': 1, 'J': 2, 'K': 0.5,
+    'L': 4, 'M': 4, 'N': 4, 'P': 3, 'Q': 1, 'R': 5, 'S': 5, 'T': 4,
+    'V': 2, 'W': 0.2, 'X': 0.5, 'Y': 0.5, 'Z': 0.8
+  };
+  
+  // Create weighted consonant pool
+  let consonantPool = '';
+  Object.entries(spanishConsonantWeights).forEach(([consonant, weight]) => {
+    consonantPool += consonant.repeat(Math.round(weight * 10));
+  });
+  
+  // Generate random consonants from weighted pool
   const randomConsonants = Array(3)
-    .fill("")
-    .map(() => consonants.charAt(Math.floor(Math.random() * consonants.length)))
-    .join("");
+    .fill('')
+    .map(() => consonantPool.charAt(Math.floor(Math.random() * consonantPool.length)))
+    .join('');
   
   return `${numbers}${randomConsonants}`;
 }

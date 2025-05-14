@@ -1,105 +1,134 @@
 
-import React from "react";
-import { useGame } from "@/context/GameContext";
-import { motion } from "framer-motion";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Car } from "lucide-react";
-
-interface CarOption {
-  id: string;
-  name: string;
-  image: string;
-  color: string;
-}
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Car, ChevronDown } from "lucide-react";
+import { useGame } from "@/context/GameContext";
+import { CarColor } from "./games/utils/carUtils";
 
 interface CarCustomizationProps {
-  isOpen: boolean;
-  onToggle: () => void;
+  isOpen?: boolean;
+  onToggle?: () => void;
   embedded?: boolean;
 }
 
-const CarCustomization: React.FC<CarCustomizationProps> = ({ isOpen, onToggle, embedded = false }) => {
+// Available car colors
+const carColors: CarColor[] = [
+  { id: "1", name: "Coche Rojo", image: "cocherojo.png", color: "bg-red-500" },
+  { id: "2", name: "Coche Azul", image: "cocheazul.png", color: "bg-blue-500" },
+  { id: "3", name: "Coche Amarillo", image: "cocheamarillo.png", color: "bg-yellow-500" },
+];
+
+const CarCustomization: React.FC<CarCustomizationProps> = ({ 
+  isOpen = false,
+  onToggle = () => {},
+  embedded = false
+}) => {
+  const [open, setOpen] = useState(isOpen);
   const { selectedCarColor, setSelectedCarColor } = useGame();
-
-  const carOptions: CarOption[] = [
-    { id: "1", name: "Coche Amarillo", image: "cocheamarillo.png", color: "bg-yellow-500" },
-    { id: "2", name: "Coche Azul", image: "cocheazul.png", color: "bg-blue-500" },
-    { id: "3", name: "Coche Rojo", image: "cocherojo.png", color: "bg-red-500" },
-  ];
-
-  // No need for handleSave, selection is saved automatically
-
-  // If embedded is true, we don't need conditional rendering based on isOpen
+  
+  // Auto-close after selection with a slight delay to show the selection animation
+  useEffect(() => {
+    if (selectedCarColor && open && !embedded) {
+      const timer = setTimeout(() => {
+        setOpen(false);
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [selectedCarColor, open, embedded]);
+  
+  const handleToggle = () => {
+    if (embedded) {
+      if (onToggle) onToggle();
+    } else {
+      setOpen(!open);
+      if (onToggle) onToggle();
+    }
+  };
+  
+  const handleSelectCar = (car: CarColor) => {
+    setSelectedCarColor(car);
+    
+    // Auto-close after selection if embedded (to hide dropdown)
+    if (embedded) {
+      setTimeout(() => {
+        if (onToggle) onToggle();
+      }, 500);
+    }
+  };
+  
   if (embedded) {
     return (
       <div className="w-full">
-        <div className="grid grid-cols-3 gap-3">
-          {carOptions.map((car) => (
+        <div className="grid grid-cols-3 gap-2">
+          {carColors.map((car) => (
             <motion.div
               key={car.id}
-              className={`rounded-lg p-2 cursor-pointer ${
-                selectedCarColor?.id === car.id
-                  ? "ring-2 ring-purple-500 bg-purple-50"
-                  : "bg-white hover:bg-purple-50"
-              }`}
               whileHover={{ scale: 1.05 }}
-              onClick={() => setSelectedCarColor(car)}
+              whileTap={{ scale: 0.95 }}
+              className={`
+                cursor-pointer rounded-md p-2 flex flex-col items-center 
+                ${selectedCarColor?.id === car.id ? 'ring-2 ring-purple-500 bg-purple-100' : 'bg-white'}
+              `}
+              onClick={() => handleSelectCar(car)}
             >
-              <div className="flex flex-col items-center">
-                <div className={`w-8 h-8 rounded-full mb-2 ${car.color}`}></div>
-                <img
-                  src={`/lovable-uploads/${car.image}`}
-                  alt={car.name}
-                  className="h-12 w-auto mb-1"
-                />
-                {/* Car names removed as requested */}
-              </div>
+              <img
+                src={`/lovable-uploads/${car.image}`}
+                alt={car.name}
+                className="h-12 w-auto mb-1"
+              />
+              <span className={`text-xs px-2 py-1 rounded-full ${car.color} text-white`}>
+                {car.name}
+              </span>
             </motion.div>
           ))}
         </div>
       </div>
     );
   }
-
+  
   return (
-    <motion.div
-      className={`w-full rounded-lg p-4 shadow-lg bg-purple-100 ${isOpen ? "block" : "hidden"}`}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
-    >
-      <div className="text-center mb-3">
-        <h3 className="text-xl text-purple-800 kids-text font-normal flex items-center justify-center">
-          <Car className="mr-2 h-5 w-5 text-purple-700" />
-          Selecciona tu coche
-        </h3>
-      </div>
-
-      <div className="grid grid-cols-3 gap-3">
-        {carOptions.map((car) => (
-          <motion.div
-            key={car.id}
-            className={`rounded-lg p-2 cursor-pointer ${
-              selectedCarColor?.id === car.id
-                ? "ring-2 ring-purple-500 bg-purple-50"
-                : "bg-white hover:bg-purple-50"
-            }`}
-            whileHover={{ scale: 1.05 }}
-            onClick={() => setSelectedCarColor(car)}
-          >
-            <div className="flex flex-col items-center">
-              <div className={`w-8 h-8 rounded-full mb-2 ${car.color}`}></div>
+    <Drawer open={open} onOpenChange={setOpen}>
+      <DrawerTrigger asChild>
+        <Button
+          variant="outline"
+          onClick={handleToggle}
+          className="flex items-center gap-2 bg-white hover:bg-gray-100"
+        >
+          <Car size={18} />
+          {selectedCarColor?.name || "Selecciona tu coche"}
+          <ChevronDown size={16} className={open ? "rotate-180" : ""} />
+        </Button>
+      </DrawerTrigger>
+      
+      <DrawerContent className="p-4">
+        <div className="grid grid-cols-3 gap-4">
+          {carColors.map((car) => (
+            <motion.div
+              key={car.id}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className={`
+                cursor-pointer rounded-md p-4 flex flex-col items-center 
+                ${selectedCarColor?.id === car.id ? 'ring-2 ring-purple-500 bg-purple-100' : 'bg-white'}
+              `}
+              onClick={() => handleSelectCar(car)}
+            >
               <img
                 src={`/lovable-uploads/${car.image}`}
                 alt={car.name}
-                className="h-12 w-auto mb-1"
+                className="h-16 w-auto mb-2"
               />
-              {/* Car names removed as requested */}
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </motion.div>
+              <div className={`text-sm px-3 py-1 rounded-full ${car.color} text-white`}>
+                {car.name}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </DrawerContent>
+    </Drawer>
   );
 };
 

@@ -59,6 +59,8 @@ interface GameContextType {
   
   // Popups and banners
   showBonusPopup: boolean;
+  setShowBonusPopup: (show: boolean) => void;
+  bonusPoints: number;
   showAgeBonusPopup: boolean;
   showCompletionBanner: boolean;
   
@@ -66,62 +68,15 @@ interface GameContextType {
   resetGame: () => void;
 }
 
-export const GameContext = createContext<GameContextType>({
-  originInfo: { city: '', country: '', flag: '' },
-  destinationInfo: { city: '', country: '', flag: '' },
-  originWord: '',
-  destinationWord: '',
-  selectedCarColor: { id: "2", name: "Coche Azul", image: "cocheazul.png", color: "bg-blue-500" }, // Set blue car as default
-  setOriginInfo: () => {},
-  setDestinationInfo: () => {},
-  setOriginWord: () => {},
-  setDestinationWord: () => {},
-  setSelectedCarColor: () => {},
-  
-  // Default values for player info
-  playerName: '',
-  playerAge: null,
-  playerGender: '',
-  setPlayerName: () => {},
-  setPlayerAge: () => {},
-  setPlayerGender: () => {},
-  
-  // Default values for game state
-  level: 1,
-  score: 0,
-  previousScore: 0,
-  totalPoints: 0,
-  highScore: 0,
-  gamesPlayed: 0,
-  
-  // Default values for license plate
-  licensePlate: '',
-  plateConsonants: '',
-  currentWord: '',
-  setCurrentWord: () => {},
-  submitWord: () => {},
-  generateNewPlate: () => {},
-  isGeneratingLicensePlate: false,
-  setIsGeneratingLicensePlate: () => {},
-  
-  // Default values for feedback
-  submitSuccess: null,
-  clearSubmitSuccess: () => {},
-  errorMessage: null,
-  clearError: () => {},
-  showLevelUp: false,
-  clearLevelUpMessage: () => {},
-  
-  // Default values for popups
-  showBonusPopup: false,
-  showAgeBonusPopup: false,
-  showCompletionBanner: false,
-  
-  // Default game control
-  resetGame: () => {},
-});
+const GameContext = createContext<GameContextType | null>(null);
 
-export const GameProvider = ({ children }: { children: React.ReactNode }) => {
+export const GameProvider: React.FC<{
+  children: React.ReactNode | ((props: { 
+    showBonusPopup: boolean;
+    setShowBonusPopup: (show: boolean) => void;
+    bonusPoints: number;
+  }) => React.ReactNode);
+}> = ({ children }) => {
   // Initialize with default country information
   const [originInfo, setOriginInfo] = useState<CountryInfo>({ 
     city: 'Madrid', 
@@ -173,6 +128,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   
   // Popups and banners states
   const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
+  const [bonusPoints, setBonusPoints] = useState<number>(500);
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState<boolean>(false);
   const [showCompletionBanner, setShowCompletionBanner] = useState<boolean>(false);
   
@@ -217,7 +173,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     // Generate new plate after reset
     generateNewPlateImpl();
   };
-
+  
   // Function to check level based on points
   useEffect(() => {
     // Calculate new level based on total points
@@ -260,15 +216,16 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       if (numbers === "6666" && !showBonusPopup) {
         setShowBonusPopup(true);
         
-        // Add bonus points - increased to 500
-        const bonusPoints = 500;
-        setTotalPoints(prev => prev + bonusPoints);
-        console.log(`🎉 Special 6666 license plate bonus! +${bonusPoints} points!`);
+        // Add bonus points - 500 points
+        const bonusAmount = 500;
+        setBonusPoints(bonusAmount);
+        setTotalPoints(prev => prev + bonusAmount);
+        console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
         
-        // Auto-hide bonus popup after 4 seconds
+        // Auto-hide bonus popup after 5 seconds
         setTimeout(() => {
           setShowBonusPopup(false);
-        }, 4000);
+        }, 5000);
       }
       
       // Check if license plate matches player age for bonus
@@ -288,94 +245,99 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [licensePlate, playerAge]);
   
+  // Country progression for the world tour
+  // Level 1: Spain -> France
+  // Level 2: France -> Italy
+  // Level 3: Italy -> Russia
+  // Level 4: Russia -> Japan
+  // Level 5: Japan -> Australia
+  // Level 6: Australia -> USA
+  // Level 7: USA -> Mexico
+  // Level 8: Mexico -> Peru
+  // Level 9: Peru -> Argentina
+  // Level 10: Argentina -> Spain
+  
   // Function to get destinations based on level, using previous destination as new origin
   const updateDestinations = (currentLevel: number) => {
     console.log(`Updating destinations for level ${currentLevel}`);
-    console.log(`Previous destination: ${previousDestination?.country || 'None'}`);
     
-    // If we have a previous destination, set it as the origin
-    if (previousDestination) {
-      console.log(`Setting origin to previous destination: ${previousDestination.city}, ${previousDestination.country}`);
-      setOriginInfo({...previousDestination});
-    } else {
-      // Default to Madrid if no previous destination (should only happen at game start)
-      const spainOrigin = { 
-        city: 'Madrid', 
-        country: 'España', 
-        flag: '🇪🇸', 
-        fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' 
-      };
-      setOriginInfo(spainOrigin);
-      console.log(`No previous destination, setting origin to default: ${spainOrigin.country}`);
-    }
+    // Handle origin and destination based on current level
+    let originCountry, destinationCountry;
     
-    // Get destination based on the level
-    let destinationCountry;
-    
-    // Setting destinations based on level according to specified progression
     switch(currentLevel) {
       case 1:
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia');
-        console.log("Level 1: Destination set to France");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                        { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
+                        { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros!' };
         break;
       case 2:
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Italia');
-        console.log("Level 2: Destination set to Italy");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
+                        { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Italia') || 
+                        { city: 'Roma', country: 'Italia', flag: '🇮🇹', fact: '¡El Coliseo romano tenía capacidad para 50.000 espectadores!' };
         break;
       case 3:
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Rusia');
-        console.log("Level 3: Destination set to Russia");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Italia') || 
+                        { city: 'Roma', country: 'Italia', flag: '🇮🇹', fact: '¡El Coliseo romano tenía capacidad para 50.000 espectadores!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Rusia') || 
+                        { city: 'Moscú', country: 'Rusia', flag: '🇷🇺', fact: '¡La Plaza Roja de Moscú es tan grande como 9 campos de fútbol!' };
         break;
       case 4:
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Japón');
-        console.log("Level 4: Destination set to Japan");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Rusia') || 
+                        { city: 'Moscú', country: 'Rusia', flag: '🇷🇺', fact: '¡La Plaza Roja de Moscú es tan grande como 9 campos de fútbol!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Japón') || 
+                        { city: 'Tokio', country: 'Japón', flag: '🇯🇵', fact: '¡En Japón hay más de 200 volcanes!' };
         break;
       case 5:
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Australia');
-        console.log("Level 5: Destination set to Australia");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Japón') || 
+                        { city: 'Tokio', country: 'Japón', flag: '🇯🇵', fact: '¡En Japón hay más de 200 volcanes!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Australia') || 
+                        { city: 'Sídney', country: 'Australia', flag: '🇦🇺', fact: '¡Australia tiene más de 10.000 playas! Tardarías 27 años en visitar una cada día.' };
         break;
       case 6:
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Estados Unidos');
-        console.log("Level 6: Destination set to United States");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Australia') || 
+                        { city: 'Sídney', country: 'Australia', flag: '🇦🇺', fact: '¡Australia tiene más de 10.000 playas! Tardarías 27 años en visitar una cada día.' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Estados Unidos') || 
+                        { city: 'Nueva York', country: 'Estados Unidos', flag: '🇺🇸', fact: '¡El Gran Cañón en Estados Unidos tiene más de 1.6 km de profundidad!' };
         break;
       case 7:
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México');
-        console.log("Level 7: Destination set to Mexico");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Estados Unidos') || 
+                        { city: 'Nueva York', country: 'Estados Unidos', flag: '🇺🇸', fact: '¡El Gran Cañón en Estados Unidos tiene más de 1.6 km de profundidad!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México') || 
+                        { city: 'Ciudad de México', country: 'México', flag: '🇲🇽', fact: '¡México tiene 34 sitios declarados Patrimonio de la Humanidad por la UNESCO!' };
         break;
       case 8:
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Perú');
-        console.log("Level 8: Destination set to Peru");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México') || 
+                        { city: 'Ciudad de México', country: 'México', flag: '🇲🇽', fact: '¡México tiene 34 sitios declarados Patrimonio de la Humanidad por la UNESCO!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Perú') || 
+                        { city: 'Lima', country: 'Perú', flag: '🇵🇪', fact: '¡Machu Picchu en Perú fue construido hace más de 500 años sin usar ruedas ni animales de tiro!' };
         break;
       case 9:
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina');
-        console.log("Level 9: Destination set to Argentina");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Perú') || 
+                        { city: 'Lima', country: 'Perú', flag: '🇵🇪', fact: '¡Machu Picchu en Perú fue construido hace más de 500 años sin usar ruedas ni animales de tiro!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina') || 
+                        { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
         break;
       case 10:
-        // Back to Spain for completing the world tour
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España');
-        console.log("Level 10: Destination set to Spain (completed world tour)");
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina') || 
+                        { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                        { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡Has completado la vuelta al mundo y has regresado a España!' };
         break;
       default:
-        // Default to France for any other level
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia');
-        console.log(`Unknown level ${currentLevel}: Defaulting destination to France`);
+        // Default to level 1 case
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                        { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
+                        { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!' };
     }
     
-    // Fallback if not found
-    if (!destinationCountry) {
-      destinationCountry = {
-        city: 'París',
-        country: 'Francia',
-        flag: '🇫🇷',
-        fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
-      };
-      console.log("Destination not found in WORLD_DESTINATIONS, using fallback");
-    }
+    // Update origin and destination states
+    setOriginInfo(originCountry);
+    setDestinationInfo(destinationCountry);
     
-    // Update destination
-    setDestinationInfo({...destinationCountry});
-    
-    console.log(`Updated destinations for level ${currentLevel}: Origin=${originInfo.country}, Destination=${destinationCountry.country}`);
+    console.log(`Updated destinations for level ${currentLevel}: Origin=${originCountry.country}, Destination=${destinationCountry.country}`);
   };
   
   // Generate a new license plate using the utility functions
@@ -394,6 +356,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
       
       newPlate = `6666${randomConsonants}`;
       console.log(`Generated special 6666 plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+      
+      // Ensure bonus popup appears with the special plate
+      setShowBonusPopup(true);
     } else {
       newPlate = generateLicensePlate();
       console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
@@ -413,7 +378,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     generateNewPlateImpl();
   };
   
-  // Improved submit word function with proper score calculation
+  // Submit word function
   const submitWord = () => {
     if (!currentWord || currentWord.length < 3) {
       setErrorMessage('La palabra es demasiado corta');
@@ -482,78 +447,87 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   // Initial setup - ensure Level 1 has correct origin/destination
   useEffect(() => {
     console.log(`Initial setup for level ${level}`);
-    if (level === 1) {
-      // Ensure level 1 always has Spain -> France
-      const spainOrigin = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
-                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
-      
-      const franceDestination = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
-                      { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!' };
-      
-      setOriginInfo(spainOrigin);
-      setDestinationInfo(franceDestination);
-      console.log("Level 1 setup: Origin=Spain, Destination=France");
-    }
+    updateDestinations(level);
   }, []);
 
+  // Create the context value
+  const contextValue: GameContextType = {
+    originInfo,
+    destinationInfo,
+    originWord,
+    destinationWord,
+    selectedCarColor,
+    setOriginInfo,
+    setDestinationInfo,
+    setOriginWord,
+    setDestinationWord,
+    setSelectedCarColor,
+    
+    // Player information
+    playerName,
+    playerAge,
+    playerGender,
+    setPlayerName,
+    setPlayerAge,
+    setPlayerGender,
+    
+    // Game state and progress
+    level,
+    score,
+    previousScore,
+    totalPoints,
+    highScore,
+    gamesPlayed,
+    
+    // License plate related
+    licensePlate,
+    plateConsonants,
+    currentWord,
+    setCurrentWord,
+    submitWord,
+    generateNewPlate,
+    isGeneratingLicensePlate,
+    setIsGeneratingLicensePlate,
+    
+    // Game feedback and messages
+    submitSuccess,
+    clearSubmitSuccess,
+    errorMessage,
+    clearError,
+    showLevelUp,
+    clearLevelUpMessage,
+    
+    // Popups and banners
+    showBonusPopup,
+    setShowBonusPopup,
+    bonusPoints,
+    showAgeBonusPopup,
+    showCompletionBanner,
+    
+    // Game control
+    resetGame,
+  };
+
+  // Check if children is a function to pass bonus popup state
+  if (typeof children === 'function') {
+    return (
+      <GameContext.Provider value={contextValue}>
+        {children({ showBonusPopup, setShowBonusPopup, bonusPoints })}
+      </GameContext.Provider>
+    );
+  }
+
   return (
-    <GameContext.Provider value={{
-      originInfo,
-      destinationInfo,
-      originWord,
-      destinationWord,
-      selectedCarColor,
-      setOriginInfo,
-      setDestinationInfo,
-      setOriginWord,
-      setDestinationWord,
-      setSelectedCarColor,
-      
-      // Player information
-      playerName,
-      playerAge,
-      playerGender,
-      setPlayerName,
-      setPlayerAge,
-      setPlayerGender,
-      
-      // Game state and progress
-      level,
-      score,
-      previousScore,
-      totalPoints,
-      highScore,
-      gamesPlayed,
-      
-      // License plate related
-      licensePlate,
-      plateConsonants,
-      currentWord,
-      setCurrentWord,
-      submitWord,
-      generateNewPlate,
-      isGeneratingLicensePlate,
-      setIsGeneratingLicensePlate,
-      
-      // Game feedback and messages
-      submitSuccess,
-      clearSubmitSuccess,
-      errorMessage,
-      clearError,
-      showLevelUp,
-      clearLevelUpMessage,
-      
-      // Popups and banners
-      showBonusPopup,
-      showAgeBonusPopup,
-      showCompletionBanner,
-      
-      // Game control
-      resetGame,
-    }}>
+    <GameContext.Provider value={contextValue}>
       {children}
     </GameContext.Provider>
   );
 };
 
-export const useGame = () => useContext(GameContext);
+export const useGame = () => {
+  const context = useContext(GameContext);
+  if (!context) {
+    throw new Error('useGame must be used within a GameProvider');
+  }
+  return context;
+};
