@@ -68,13 +68,13 @@ const DrawControls: React.FC<DrawControlsProps> = ({
         Borrar
       </Button>
       
-      {/* Back to Home button - Changed from "Más Matrículas" to just "Matrículas" */}
+      {/* Back button - Changed from "Matrículas" to "Volver" */}
       <Link to="/" className="w-full" onClick={handleNavigation}>
         <Button
           className="bg-purple-600 hover:bg-purple-700 text-white kids-text text-lg font-normal py-6 w-full"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Matrículas
+          Volver
         </Button>
       </Link>
     </div>

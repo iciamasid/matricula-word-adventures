@@ -62,11 +62,7 @@ const DrawGameContent: React.FC = () => {
     });
   };
   
-  return <div className="min-h-screen flex flex-col items-center px-4 pt-3 pb-20 relative overflow-hidden" style={{
-    backgroundColor: isEnglish ? "#f8b195" : "#bba7ca", // Different bg color based on language
-    backgroundSize: "cover",
-    backgroundAttachment: "fixed"
-  }}>
+  return <div className="min-h-screen flex flex-col items-center px-4 pt-3 pb-20 relative overflow-hidden bg-white">
       <motion.div className="w-full max-w-3xl flex flex-col items-center gap-4" initial={{
       opacity: 0
     }} animate={{
@@ -74,29 +70,36 @@ const DrawGameContent: React.FC = () => {
     }} transition={{
       duration: 0.5
     }}>
-        {/* Header with Help button positioned at top right */}
-        <div className="w-full flex justify-between items-center mb-2">
-          <motion.h1 animate={{
-          scale: [1, 1.05, 1],
-          transition: {
-            repeat: Infinity,
-            duration: 2
-          }
-        }} className={`kids-text ${textColor} text-3xl font-medium`}>{t('drive_to_destination')}</motion.h1>
+        {/* Header with title taking full width */}
+        <div className="w-full mb-2">
+          <motion.h1 
+            animate={{
+              scale: [1, 1.05, 1],
+              transition: { repeat: Infinity, duration: 2 }
+            }} 
+            className={`kids-text ${textColor} text-3xl font-medium text-center whitespace-nowrap`}
+          >
+            {t('drive_to_destination')}
+          </motion.h1>
+        </div>
+        
+        {/* Help and Car Selection buttons now below title */}
+        <div className="w-full flex justify-center gap-4 mb-3">
+          <Button 
+            variant="outline" 
+            onClick={() => setShowCarSelection(!showCarSelection)} 
+            className="text-white kids-text bg-purple-600 hover:bg-purple-700"
+          >
+            <Car className="mr-2 h-5 w-5" /> {t('select_car')}
+          </Button>
           
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              onClick={() => setShowCarSelection(!showCarSelection)} 
-              className="mr-2 text-white kids-text bg-purple-600 hover:bg-purple-700"
-            >
-              <Car className="mr-2 h-5 w-5" /> {t('select_car')}
-            </Button>
-            
-            <Button variant="outline" onClick={() => setShowHelp(true)} className="text-white kids-text bg-transparent">
-              <HelpCircle className="mr-2 h-5 w-5" /> {t('help')}
-            </Button>
-          </div>
+          <Button 
+            variant="outline" 
+            onClick={() => setShowHelp(true)} 
+            className="text-white kids-text bg-transparent bg-purple-600 hover:bg-purple-700"
+          >
+            <HelpCircle className="mr-2 h-5 w-5" /> {t('help')}
+          </Button>
         </div>
         
         {/* Car selection panel */}

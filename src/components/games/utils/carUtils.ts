@@ -257,26 +257,27 @@ export const createCar = (left: number, top: number, color = '#E74C3C', scale = 
   };
 };
 
-// Create start and end points for the path
+// Create start point - changed to WHITE color
 export const createStartPoint = (left: number, top: number) => {
   return new Circle({
     left,
     top,
     radius: 10,
-    fill: '#2ECC71', // Green color
-    stroke: '#27AE60',
+    fill: '#FFFFFF', // WHITE color instead of green
+    stroke: '#FFFFFF',
     strokeWidth: 2,
     selectable: false
   });
 };
 
+// Create end point - changed to WHITE color
 export const createEndPoint = (left: number, top: number) => {
   return new Circle({
     left,
     top,
     radius: 10,
-    fill: '#E74C3C', // Red color
-    stroke: '#C0392B',
+    fill: '#FFFFFF', // WHITE color instead of red
+    stroke: '#FFFFFF',
     strokeWidth: 2,
     selectable: false
   });
