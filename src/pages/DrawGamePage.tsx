@@ -16,15 +16,23 @@ const DrawGameContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [showCarSelection, setShowCarSelection] = useState<boolean>(false);
-  const { toast } = useToast();
-  const { originInfo, destinationInfo, selectedCarColor } = useGame();
-  const { t, isEnglish } = useLanguage();
-  
+  const {
+    toast
+  } = useToast();
+  const {
+    originInfo,
+    destinationInfo,
+    selectedCarColor
+  } = useGame();
+  const {
+    t,
+    isEnglish
+  } = useLanguage();
+
   // Determine styling based on language
-  const bgColor = isEnglish 
-    ? "bg-orange-200" // English background
-    : "bg-bba7ca";    // Spanish background
-    
+  const bgColor = isEnglish ? "bg-orange-200" // English background
+  : "bg-bba7ca"; // Spanish background
+
   const textColor = isEnglish ? "text-orange-900" : "text-fuchsia-900";
   const panelBg = isEnglish ? "bg-orange-100" : "bg-purple-100";
   const buttonBg = isEnglish ? "bg-orange-600 hover:bg-orange-700" : "bg-purple-600 hover:bg-purple-700";
@@ -60,7 +68,6 @@ const DrawGameContent: React.FC = () => {
       variant: "destructive"
     });
   };
-  
   return <div className="min-h-screen flex flex-col items-center px-4 pt-3 pb-20 relative overflow-hidden bg-bba7ca">
       <motion.div className="w-full max-w-3xl flex flex-col items-center gap-4" initial={{
       opacity: 0
@@ -71,68 +78,54 @@ const DrawGameContent: React.FC = () => {
     }}>
         {/* Header with title taking full width */}
         <div className="w-full mb-2">
-          <motion.h1 
-            animate={{
-              scale: [1, 1.05, 1],
-              transition: { repeat: Infinity, duration: 2 }
-            }} 
-            className={`kids-text ${textColor} text-3xl font-medium text-center whitespace-nowrap w-full`}
-          >
+          <motion.h1 animate={{
+          scale: [1, 1.05, 1],
+          transition: {
+            repeat: Infinity,
+            duration: 2
+          }
+        }} className={`kids-text ${textColor} text-3xl font-medium text-center whitespace-nowrap w-full`}>
             {t('drive_to_destination')}
           </motion.h1>
         </div>
         
         {/* Help and Car Selection buttons now below title */}
         <div className="w-full flex justify-center gap-4 mb-3">
-          <Button 
-            variant="outline" 
-            onClick={() => setShowCarSelection(!showCarSelection)} 
-            className="text-white kids-text bg-purple-600 hover:bg-purple-700"
-          >
+          <Button variant="outline" onClick={() => setShowCarSelection(!showCarSelection)} className="text-white kids-text bg-purple-600 hover:bg-purple-700">
             <Car className="mr-2 h-5 w-5" /> {t('select_car')}
           </Button>
           
-          <Button 
-            variant="outline" 
-            onClick={() => setShowHelp(true)} 
-            className="text-white kids-text bg-transparent bg-purple-600 hover:bg-purple-700"
-          >
+          <Button variant="outline" onClick={() => setShowHelp(true)} className="text-white kids-text bg-transparent bg-purple-600 hover:bg-purple-700">
             <HelpCircle className="mr-2 h-5 w-5" /> {t('help')}
           </Button>
         </div>
         
         {/* Car selection panel */}
         <AnimatePresence>
-          {showCarSelection && (
-            <motion.div 
-              className="w-full"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-            >
+          {showCarSelection && <motion.div className="w-full" initial={{
+          opacity: 0,
+          height: 0
+        }} animate={{
+          opacity: 1,
+          height: 'auto'
+        }} exit={{
+          opacity: 0,
+          height: 0
+        }} transition={{
+          duration: 0.3
+        }}>
               <div className={`w-full ${panelBg} rounded-lg p-4 shadow-md mb-3`}>
                 <div className="flex justify-between items-center mb-3">
                   <h3 className="text-lg font-medium kids-text text-purple-700 flex items-center">
                     <Car className="mr-2 h-5 w-5" /> {t('select_your_car')}
                   </h3>
-                  <Button 
-                    size="icon" 
-                    variant="ghost" 
-                    onClick={() => setShowCarSelection(false)}
-                    className="h-7 w-7"
-                  >
+                  <Button size="icon" variant="ghost" onClick={() => setShowCarSelection(false)} className="h-7 w-7">
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <CarCustomization 
-                  isOpen={true} 
-                  onToggle={() => {}} 
-                  embedded={true}
-                />
+                <CarCustomization isOpen={true} onToggle={() => {}} embedded={true} />
               </div>
-            </motion.div>
-          )}
+            </motion.div>}
         </AnimatePresence>
         
         {/* Origin and Destination with route visualization */}
@@ -207,19 +200,9 @@ const DrawGameContent: React.FC = () => {
         </div>
         
         {/* Car type indicator */}
-        {selectedCarColor && (
-          <div className="w-full flex justify-center items-center">
-            <motion.div 
-              className={`${panelBg} rounded-full px-4 py-1 shadow-md flex items-center gap-2`}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <div className={`w-3 h-3 rounded-full ${selectedCarColor.color}`}></div>
-              <span className="text-sm kids-text text-purple-700">{t('driving')} {selectedCarColor.name}</span>
-            </motion.div>
-          </div>
-        )}
+        {selectedCarColor && <div className="w-full flex justify-center items-center">
+            
+          </div>}
         
         {/* Error Display */}
         {error && <motion.div initial={{
@@ -333,5 +316,4 @@ const DrawGamePage: React.FC = () => {
       <DrawGameContent />
     </GameProvider>;
 };
-
 export default DrawGamePage;
