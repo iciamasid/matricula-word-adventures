@@ -1,7 +1,7 @@
-
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate } from '@/utils/gameUtils';
+import { WORLD_DESTINATIONS } from '@/utils/mapData';
 
 interface CountryInfo {
   city: string;
@@ -122,8 +122,21 @@ export const GameContext = createContext<GameContextType>({
 });
 
 export const GameProvider = ({ children }: { children: React.ReactNode }) => {
-  const [originInfo, setOriginInfo] = useState<CountryInfo>({ city: '', country: '', flag: '' });
-  const [destinationInfo, setDestinationInfo] = useState<CountryInfo>({ city: '', country: '', flag: '' });
+  // Initialize with default country information
+  const [originInfo, setOriginInfo] = useState<CountryInfo>({ 
+    city: 'Madrid', 
+    country: 'España', 
+    flag: '🇪🇸',
+    fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
+  });
+  
+  const [destinationInfo, setDestinationInfo] = useState<CountryInfo>({ 
+    city: 'París', 
+    country: 'Francia', 
+    flag: '🇫🇷',
+    fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
+  });
+  
   const [originWord, setOriginWord] = useState<string>('');
   const [destinationWord, setDestinationWord] = useState<string>('');
   // Set the default selected car to the blue one (id: "2")
@@ -183,6 +196,71 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     generateNewPlateImpl();
   };
   
+  // Function to get random destinations based on level
+  const updateDestinations = (currentLevel: number) => {
+    // Always start from Madrid
+    const originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                          { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+    
+    // Get a destination based on level
+    let destinationCountry;
+    
+    switch(currentLevel) {
+      case 1:
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia');
+        break;
+      case 2:
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Italia');
+        break;
+      case 3:
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Rusia');
+        break;
+      case 4:
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Japón');
+        break;
+      case 5:
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Australia');
+        break;
+      case 6:
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Estados Unidos');
+        break;
+      case 7:
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México');
+        break;
+      case 8:
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Perú');
+        break;
+      case 9:
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina');
+        break;
+      case 10:
+        // Back to Spain for completing the world tour
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España');
+        break;
+      default:
+        // Default to France for any other level
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia');
+    }
+    
+    // Fallback if not found
+    if (!destinationCountry) {
+      destinationCountry = {
+        city: 'París',
+        country: 'Francia',
+        flag: '🇫🇷',
+        fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
+      };
+    }
+    
+    setOriginInfo(originCountry);
+    setDestinationInfo(destinationCountry);
+  };
+  
+  // Update destinations whenever level changes
+  useEffect(() => {
+    updateDestinations(level);
+  }, [level]);
+  
   // Generate a new license plate using the utility functions
   const generateNewPlateImpl = () => {
     const newPlate = generateLicensePlate(); 
@@ -190,6 +268,9 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     setPlateConsonants(getConsonantsFromPlate(newPlate));
     setIsGeneratingLicensePlate(false);
     setGamesPlayed(prevGamesPlayed => prevGamesPlayed + 1);
+    
+    // Also update the destinations if level has changed
+    updateDestinations(level);
   };
   
   // License plate functions
@@ -206,7 +287,7 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   // Generate a plate on initial load if there isn't one already
-  React.useEffect(() => {
+  useEffect(() => {
     if (!licensePlate) {
       generateNewPlateImpl();
     }
