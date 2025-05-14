@@ -19,7 +19,7 @@ export const useDrawPathCanvas = ({
   containerRef,
   onPathCreated,
   onError,
-  backgroundColor = '#f9f2ff', // Default background color
+  backgroundColor = '#FFFFFF', // Default to WHITE background
   showCarImage = false // Default to not showing car image
 }: UseDrawPathCanvasProps) => {
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -62,7 +61,7 @@ const DrawGameContent: React.FC = () => {
     });
   };
   
-  return <div className="min-h-screen flex flex-col items-center px-4 pt-3 pb-20 relative overflow-hidden bg-white">
+  return <div className="min-h-screen flex flex-col items-center px-4 pt-3 pb-20 relative overflow-hidden bg-bba7ca">
       <motion.div className="w-full max-w-3xl flex flex-col items-center gap-4" initial={{
       opacity: 0
     }} animate={{
@@ -77,7 +76,7 @@ const DrawGameContent: React.FC = () => {
               scale: [1, 1.05, 1],
               transition: { repeat: Infinity, duration: 2 }
             }} 
-            className={`kids-text ${textColor} text-3xl font-medium text-center whitespace-nowrap`}
+            className={`kids-text ${textColor} text-3xl font-medium text-center whitespace-nowrap w-full`}
           >
             {t('drive_to_destination')}
           </motion.h1>

@@ -1,4 +1,3 @@
-
 import { useRef, useState, useCallback } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, Polygon } from 'fabric';
 import { toast } from '@/hooks/use-toast';
@@ -253,7 +252,7 @@ export const usePathAnimation = ({
     // Always update the path trace to show progress
     updatePathTrace(currentIndex);
     
-    // Update progress state
+    // Calculate progress state
     const progress = Math.round((currentIndex / interpolatedPath.length) * 100);
     setAnimationProgress(progress);
     
@@ -271,9 +270,9 @@ export const usePathAnimation = ({
     // Use larger step size for smoother movement
     const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 800)); 
     
-    // Ajustar la velocidad para completar en aproximadamente 10 segundos
+    // Adjust the speed to complete in approximately 7-8 seconds at max speed (increased from previous)
     const baseSpeed = 20; 
-    const adjustedSpeed = Math.max(5, Math.min(50, currentAnimationSpeed / 10));
+    const adjustedSpeed = Math.max(2, Math.min(30, currentAnimationSpeed / 15)); // Increased speed by reducing divisor
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
