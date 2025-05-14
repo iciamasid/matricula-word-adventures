@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -209,7 +208,7 @@ const GameContent = () => {
                   <div className="w-full flex justify-center">
                     <Link to={`/country/${originInfo.country}`} onClick={handleNavigation}>
                       <Button className="bg-purple-800 hover:bg-purple-700 py-[10px] text-slate-50 font-extralight text-base mt-2 w-full max-w-[120px] px-2 sm:px-4">
-                        {t("learn_about")} {originInfo.country}
+                        {isEnglish ? "Visit" : t("learn_about")} {originInfo.country}
                       </Button>
                     </Link>
                   </div>
@@ -250,7 +249,7 @@ const GameContent = () => {
                   <div className="w-full flex justify-center">
                     <Link to={`/country/${destinationInfo.country}`} onClick={handleNavigation}>
                       <Button className="bg-purple-800 hover:bg-purple-700 text-slate-50 font-normal text-base mt-2 w-full max-w-[120px] px-2 sm:px-4">
-                        {t("learn_about")} {destinationInfo.country}
+                        {isEnglish ? "Visit" : t("learn_about")} {destinationInfo.country}
                       </Button>
                     </Link>
                   </div>

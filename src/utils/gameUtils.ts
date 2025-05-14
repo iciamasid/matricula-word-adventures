@@ -1,4 +1,3 @@
-
 // Generates a random license plate with 4 numbers and 3 consonants
 export function generateLicensePlate(): string {
   const numbers = Array(4)
@@ -32,6 +31,11 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   let lastIndex = -1;
   const foundIndices: number[] = [];
 
+  // First check if word exists in the dictionary
+  if (!wordExists(word, language)) {
+    return -20; // Return negative score immediately for non-existent words
+  }
+
   // Check each consonant from the plate
   for (let i = 0; i < plateConsonants.length; i++) {
     const consonant = plateConsonants[i];
@@ -61,15 +65,23 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   }
 
   // Bonus for longer words
-  if (score > 0) {
+  if (score > 0 && word.length > 4) {
     score += Math.min(50, word.length * 5);
+  }
+  
+  // Special license plate number checks
+  if (plateConsonants && word.length > 0) {
+    const licensePlateNumbers = plateConsonants.substring(0, 4);
+    if (licensePlateNumbers === "6666") {
+      score = Math.max(score, 0) + 66; // Add 66 points bonus for 6666
+    }
   }
   
   // Bonus for words in the opposite language
   if (score > 0) {
     if ((language === 'es' && isEnglishWord(word)) || 
         (language === 'en' && isSpanishWord(word))) {
-      score = 200;
+      score = Math.max(score, 0) + 100; // Add 100 points bonus for foreign language
     }
   }
 
@@ -144,6 +156,8 @@ export function getDestination(level: number): string {
 
 // Check if a word is potentially valid (contains at least one required consonant)
 export function isValidWord(word: string, plateConsonants: string): boolean {
+  if (word.length < 3) return false; // Words must be at least 3 letters
+  
   const uppercaseWord = word.toUpperCase();
   
   for (const consonant of plateConsonants) {
@@ -155,7 +169,7 @@ export function isValidWord(word: string, plateConsonants: string): boolean {
   return false;
 }
 
-// Word validation function - UPDATED to consider language
+// Word validation function - Improved for better accuracy
 export function wordExists(word: string, language: 'es' | 'en'): boolean {
   // First check if word length is sufficient
   if (word.length < 3) {
@@ -171,36 +185,8 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
     return true;
   }
   
-  // More permissive validation based on language
-  if (language === 'es') {
-    // Spanish word structure check
-    const spanishVowels = "AEIOUÁÉÍÓÚ";
-    const hasVowel = [...uppercaseWord].some(char => spanishVowels.includes(char));
-    
-    // Common Spanish word endings
-    const commonEndings = ["AR", "ER", "IR", "ADO", "IDO", "ADA", "IDA", "MENTE", "CIÓN", "DAD", "TAD", "AL", "EZ"];
-    const hasCommonEnding = commonEndings.some(ending => uppercaseWord.endsWith(ending));
-    
-    // Common Spanish prefixes
-    const commonPrefixes = ["DES", "RE", "IN", "CON", "SUB", "SUPER", "PRE", "POST"];
-    const hasCommonPrefix = commonPrefixes.some(prefix => uppercaseWord.startsWith(prefix));
-    
-    return hasVowel && (hasCommonEnding || hasCommonPrefix || word.length >= 4);
-  } else {
-    // English word structure check
-    const englishVowels = "AEIOUY";
-    const hasVowel = [...uppercaseWord].some(char => englishVowels.includes(char));
-    
-    // Common English word endings
-    const commonEndings = ["ING", "ED", "LY", "TION", "MENT", "NESS", "FUL", "LESS", "ABLE"];
-    const hasCommonEnding = commonEndings.some(ending => uppercaseWord.endsWith(ending));
-    
-    // Common English prefixes
-    const commonPrefixes = ["RE", "UN", "IN", "DIS", "EN", "EM", "NON", "DE", "OVER"];
-    const hasCommonPrefix = commonPrefixes.some(prefix => uppercaseWord.startsWith(prefix));
-    
-    return hasVowel && (hasCommonEnding || hasCommonPrefix || word.length >= 4);
-  }
+  // More stringent validation - default to false if not in dictionary
+  return false;
 }
 
 // Keep the existing SPANISH_WORDS set for reference

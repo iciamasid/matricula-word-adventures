@@ -375,26 +375,26 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       <DrawControls isPlaying={isPlaying} isDrawing={isDrawing} pathExists={pathExists} canvasReady={canvasReady} isInitializing={isInitializing} onDraw={handleDrawMode} onPlay={handlePlay} onClear={handleClear} onHelp={handleHelp} />
       
       {/* Game canvas with much thicker purple border - 8px border (approx 3mm) */}
-      <Card className="border-8 border-purple-300 shadow-lg overflow-hidden">
-        <CardContent className="p-4 touch-none">
+      <Card className="border-8 border-purple-300 shadow-lg overflow-hidden" style={{ borderStyle: 'solid' }}>
+        <CardContent className="p-0 touch-none">
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
             
             {/* Overlay car image on top of the drawn car - Made bigger and smoother transitions */}
             {selectedCarColor && showCarImage && <div className="absolute pointer-events-none" style={{
-            width: '140px',
-            // Increased size for better visibility
-            height: '110px',
-            // Increased height proportionally
-            left: `${carPosition.x - 70}px`,
-            // Centered horizontally (half of width)
-            top: `${carPosition.y - 55}px`,
-            // Centered vertically with adjustment
-            transform: `rotate(${carRotation}deg)`,
-            transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
-            // Smoother transitions
-            zIndex: 100
-          }}>
+              width: '140px',
+              // Increased size for better visibility
+              height: '110px',
+              // Increased height proportionally
+              left: `${carPosition.x - 70}px`,
+              // Centered horizontally (half of width)
+              top: `${carPosition.y - 55}px`,
+              // Centered vertically with adjustment
+              transform: `rotate(${carRotation}deg)`,
+              transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
+              // Smoother transitions
+              zIndex: 100
+            }}>
                 <img src={getSelectedCarImage()} alt="Selected car" className="w-full h-full object-contain" />
               </div>}
             

@@ -1,6 +1,7 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
-import { generateLicensePlate, getConsonantsFromPlate } from '@/utils/gameUtils';
+import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
 import { WORLD_DESTINATIONS } from '@/utils/mapData';
 
 interface CountryInfo {
@@ -192,9 +193,77 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     clearSubmitSuccess();
     clearError();
     clearLevelUpMessage();
+    // Reset popup states
+    setShowBonusPopup(false);
+    setShowAgeBonusPopup(false);
+    setShowCompletionBanner(false);
     // Generate new plate after reset
     generateNewPlateImpl();
   };
+
+  // Function to check level based on points
+  useEffect(() => {
+    // Calculate new level based on total points
+    const newLevel = getLevel(totalPoints);
+    
+    // If level has increased, show level up message
+    if (newLevel > level) {
+      setLevel(newLevel);
+      setShowLevelUp(true);
+      
+      // Play level up sound (optional)
+      try {
+        const audio = new Audio('/lovable-uploads/level-up.mp3');
+        audio.volume = 0.5;
+        audio.play();
+      } catch (e) {
+        console.error("Could not play level up sound", e);
+      }
+      
+      // Auto-hide level up message after 5 seconds
+      setTimeout(() => {
+        clearLevelUpMessage();
+      }, 5000);
+      
+      // Update destinations for the new level
+      updateDestinations(newLevel);
+    }
+  }, [totalPoints]);
+  
+  // Check for special license plate patterns and player age bonus
+  useEffect(() => {
+    if (licensePlate) {
+      const numbers = licensePlate.substring(0, 4);
+      
+      // Check for 6666 pattern (bonus points)
+      if (numbers === "6666" && !showBonusPopup) {
+        setShowBonusPopup(true);
+        
+        // Add bonus points
+        const bonusPoints = 66;
+        setTotalPoints(prev => prev + bonusPoints);
+        
+        // Auto-hide bonus popup after 4 seconds
+        setTimeout(() => {
+          setShowBonusPopup(false);
+        }, 4000);
+      }
+      
+      // Check if license plate matches player age for bonus
+      if (playerAge !== null && parseInt(numbers) === playerAge && !showAgeBonusPopup) {
+        setShowAgeBonusPopup(true);
+        
+        // Add age bonus points
+        const ageBonusPoints = 50;
+        setTotalPoints(prev => prev + ageBonusPoints);
+        
+        // Auto-hide age bonus popup after 4 seconds
+        setTimeout(() => {
+          setShowAgeBonusPopup(false);
+        }, 4000);
+      }
+    }
+  }, [licensePlate, playerAge]);
   
   // Function to get random destinations based on level
   const updateDestinations = (currentLevel: number) => {
@@ -278,12 +347,42 @@ export const GameProvider = ({ children }: { children: React.ReactNode }) => {
     generateNewPlateImpl();
   };
   
+  // Improved submit word function with proper score calculation
   const submitWord = () => {
-    // This is a placeholder - in a real implementation, this would handle word submission
-    setSubmitSuccess('¡Palabra correcta!');
-    setScore(50); // Example score
-    setTotalPoints(totalPoints + 50);
-    setCurrentWord('');
+    if (!currentWord || currentWord.length < 3) {
+      setErrorMessage('La palabra es demasiado corta');
+      return;
+    }
+    
+    // Calculate score based on word and current license plate
+    import('@/utils/gameUtils').then(({ calculateScore }) => {
+      const calculatedScore = calculateScore(currentWord, plateConsonants, 'es');
+      
+      if (calculatedScore < 0) {
+        // Word is invalid
+        setErrorMessage('Palabra no válida o no contiene las consonantes requeridas');
+        return;
+      }
+      
+      // Word is valid, update score
+      setPreviousScore(score);
+      setScore(calculatedScore);
+      setTotalPoints(prev => prev + calculatedScore);
+      
+      if (calculatedScore > 75) {
+        setSubmitSuccess(`¡${currentWord} es correcta! +${calculatedScore} puntos`);
+      } else {
+        setSubmitSuccess(`¡Palabra correcta! +${calculatedScore} puntos`);
+      }
+      
+      // Track high score
+      if (calculatedScore > highScore) {
+        setHighScore(calculatedScore);
+      }
+      
+      // Reset current word
+      setCurrentWord('');
+    });
   };
 
   // Generate a plate on initial load if there isn't one already
