@@ -55,10 +55,10 @@ const GameContent = () => {
     if (isNavigatingBack) {
       // Clear the navigation flag
       sessionStorage.removeItem('navigatingBack');
-      // Restore proper destinations based on current level
-      updateDestinations(level);
+      // Here's the fix - we don't reset to default destinations, we keep the existing ones
+      console.log("Navigating back, preserving current destinations:", originInfo, destinationInfo);
     }
-  }, []);
+  }, [originInfo, destinationInfo]);
 
   // Determine the color theme based on language
   const bgColor = isEnglish ? "bg-orange-100" : "bg-bba7ca";
