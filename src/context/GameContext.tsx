@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -166,10 +165,9 @@ export const GameProvider: React.FC<{
         
         console.log('Game state loaded from localStorage:', parsedState);
         
-        // Generate level appropriate destinations
-        if (parsedState.level) {
-          updateDestinations(parsedState.level);
-        }
+        // Restore origin and destination info if available
+        if (parsedState.originInfo) setOriginInfo(parsedState.originInfo);
+        if (parsedState.destinationInfo) setDestinationInfo(parsedState.destinationInfo);
       }
     } catch (error) {
       console.error('Error loading game state:', error);
@@ -314,6 +312,16 @@ export const GameProvider: React.FC<{
       console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
       // Update destinations for the new level
       updateDestinations(newLevel);
+      
+      // Show completion popup when reaching level 11 (world tour complete)
+      if (newLevel >= 11) {
+        setShowCompletionBanner(true);
+        
+        // Reset game after showing completion banner (with a delay)
+        setTimeout(() => {
+          resetGame();
+        }, 10000);
+      }
     }
   }, [totalPoints]);
   
@@ -326,8 +334,8 @@ export const GameProvider: React.FC<{
       if (numbers === "6666" && !showBonusPopup) {
         setShowBonusPopup(true);
         
-        // Add bonus points - 500 points
-        const bonusAmount = 500;
+        // Add bonus points - CHANGED TO 200 as requested
+        const bonusAmount = 200;
         setBonusPoints(bonusAmount);
         setTotalPoints(prev => prev + bonusAmount);
         console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
@@ -459,8 +467,8 @@ export const GameProvider: React.FC<{
       // Ensure bonus popup appears with the special plate
       setShowBonusPopup(true);
       
-      // Add bonus points
-      const bonusAmount = 500;
+      // Add bonus points - CHANGED TO 200 as requested
+      const bonusAmount = 200;
       setBonusPoints(bonusAmount);
       setTotalPoints(prev => prev + bonusAmount);
       
@@ -472,7 +480,25 @@ export const GameProvider: React.FC<{
       } catch (e) {
         console.error("Could not play bonus sound", e);
       }
-    } else {
+    } 
+    // Try to generate a plate with player age
+    else if (playerAge !== null && Math.random() < 0.2) { // 20% chance for age plate
+      // Create a plate that includes the player's age
+      const spanishConsonants = "BCDFGHJKLMNPQRSTVZRRSTDLNC";
+      const randomConsonants = Array(3)
+        .fill("")
+        .map(() => spanishConsonants.charAt(Math.floor(Math.random() * spanishConsonants.length)))
+        .join("");
+      
+      // Format age with leading zeros if needed (e.g. 8 becomes 0008)
+      const formattedAge = playerAge.toString().padStart(4, '0');
+      newPlate = `${formattedAge}${randomConsonants}`;
+      console.log(`Generated age plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+      
+      // We'll trigger the age bonus popup in the useEffect that watches licensePlate
+      // since we need to check the plate content there
+    }
+    else {
       newPlate = generateLicensePlate();
       console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
     }
