@@ -19,7 +19,7 @@ const DrawGameContent: React.FC = () => {
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [showCarSelection, setShowCarSelection] = useState<boolean>(false);
   const { toast } = useToast();
-  const { selectedCarColor, originInfo, destinationInfo } = useGame();
+  const { selectedCarColor, originInfo, destinationInfo, level } = useGame();
   const { t, isEnglish } = useLanguage();
 
   // Determine styling based on language
@@ -31,15 +31,18 @@ const DrawGameContent: React.FC = () => {
   // Log when component mounts to help with debugging
   useEffect(() => {
     console.log("DrawGamePage mounted");
+    console.log("Current level:", level);
     console.log("Current origins and destinations:", { originInfo, destinationInfo });
+    
     // Scroll to top when page loads to ensure title is visible
     window.scrollTo(0, 0);
+    
     // Set session storage flag for navigation
     return () => {
       console.log("DrawGamePage unmounted");
       sessionStorage.setItem('navigatingBack', 'true');
     };
-  }, [originInfo, destinationInfo]);
+  }, [originInfo, destinationInfo, level]);
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -172,13 +175,20 @@ const DrawGameContent: React.FC = () => {
             </Alert>
           </motion.div>}
         
-        {/* Origin and Destination Panel - NEW */}
+        {/* Origin and Destination Panel with Level - UPDATED */}
         <motion.div 
           className={`w-full ${panelBg} rounded-lg p-4 shadow-md mt-4 mb-2`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
+          {/* Level indicator - NEW */}
+          <div className="text-center mb-3">
+            <span className="bg-purple-700 text-white px-4 py-1 rounded-full kids-text font-medium">
+              {isEnglish ? "Level" : "Nivel"} {level}
+            </span>
+          </div>
+          
           <div className="flex justify-between items-center">
             {/* Origin section */}
             <div className="flex flex-col items-center text-center">
