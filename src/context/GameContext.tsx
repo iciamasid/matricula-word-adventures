@@ -62,7 +62,9 @@ interface GameContextType {
   setShowBonusPopup: (show: boolean) => void;
   bonusPoints: number;
   showAgeBonusPopup: boolean;
+  setShowAgeBonusPopup: (show: boolean) => void;
   showCompletionBanner: boolean;
+  setShowCompletionBanner: (show: boolean) => void;
   
   // Game control
   resetGame: () => void;
@@ -641,7 +643,9 @@ export const GameProvider: React.FC<{
     setShowBonusPopup,
     bonusPoints,
     showAgeBonusPopup,
+    setShowAgeBonusPopup,
     showCompletionBanner,
+    setShowCompletionBanner,
     
     // Game control
     resetGame,

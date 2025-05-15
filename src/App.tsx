@@ -1,4 +1,5 @@
 
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,28 +18,29 @@ import WorldCompletionBanner from "./components/WorldCompletionBanner";
 const queryClient = new QueryClient();
 
 const App = () => {
+  // Scroll to top when app loads
+  React.useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <LanguageProvider>
           <GameProvider>
-            {({ showBonusPopup, setShowBonusPopup, bonusPoints }) => (
-              <>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/country/:country" element={<CountryPage />} />
-                    <Route path="/draw-game" element={<DrawGamePage />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
-                
-                {/* Game popups */}
-                <GamePopups />
-              </>
-            )}
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/country/:country" element={<CountryPage />} />
+                <Route path="/draw-game" element={<DrawGamePage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+            
+            {/* Game popups */}
+            <GamePopups />
           </GameProvider>
         </LanguageProvider>
       </TooltipProvider>
