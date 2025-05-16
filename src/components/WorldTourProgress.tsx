@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -268,6 +267,11 @@ const WorldTourProgress = () => {
     sessionStorage.setItem('navigatingBack', 'true');
   };
 
+  // Get current country based on level
+  const getCurrentCountry = () => {
+    return getCountryName(level, isEnglish);
+  };
+
   return (
     <motion.div 
       className={`w-full p-4 rounded-lg shadow-lg ${bgColor}`}
@@ -388,6 +392,13 @@ const WorldTourProgress = () => {
             </motion.div>
           </div>
         </div>
+      </div>
+      
+      {/* Current country indicator */}
+      <div className="mt-2 text-center">
+        <span className="text-xl font-normal text-fuchsia-800">
+          {isEnglish ? "You are in:" : "Estás en:"} {getLevelFlag(level)} {getCurrentCountry()}
+        </span>
       </div>
       
       {/* Current destination indicator */}

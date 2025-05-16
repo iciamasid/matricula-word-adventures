@@ -17,7 +17,7 @@ const LicensePlate: React.FC = () => {
   } = useGame();
   
   const { t, isEnglish } = useLanguage();
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(true); // Start with tooltip visible
   
   // Available car colors for cycling
   const carColors: CarColor[] = [
@@ -71,7 +71,17 @@ const LicensePlate: React.FC = () => {
     const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
     return Array(10).fill('').map(() => consonants[Math.floor(Math.random() * consonants.length)]);
   };
-
+  
+  // Show tooltip and hide after 5 seconds on initial render
+  useEffect(() => {
+    setShowTooltip(true);
+    const timer = setTimeout(() => {
+      setShowTooltip(false);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
   // Function to cycle through available cars
   const handleCycleCar = () => {
     // Get current car index
@@ -89,16 +99,6 @@ const LicensePlate: React.FC = () => {
       description: carColors[nextIndex].name
     });
   };
-
-  // Show tooltip and hide after 5 seconds on initial render
-  useEffect(() => {
-    setShowTooltip(true);
-    const timer = setTimeout(() => {
-      setShowTooltip(false);
-    }, 5000);
-    
-    return () => clearTimeout(timer);
-  }, []);
   
   return (
     <motion.div 
@@ -109,19 +109,17 @@ const LicensePlate: React.FC = () => {
     >
       {/* Car image with horizontal loop animation and tooltip */}
       <div className="flex justify-center w-full mb-3 relative h-16 overflow-hidden">
-        {/* Tooltip message */}
-        {showTooltip && (
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="absolute -top-8 bg-purple-100 text-purple-800 px-3 py-1 rounded-full shadow-md text-sm kids-text"
-          >
-            {isEnglish ? "Click the car to change model!" : "¡Pincha sobre el coche para cambiarlo!"}
-          </motion.div>
-        )}
+        {/* Tooltip message - always visible for 5 seconds */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: showTooltip ? 1 : 0, y: showTooltip ? 0 : -10 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="absolute -top-10 bg-purple-100 text-purple-800 px-3 py-1 rounded-full shadow-md text-sm kids-text"
+        >
+          {isEnglish ? "Click on the car to choose another one!" : "¡Pulsa en el coche para elegir otro!"}
+        </motion.div>
       
-        {/* Only show the animated car (removed the static car) */}
+        {/* Only show the animated car */}
         {selectedCarColor && (
           <motion.img 
             src={`/lovable-uploads/${selectedCarColor.image}`} 
@@ -188,7 +186,6 @@ const LicensePlate: React.FC = () => {
                 stiffness: 80
               }}
             >
-              {/* ... keep existing code (random digits animation) */}
               {isGeneratingLicensePlate ? (
                 <motion.div 
                   className="flex flex-col items-center"
@@ -243,7 +240,6 @@ const LicensePlate: React.FC = () => {
               }}
               whileHover={{ scale: 1.1 }}
             >
-              {/* ... keep existing code (random consonants animation) */}
               {isGeneratingLicensePlate ? (
                 <motion.div 
                   className="flex flex-col items-center"
