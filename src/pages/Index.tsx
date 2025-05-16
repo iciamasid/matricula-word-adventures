@@ -18,6 +18,7 @@ import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
+import { useLanguage } from "@/context/LanguageContext";
 import CarCustomization from "@/components/CarCustomization";
 
 const Index = () => {
