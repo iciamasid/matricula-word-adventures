@@ -154,7 +154,7 @@ const WordInput: React.FC = () => {
           <Button 
             onClick={handleSubmit} 
             className={`h-full bg-gradient-to-r ${buttonGradient} ${isMobile ? "text-xl" : "text-2xl"} ${isAnimating ? "animate-bounce" : ""}`} 
-            disabled={currentWord.trim().length < 3} 
+            disabled={currentWord.trim().length < 4} 
             size="lg"
           >
             <ArrowRight className="w-7 h-7" />
