@@ -62,7 +62,7 @@ const ScorePanel: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <p className="text-xs uppercase text-white font-bold">{t("level")}</p>
-            <h2 className="kids-text text-lg font-bold text-white">
+            <h2 className="kids-text font-bold text-purple-900 text-4xl">
               {level}
             </h2>
           </div>
