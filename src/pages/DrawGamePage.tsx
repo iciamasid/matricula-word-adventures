@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -18,9 +17,16 @@ const DrawGameContent: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [showCarSelection, setShowCarSelection] = useState<boolean>(false);
-  const { toast } = useToast();
-  const { selectedCarColor } = useGame();
-  const { t, isEnglish } = useLanguage();
+  const {
+    toast
+  } = useToast();
+  const {
+    selectedCarColor
+  } = useGame();
+  const {
+    t,
+    isEnglish
+  } = useLanguage();
 
   // Determine styling based on language
   const bgColor = isEnglish ? "bg-orange-200" : "bg-bba7ca"; // English vs Spanish background
@@ -82,9 +88,7 @@ const DrawGameContent: React.FC = () => {
         
         {/* Help and Car Selection buttons now below title */}
         <div className="w-full flex justify-center gap-4 mb-3">
-          <Button variant="outline" onClick={() => setShowCarSelection(!showCarSelection)} className="text-white kids-text bg-purple-600 hover:bg-purple-700">
-            <Car className="mr-2 h-5 w-5" /> {t('select_car')}
-          </Button>
+          
           
           <Button variant="outline" onClick={() => setShowHelp(true)} className="text-white kids-text bg-transparent bg-purple-600 hover:bg-purple-700">
             <HelpCircle className="mr-2 h-5 w-5" /> {t('help')}
@@ -238,5 +242,4 @@ const DrawGamePage: React.FC = () => {
       </ScrollArea>
     </GameProvider>;
 };
-
 export default DrawGamePage;
