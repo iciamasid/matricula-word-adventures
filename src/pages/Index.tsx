@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+
+import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
 import WordInput from "@/components/WordInput";
@@ -43,9 +44,6 @@ const GameContent = () => {
     selectedCarColor,
     updateDestinations
   } = useGame();
-  
-  // Ref to the license plate section
-  const licensePlateRef = useRef<HTMLDivElement>(null);
 
   // Asegura que la página comience desde la parte superior al cargar
   useEffect(() => {
@@ -60,14 +58,6 @@ const GameContent = () => {
       sessionStorage.removeItem('navigatingBack');
       // Restore proper destinations based on current level
       updateDestinations(level);
-      
-      // If car is already selected, scroll to license plate section
-      if (selectedCarColor && licensePlateRef.current) {
-        // Slight delay to ensure DOM is ready
-        setTimeout(() => {
-          licensePlateRef.current?.scrollIntoView({ behavior: 'smooth' });
-        }, 100);
-      }
     }
   }, []);
 
@@ -196,9 +186,6 @@ const GameContent = () => {
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
         {/* Player Registration Form */}
         <PlayerRegistration />
-        
-        {/* This div will be the reference for scrolling */}
-        <div ref={licensePlateRef} className="w-full"></div>
         
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
           <LicensePlate />

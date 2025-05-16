@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,10 +26,11 @@ const WordInput: React.FC = () => {
   const [placeholderText, setPlaceholderText] = useState("");
   const [fullPlaceholder, setFullPlaceholder] = useState("");
   
-  // Remove the auto-focus on the input so keyboard doesn't appear automatically
+  // Focus the input when the component mounts
   useEffect(() => {
-    // Don't auto-focus the input
-    // This is intentionally left empty to prevent auto-focus
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
     
     // Set the full placeholder text based on language
     // Ensure plateConsonants is always an array we can join
@@ -139,8 +141,7 @@ const WordInput: React.FC = () => {
           onKeyDown={handleKeyDown} 
           placeholder={placeholderText || " "} 
           className={`flex-1 text-center font-bold py-6 uppercase border-2 ${borderColor} shadow-md kids-text ${fontSize}`} 
-          autoComplete="off"
-          // Remove autofocus attribute to prevent keyboard from showing up automatically
+          autoComplete="off" 
         />
         <motion.div 
           whileHover={{
