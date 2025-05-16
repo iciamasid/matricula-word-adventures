@@ -1,28 +1,27 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { Navigation, Route, MapPin, Trophy, Star } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useLanguage } from "@/context/LanguageContext";
-
 const ScorePanel: React.FC = () => {
   const {
     totalPoints,
     level,
     originInfo
   } = useGame();
-  
-  const { t, isEnglish } = useLanguage();
+  const {
+    t,
+    isEnglish
+  } = useLanguage();
 
   // Calculate progress percentage to next level (each level is 500 points)
   const levelProgress = totalPoints % 500 / 500 * 100;
-  
+
   // Change text and icon colors based on language
   const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
   const textColorDark = isEnglish ? "text-orange-900" : "text-purple-900";
   const textColorLight = isEnglish ? "text-orange-600" : "text-purple-600";
-  
   return <div className="w-full grid grid-cols-2 gap-4 mb-4">
       {/* Score Panel - Changed to Total Kilometers */}
       <motion.div initial={{
@@ -77,9 +76,7 @@ const ScorePanel: React.FC = () => {
             <span>{t('level')} {level + 1}</span>
           </div>
           <Progress value={levelProgress} className="h-2" />
-          <p className={`${textColorLight} mt-1 text-lg`}>
-            {500 - totalPoints % 500} {t('points_for_next_level')}
-          </p>
+          
         </div>
       </motion.div>
       
@@ -144,5 +141,4 @@ const ScorePanel: React.FC = () => {
       </motion.div>
     </div>;
 };
-
 export default ScorePanel;
