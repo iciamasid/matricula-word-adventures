@@ -1,7 +1,10 @@
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
+import { toast } from "@/hooks/use-toast";
+import { useLanguage } from "@/context/LanguageContext";
+import { CarColor } from "./games/utils/carUtils";
 
 const LicensePlate: React.FC = () => {
   const {
@@ -10,10 +13,37 @@ const LicensePlate: React.FC = () => {
     isGeneratingLicensePlate,
     selectedCarColor,
     submitSuccess,
-    generateNewPlate
+    generateNewPlate,
+    setSelectedCarColor
   } = useGame();
   
-  const CONSONANT_COLORS = ["bg-game-purple", "bg-game-blue", "bg-game-yellow"];
+  const { t, isEnglish } = useLanguage();
+  const [showTooltip, setShowTooltip] = useState(false);
+  
+  // Available car colors for cycling
+  const carColors: CarColor[] = [
+    {
+      id: "1",
+      name: "Coche Rojo",
+      image: "cocherojo.png",
+      color: "bg-red-500"
+    }, 
+    {
+      id: "2",
+      name: "Coche Azul",
+      image: "cocheazul.png",
+      color: "bg-blue-500"
+    }, 
+    {
+      id: "3",
+      name: "Coche Amarillo",
+      image: "cocheamarillo.png",
+      color: "bg-yellow-500"
+    }
+  ];
+
+  // Car colors for the license plate letters - map to exact car colors
+  const CONSONANT_COLORS = ["bg-red-500", "bg-blue-600", "bg-yellow-500"];
 
   // Get the numbers part (first 4 characters) from the license plate
   const numbers = licensePlate.substring(0, 4);
@@ -42,6 +72,34 @@ const LicensePlate: React.FC = () => {
     const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
     return Array(10).fill('').map(() => consonants[Math.floor(Math.random() * consonants.length)]);
   };
+
+  // Function to cycle through available cars
+  const handleCycleCar = () => {
+    // Get current car index
+    const currentIndex = selectedCarColor ? carColors.findIndex(car => car.id === selectedCarColor.id) : 0;
+    
+    // Calculate next index (cycle through the array)
+    const nextIndex = (currentIndex + 1) % carColors.length;
+    
+    // Update selected car
+    setSelectedCarColor(carColors[nextIndex]);
+    
+    // Show toast with car name
+    toast({
+      title: isEnglish ? "Car changed!" : "¡Coche cambiado!",
+      description: carColors[nextIndex].name
+    });
+  };
+
+  // Show tooltip and hide after 5 seconds on initial render
+  useEffect(() => {
+    setShowTooltip(true);
+    const timer = setTimeout(() => {
+      setShowTooltip(false);
+    }, 5000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
   return (
     <motion.div 
@@ -52,6 +110,18 @@ const LicensePlate: React.FC = () => {
     >
       {/* Car image centered above the license plate with horizontal loop animation */}
       <div className="flex justify-center w-full mb-3 relative h-16 overflow-hidden">
+        {/* Tooltip message */}
+        {showTooltip && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute -top-8 bg-purple-100 text-purple-800 px-3 py-1 rounded-full shadow-md text-sm kids-text"
+          >
+            {isEnglish ? "Click the car to change model!" : "¡Pincha en el coche para cambiar de modelo!"}
+          </motion.div>
+        )}
+      
         {selectedCarColor && (
           <motion.img 
             src={`/lovable-uploads/${selectedCarColor.image}`} 
@@ -65,7 +135,10 @@ const LicensePlate: React.FC = () => {
               repeat: Infinity,
               ease: "linear"
             }}
-            className="h-16 w-auto absolute"
+            className="h-16 w-auto absolute cursor-pointer"
+            onClick={handleCycleCar}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           />
         )}
         
@@ -82,7 +155,10 @@ const LicensePlate: React.FC = () => {
               repeat: Infinity,
               ease: "linear"
             }}
-            className="h-16 w-auto absolute"
+            className="h-16 w-auto absolute cursor-pointer"
+            onClick={handleCycleCar}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
           />
         )}
       </div>
@@ -147,7 +223,7 @@ const LicensePlate: React.FC = () => {
             <span className="text-gray-700 text-2xl kids-text font-normal">-</span>
           </div>
           
-          {/* Consonants with enhanced slot machine effect */}
+          {/* Consonants with enhanced slot machine effect - WITH MATCHING CAR COLORS */}
           {consonantsArray.map((consonant, index) => (
             <motion.div 
               key={`consonant-${index}`} 

@@ -28,25 +28,14 @@ const carColors: CarColor[] = [
 ];
 
 const CarCustomization: React.FC = () => {
-  const { selectedCarColor, setSelectedCarColor } = useGame();
+  const { selectedCarColor } = useGame();
   const { isEnglish } = useLanguage();
-  
-  // Get current car index
-  const currentIndex = selectedCarColor ? carColors.findIndex(car => car.id === selectedCarColor.id) : 0;
-  
-  // Handle clicking the car to cycle through options
-  const handleCycleCar = () => {
-    const nextIndex = (currentIndex + 1) % carColors.length;
-    setSelectedCarColor(carColors[nextIndex]);
-  };
   
   return (
     <div className="w-full flex justify-center">
       <motion.div 
         whileHover={{ scale: 1.1 }} 
-        whileTap={{ scale: 0.95 }} 
-        className="cursor-pointer flex justify-center"
-        onClick={handleCycleCar}
+        className="flex justify-center"
       >
         <div className="relative">
           <img 

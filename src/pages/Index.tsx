@@ -209,11 +209,9 @@ const GameContent = () => {
           {/* Add World Tour Progress component */}
           <WorldTourProgress />
           
-          {/* Enhanced "Drive" button - more eye-catching */}
+          {/* Enhanced "Drive" button - PURPLE and text fits inside button */}
           <motion.div 
-            className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? 
-              isEnglish ? 'bg-gradient-to-r from-amber-300 to-orange-400' : 'bg-gradient-to-r from-violet-300 to-purple-400' : 
-              isEnglish ? 'bg-gradient-to-r from-orange-400 to-amber-300' : 'bg-gradient-to-r from-purple-400 to-violet-300'}`}
+            className="w-full rounded-lg p-4 shadow-lg bg-gradient-to-r from-purple-400 to-violet-300"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
@@ -224,7 +222,7 @@ const GameContent = () => {
               
               
               <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
-                <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white text-2xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300">
+                <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-white text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 w-full">
                   <div className="flex flex-col items-center">
                     <motion.div 
                       animate={{
@@ -236,11 +234,11 @@ const GameContent = () => {
                         duration: 2,
                         repeat: Infinity
                       }}
-                      className="mb-1 text-4xl"
+                      className="mb-1 text-3xl"
                     >
                       🚗
                     </motion.div>
-                    <span className="tracking-wide uppercase">
+                    <span className="tracking-wide uppercase whitespace-normal px-2">
                       {isEnglish ? "Drive your car!" : "¡CONDUCE TU COCHE!"}
                     </span>
                   </div>
