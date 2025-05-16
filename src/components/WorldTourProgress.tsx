@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -336,9 +337,6 @@ const WorldTourProgress = () => {
                   >
                     {flag}
                   </motion.span>
-                  
-                  {/* Circle indicator beneath the flag */}
-                  <div className={`w-4 h-4 rounded-full mt-1 ${isCurrentLocation ? isEnglish ? 'bg-orange-500 ring-4 ring-orange-300/50' : 'bg-purple-500 ring-4 ring-purple-300/50' : isCompleted ? isEnglish ? 'bg-orange-400' : 'bg-purple-400' : 'bg-gray-300'}`} />
                   
                   {/* Country name tooltip */}
                   {hoveredCountry === levelIndex && (

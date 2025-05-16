@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -88,8 +89,6 @@ const DrawGameContent: React.FC = () => {
         
         {/* Help and Car Selection buttons now below title */}
         <div className="w-full flex justify-center gap-4 mb-3">
-          
-          
           <Button variant="outline" onClick={() => setShowHelp(true)} className="text-white kids-text bg-transparent bg-purple-600 hover:bg-purple-700">
             <HelpCircle className="mr-2 h-5 w-5" /> {t('help')}
           </Button>
@@ -118,7 +117,7 @@ const DrawGameContent: React.FC = () => {
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-                <CarCustomization isOpen={true} onToggle={() => {}} embedded={true} />
+                <CarCustomization />
               </div>
             </motion.div>}
         </AnimatePresence>
