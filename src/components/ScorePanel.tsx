@@ -35,7 +35,7 @@ const ScorePanel: React.FC = () => {
             <span className="text-white text-sm">🚗</span>
           </div>
           <div className="flex flex-col">
-            <p className={`text-xs uppercase ${textColor} font-bold`}>{t("kms")}</p>
+            <p className="text-violet-900 text-3xl font-semibold">{t("kms")}</p>
             <h2 className="kids-text font-bold flex items-baseline text-violet-900 text-4xl">
               {score} 
               <span className="text-xs ml-1">km</span>
