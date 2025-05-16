@@ -36,7 +36,7 @@ const DrawControls: React.FC<DrawControlsProps> = ({
       </Button>
       
       {/* Play button - "Conducir" */}
-      <Button onClick={onPlay} disabled={isPlaying || !pathExists || isInitializing || !canvasReady} className="bg-cyan-600 hover:bg-cyan-700 text-white kids-text text-lg font-normal py-6">
+      <Button onClick={onPlay} disabled={isPlaying || !pathExists || isInitializing || !canvasReady} className="text-white kids-text text-lg font-normal py-6 bg-amber-500 hover:bg-amber-400">
         <PlayCircle className="w-5 h-5 mr-2" />
         Conducir
       </Button>
