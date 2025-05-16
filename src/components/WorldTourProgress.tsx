@@ -199,10 +199,9 @@ const WorldTourProgress = () => {
               d={createCircularPath()}
               fill="none" 
               strokeWidth="2.5"
-              strokeDasharray={progressValue >= 100 ? "none" : "3,2"}
               stroke={level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6"} 
               strokeLinecap="round"
-              strokeDashoffset={(1 - progressValue / 100) * 282} // Adjust offset based on progress
+              strokeDashoffset={(1 - progressValue / 100) * 282}
               strokeDasharray={progressValue === 0 ? "0" : "282"}
               style={{ 
                 strokeDashoffset: `${(1 - progressValue / 100) * 282}px`,
