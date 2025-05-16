@@ -127,9 +127,7 @@ const ScorePanel: React.FC = () => {
         }}>
             {originInfo.flag}
           </motion.span>
-          <p className={`${textColorLight} kids-text ml-2 text-base font-normal`}>
-            {t('you_are_in')} {originInfo.city}, {originInfo.country}
-          </p>
+          
         </div>
       </motion.div>
     </div>;
