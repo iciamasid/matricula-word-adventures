@@ -46,14 +46,22 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
 
   // Get the selected car image
   const selectedCarImage = selectedCarColor?.image ? `/lovable-uploads/${selectedCarColor.image}` : null;
-  
+
+  // Auto-close after selection with a sufficient delay to allow user selection
+  useEffect(() => {
+    // Only close if a car has been selected AND the user has clicked on it (not on initial render)
+    if (selectedCarColor && open) {
+      const timer = setTimeout(() => {
+        setOpen(false);
+        if (onToggle) onToggle();
+      }, 2000); // 2 seconds delay to ensure user has time to see the selection
+      return () => clearTimeout(timer);
+    }
+  }, [selectedCarColor, open, onToggle]);
   const handleSelectCar = (car: CarColor) => {
     setSelectedCarColor(car);
-    // Cerrar inmediatamente después de seleccionar un coche
-    setOpen(false);
-    if (onToggle) onToggle();
+    // No auto-close here, the effect will handle it with a delay
   };
-  
   return <div className="w-full">
       <Collapsible open={open} onOpenChange={setOpen} className="w-full">
         <div className="flex items-center justify-between">

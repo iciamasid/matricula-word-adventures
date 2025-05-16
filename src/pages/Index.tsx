@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -196,44 +195,8 @@ const GameContent = () => {
           
           {/* Add World Tour Progress component */}
           <WorldTourProgress />
-
-          {/* Drawing Game Button - Moved BEFORE the level info panel */}
-          <motion.div className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? isEnglish ? 'bg-gradient-to-r from-orange-200 to-orange-300/90' : 'bg-gradient-to-r from-purple-200 to-purple-300/90' : isEnglish ? 'bg-orange-200/90' : 'bg-purple-200/90'}`} initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.4
-        }} whileHover={{
-          scale: 1.02
-        }}>
-            <div className="text-center">
-              <h2 className={`text-2xl ${textColor} kids-text mb-3 font-normal`}>{t("drive_car")}</h2>
-              <p className={`${textColorLight} kids-text mb-4 text-xl font-normal`}>{t("draw_path")}</p>
-              
-              <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
-                <Button className={`${buttonBgColor} text-white text-xl kids-text px-6 py-3 font-normal relative`}>
-                  <div className="flex items-center">
-                    <motion.div animate={{
-                    x: [-5, 5, -5],
-                    y: [-3, 3, -3],
-                    rotate: [0, 5, -5, 0]
-                  }} transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }} className="mr-3 text-4xl">
-                      🚗
-                    </motion.div>
-                    <span>{t("drive")}</span>
-                  </div>
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
           
-          {/* "Has llegado hasta" panel - Now AFTER the drawing game button */}
+          {/* "Has llegado hasta" panel */}
           <motion.div initial={{
           opacity: 0,
           y: 20
@@ -351,6 +314,42 @@ const GameContent = () => {
                     {t("world_tour_completed")} 🏆
                   </span>
                 </motion.div>}
+            </div>
+          </motion.div>
+          
+          {/* Drawing Game Button - After the world tour progress */}
+          <motion.div className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? isEnglish ? 'bg-gradient-to-r from-orange-200 to-orange-300/90' : 'bg-gradient-to-r from-purple-200 to-purple-300/90' : isEnglish ? 'bg-orange-200/90' : 'bg-purple-200/90'}`} initial={{
+          opacity: 0,
+          y: 20
+        }} animate={{
+          opacity: 1,
+          y: 0
+        }} transition={{
+          delay: 0.4
+        }} whileHover={{
+          scale: 1.02
+        }}>
+            <div className="text-center">
+              <h2 className={`text-2xl ${textColor} kids-text mb-3 font-normal`}>{t("drive_car")}</h2>
+              <p className={`${textColorLight} kids-text mb-4 text-xl font-normal`}>{t("draw_path")}</p>
+              
+              <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
+                <Button className={`${buttonBgColor} text-white text-xl kids-text px-6 py-3 font-normal relative`}>
+                  <div className="flex items-center">
+                    <motion.div animate={{
+                    x: [-5, 5, -5],
+                    y: [-3, 3, -3],
+                    rotate: [0, 5, -5, 0]
+                  }} transition={{
+                    duration: 2,
+                    repeat: Infinity
+                  }} className="mr-3 text-4xl">
+                      🚗
+                    </motion.div>
+                    <span>{t("drive")}</span>
+                  </div>
+                </Button>
+              </Link>
             </div>
           </motion.div>
           
