@@ -225,7 +225,7 @@ const GameContent = () => {
           scale: 1.02
         }}>
             <div className="text-center">
-              <h2 className={`text-2xl ${textColor} kids-text mb-3 font-normal`}>{t("drive_car")}</h2>
+              
               
               
               <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
