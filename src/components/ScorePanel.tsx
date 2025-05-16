@@ -58,7 +58,7 @@ const ScorePanel: React.FC = () => {
     }}>
         <div className="flex items-center p-3">
           <div className="bg-yellow-500 flex items-center justify-center p-2 rounded-full w-8 h-8 mr-2">
-            <span className="text-white text-sm">⭐</span>
+            <span className="text-white text-3xl">⭐</span>
           </div>
           <div className="flex flex-col">
             <p className="uppercase font-bold text-purple-900 text-2xl">{t("level")}</p>
