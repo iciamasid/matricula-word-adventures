@@ -70,14 +70,7 @@ const ScorePanel: React.FC = () => {
         </motion.p>
         
         {/* Added Level Progress Bar */}
-        <div className="mt-2">
-          <div className="flex justify-between text-xs text-purple-700 mb-1">
-            <span>{t('level')} {level}</span>
-            <span>{t('level')} {level + 1}</span>
-          </div>
-          <Progress value={levelProgress} className="h-2" />
-          
-        </div>
+        
       </motion.div>
       
       {/* Level Panel */}
