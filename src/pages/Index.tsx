@@ -22,9 +22,11 @@ import { useLanguage } from "@/context/LanguageContext";
 import CarCustomization from "@/components/CarCustomization";
 
 const Index = () => {
-  return <GameProvider>
+  return (
+    <GameProvider>
       <GameContent />
-    </GameProvider>;
+    </GameProvider>
+  );
 };
 
 // Componente para manejar el contenido del juego
@@ -50,6 +52,11 @@ const GameContent = () => {
     updateDestinations
   } = useGame();
   
+  // Asegura que la página comience desde la parte superior al cargar
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Check if we're navigating back from another page and restore proper destinations
   useEffect(() => {
     const isNavigatingBack = sessionStorage.getItem('navigatingBack');
@@ -128,45 +135,73 @@ const GameContent = () => {
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
   };
-  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
-    backgroundSize: "cover",
-    backgroundAttachment: "fixed"
-  }}>
+
+  return (
+    <div 
+      className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} 
+      style={{
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed"
+      }}
+    >
       {/* Special background effect when the world tour is completed */}
-      {level >= 10 && <div className="absolute inset-0 pointer-events-none">
+      {level >= 10 && (
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
-          {[...Array(20)].map((_, i) => <motion.div key={i} className="absolute rounded-full bg-yellow-300 opacity-30" style={{
-        width: Math.random() * 10 + 5,
-        height: Math.random() * 10 + 5,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`
-      }} animate={{
-        y: [0, -100],
-        opacity: [0.3, 0]
-      }} transition={{
-        duration: Math.random() * 5 + 5,
-        repeat: Infinity,
-        repeatType: "loop",
-        delay: Math.random() * 5
-      }} />)}
-        </div>}
+          {[...Array(20)].map((_, i) => (
+            <motion.div 
+              key={i} 
+              className="absolute rounded-full bg-yellow-300 opacity-30" 
+              style={{
+                width: Math.random() * 10 + 5,
+                height: Math.random() * 10 + 5,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`
+              }} 
+              animate={{
+                y: [0, -100],
+                opacity: [0.3, 0]
+              }} 
+              transition={{
+                duration: Math.random() * 5 + 5,
+                repeat: Infinity,
+                repeatType: "loop",
+                delay: Math.random() * 5
+              }} 
+            />
+          ))}
+        </div>
+      )}
       
       <div className="relative w-full">
-        <motion.img src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" alt="Matriculabra Cadabra" className="w-full object-contain mb-2 px-0" style={{
-        maxHeight: isMobile ? "28vh" : "25vh",
-        width: "100%"
-      }} initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        duration: 0.5
-      }} />
+        <motion.img 
+          src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" 
+          alt="Matriculabra Cadabra" 
+          className="w-full object-contain mb-2 px-0" 
+          style={{
+            maxHeight: isMobile ? "28vh" : "25vh",
+            width: "100%"
+          }} 
+          initial={{
+            opacity: 0,
+            y: -20
+          }} 
+          animate={{
+            opacity: 1,
+            y: 0
+          }} 
+          transition={{
+            duration: 0.5
+          }} 
+        />
         
         {/* Instructions button positioned at bottom right of the image */}
-        <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute bottom-4 right-4 ${isEnglish ? 'bg-orange-100/90 hover:bg-orange-200 text-orange-900 border-orange-300' : 'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => setShowInstructions(true)} 
+          className={`absolute bottom-4 right-4 ${isEnglish ? 'bg-orange-100/90 hover:bg-orange-200 text-orange-900 border-orange-300' : 'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}
+        >
           <Globe className="w-4 h-4 mr-1" /> {t("help")}
         </Button>
       </div>
@@ -196,19 +231,25 @@ const GameContent = () => {
           
           {/* Add World Tour Progress component */}
           <WorldTourProgress />
-
-          {/* Drawing Game Button - Moved BEFORE the level info panel */}
-          <motion.div className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? isEnglish ? 'bg-gradient-to-r from-orange-200 to-orange-300/90' : 'bg-gradient-to-r from-purple-200 to-purple-300/90' : isEnglish ? 'bg-orange-200/90' : 'bg-purple-200/90'}`} initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.4
-        }} whileHover={{
-          scale: 1.02
-        }}>
+          
+          {/* Drawing Game Button - ANTES del panel de nivel */}
+          <motion.div 
+            className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? isEnglish ? 'bg-gradient-to-r from-orange-200 to-orange-300/90' : 'bg-gradient-to-r from-purple-200 to-purple-300/90' : isEnglish ? 'bg-orange-200/90' : 'bg-purple-200/90'}`} 
+            initial={{
+              opacity: 0,
+              y: 20
+            }} 
+            animate={{
+              opacity: 1,
+              y: 0
+            }} 
+            transition={{
+              delay: 0.4
+            }} 
+            whileHover={{
+              scale: 1.02
+            }}
+          >
             <div className="text-center">
               <h2 className={`text-2xl ${textColor} kids-text mb-3 font-normal`}>{t("drive_car")}</h2>
               <p className={`${textColorLight} kids-text mb-4 text-xl font-normal`}>{t("draw_path")}</p>
@@ -216,14 +257,18 @@ const GameContent = () => {
               <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
                 <Button className={`${buttonBgColor} text-white text-xl kids-text px-6 py-3 font-normal relative`}>
                   <div className="flex items-center">
-                    <motion.div animate={{
-                    x: [-5, 5, -5],
-                    y: [-3, 3, -3],
-                    rotate: [0, 5, -5, 0]
-                  }} transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }} className="mr-3 text-4xl">
+                    <motion.div 
+                      animate={{
+                        x: [-5, 5, -5],
+                        y: [-3, 3, -3],
+                        rotate: [0, 5, -5, 0]
+                      }} 
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity
+                      }} 
+                      className="mr-3 text-4xl"
+                    >
                       🚗
                     </motion.div>
                     <span>{t("drive")}</span>
@@ -233,37 +278,48 @@ const GameContent = () => {
             </div>
           </motion.div>
           
-          {/* "Has llegado hasta" panel - Now AFTER the drawing game button */}
-          <motion.div initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.3
-        }} className={`w-full rounded-lg p-5 shadow-lg py-[20px] ${level >= 10 ? panelGradientBg : panelBgColor}`}>
+          {/* "Has llegado hasta" panel - Ahora DESPUÉS del botón de dibujo */}
+          <motion.div 
+            initial={{
+              opacity: 0,
+              y: 20
+            }} 
+            animate={{
+              opacity: 1,
+              y: 0
+            }} 
+            transition={{
+              delay: 0.3
+            }} 
+            className={`w-full rounded-lg p-5 shadow-lg py-[20px] ${level >= 10 ? panelGradientBg : panelBgColor}`}
+          >
             <div className="text-center mb-4">
               <h2 className={`text-2xl font-normal ${textColor} kids-text flex items-center justify-center`}>
-                <motion.span className="inline-block" animate={{
-                rotate: [0, 360],
-                transition: {
-                  repeat: Infinity,
-                  duration: 8,
-                  ease: "linear"
-                }
-              }}>
+                <motion.span 
+                  className="inline-block" 
+                  animate={{
+                    rotate: [0, 360],
+                    transition: {
+                      repeat: Infinity,
+                      duration: 8,
+                      ease: "linear"
+                    }
+                  }}
+                >
                   <Globe className={`h-7 w-7 ${isEnglish ? "text-orange-600" : "text-blue-600"}`} />
                 </motion.span>
                 <span className="mx-2 font-normal text-xl">{t("level_allows_driving_from")}</span>
-                <motion.span className="inline-block" animate={{
-                rotate: [0, 360],
-                transition: {
-                  repeat: Infinity,
-                  duration: 8,
-                  ease: "linear"
-                }
-              }}>
+                <motion.span 
+                  className="inline-block" 
+                  animate={{
+                    rotate: [0, 360],
+                    transition: {
+                      repeat: Infinity,
+                      duration: 8,
+                      ease: "linear"
+                    }
+                  }}
+                >
                   <Globe className={`h-7 w-7 ${isEnglish ? "text-orange-600" : "text-blue-600"}`} />
                 </motion.span>
               </h2>
@@ -272,20 +328,28 @@ const GameContent = () => {
               <div className="grid grid-cols-3 items-center gap-2 my-4">
                 {/* Origin */}
                 <div className="flex flex-col items-center">
-                  <motion.span className="text-4xl mb-2" animate={{
-                  rotate: [0, 10, -10, 0]
-                }} transition={{
-                  duration: 2,
-                  repeat: Infinity
-                }}>
+                  <motion.span 
+                    className="text-4xl mb-2" 
+                    animate={{
+                      rotate: [0, 10, -10, 0]
+                    }} 
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity
+                    }}
+                  >
                     {originInfo.flag}
                   </motion.span>
-                  <motion.p className={`text-xl font-normal ${textColor} kids-text`} animate={{
-                  scale: [1, 1.05, 1]
-                }} transition={{
-                  duration: 2,
-                  repeat: Infinity
-                }}>
+                  <motion.p 
+                    className={`text-xl font-normal ${textColor} kids-text`} 
+                    animate={{
+                      scale: [1, 1.05, 1]
+                    }} 
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity
+                    }}
+                  >
                     {originInfo.city}, {getLocalizedCountry(originInfo.country)}
                   </motion.p>
                   <p className={`text-sm ${textColorLight} kids-text`}>{t("origin")}</p>
@@ -300,33 +364,44 @@ const GameContent = () => {
                 
                 {/* Arrow */}
                 <div className="flex justify-center">
-                  <motion.div animate={{
-                  x: [0, 10, 0]
-                }} transition={{
-                  duration: 1.5,
-                  repeat: Infinity
-                }}>
+                  <motion.div 
+                    animate={{
+                      x: [0, 10, 0]
+                    }} 
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity
+                    }}
+                  >
                     <ArrowRight className={`h-10 w-10 ${isEnglish ? "text-orange-700" : "text-purple-700"}`} />
                   </motion.div>
                 </div>
                 
                 {/* Destination */}
                 <div className="flex flex-col items-center">
-                  <motion.span className="text-4xl mb-2" animate={{
-                  rotate: [0, 10, -10, 0],
-                  scale: [1, 1.1, 1]
-                }} transition={{
-                  duration: 2,
-                  repeat: Infinity
-                }}>
+                  <motion.span 
+                    className="text-4xl mb-2" 
+                    animate={{
+                      rotate: [0, 10, -10, 0],
+                      scale: [1, 1.1, 1]
+                    }} 
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity
+                    }}
+                  >
                     {destinationInfo.flag}
                   </motion.span>
-                  <motion.p className={`text-xl font-normal ${textColor} kids-text`} animate={{
-                  scale: [1, 1.05, 1]
-                }} transition={{
-                  duration: 2,
-                  repeat: Infinity
-                }}>
+                  <motion.p 
+                    className={`text-xl font-normal ${textColor} kids-text`} 
+                    animate={{
+                      scale: [1, 1.05, 1]
+                    }} 
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity
+                    }}
+                  >
                     {destinationInfo.city}, {getLocalizedCountry(destinationInfo.country)}
                   </motion.p>
                   <p className={`text-sm ${textColorLight} kids-text`}>{t("destination")}</p>
@@ -341,27 +416,41 @@ const GameContent = () => {
               </div>
               
               {/* Special badge for world tour completion */}
-              {level >= 10 && <motion.div className="mt-4 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full px-6 py-2 inline-block shadow-lg" animate={{
-              scale: [1, 1.05, 1]
-            }} transition={{
-              repeat: Infinity,
-              duration: 2
-            }}>
+              {level >= 10 && (
+                <motion.div 
+                  className="mt-4 bg-gradient-to-r from-yellow-400 to-amber-500 rounded-full px-6 py-2 inline-block shadow-lg" 
+                  animate={{
+                    scale: [1, 1.05, 1]
+                  }} 
+                  transition={{
+                    repeat: Infinity,
+                    duration: 2
+                  }}
+                >
                   <span className="text-lg font-bold text-amber-900 kids-text">
                     {t("world_tour_completed")} 🏆
                   </span>
-                </motion.div>}
+                </motion.div>
+              )}
             </div>
           </motion.div>
           
           {/* Reset Game Button - in theme color */}
-          <motion.div className="w-full max-w-xs mt-8" whileHover={{
-          scale: 1.03
-        }} transition={{
-          type: "spring",
-          stiffness: 400
-        }}>
-            <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal ${isEnglish ? "bg-orange-700 hover:bg-orange-600" : "bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}>
+          <motion.div 
+            className="w-full max-w-xs mt-8" 
+            whileHover={{
+              scale: 1.03
+            }} 
+            transition={{
+              type: "spring",
+              stiffness: 400
+            }}
+          >
+            <Button 
+              onClick={handleResetGame} 
+              size="lg" 
+              className={`w-full text-white kids-text text-xl font-normal ${isEnglish ? "bg-orange-700 hover:bg-orange-600" : "bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}
+            >
               <RefreshCw className="mr-2 h-5 w-5" /> {t("reset_game")}
             </Button>
           </motion.div>
@@ -379,6 +468,8 @@ const GameContent = () => {
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;

@@ -37,7 +37,7 @@ const App = () => {
                 <BonusPopup
                   open={showBonusPopup}
                   onClose={() => setShowBonusPopup(false)}
-                  points={bonusPoints || 500}
+                  points={bonusPoints || 200}
                 />
               </>
             )}

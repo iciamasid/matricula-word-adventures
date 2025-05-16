@@ -7,6 +7,7 @@ import { useGame } from "@/context/GameContext";
 import { CarColor } from "./games/utils/carUtils";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useLanguage } from "@/context/LanguageContext";
+
 interface CarCustomizationProps {
   isOpen?: boolean;
   onToggle?: () => void;
@@ -30,6 +31,7 @@ const carColors: CarColor[] = [{
   image: "cocheamarillo.png",
   color: "bg-yellow-500"
 }];
+
 const CarCustomization: React.FC<CarCustomizationProps> = ({
   isOpen = false,
   onToggle = () => {},
@@ -54,7 +56,8 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
     if (onToggle) onToggle();
   };
   
-  return <div className="w-full">
+  return (
+    <div className="w-full">
       <Collapsible open={open} onOpenChange={setOpen} className="w-full">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -73,20 +76,34 @@ const CarCustomization: React.FC<CarCustomizationProps> = ({
         
         <CollapsibleContent className="mt-2">
           <div className="grid grid-cols-3 gap-2">
-            {carColors.map(car => <motion.div key={car.id} whileHover={{
-            scale: 1.05
-          }} whileTap={{
-            scale: 0.95
-          }} className={`
+            {carColors.map(car => (
+              <motion.div 
+                key={car.id} 
+                whileHover={{
+                  scale: 1.05
+                }} 
+                whileTap={{
+                  scale: 0.95
+                }} 
+                className={`
                   cursor-pointer rounded-md p-2 flex flex-col items-center 
                   ${selectedCarColor?.id === car.id ? 'ring-2 ring-purple-500 bg-purple-100/50' : 'bg-transparent'}
-                `} onClick={() => handleSelectCar(car)}>
-                <img src={`/lovable-uploads/${car.image}`} alt={car.name} className="h-12 w-auto mb-1" />
+                `} 
+                onClick={() => handleSelectCar(car)}
+              >
+                <img 
+                  src={`/lovable-uploads/${car.image}`} 
+                  alt={car.name} 
+                  className="h-12 w-auto mb-1" 
+                />
                 {/* No text labels for cleaner UI */}
-              </motion.div>)}
+              </motion.div>
+            ))}
           </div>
         </CollapsibleContent>
       </Collapsible>
-    </div>;
+    </div>
+  );
 };
+
 export default CarCustomization;

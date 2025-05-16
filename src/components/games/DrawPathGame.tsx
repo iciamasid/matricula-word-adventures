@@ -47,7 +47,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
   const [carRotation, setCarRotation] = useState<number>(0); // Track car rotation angle
   const [showCarImage, setShowCarImage] = useState<boolean>(true); // Show car image by default
-  const [showCarSelector, setShowCarSelector] = useState<boolean>(false);
   const [carPosition, setCarPosition] = useState<{
     x: number;
     y: number;
@@ -55,24 +54,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     x: 50,
     y: 50
   }); // Initial car position
-
-  // Available car colors
-  const carColors: CarColor[] = [{
-    id: "1",
-    name: "Coche Rojo",
-    image: "cocherojo.png",
-    color: "bg-red-500"
-  }, {
-    id: "2",
-    name: "Coche Azul",
-    image: "cocheazul.png",
-    color: "bg-blue-500"
-  }, {
-    id: "3",
-    name: "Coche Amarillo",
-    image: "cocheamarillo.png",
-    color: "bg-yellow-500"
-  }];
 
   // Handle errors
   const handleError = (message: string) => {
@@ -158,21 +139,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       setCarPosition(position);
     }
   });
-
-  // Toggle car selector
-  const toggleCarSelector = () => {
-    setShowCarSelector(!showCarSelector);
-  };
-
-  // Handle car selection
-  const handleSelectCar = (car: CarColor) => {
-    setSelectedCarColor(car);
-    setShowCarSelector(false);
-    toast({
-      title: "¡Coche seleccionado!",
-      description: `Has seleccionado el ${car.name}.`
-    });
-  };
 
   // Update interpolated path when original path changes
   useEffect(() => {
@@ -415,78 +381,87 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     return isEnglish ? "Arriving at destination..." : "Llegando a tu destino...";
   };
 
-  return <div className="flex flex-col w-full gap-4">
-      {/* Car selector button */}
-      <div className="flex justify-center mb-2">
-        
-      </div>
-      
-      {/* Car selector popup */}
-      {showCarSelector && <Card className="border-2 border-purple-300 shadow-lg overflow-hidden mb-4">
-          <CardContent className="p-4">
-            <h3 className="text-lg font-bold mb-2 text-center kids-text">Elige tu coche</h3>
-            <div className="flex justify-center space-x-4">
-              {carColors.map(car => <div key={car.id} className={`p-2 rounded-lg cursor-pointer transition-all hover:scale-105 ${selectedCarColor?.id === car.id ? "border-4 border-green-500" : "border border-gray-300"}`} onClick={() => handleSelectCar(car)}>
-                  <img src={`/lovable-uploads/${car.image}`} alt={car.name} className="w-24 h-20 object-contain" />
-                  <p className="text-center font-medium text-sm mt-1 kids-text">{car.name}</p>
-                </div>)}
-            </div>
-          </CardContent>
-        </Card>}
-      
-      {/* Speed control slider - MOVED UP */}
+  return (
+    <div className="flex flex-col w-full gap-4">
+      {/* Speed control slider */}
       <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
       
-      {/* Game controls - MOVED UP */}
-      <DrawControls isPlaying={isPlaying} isDrawing={isDrawing} pathExists={pathExists} canvasReady={canvasReady} isInitializing={isInitializing} onDraw={handleDrawMode} onPlay={handlePlay} onClear={handleClear} onHelp={handleHelp} />
+      {/* Game controls */}
+      <DrawControls 
+        isPlaying={isPlaying} 
+        isDrawing={isDrawing} 
+        pathExists={pathExists} 
+        canvasReady={canvasReady} 
+        isInitializing={isInitializing} 
+        onDraw={handleDrawMode} 
+        onPlay={handlePlay} 
+        onClear={handleClear} 
+        onHelp={handleHelp} 
+      />
       
       {/* Game canvas with much thicker purple border - 8px border (approx 3mm) */}
       <Card className="border-8 border-purple-300 shadow-lg overflow-hidden" style={{
-      borderStyle: 'solid'
-    }}>
+        borderStyle: 'solid'
+      }}>
         <CardContent className="p-0 touch-none">
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
             
-            {/* Overlay car image on top of the drawn car - Made bigger and smoother transitions
-                Added lower z-index (50) so it appears behind the help popup */}
-            {selectedCarColor && showCarImage && <div className="absolute pointer-events-none" style={{
-            width: '140px',
-            height: '110px',
-            left: `${carPosition.x - 70}px`,
-            top: `${carPosition.y - 55}px`,
-            transform: `rotate(${carRotation}deg)`,
-            transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
-            zIndex: 50 // Changed from 100 to 50 so it appears behind help popup
-          }}>
-                <img src={getSelectedCarImage()} alt="Selected car" className="w-full h-full object-contain" />
-              </div>}
+            {/* Overlay car image on top of the drawn car */}
+            {selectedCarColor && showCarImage && (
+              <div 
+                className="absolute pointer-events-none" 
+                style={{
+                  width: '140px',
+                  height: '110px',
+                  left: `${carPosition.x - 70}px`,
+                  top: `${carPosition.y - 55}px`,
+                  transform: `rotate(${carRotation}deg)`,
+                  transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
+                  zIndex: 50 
+                }}
+              >
+                <img 
+                  src={getSelectedCarImage()} 
+                  alt="Selected car" 
+                  className="w-full h-full object-contain" 
+                />
+              </div>
+            )}
             
             {/* Drawing mode indicator */}
-            {isDrawing && <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md kids-text">
+            {isDrawing && (
+              <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md kids-text">
                 ¡Dibuja ahora el camino!
-              </div>}
+              </div>
+            )}
             
-            {/* Improved Progress indicator for animation - Updated text */}
-            {isPlaying && interpolatedPath.length > 0 && <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
+            {/* Progress indicator for animation */}
+            {isPlaying && interpolatedPath.length > 0 && (
+              <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
                 <div className="flex flex-col items-center gap-1 px-4">
                   <span className="text-xs font-medium kids-text">{getDestinationText()}</span>
                   <Progress value={animationProgress} className="h-3 w-full" />
                   <span className="text-xs kids-text">{animationProgress}%</span>
                 </div>
-              </div>}
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
       
       {/* Game status indicators with higher z-index to appear above car */}
-      <GameStatusIndicators isInitializing={isInitializing} canvasReady={canvasReady} isDrawing={isDrawing} isPlaying={isPlaying} animationProgress={animationProgress} interpolatedPathLength={interpolatedPath.length} animationCompleted={animationCompleted} />
-      
-      {/* Debug button (only visible during development) */}
-      {process.env.NODE_ENV !== 'production' && <div className="flex justify-end">
-          
-        </div>}
-    </div>;
+      <GameStatusIndicators 
+        isInitializing={isInitializing} 
+        canvasReady={canvasReady} 
+        isDrawing={isDrawing} 
+        isPlaying={isPlaying} 
+        animationProgress={animationProgress} 
+        interpolatedPathLength={interpolatedPath.length} 
+        animationCompleted={animationCompleted} 
+      />
+    </div>
+  );
 };
 
 export default DrawPathGame;

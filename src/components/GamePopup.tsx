@@ -8,7 +8,7 @@ import { useLanguage } from "@/context/LanguageContext";
 interface GamePopupProps {
   open: boolean;
   onClose: () => void;
-  type: "success" | "error" | "levelUp";
+  type: "success" | "error" | "levelUp" | "bonus";
   message: string;
   points?: number;
   level?: number;
@@ -82,6 +82,17 @@ const GamePopup: React.FC<GamePopupProps> = ({
           bgIconColor: "bg-yellow-400",
           shadow: "shadow-[0_0_30px_rgba(220,38,38,0.7)]",
           textColor: "text-red-900"
+        };
+      case "bonus":
+        return {
+          from: "from-pink-600", 
+          via: "via-pink-500", 
+          to: "to-pink-700",
+          border: "border-yellow-400",
+          icon: <Gift className="w-10 h-10 text-pink-900" />,
+          bgIconColor: "bg-yellow-400",
+          shadow: "shadow-[0_0_30px_rgba(236,72,153,0.7)]",
+          textColor: "text-pink-900"
         };
       case "levelUp":
         return {
@@ -212,6 +223,17 @@ const GamePopup: React.FC<GamePopupProps> = ({
                         ))}
                       </div>
                     </div>
+                  )}
+                  
+                  {/* Bonus points display */}
+                  {type === "bonus" && points && (
+                    <motion.div 
+                      className="text-3xl font-bold text-yellow-300 kids-text mt-2"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      +{points} {isEnglish ? "POINTS!" : "¡PUNTOS!"}
+                    </motion.div>
                   )}
                 </div>
               </div>
