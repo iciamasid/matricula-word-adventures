@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -17,7 +18,6 @@ import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
-import { useLanguage } from "@/context/LanguageContext";
 import CarCustomization from "@/components/CarCustomization";
 
 const Index = () => {
@@ -31,7 +31,6 @@ const Index = () => {
 // Componente para manejar el contenido del juego
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
-  const [showCarCustomization, setShowCarCustomization] = useState(false);
   const isMobile = useIsMobile();
   const { language, t, isEnglish } = useLanguage();
   const {
@@ -41,8 +40,6 @@ const GameContent = () => {
     level,
     resetGame,
     plateConsonants,
-    score,
-    previousScore,
     selectedCarColor,
     updateDestinations
   } = useGame();
@@ -128,6 +125,7 @@ const GameContent = () => {
     if (level >= 10) countries.push(language === 'es' ? "España (vuelta completa)" : "Spain (full tour)");
     return countries;
   }, [level, language]);
+  
   const handleResetGame = () => {
     if (confirm(t("reset_confirm"))) {
       resetGame();
@@ -138,10 +136,6 @@ const GameContent = () => {
     }
   };
 
-  // Toggle car customization panel
-  const toggleCarCustomization = () => {
-    setShowCarCustomization(!showCarCustomization);
-  };
   return (
     <div 
       className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
@@ -189,15 +183,8 @@ const GameContent = () => {
       </div>
     
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
-        {/* Player Registration Form and Car Customization */}
+        {/* Player Registration Form */}
         <PlayerRegistration />
-        
-        {/* Car selection using the collapsible component - WITH TRANSPARENT BACKGROUND */}
-        <div className="w-full max-w-md mb-4">
-          <div className="bg-transparent rounded-lg p-4 shadow-md mb-2">
-            <CarCustomization />
-          </div>
-        </div>
         
         <div className="w-full max-w-md flex flex-col items-center space-y-4">
           <LicensePlate />
@@ -209,7 +196,7 @@ const GameContent = () => {
           {/* Add World Tour Progress component */}
           <WorldTourProgress />
           
-          {/* Enhanced "Drive" button - PURPLE and text fits inside button */}
+          {/* Modified "Drive" button - PURPLE with car icon to the left and shorter text */}
           <motion.div 
             className="w-full rounded-lg p-4 shadow-lg bg-gradient-to-r from-purple-400 to-violet-300"
             initial={{ opacity: 0, y: 20 }}
@@ -218,12 +205,10 @@ const GameContent = () => {
             whileHover={{ scale: 1.02 }}
           >
             <div className="text-center">
-              
-              
-              
               <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
                 <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-white text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 w-full">
-                  <div className="flex flex-col items-center">
+                  <div className="flex items-center justify-center">
+                    {/* Car icon on the left */}
                     <motion.div 
                       animate={{
                         x: [-5, 5, -5],
@@ -234,12 +219,12 @@ const GameContent = () => {
                         duration: 2,
                         repeat: Infinity
                       }}
-                      className="mb-1 text-3xl"
+                      className="mr-3 text-3xl"
                     >
                       🚗
                     </motion.div>
                     <span className="tracking-wide uppercase whitespace-normal px-2">
-                      {isEnglish ? "Drive your car!" : "¡CONDUCE TU COCHE!"}
+                      {isEnglish ? "Drive!" : "¡CONDUCE!"}
                     </span>
                   </div>
                   
@@ -271,9 +256,6 @@ const GameContent = () => {
               </Link>
             </div>
           </motion.div>
-          
-          {/* "Has llegado hasta" panel - Ahora DESPUÉS del botón de dibujo */}
-          
           
           {/* Reset Game Button - in theme color */}
           <motion.div className="w-full max-w-xs mt-8" whileHover={{

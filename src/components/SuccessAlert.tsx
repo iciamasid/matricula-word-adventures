@@ -4,7 +4,7 @@ import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
 
 const SuccessAlert: React.FC = () => {
-  const { score, submitSuccess, clearSubmitSuccess } = useGame();
+  const { totalPoints, submitSuccess, clearSubmitSuccess } = useGame();
   
   // Verificar si estamos navegando entre páginas
   useEffect(() => {
@@ -17,8 +17,8 @@ const SuccessAlert: React.FC = () => {
     }
   }, [clearSubmitSuccess]);
   
-  // Only show the kilometers value
-  const explanation = `${score} Kms`;
+  // Show the total kilometers accumulated
+  const explanation = `${totalPoints} Kms`;
   
   return (
     <GamePopup
@@ -26,7 +26,7 @@ const SuccessAlert: React.FC = () => {
       onClose={clearSubmitSuccess}
       type="success"
       message={submitSuccess || ""}
-      points={score}
+      points={totalPoints}
       explanation={explanation}
     />
   );

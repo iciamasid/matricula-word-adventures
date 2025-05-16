@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
@@ -108,7 +107,7 @@ const LicensePlate: React.FC = () => {
       animate={{ scale: 1, opacity: 1 }} 
       transition={{ duration: 0.5 }}
     >
-      {/* Car image centered above the license plate with horizontal loop animation */}
+      {/* Car image with horizontal loop animation and tooltip */}
       <div className="flex justify-center w-full mb-3 relative h-16 overflow-hidden">
         {/* Tooltip message */}
         {showTooltip && (
@@ -118,10 +117,11 @@ const LicensePlate: React.FC = () => {
             exit={{ opacity: 0, y: -10 }}
             className="absolute -top-8 bg-purple-100 text-purple-800 px-3 py-1 rounded-full shadow-md text-sm kids-text"
           >
-            {isEnglish ? "Click the car to change model!" : "¡Pincha en el coche para cambiar de modelo!"}
+            {isEnglish ? "Click the car to change model!" : "¡Pincha sobre el coche para cambiarlo!"}
           </motion.div>
         )}
       
+        {/* Only show the animated car (removed the static car) */}
         {selectedCarColor && (
           <motion.img 
             src={`/lovable-uploads/${selectedCarColor.image}`} 
@@ -188,6 +188,7 @@ const LicensePlate: React.FC = () => {
                 stiffness: 80
               }}
             >
+              {/* ... keep existing code (random digits animation) */}
               {isGeneratingLicensePlate ? (
                 <motion.div 
                   className="flex flex-col items-center"
@@ -242,6 +243,7 @@ const LicensePlate: React.FC = () => {
               }}
               whileHover={{ scale: 1.1 }}
             >
+              {/* ... keep existing code (random consonants animation) */}
               {isGeneratingLicensePlate ? (
                 <motion.div 
                   className="flex flex-col items-center"
