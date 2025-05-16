@@ -49,20 +49,16 @@ const GameContent = () => {
     updateDestinations
   } = useGame();
   
-  // Check if we're navigating back from another page and preserve current destinations
+  // Check if we're navigating back from another page and restore proper destinations
   useEffect(() => {
     const isNavigatingBack = sessionStorage.getItem('navigatingBack');
     if (isNavigatingBack) {
       // Clear the navigation flag
       sessionStorage.removeItem('navigatingBack');
-      
-      console.log("Navigating back, preserving current destinations:", originInfo, destinationInfo);
-      console.log("Current level:", level);
-      
-      // We don't need to call updateDestinations here, as we're preserving the current state
-      // The correct destinations for the current level are already set
+      // Restore proper destinations based on current level
+      updateDestinations(level);
     }
-  }, [originInfo, destinationInfo, level]);
+  }, []);
 
   // Determine the color theme based on language
   const bgColor = isEnglish ? "bg-orange-100" : "bg-bba7ca";
@@ -131,7 +127,6 @@ const GameContent = () => {
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
   };
-  
   return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
@@ -175,13 +170,9 @@ const GameContent = () => {
         </Button>
       </div>
 
-      {/* Level indicator displayed prominently */}
+      {/* Language Selector below the image */}
       <div className="w-full flex justify-center mb-4">
-        <div className="bg-purple-700 text-white px-6 py-2 rounded-full shadow-lg">
-          <span className="text-xl font-bold kids-text">
-            {isEnglish ? "Level" : "Nivel"} {level}
-          </span>
-        </div>
+        <LanguageSelector />
       </div>
     
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">

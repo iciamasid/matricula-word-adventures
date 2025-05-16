@@ -32,11 +32,6 @@ const LicensePlate: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [submitSuccess, generateNewPlate]);
-
-  // Scroll to top when component mounts
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
   
   // Create arrays of random numbers and letters for the slot machine effect
   const getRandomDigits = () => {

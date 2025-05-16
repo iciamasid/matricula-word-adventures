@@ -19,7 +19,7 @@ const DrawGameContent: React.FC = () => {
   const [showHelp, setShowHelp] = useState<boolean>(false);
   const [showCarSelection, setShowCarSelection] = useState<boolean>(false);
   const { toast } = useToast();
-  const { selectedCarColor, originInfo, destinationInfo, level } = useGame();
+  const { selectedCarColor } = useGame();
   const { t, isEnglish } = useLanguage();
 
   // Determine styling based on language
@@ -31,18 +31,14 @@ const DrawGameContent: React.FC = () => {
   // Log when component mounts to help with debugging
   useEffect(() => {
     console.log("DrawGamePage mounted");
-    console.log("Current level:", level);
-    console.log("Current origins and destinations:", { originInfo, destinationInfo });
-    
     // Scroll to top when page loads to ensure title is visible
     window.scrollTo(0, 0);
-    
     // Set session storage flag for navigation
     return () => {
       console.log("DrawGamePage unmounted");
       sessionStorage.setItem('navigatingBack', 'true');
     };
-  }, [originInfo, destinationInfo, level]);
+  }, []);
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -63,28 +59,6 @@ const DrawGameContent: React.FC = () => {
       variant: "destructive"
     });
   };
-  
-  // Helper function to get localized country names
-  const getLocalizedCountry = (country: string) => {
-    if (!isEnglish) return country;
-    
-    // Map Spanish country names to English
-    switch(country) {
-      case "España": return "Spain";
-      case "Francia": return "France";
-      case "Italia": return "Italy";
-      case "Rusia": return "Russia";
-      case "Japón": return "Japan";
-      case "Australia": return "Australia"; // Same in both languages
-      case "Estados Unidos": return "United States";
-      case "Méjico": 
-      case "México": return "Mexico";
-      case "Perú": return "Peru";
-      case "Argentina": return "Argentina"; // Same in both languages
-      default: return country;
-    }
-  };
-  
   return <div className="min-h-screen flex flex-col items-center px-4 pt-3 pb-20 relative overflow-hidden bg-bba7ca">
       <motion.div className="w-full max-w-3xl flex flex-col items-center gap-4" initial={{
       opacity: 0
@@ -174,48 +148,6 @@ const DrawGameContent: React.FC = () => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           </motion.div>}
-        
-        {/* Origin and Destination Panel with Level - UPDATED */}
-        <motion.div 
-          className={`w-full ${panelBg} rounded-lg p-4 shadow-md mt-4 mb-2`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          {/* Level indicator - NEW */}
-          <div className="text-center mb-3">
-            <span className="bg-purple-700 text-white px-4 py-1 rounded-full kids-text font-medium">
-              {isEnglish ? "Level" : "Nivel"} {level}
-            </span>
-          </div>
-          
-          <div className="flex justify-between items-center">
-            {/* Origin section */}
-            <div className="flex flex-col items-center text-center">
-              <span className="text-2xl mb-1">{originInfo.flag}</span>
-              <p className="font-bold kids-text text-purple-800">{originInfo.city}</p>
-              <p className="text-sm text-purple-600 kids-text">{getLocalizedCountry(originInfo.country)}</p>
-              <p className="text-xs text-purple-500 kids-text">{t('origin')}</p>
-            </div>
-            
-            {/* Arrow indicator */}
-            <motion.div 
-              animate={{ x: [0, 10, 0] }}
-              transition={{ repeat: Infinity, duration: 2 }}
-              className="text-purple-700"
-            >
-              ➡️
-            </motion.div>
-            
-            {/* Destination section */}
-            <div className="flex flex-col items-center text-center">
-              <span className="text-2xl mb-1">{destinationInfo.flag}</span>
-              <p className="font-bold kids-text text-purple-800">{destinationInfo.city}</p>
-              <p className="text-sm text-purple-600 kids-text">{getLocalizedCountry(destinationInfo.country)}</p>
-              <p className="text-xs text-purple-500 kids-text">{t('destination')}</p>
-            </div>
-          </div>
-        </motion.div>
         
         {/* Car type indicator */}
         {selectedCarColor && <div className="w-full flex justify-center items-center">

@@ -62,14 +62,12 @@ interface GameContextType {
   setShowBonusPopup: (show: boolean) => void;
   bonusPoints: number;
   showAgeBonusPopup: boolean;
-  setShowAgeBonusPopup: (show: boolean) => void;
   showCompletionBanner: boolean;
-  setShowCompletionBanner: (show: boolean) => void;
   
   // Game control
   resetGame: () => void;
   
-  // Add updateDestinations function
+  // Adding the missing updateDestinations function
   updateDestinations: (currentLevel: number) => void;
 }
 
@@ -167,13 +165,10 @@ export const GameProvider: React.FC<{
         
         console.log('Game state loaded from localStorage:', parsedState);
         
-        // Restore origin and destination info if available
-        if (parsedState.originInfo) setOriginInfo(parsedState.originInfo);
-        if (parsedState.destinationInfo) setDestinationInfo(parsedState.destinationInfo);
-        
-        // Ensure destinations match the current level
-        console.log(`Initial level loaded: ${parsedState.level || 1}`);
-        updateDestinationsForLevel(parsedState.level || 1);
+        // Generate level appropriate destinations
+        if (parsedState.level) {
+          updateDestinations(parsedState.level);
+        }
       }
     } catch (error) {
       console.error('Error loading game state:', error);
@@ -192,9 +187,6 @@ export const GameProvider: React.FC<{
         playerAge,
         playerGender,
         selectedCarColor,
-        // Save origin and destination info to persist between page navigations
-        originInfo,
-        destinationInfo
       };
       
       localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
@@ -202,10 +194,177 @@ export const GameProvider: React.FC<{
     } catch (error) {
       console.error('Error saving game state:', error);
     }
-  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor, originInfo, destinationInfo]);
+  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor]);
   
-  // Function to get destinations based on level
-  const updateDestinationsForLevel = (currentLevel: number) => {
+  // Game control functions
+  const resetGame = () => {
+    // Initialize with default country information
+    setOriginInfo({ 
+      city: 'Madrid', 
+      country: 'España', 
+      flag: '🇪🇸',
+      fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
+    });
+    
+    setDestinationInfo({ 
+      city: 'París', 
+      country: 'Francia', 
+      flag: '🇫🇷',
+      fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
+    });
+    
+    setOriginWord('');
+    setDestinationWord('');
+    setSelectedCarColor({ 
+      id: "2", 
+      name: "Coche Azul", 
+      image: "cocheazul.png", 
+      color: "bg-blue-500" 
+    });
+    
+    setPlayerName('');
+    setPlayerAge(null);
+    setPlayerGender('');
+    
+    setLevel(1);
+    setScore(0);
+    setPreviousScore(0);
+    setTotalPoints(0);
+    setHighScore(0);
+    setGamesPlayed(0);
+    
+    setLicensePlate('');
+    setPlateConsonants('');
+    setCurrentWord('');
+    setIsGeneratingLicensePlate(false);
+    
+    setSubmitSuccess(null);
+    setErrorMessage(null);
+    setShowLevelUp(false);
+    
+    setShowBonusPopup(false);
+    setBonusPoints(500);
+    setShowAgeBonusPopup(false);
+    setShowCompletionBanner(false);
+    
+    setPreviousDestination(null);
+    
+    // Clear any active messages
+    clearSubmitSuccess();
+    clearError();
+    clearLevelUpMessage();
+    
+    // Reset popup states
+    setShowBonusPopup(false);
+    setShowAgeBonusPopup(false);
+    setShowCompletionBanner(false);
+    
+    // Reset previous destination
+    setPreviousDestination(null);
+    
+    // Reset origin and destination to defaults (Spain -> France for level 1)
+    setOriginInfo({ 
+      city: 'Madrid', 
+      country: 'España', 
+      flag: '🇪🇸',
+      fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
+    });
+    setDestinationInfo({ 
+      city: 'París', 
+      country: 'Francia', 
+      flag: '🇫🇷',
+      fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
+    });
+    
+    // Generate new plate after reset
+    generateNewPlateImpl();
+  };
+  
+  // Function to check level based on points
+  useEffect(() => {
+    // Calculate new level based on total points
+    const newLevel = getLevel(totalPoints);
+    
+    // If level has increased, show level up message
+    if (newLevel > level) {
+      // Save current destination as previous before updating
+      setPreviousDestination({...destinationInfo});
+      
+      setLevel(newLevel);
+      setShowLevelUp(true);
+      
+      // Play level up sound (optional)
+      try {
+        const audio = new Audio('/lovable-uploads/level-up.mp3');
+        audio.volume = 0.5;
+        audio.play();
+      } catch (e) {
+        console.error("Could not play level up sound", e);
+      }
+      
+      // Auto-hide level up message after 5 seconds
+      setTimeout(() => {
+        clearLevelUpMessage();
+      }, 5000);
+      
+      console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
+      // Update destinations for the new level
+      updateDestinations(newLevel);
+    }
+  }, [totalPoints]);
+  
+  // Check for special license plate patterns and player age bonus
+  useEffect(() => {
+    if (licensePlate) {
+      const numbers = licensePlate.substring(0, 4);
+      
+      // Check for 6666 pattern (bonus points)
+      if (numbers === "6666" && !showBonusPopup) {
+        setShowBonusPopup(true);
+        
+        // Add bonus points - 500 points
+        const bonusAmount = 500;
+        setBonusPoints(bonusAmount);
+        setTotalPoints(prev => prev + bonusAmount);
+        console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
+        
+        // Auto-hide bonus popup after 5 seconds
+        setTimeout(() => {
+          setShowBonusPopup(false);
+        }, 5000);
+      }
+      
+      // Check if license plate matches player age for bonus
+      if (playerAge !== null && parseInt(numbers) === playerAge && !showAgeBonusPopup) {
+        setShowAgeBonusPopup(true);
+        
+        // Add age bonus points (20 points)
+        const ageBonusPoints = 20;
+        setTotalPoints(prev => prev + ageBonusPoints);
+        console.log(`🎂 Age match bonus! License plate matches your age (${playerAge})! +${ageBonusPoints} points!`);
+        
+        // Auto-hide age bonus popup after 4 seconds
+        setTimeout(() => {
+          setShowAgeBonusPopup(false);
+        }, 4000);
+      }
+    }
+  }, [licensePlate, playerAge]);
+  
+  // Country progression for the world tour
+  // Level 1: Spain -> France
+  // Level 2: France -> Italy
+  // Level 3: Italy -> Russia
+  // Level 4: Russia -> Japan
+  // Level 5: Japan -> Australia
+  // Level 6: Australia -> USA
+  // Level 7: USA -> Mexico
+  // Level 8: Mexico -> Peru
+  // Level 9: Peru -> Argentina
+  // Level 10: Argentina -> Spain
+  
+  // Function to get destinations based on level, using previous destination as new origin
+  const updateDestinations = (currentLevel: number) => {
     console.log(`Updating destinations for level ${currentLevel}`);
     
     // Handle origin and destination based on current level
@@ -287,11 +446,6 @@ export const GameProvider: React.FC<{
     console.log(`Updated destinations for level ${currentLevel}: Origin=${originCountry.country}, Destination=${destinationCountry.country}`);
   };
   
-  // Function to update destinations (can be called from outside)
-  const updateDestinations = (currentLevel: number) => {
-    updateDestinationsForLevel(currentLevel);
-  };
-  
   // Generate a new license plate using the utility functions
   const generateNewPlateImpl = () => {
     let newPlate;
@@ -313,35 +467,20 @@ export const GameProvider: React.FC<{
       // Ensure bonus popup appears with the special plate
       setShowBonusPopup(true);
       
-      // Add bonus points - CHANGED TO 200 as requested
-      const bonusAmount = 200;
+      // Add bonus points
+      const bonusAmount = 500;
       setBonusPoints(bonusAmount);
       setTotalPoints(prev => prev + bonusAmount);
-      console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
       
-      // Auto-hide bonus popup after 5 seconds
-      setTimeout(() => {
-        setShowBonusPopup(false);
-      }, 5000);
-    } 
-    // Try to generate a plate with player age
-    else if (playerAge !== null && Math.random() < 0.2) { // 20% chance for age plate
-      // Create a plate that includes the player's age
-      const spanishConsonants = "BCDFGHJKLMNPQRSTVZRRSTDLNC";
-      const randomConsonants = Array(3)
-        .fill("")
-        .map(() => spanishConsonants.charAt(Math.floor(Math.random() * spanishConsonants.length)))
-        .join("");
-      
-      // Format age with leading zeros if needed (e.g. 8 becomes 0008)
-      const formattedAge = playerAge.toString().padStart(4, '0');
-      newPlate = `${formattedAge}${randomConsonants}`;
-      console.log(`Generated age plate: ${newPlate} (Game ${gamesPlayed + 1})`);
-      
-      // We'll trigger the age bonus popup in the useEffect that watches licensePlate
-      // since we need to check the plate content there
-    }
-    else {
+      // Play bonus sound
+      try {
+        const audio = new Audio('/lovable-uploads/level-up.mp3');
+        audio.volume = 0.6;
+        audio.play();
+      } catch (e) {
+        console.error("Could not play bonus sound", e);
+      }
+    } else {
       newPlate = generateLicensePlate();
       console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
     }
@@ -432,171 +571,6 @@ export const GameProvider: React.FC<{
     updateDestinations(level);
   }, []);
 
-  // Game reset function
-  const resetGame = () => {
-    // Initialize with default country information
-    setOriginInfo({ 
-      city: 'Madrid', 
-      country: 'España', 
-      flag: '🇪🇸',
-      fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
-    });
-    
-    setDestinationInfo({ 
-      city: 'París', 
-      country: 'Francia', 
-      flag: '🇫🇷',
-      fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
-    });
-    
-    setOriginWord('');
-    setDestinationWord('');
-    setSelectedCarColor({ 
-      id: "2", 
-      name: "Coche Azul", 
-      image: "cocheazul.png", 
-      color: "bg-blue-500" 
-    });
-    
-    setPlayerName('');
-    setPlayerAge(null);
-    setPlayerGender('');
-    
-    setLevel(1);
-    setScore(0);
-    setPreviousScore(0);
-    setTotalPoints(0);
-    setHighScore(0);
-    setGamesPlayed(0);
-    
-    setLicensePlate('');
-    setPlateConsonants('');
-    setCurrentWord('');
-    setIsGeneratingLicensePlate(false);
-    
-    setSubmitSuccess(null);
-    setErrorMessage(null);
-    setShowLevelUp(false);
-    
-    setShowBonusPopup(false);
-    setBonusPoints(500);
-    setShowAgeBonusPopup(false);
-    setShowCompletionBanner(false);
-    
-    setPreviousDestination(null);
-    
-    // Clear any active messages
-    clearSubmitSuccess();
-    clearError();
-    clearLevelUpMessage();
-    
-    // Reset popup states
-    setShowBonusPopup(false);
-    setShowAgeBonusPopup(false);
-    setShowCompletionBanner(false);
-    
-    // Reset previous destination
-    setPreviousDestination(null);
-    
-    // Reset origin and destination to defaults (Spain -> France for level 1)
-    setOriginInfo({ 
-      city: 'Madrid', 
-      country: 'España', 
-      flag: '🇪🇸',
-      fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
-    });
-    setDestinationInfo({ 
-      city: 'París', 
-      country: 'Francia', 
-      flag: '🇫🇷',
-      fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
-    });
-    
-    // Generate new plate after reset
-    generateNewPlateImpl();
-  };
-  
-  // Check for level changes and update destinations accordingly
-  useEffect(() => {
-    // Calculate new level based on total points
-    const newLevel = getLevel(totalPoints);
-    
-    // If level has increased, show level up message
-    if (newLevel > level) {
-      // Save current destination as previous before updating
-      setPreviousDestination({...destinationInfo});
-      
-      setLevel(newLevel);
-      setShowLevelUp(true);
-      
-      // Play level up sound (optional)
-      try {
-        const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.5;
-        audio.play();
-      } catch (e) {
-        console.error("Could not play level up sound", e);
-      }
-      
-      // Auto-hide level up message after 5 seconds
-      setTimeout(() => {
-        clearLevelUpMessage();
-      }, 5000);
-      
-      console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
-      // Update destinations for the new level
-      updateDestinationsForLevel(newLevel);
-      
-      // Show completion popup when reaching level 11 (world tour complete)
-      if (newLevel >= 11) {
-        setShowCompletionBanner(true);
-        
-        // Reset game after showing completion banner (with a delay)
-        setTimeout(() => {
-          resetGame();
-        }, 10000);
-      }
-    }
-  }, [totalPoints, level]);
-  
-  // Check for special license plate patterns and player age bonus
-  useEffect(() => {
-    if (licensePlate) {
-      const numbers = licensePlate.substring(0, 4);
-      
-      // Check for 6666 pattern (bonus points)
-      if (numbers === "6666" && !showBonusPopup) {
-        setShowBonusPopup(true);
-        
-        // Add bonus points - CHANGED TO 200 as requested
-        const bonusAmount = 200;
-        setBonusPoints(bonusAmount);
-        setTotalPoints(prev => prev + bonusAmount);
-        console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
-        
-        // Auto-hide bonus popup after 5 seconds
-        setTimeout(() => {
-          setShowBonusPopup(false);
-        }, 5000);
-      }
-      
-      // Check if license plate matches player age for bonus
-      if (playerAge !== null && parseInt(numbers) === playerAge && !showAgeBonusPopup) {
-        setShowAgeBonusPopup(true);
-        
-        // Add age bonus points (20 points)
-        const ageBonusPoints = 20;
-        setTotalPoints(prev => prev + ageBonusPoints);
-        console.log(`🎂 Age match bonus! License plate matches your age (${playerAge})! +${ageBonusPoints} points!`);
-        
-        // Auto-hide age bonus popup after 4 seconds
-        setTimeout(() => {
-          setShowAgeBonusPopup(false);
-        }, 4000);
-      }
-    }
-  }, [licensePlate, playerAge]);
-  
   // Create the context value
   const contextValue: GameContextType = {
     originInfo,
@@ -649,9 +623,7 @@ export const GameProvider: React.FC<{
     setShowBonusPopup,
     bonusPoints,
     showAgeBonusPopup,
-    setShowAgeBonusPopup,
     showCompletionBanner,
-    setShowCompletionBanner,
     
     // Game control
     resetGame,
