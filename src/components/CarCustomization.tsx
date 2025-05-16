@@ -1,11 +1,8 @@
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Car, ChevronDown } from "lucide-react";
+import React from "react";
+import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { CarColor } from "./games/utils/carUtils";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface CarCustomizationProps {
@@ -15,93 +12,64 @@ interface CarCustomizationProps {
 }
 
 // Available car colors
-const carColors: CarColor[] = [{
-  id: "1",
-  name: "Coche Rojo",
-  image: "cocherojo.png",
-  color: "bg-red-500"
-}, {
-  id: "2",
-  name: "Coche Azul",
-  image: "cocheazul.png",
-  color: "bg-blue-500"
-}, {
-  id: "3",
-  name: "Coche Amarillo",
-  image: "cocheamarillo.png",
-  color: "bg-yellow-500"
-}];
+const carColors: CarColor[] = [
+  {
+    id: "1",
+    name: "Coche Rojo",
+    image: "cocherojo.png",
+    color: "bg-red-500"
+  }, 
+  {
+    id: "2",
+    name: "Coche Azul",
+    image: "cocheazul.png",
+    color: "bg-blue-500"
+  }, 
+  {
+    id: "3",
+    name: "Coche Amarillo",
+    image: "cocheamarillo.png",
+    color: "bg-yellow-500"
+  }
+];
 
-const CarCustomization: React.FC<CarCustomizationProps> = ({
-  isOpen = false,
-  onToggle = () => {},
-  embedded = false
-}) => {
-  const [open, setOpen] = useState(false);
-  const {
-    selectedCarColor,
-    setSelectedCarColor
-  } = useGame();
-  const {
-    isEnglish
-  } = useLanguage();
-
-  // Get the selected car image
-  const selectedCarImage = selectedCarColor?.image ? `/lovable-uploads/${selectedCarColor.image}` : null;
+const CarCustomization: React.FC<CarCustomizationProps> = () => {
+  const { selectedCarColor, setSelectedCarColor } = useGame();
+  const { isEnglish } = useLanguage();
+  
+  // Set background and border colors based on language
+  const borderColorSelected = isEnglish ? "border-orange-500" : "border-purple-500";
+  const bgColorSelected = isEnglish ? "bg-orange-100/50" : "bg-purple-100/50";
   
   const handleSelectCar = (car: CarColor) => {
     setSelectedCarColor(car);
-    // Cerrar inmediatamente después de seleccionar un coche
-    setOpen(false);
-    if (onToggle) onToggle();
   };
   
   return (
     <div className="w-full">
-      <Collapsible open={open} onOpenChange={setOpen} className="w-full">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            {selectedCarImage && <img src={selectedCarImage} alt="Selected car" className="h-10 w-auto" />}
-          </div>
-          <CollapsibleTrigger asChild>
-            <Button variant="outline" size="sm" className={`${isEnglish ? 'border-orange-400 text-orange-700 hover:bg-orange-100' : 'border-purple-400 text-purple-700 hover:bg-purple-100'} flex items-center gap-2`}>
-              <Car className="h-4 w-4" />
-              <span className="kids-text text-base">
-                {isEnglish ? "Select car" : "Selecciona tu coche"}
-              </span>
-              <ChevronDown className="h-4 w-4" />
-            </Button>
-          </CollapsibleTrigger>
-        </div>
-        
-        <CollapsibleContent className="mt-2">
-          <div className="grid grid-cols-3 gap-2">
-            {carColors.map(car => (
-              <motion.div 
-                key={car.id} 
-                whileHover={{
-                  scale: 1.05
-                }} 
-                whileTap={{
-                  scale: 0.95
-                }} 
-                className={`
-                  cursor-pointer rounded-md p-2 flex flex-col items-center 
-                  ${selectedCarColor?.id === car.id ? 'ring-2 ring-purple-500 bg-purple-100/50' : 'bg-transparent'}
-                `} 
-                onClick={() => handleSelectCar(car)}
-              >
-                <img 
-                  src={`/lovable-uploads/${car.image}`} 
-                  alt={car.name} 
-                  className="h-12 w-auto mb-1" 
-                />
-                {/* No text labels for cleaner UI */}
-              </motion.div>
-            ))}
-          </div>
-        </CollapsibleContent>
-      </Collapsible>
+      <div className="grid grid-cols-3 gap-2">
+        {carColors.map(car => (
+          <motion.div 
+            key={car.id} 
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }} 
+            className={`
+              cursor-pointer rounded-md p-2 flex flex-col items-center justify-center
+              border-2 transition-all duration-200
+              ${selectedCarColor?.id === car.id 
+                ? `${borderColorSelected} ${bgColorSelected}` 
+                : 'border-transparent hover:border-gray-200'}
+            `} 
+            onClick={() => handleSelectCar(car)}
+          >
+            <img 
+              src={`/lovable-uploads/${car.image}`} 
+              alt={car.name} 
+              className="h-14 w-auto" 
+            />
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 };
