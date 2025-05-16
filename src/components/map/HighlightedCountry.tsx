@@ -43,18 +43,7 @@ const HighlightedCountry: React.FC<HighlightedCountryProps> = ({
       
       {/* Marker container */}
       <div className="bg-white rounded-full p-1 shadow-lg relative z-20">
-        <div className="bg-red-500 rounded-full w-8 h-8 flex items-center justify-center">
-          <motion.span className="text-white text-lg" animate={{
-          scale: [1, 1.2, 1],
-          rotate: [0, 5, -5, 0]
-        }} transition={{
-          duration: 3,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}>
-            {countryFlag}
-          </motion.span>
-        </div>
+        
       </div>
       
       {/* Country name label */}
