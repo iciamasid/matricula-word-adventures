@@ -119,14 +119,7 @@ const ScorePanel: React.FC = () => {
         </motion.p>
         
         <div className="flex items-center justify-center gap-1 mt-1">
-          <motion.span className="text-6xl" animate={{
-          scale: [1, 1.2, 1]
-        }} transition={{
-          duration: 2,
-          repeat: Infinity
-        }}>
-            {originInfo.flag}
-          </motion.span>
+          
           
         </div>
       </motion.div>
