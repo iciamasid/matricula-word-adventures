@@ -4,7 +4,7 @@ import { useGame } from '@/context/GameContext';
 import { Progress } from '@/components/ui/progress';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-import { Car, Plane } from 'lucide-react';
+import { Car, Plane, Compass, Map } from 'lucide-react';
 
 // Function to get the flag emoji based on level
 const getLevelFlag = (level: number) => {
@@ -56,7 +56,7 @@ const WorldTourProgress = () => {
   const accentColor = isEnglish ? "bg-orange-400" : "bg-purple-400";
   const completedColor = isEnglish ? "bg-orange-500" : "bg-purple-500";
 
-  // Modified animation to show path from Spain to current destination
+  // Modified animation to show circular path progress
   useEffect(() => {
     const targetValue = (level - 1) / 10 * 100;
     let animationActive = true;
@@ -111,34 +111,64 @@ const WorldTourProgress = () => {
     }
   };
 
-  // Function to determine X position based on index (for the S-curve)
-  const getXPosition = (index: number) => {
-    // First row (indices 0-5) goes left to right
-    if (index <= 5) {
-      return `${index * 20}%`;
-    } 
-    // Second row (indices 6-10) goes right to left
-    else {
-      const reverseIndex = 10 - (index % 6);
-      return `${reverseIndex * 20}%`;
-    }
-  };
+  // Calculate positions for a circular layout
+  const getCirclePosition = (index: number, totalPoints: number = 11) => {
+    // Calculate angle for evenly distributed points around a circle
+    // Subtract from 360 to go clockwise, and adjust starting point to top (270 degrees)
+    const angle = ((360 / (totalPoints - 1)) * index + 270) % 360;
+    
+    // Convert to radians
+    const angleRad = (angle * Math.PI) / 180;
+    
+    // Calculate x and y position on a circle with radius 45% (adjusted to fit within container)
+    const radius = 36;
+    const x = 50 + radius * Math.cos(angleRad);
+    const y = 50 + radius * Math.sin(angleRad);
+    
+    return { x, y };
+  }
 
-  // Function to determine Y position based on index (for the S-curve)
-  const getYPosition = (index: number) => {
-    // First row is at top
-    if (index <= 5) {
-      return '0%';
-    } 
-    // Second row is at bottom
-    else {
-      return '100%';
-    }
-  };
+  // Determine position of the moving vehicle
+  const getVehiclePosition = () => {
+    // Calculate how many full segments the vehicle has completed
+    const segmentSize = 100 / 10; // 10 segments in total
+    const completedSegments = Math.floor(progressValue / segmentSize);
+    
+    // Calculate progress within the current segment (0 to 1)
+    const progressInSegment = (progressValue % segmentSize) / segmentSize;
+    
+    // Calculate the current and next point positions
+    const currentPoint = getCirclePosition(completedSegments);
+    const nextPoint = getCirclePosition(completedSegments + 1);
+    
+    // Interpolate between the two points based on progress in segment
+    const x = currentPoint.x + (nextPoint.x - currentPoint.x) * progressInSegment;
+    const y = currentPoint.y + (nextPoint.y - currentPoint.y) * progressInSegment;
+    
+    // Calculate rotation angle for the vehicle (tangent to the circle)
+    const dx = nextPoint.x - currentPoint.x;
+    const dy = nextPoint.y - currentPoint.y;
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    
+    return { x, y, angle };
+  }
 
   // Helper function to determine if a location is completed
   const isLocationCompleted = (locationIndex: number) => {
     return animatingLevel > locationIndex;
+  };
+  
+  // Determine which icon to show as the moving vehicle
+  const vehiclePosition = getVehiclePosition();
+  
+  // Helper to create SVG path for the circular journey
+  const createCircularPath = () => {
+    const points = [];
+    for (let i = 0; i < 11; i++) {
+      const pos = getCirclePosition(i);
+      points.push(`${pos.x},${pos.y}`);
+    }
+    return `M ${points.join(" L ")}`;
   };
   
   return (
@@ -150,73 +180,59 @@ const WorldTourProgress = () => {
     >
       <h3 className={`text-xl text-center ${textColor} kids-text mb-3`}>{t('world_tour_progress')}</h3>
       
-      {/* S-shaped world tour visualization */}
+      {/* Circular world tour visualization */}
       <div className="relative pt-2 pb-4">
-        <div className="w-full h-[180px] relative"> 
-          {/* Background path (dotted line) */}
-          <div className="absolute w-[92%] h-2 top-[25%] left-[4%] border-t-2 border-dashed border-gray-300"></div>
-          <div className="absolute w-[92%] h-2 top-[75%] left-[4%] border-t-2 border-dashed border-gray-300"></div>
-          <div className="absolute w-2 h-[50%] top-[25%] left-[96%] border-l-2 border-dashed border-gray-300"></div>
-          <div className="absolute w-2 h-[50%] top-[25%] left-[4%] border-l-2 border-dashed border-gray-300"></div>
-          
-          {/* Highlighted portion of the path based on progress */}
-          <svg className="absolute top-0 left-0 w-full h-full overflow-visible">
+        <div className="w-full h-[220px] relative"> 
+          {/* Background circular path (dotted line) */}
+          <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
             <path 
-              d={`M ${4}% ${25}% H ${Math.min(96, 4 + progressValue * 0.92)}%
-                 ${progressValue >= 100 ? `V ${75}% H ${4}% ${progressValue >= 100 ? `V ${25}%` : ''}` : ''}`}
+              d={createCircularPath()}
               fill="none" 
-              strokeWidth="4"
-              strokeDasharray={progressValue >= 100 ? "none" : "5,3"}
+              stroke="#D1D5DB" 
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeDasharray="3,3"
+            />
+            
+            {/* Highlighted portion of the path based on progress */}
+            <path 
+              d={createCircularPath()}
+              fill="none" 
+              strokeWidth="2.5"
+              strokeDasharray={progressValue >= 100 ? "none" : "3,2"}
               stroke={level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6"} 
               strokeLinecap="round"
-              strokeLinejoin="round"
+              strokeDashoffset={(1 - progressValue / 100) * 282} // Adjust offset based on progress
+              strokeDasharray={progressValue === 0 ? "0" : "282"}
+              style={{ 
+                strokeDashoffset: `${(1 - progressValue / 100) * 282}px`,
+              }}
             />
           </svg>
           
-          {/* Moving car/plane icon */}
-          {progressValue > 0 && (
-            <motion.div 
-              className="absolute"
-              style={{
-                left: progressValue <= 96 ? `${4 + progressValue * 0.92}%` : 
-                      progressValue <= 148 ? '96%' : 
-                      progressValue <= 244 ? `${96 - (progressValue - 148) * 0.92}%` : '4%',
-                top: progressValue <= 96 ? '22%' : 
-                     progressValue <= 148 ? `${25 + (progressValue - 96) * 0.5}%` : 
-                     progressValue <= 244 ? '75%' : 
-                     `${75 - (progressValue - 244) * 0.5}%`,
-                transform: 'translate(-50%, -50%) scale(1.2)'
-              }}
-            >
-              {progressValue <= 96 ? (
-                <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
-              ) : (
-                <Plane className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
-              )}
-            </motion.div>
-          )}
-          
-          {/* Country flags for locations */}
+          {/* Country flags positioned in a circle */}
           {[...Array(11)].map((_, i) => {
             // Skip index 0 as it's just a placeholder
             const levelIndex = i + 1;
             const flag = getLevelFlag(levelIndex);
-            const xPos = getXPosition(i);
-            const yPos = getYPosition(i);
+            const position = getCirclePosition(i);
             const isCurrentLocation = animatingLevel === levelIndex;
             const isCompleted = isLocationCompleted(levelIndex);
             
             return (
               <motion.div 
                 key={i} 
-                className="absolute"
-                style={{ left: xPos, top: yPos, transform: 'translate(-50%, -50%)' }}
+                className="absolute transform -translate-x-1/2 -translate-y-1/2"
+                style={{ 
+                  left: `${position.x}%`, 
+                  top: `${position.y}%`,
+                }}
                 onMouseEnter={() => setHoveredCountry(levelIndex)}
                 onMouseLeave={() => setHoveredCountry(null)}
               >
                 {/* Country flag with pulse animation if current */}
                 <motion.div 
-                  className={`flex flex-col items-center justify-center`}
+                  className="flex flex-col items-center justify-center"
                   animate={isCurrentLocation ? {
                     scale: [1, 1.2, 1],
                     transition: { repeat: Infinity, duration: 2 }
@@ -242,7 +258,7 @@ const WorldTourProgress = () => {
                   
                   {/* Country name tooltip */}
                   {hoveredCountry === levelIndex && (
-                    <div className="absolute -bottom-10 bg-white/90 px-2 py-1 rounded shadow-md text-xs whitespace-nowrap z-20">
+                    <div className="absolute -bottom-12 bg-white/90 px-2 py-1 rounded shadow-md text-xs whitespace-nowrap z-20">
                       {getCountryName(levelIndex, isEnglish)}
                     </div>
                   )}
@@ -250,6 +266,35 @@ const WorldTourProgress = () => {
               </motion.div>
             );
           })}
+          
+          {/* Moving vehicle icon */}
+          {progressValue > 0 && (
+            <motion.div 
+              className="absolute transform -translate-x-1/2 -translate-y-1/2"
+              style={{
+                left: `${vehiclePosition.x}%`,
+                top: `${vehiclePosition.y}%`,
+                transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(1.2)`
+              }}
+              initial={false}
+            >
+              {progressValue <= 50 ? (
+                <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
+              ) : (
+                <Plane className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
+              )}
+            </motion.div>
+          )}
+          
+          {/* Central compass icon */}
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            >
+              <Compass className={`${isEnglish ? 'text-orange-300/50' : 'text-purple-300/50'}`} size={40} />
+            </motion.div>
+          </div>
         </div>
         
         {/* Legend */}
