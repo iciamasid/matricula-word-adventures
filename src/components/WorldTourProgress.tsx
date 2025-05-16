@@ -4,7 +4,8 @@ import { useGame } from '@/context/GameContext';
 import { Progress } from '@/components/ui/progress';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-import { Car, Plane, Globe, Map } from 'lucide-react';
+import { Car, Plane } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 // Function to get the flag emoji based on level
 const getLevelFlag = (level: number) => {
@@ -42,6 +43,24 @@ const getCountryName = (level: number, isEnglish: boolean) => {
   }
 };
 
+// Function to get country code for routing
+const getCountryCode = (level: number) => {
+  switch (level) {
+    case 1: return "España"; 
+    case 2: return "Francia";
+    case 3: return "Italia";
+    case 4: return "Rusia";
+    case 5: return "Japón";
+    case 6: return "Australia";
+    case 7: return "Estados Unidos";
+    case 8: return "México";
+    case 9: return "Perú";
+    case 10: return "Argentina";
+    case 11: return "España";
+    default: return "España";
+  }
+};
+
 const WorldTourProgress = () => {
   const { level } = useGame();
   const { t, isEnglish } = useLanguage();
@@ -55,6 +74,9 @@ const WorldTourProgress = () => {
   const subtextColor = isEnglish ? "text-orange-700/80" : "text-purple-700/80";
   const accentColor = isEnglish ? "bg-orange-400" : "bg-purple-400";
   const completedColor = isEnglish ? "bg-orange-500" : "bg-purple-500";
+
+  // Store for navigation paths
+  const [navigationPath, setNavigationPath] = useState('');
 
   // Modified animation to show circular path progress
   useEffect(() => {
@@ -111,19 +133,22 @@ const WorldTourProgress = () => {
     }
   };
 
-  // Calculate positions for a circular layout
-  const getCirclePosition = (index: number, totalPoints: number = 11) => {
-    // Calculate angle for evenly distributed points around a circle
+  // Calculate positions for an elliptical layout (modified from circle to ellipse)
+  const getEllipsePosition = (index: number, totalPoints: number = 11) => {
+    // Calculate angle for evenly distributed points around an ellipse
     // Subtract from 360 to go clockwise, and adjust starting point to top (270 degrees)
     const angle = ((360 / (totalPoints - 1)) * index + 270) % 360;
     
     // Convert to radians
     const angleRad = (angle * Math.PI) / 180;
     
-    // Calculate x and y position on a circle with radius 45% (adjusted to fit within container)
-    const radius = 36;
-    const x = 50 + radius * Math.cos(angleRad);
-    const y = 50 + radius * Math.sin(angleRad);
+    // Ellipse parameters (horizontal radius a bit larger than vertical radius)
+    const radiusX = 42; // horizontal radius
+    const radiusY = 32; // vertical radius
+    
+    // Calculate x and y position on an ellipse
+    const x = 50 + radiusX * Math.cos(angleRad);
+    const y = 50 + radiusY * Math.sin(angleRad);
     
     return { x, y };
   }
@@ -138,14 +163,14 @@ const WorldTourProgress = () => {
     const progressInSegment = (progressValue % segmentSize) / segmentSize;
     
     // Calculate the current and next point positions
-    const currentPoint = getCirclePosition(completedSegments);
-    const nextPoint = getCirclePosition(completedSegments + 1);
+    const currentPoint = getEllipsePosition(completedSegments);
+    const nextPoint = getEllipsePosition(completedSegments + 1);
     
     // Interpolate between the two points based on progress in segment
     const x = currentPoint.x + (nextPoint.x - currentPoint.x) * progressInSegment;
     const y = currentPoint.y + (nextPoint.y - currentPoint.y) * progressInSegment;
     
-    // Calculate rotation angle for the vehicle (tangent to the circle)
+    // Calculate rotation angle for the vehicle (tangent to the ellipse)
     const dx = nextPoint.x - currentPoint.x;
     const dy = nextPoint.y - currentPoint.y;
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
@@ -161,14 +186,20 @@ const WorldTourProgress = () => {
   // Determine which icon to show as the moving vehicle
   const vehiclePosition = getVehiclePosition();
   
-  // Helper to create SVG path for the circular journey
-  const createCircularPath = () => {
+  // Helper to create SVG path for the elliptical journey
+  const createEllipsePath = () => {
     const points = [];
     for (let i = 0; i < 11; i++) {
-      const pos = getCirclePosition(i);
+      const pos = getEllipsePosition(i);
       points.push(`${pos.x},${pos.y}`);
     }
     return `M ${points.join(" L ")}`;
+  };
+  
+  // Prepare for navigation when clicking on a flag
+  const handleNavigateToCountry = (countryCode: string) => {
+    // Set navigation flag for proper destination restoration
+    sessionStorage.setItem('navigatingBack', 'true');
   };
   
   return (
@@ -182,13 +213,13 @@ const WorldTourProgress = () => {
         {isEnglish ? "Your world tour!" : "¡Tu vuelta al mundo!"}
       </h3>
       
-      {/* Circular world tour visualization */}
+      {/* Elliptical world tour visualization */}
       <div className="relative pt-2 pb-4">
         <div className="w-full h-[220px] relative"> 
-          {/* Background circular path (dotted line) */}
+          {/* Background elliptical path (dotted line) */}
           <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
             <path 
-              d={createCircularPath()}
+              d={createEllipsePath()}
               fill="none" 
               stroke="#D1D5DB" 
               strokeWidth="1.5"
@@ -198,12 +229,11 @@ const WorldTourProgress = () => {
             
             {/* Highlighted portion of the path based on progress */}
             <path 
-              d={createCircularPath()}
+              d={createEllipsePath()}
               fill="none" 
               strokeWidth="2.5"
               stroke={level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6"} 
               strokeLinecap="round"
-              strokeDashoffset={(1 - progressValue / 100) * 282}
               strokeDasharray={progressValue === 0 ? "0" : "282"}
               style={{ 
                 strokeDashoffset: `${(1 - progressValue / 100) * 282}px`,
@@ -211,22 +241,26 @@ const WorldTourProgress = () => {
             />
           </svg>
           
-          {/* Country flags positioned in a circle */}
+          {/* Country flags positioned on the ellipse */}
           {[...Array(11)].map((_, i) => {
             // Skip index 0 as it's just a placeholder
             const levelIndex = i + 1;
             const flag = getLevelFlag(levelIndex);
-            const position = getCirclePosition(i);
+            const position = getEllipsePosition(i);
             const isCurrentLocation = animatingLevel === levelIndex;
             const isCompleted = isLocationCompleted(levelIndex);
+            const countryCode = getCountryCode(levelIndex);
             
             return (
-              <motion.div 
+              <Link 
                 key={i} 
+                to={`/country/${countryCode}`} 
+                onClick={() => handleNavigateToCountry(countryCode)}
                 className="absolute transform -translate-x-1/2 -translate-y-1/2"
                 style={{ 
                   left: `${position.x}%`, 
                   top: `${position.y}%`,
+                  zIndex: hoveredCountry === levelIndex ? 30 : 10
                 }}
                 onMouseEnter={() => setHoveredCountry(levelIndex)}
                 onMouseLeave={() => setHoveredCountry(null)}
@@ -264,7 +298,7 @@ const WorldTourProgress = () => {
                     </div>
                   )}
                 </motion.div>
-              </motion.div>
+              </Link>
             );
           })}
           
@@ -275,7 +309,8 @@ const WorldTourProgress = () => {
               style={{
                 left: `${vehiclePosition.x}%`,
                 top: `${vehiclePosition.y}%`,
-                transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(1.2)`
+                transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(1.2)`,
+                zIndex: 20
               }}
               initial={false}
             >
@@ -287,14 +322,18 @@ const WorldTourProgress = () => {
             </motion.div>
           )}
           
-          {/* Central Earth/Globe icon */}
-          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          {/* Central Earth image */}
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <motion.div 
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
               className="relative"
             >
-              <Globe className={`${isEnglish ? 'text-blue-500' : 'text-blue-500'}`} size={48} />
+              <img 
+                src="/lovable-uploads/1e352155-e337-4c3e-b4a9-503b2d6a03f4.png" 
+                alt="Earth" 
+                className="w-[60px] h-[60px] object-contain"
+              />
             </motion.div>
           </div>
         </div>
