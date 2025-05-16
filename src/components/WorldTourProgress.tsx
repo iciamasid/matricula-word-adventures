@@ -4,7 +4,7 @@ import { useGame } from '@/context/GameContext';
 import { Progress } from '@/components/ui/progress';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-import { Car, Plane, Compass, Map } from 'lucide-react';
+import { Car, Plane, Globe, Map } from 'lucide-react';
 
 // Function to get the flag emoji based on level
 const getLevelFlag = (level: number) => {
@@ -178,7 +178,9 @@ const WorldTourProgress = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
     >
-      <h3 className={`text-xl text-center ${textColor} kids-text mb-3`}>{t('world_tour_progress')}</h3>
+      <h3 className={`text-xl text-center ${textColor} kids-text mb-3 uppercase font-bold`}>
+        {isEnglish ? "Your world tour!" : "¡Tu vuelta al mundo!"}
+      </h3>
       
       {/* Circular world tour visualization */}
       <div className="relative pt-2 pb-4">
@@ -285,21 +287,16 @@ const WorldTourProgress = () => {
             </motion.div>
           )}
           
-          {/* Central compass icon */}
+          {/* Central Earth/Globe icon */}
           <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <motion.div 
               animate={{ rotate: 360 }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              className="relative"
             >
-              <Compass className={`${isEnglish ? 'text-orange-300/50' : 'text-purple-300/50'}`} size={40} />
+              <Globe className={`${isEnglish ? 'text-blue-500' : 'text-blue-500'}`} size={48} />
             </motion.div>
           </div>
-        </div>
-        
-        {/* Legend */}
-        <div className={`flex justify-between text-xs ${subtextColor} mt-6 px-2`}>
-          <span>{t('start_madrid')}</span>
-          <span>{t('world_tour_complete')}</span>
         </div>
       </div>
       
