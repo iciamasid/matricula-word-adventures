@@ -5,12 +5,6 @@ import { useGame } from "@/context/GameContext";
 import { CarColor } from "./games/utils/carUtils";
 import { useLanguage } from "@/context/LanguageContext";
 
-interface CarCustomizationProps {
-  isOpen?: boolean;
-  onToggle?: () => void;
-  embedded?: boolean;
-}
-
 // Available car colors
 const carColors: CarColor[] = [
   {
@@ -33,43 +27,53 @@ const carColors: CarColor[] = [
   }
 ];
 
-const CarCustomization: React.FC<CarCustomizationProps> = () => {
+const CarCustomization: React.FC = () => {
   const { selectedCarColor, setSelectedCarColor } = useGame();
   const { isEnglish } = useLanguage();
   
-  // Set background and border colors based on language
-  const borderColorSelected = isEnglish ? "border-orange-500" : "border-purple-500";
-  const bgColorSelected = isEnglish ? "bg-orange-100/50" : "bg-purple-100/50";
+  // Get current car index
+  const currentIndex = selectedCarColor ? carColors.findIndex(car => car.id === selectedCarColor.id) : 0;
   
-  const handleSelectCar = (car: CarColor) => {
-    setSelectedCarColor(car);
+  // Handle clicking the car to cycle through options
+  const handleCycleCar = () => {
+    const nextIndex = (currentIndex + 1) % carColors.length;
+    setSelectedCarColor(carColors[nextIndex]);
   };
   
   return (
-    <div className="w-full">
-      <div className="grid grid-cols-3 gap-2">
-        {carColors.map(car => (
+    <div className="w-full flex justify-center">
+      <motion.div 
+        whileHover={{ scale: 1.1 }} 
+        whileTap={{ scale: 0.95 }} 
+        className="cursor-pointer flex justify-center"
+        onClick={handleCycleCar}
+      >
+        <div className="relative">
+          <img 
+            src={`/lovable-uploads/${selectedCarColor?.image || carColors[0].image}`} 
+            alt="Car" 
+            className="h-16 w-auto" 
+          />
           <motion.div 
-            key={car.id} 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }} 
-            className={`
-              cursor-pointer rounded-md p-2 flex flex-col items-center justify-center
-              border-2 transition-all duration-200
-              ${selectedCarColor?.id === car.id 
-                ? `${borderColorSelected} ${bgColorSelected}` 
-                : 'border-transparent hover:border-gray-200'}
-            `} 
-            onClick={() => handleSelectCar(car)}
+            className="absolute inset-0" 
+            animate={{ 
+              y: [0, -3, 0, -2, 0],
+              x: [0, 2, 0, -2, 0] 
+            }}
+            transition={{ 
+              duration: 2, 
+              repeat: Infinity,
+              repeatType: "mirror" 
+            }}
           >
             <img 
-              src={`/lovable-uploads/${car.image}`} 
-              alt={car.name} 
-              className="h-14 w-auto" 
+              src={`/lovable-uploads/${selectedCarColor?.image || carColors[0].image}`} 
+              alt="Car Animation" 
+              className="h-16 w-auto opacity-0"
             />
           </motion.div>
-        ))}
-      </div>
+        </div>
+      </motion.div>
     </div>
   );
 };

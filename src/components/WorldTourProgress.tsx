@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
-import { Progress } from '@/components/ui/progress';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-import { Car, Plane, Navigation } from 'lucide-react';
+import { Car, Plane } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 // Function to get the flag emoji based on level
@@ -107,14 +106,10 @@ const getCountryCode = (level: number) => {
       return "España";
   }
 };
+
 const WorldTourProgress = () => {
-  const {
-    level
-  } = useGame();
-  const {
-    t,
-    isEnglish
-  } = useLanguage();
+  const { level } = useGame();
+  const { t, isEnglish } = useLanguage();
   const [animatingLevel, setAnimatingLevel] = useState(0);
   const [progressValue, setProgressValue] = useState(0);
   const [hoveredCountry, setHoveredCountry] = useState<number | null>(null);
@@ -122,12 +117,8 @@ const WorldTourProgress = () => {
   // Set background color based on language
   const bgColor = isEnglish ? "bg-orange-100" : "bg-purple-100";
   const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
-  const subtextColor = isEnglish ? "text-orange-700/80" : "text-purple-700/80";
   const accentColor = isEnglish ? "bg-orange-400" : "bg-purple-400";
   const completedColor = isEnglish ? "bg-orange-500" : "bg-purple-500";
-
-  // Store for navigation paths
-  const [navigationPath, setNavigationPath] = useState('');
 
   // Modified animation to show circular path progress
   useEffect(() => {
@@ -202,7 +193,7 @@ const WorldTourProgress = () => {
     }
   };
 
-  // Calculate positions for an elliptical layout (modified from circle to ellipse)
+  // Calculate positions for an elliptical layout
   const getEllipsePosition = (index: number, totalPoints: number = 11) => {
     // Calculate angle for evenly distributed points around an ellipse
     // Subtract from 360 to go clockwise, and adjust starting point to top (270 degrees)
@@ -275,15 +266,14 @@ const WorldTourProgress = () => {
     // Set navigation flag for proper destination restoration
     sessionStorage.setItem('navigatingBack', 'true');
   };
-  return <motion.div className={`w-full p-4 rounded-lg shadow-lg ${bgColor}`} initial={{
-    opacity: 0,
-    y: 20
-  }} animate={{
-    opacity: 1,
-    y: 0
-  }} transition={{
-    delay: 0.4
-  }}>
+
+  return (
+    <motion.div 
+      className={`w-full p-4 rounded-lg shadow-lg ${bgColor}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.4 }}
+    >
       <h3 className={`text-xl text-center ${textColor} kids-text mb-2 uppercase font-bold`}>
         {isEnglish ? "Your world tour!" : "¡TU VUELTA AL MUNDO!"}
       </h3>
@@ -302,35 +292,48 @@ const WorldTourProgress = () => {
             
             {/* Highlighted portion of the path based on progress */}
             <path d={createEllipsePath()} fill="none" strokeWidth="2.5" stroke={level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6"} strokeLinecap="round" strokeDasharray={progressValue === 0 ? "0" : "282"} style={{
-            strokeDashoffset: `${(1 - progressValue / 100) * 282}px`
-          }} />
+              strokeDashoffset: `${(1 - progressValue / 100) * 282}px`
+            }} />
           </svg>
           
           {/* Country flags positioned on the ellipse */}
           {[...Array(11)].map((_, i) => {
-          // Skip index 0 as it's just a placeholder
-          const levelIndex = i + 1;
-          const flag = getLevelFlag(levelIndex);
-          const position = getEllipsePosition(i);
-          const isCurrentLocation = animatingLevel === levelIndex;
-          const isCompleted = isLocationCompleted(levelIndex);
-          const countryCode = getCountryCode(levelIndex);
-          return <Link key={i} to={`/country/${countryCode}`} onClick={() => handleNavigateToCountry(countryCode)} className="absolute transform -translate-x-1/2 -translate-y-1/2" style={{
-            left: `${position.x}%`,
-            top: `${position.y}%`,
-            zIndex: hoveredCountry === levelIndex ? 30 : 10
-          }} onMouseEnter={() => setHoveredCountry(levelIndex)} onMouseLeave={() => setHoveredCountry(null)}>
+            // Skip index 0 as it's just a placeholder
+            const levelIndex = i + 1;
+            const flag = getLevelFlag(levelIndex);
+            const position = getEllipsePosition(i);
+            const isCurrentLocation = animatingLevel === levelIndex;
+            const countryCode = getCountryCode(levelIndex);
+            
+            return (
+              <Link 
+                key={i}
+                to={`/country/${countryCode}`} 
+                onClick={() => handleNavigateToCountry(countryCode)}
+                className="absolute transform -translate-x-1/2 -translate-y-1/2" 
+                style={{
+                  left: `${position.x}%`,
+                  top: `${position.y}%`,
+                  zIndex: hoveredCountry === levelIndex ? 30 : 10
+                }}
+                onMouseEnter={() => setHoveredCountry(levelIndex)}
+                onMouseLeave={() => setHoveredCountry(null)}
+              >
                 {/* Country flag with pulse animation if current */}
-                <motion.div className="flex flex-col items-center justify-center" animate={isCurrentLocation ? {
-              scale: [1, 1.2, 1],
-              transition: {
-                repeat: Infinity,
-                duration: 2
-              }
-            } : {}}>
-                  <motion.span className={`text-3xl z-10 ${isCompleted ? 'opacity-100' : 'opacity-70'}`} whileHover={{
-                scale: 1.3
-              }}>
+                <motion.div 
+                  className="flex flex-col items-center justify-center"
+                  animate={isCurrentLocation ? {
+                    scale: [1, 1.2, 1],
+                    transition: {
+                      repeat: Infinity,
+                      duration: 2
+                    }
+                  } : {}}
+                >
+                  <motion.span 
+                    className="text-3xl z-10" 
+                    whileHover={{ scale: 1.3 }}
+                  >
                     {flag}
                   </motion.span>
                   
@@ -338,44 +341,67 @@ const WorldTourProgress = () => {
                   <div className={`w-4 h-4 rounded-full mt-1 ${isCurrentLocation ? isEnglish ? 'bg-orange-500 ring-4 ring-orange-300/50' : 'bg-purple-500 ring-4 ring-purple-300/50' : isCompleted ? isEnglish ? 'bg-orange-400' : 'bg-purple-400' : 'bg-gray-300'}`} />
                   
                   {/* Country name tooltip */}
-                  {hoveredCountry === levelIndex && <div className="absolute -bottom-12 bg-white/90 px-2 py-1 rounded shadow-md text-xs whitespace-nowrap z-20">
+                  {hoveredCountry === levelIndex && (
+                    <div className="absolute -bottom-12 bg-white/90 px-2 py-1 rounded shadow-md text-xs whitespace-nowrap z-20">
                       {getCountryName(levelIndex, isEnglish)}
-                    </div>}
+                    </div>
+                  )}
                 </motion.div>
-              </Link>;
-        })}
+              </Link>
+            );
+          })}
           
           {/* Moving vehicle icon */}
-          {progressValue > 0 && <motion.div className="absolute transform -translate-x-1/2 -translate-y-1/2" style={{
-          left: `${vehiclePosition.x}%`,
-          top: `${vehiclePosition.y}%`,
-          transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(1.2)`,
-          zIndex: 20
-        }} initial={false}>
-              {progressValue <= 50 ? <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} /> : <Plane className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />}
-            </motion.div>}
+          {progressValue > 0 && (
+            <motion.div 
+              className="absolute transform -translate-x-1/2 -translate-y-1/2" 
+              style={{
+                left: `${vehiclePosition.x}%`,
+                top: `${vehiclePosition.y}%`,
+                transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(1.2)`,
+                zIndex: 20
+              }}
+              initial={false}
+            >
+              {progressValue <= 50 ? (
+                <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
+              ) : (
+                <Plane className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
+              )}
+            </motion.div>
+          )}
           
           {/* Updated Earth image */}
           <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <motion.div animate={{
-            rotate: 360
-          }} transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }} className="relative">
-              <img src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" alt="Earth" className="w-[60px] h-[60px] object-contain" />
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              className="relative"
+            >
+              <img 
+                src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" 
+                alt="Earth" 
+                className="w-[60px] h-[60px] object-contain"
+              />
             </motion.div>
           </div>
         </div>
       </div>
       
       {/* Current destination indicator */}
-      {level <= 10 && <div className="mt-2 text-center">
+      {level <= 10 && (
+        <div className="mt-2 text-center">
           <span className="text-xl font-normal text-fuchsia-800">
             {isEnglish ? "Next destination:" : "Próximo destino:"} {getDestinationFlag(level)} {getCountryName(level + 1, isEnglish)}
           </span>
-        </div>}
-    </motion.div>;
+        </div>
+      )}
+    </motion.div>
+  );
 };
+
 export default WorldTourProgress;

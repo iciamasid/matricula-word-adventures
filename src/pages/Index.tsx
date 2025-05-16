@@ -19,10 +19,13 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
 import CarCustomization from "@/components/CarCustomization";
+
 const Index = () => {
-  return <GameProvider>
+  return (
+    <GameProvider>
       <GameContent />
-    </GameProvider>;
+    </GameProvider>
+  );
 };
 
 // Componente para manejar el contenido del juego
@@ -30,11 +33,7 @@ const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [showCarCustomization, setShowCarCustomization] = useState(false);
   const isMobile = useIsMobile();
-  const {
-    language,
-    t,
-    isEnglish
-  } = useLanguage();
+  const { language, t, isEnglish } = useLanguage();
   const {
     totalPoints,
     destinationInfo,
@@ -143,10 +142,11 @@ const GameContent = () => {
   const toggleCarCustomization = () => {
     setShowCarCustomization(!showCarCustomization);
   };
-  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
-    backgroundSize: "cover",
-    backgroundAttachment: "fixed"
-  }}>
+  return (
+    <div 
+      className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
+      style={{ backgroundSize: "cover", backgroundAttachment: "fixed" }}
+    >
       {/* Special background effect when the world tour is completed */}
       {level >= 10 && <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
@@ -167,18 +167,15 @@ const GameContent = () => {
         </div>}
       
       <div className="relative w-full">
-        <motion.img src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" alt="Matriculabra Cadabra" className="w-full object-contain mb-2 px-0" style={{
-        maxHeight: isMobile ? "28vh" : "25vh",
-        width: "100%"
-      }} initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        duration: 0.5
-      }} />
+        <motion.img 
+          src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" 
+          alt="Matriculabra Cadabra" 
+          className="w-full object-contain mb-2 px-0" 
+          style={{ maxHeight: isMobile ? "28vh" : "25vh", width: "100%" }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        />
         
         {/* Instructions button positioned at bottom right of the image */}
         <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute bottom-4 right-4 ${isEnglish ? 'bg-orange-100/90 hover:bg-orange-200 text-orange-900 border-orange-300' : 'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}>
@@ -212,37 +209,66 @@ const GameContent = () => {
           {/* Add World Tour Progress component */}
           <WorldTourProgress />
           
-          {/* Drawing Game Button - ANTES del panel de nivel */}
-          <motion.div className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? isEnglish ? 'bg-gradient-to-r from-orange-200 to-orange-300/90' : 'bg-gradient-to-r from-purple-200 to-purple-300/90' : isEnglish ? 'bg-orange-200/90' : 'bg-purple-200/90'}`} initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.4
-        }} whileHover={{
-          scale: 1.02
-        }}>
+          {/* Enhanced "Drive" button - more eye-catching */}
+          <motion.div 
+            className={`w-full rounded-lg p-4 shadow-lg ${level >= 10 ? 
+              isEnglish ? 'bg-gradient-to-r from-amber-300 to-orange-400' : 'bg-gradient-to-r from-violet-300 to-purple-400' : 
+              isEnglish ? 'bg-gradient-to-r from-orange-400 to-amber-300' : 'bg-gradient-to-r from-purple-400 to-violet-300'}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            whileHover={{ scale: 1.02 }}
+          >
             <div className="text-center">
               
               
               
               <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
-                <Button className={`${buttonBgColor} text-white text-xl kids-text px-6 py-3 font-normal relative`}>
-                  <div className="flex items-center">
-                    <motion.div animate={{
-                    x: [-5, 5, -5],
-                    y: [-3, 3, -3],
-                    rotate: [0, 5, -5, 0]
-                  }} transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }} className="mr-3 text-4xl">
+                <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-600 text-white text-2xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col items-center">
+                    <motion.div 
+                      animate={{
+                        x: [-5, 5, -5],
+                        y: [-3, 3, -3],
+                        rotate: [0, 5, -5, 0]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity
+                      }}
+                      className="mb-1 text-4xl"
+                    >
                       🚗
                     </motion.div>
-                    <span>{t("drive")}</span>
+                    <span className="tracking-wide uppercase">
+                      {isEnglish ? "Drive your car!" : "¡CONDUCE TU COCHE!"}
+                    </span>
                   </div>
+                  
+                  {/* Add decorative elements */}
+                  <motion.div 
+                    className="absolute -right-2 -top-2 w-12 h-12 rounded-full bg-yellow-300 opacity-80 z-0"
+                    animate={{
+                      scale: [1, 1.2, 1],
+                      opacity: [0.7, 0.9, 0.7]
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity
+                    }}
+                  />
+                  <motion.div 
+                    className="absolute -left-1 -bottom-1 w-8 h-8 rounded-full bg-red-400 opacity-70 z-0"
+                    animate={{
+                      scale: [1, 1.3, 1],
+                      opacity: [0.6, 0.8, 0.6]
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      delay: 0.5
+                    }}
+                  />
                 </Button>
               </Link>
             </div>
@@ -276,6 +302,8 @@ const GameContent = () => {
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;

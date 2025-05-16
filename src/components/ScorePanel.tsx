@@ -1,128 +1,101 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
-import { Navigation, Route, MapPin, Trophy, Star } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { Route, Trophy } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+
 const ScorePanel: React.FC = () => {
-  const {
-    totalPoints,
-    level,
-    originInfo
-  } = useGame();
-  const {
-    t,
-    isEnglish
-  } = useLanguage();
+  const { totalPoints, level } = useGame();
+  const { t, isEnglish } = useLanguage();
 
-  // Calculate progress percentage to next level (each level is 500 points)
-  const levelProgress = totalPoints % 500 / 500 * 100;
+  // Change theme colors based on language
+  const bgGradient = isEnglish 
+    ? "bg-gradient-to-r from-orange-500/80 to-amber-400/80" 
+    : "bg-gradient-to-r from-purple-500/80 to-violet-400/80";
+  const textColor = "text-white";
+  const shimmerColor = "bg-white/20";
 
-  // Change text and icon colors based on language
-  const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
-  const textColorDark = isEnglish ? "text-orange-900" : "text-purple-900";
-  const textColorLight = isEnglish ? "text-orange-600" : "text-purple-600";
-  return <div className="w-full grid grid-cols-2 gap-4 mb-4">
-      {/* Score Panel - Changed to Total Kilometers */}
-      <motion.div initial={{
-      opacity: 0,
-      x: -20
-    }} animate={{
-      opacity: 1,
-      x: 0
-    }} transition={{
-      delay: 0.1
-    }} whileHover={{
-      scale: 1.02
-    }} className="rounded-lg p-4 shadow-lg text-center bg-transparent">
-        <div className="flex items-center justify-center gap-2">
-          <motion.div animate={{
-          rotate: totalPoints > 0 ? [0, 15, -15, 0] : 0,
-          scale: totalPoints > 0 ? [1, 1.2, 1] : 1
-        }} transition={{
-          duration: 1,
-          repeat: totalPoints > 0 ? 1 : 0
-        }}>
-            {/* Changed to Route icon (road/path icon) */}
-            <div className="h-14 w-14 flex items-center justify-center relative">
-              <Route className="h-12 w-12 text-blue-500 absolute" strokeWidth={1.5} />
-              <motion.div className="absolute inset-0" animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.7, 1, 0.7]
-            }} transition={{
-              repeat: Infinity,
-              duration: 2
-            }}>
-                <Route className="h-12 w-12 text-blue-400" strokeWidth={1} />
-              </motion.div>
-              <Navigation className="h-5 w-5 text-blue-600" />
-            </div>
+  return (
+    <div className="w-full grid grid-cols-2 gap-3 mb-4">
+      {/* KMS Panel - Gamer Style */}
+      <motion.div 
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1 }}
+        whileHover={{ scale: 1.03 }}
+        className={`rounded-lg p-3 shadow-lg ${bgGradient} relative overflow-hidden`}
+      >
+        {/* Shimmer effect */}
+        <motion.div 
+          className={`absolute top-0 left-0 w-20 h-full ${shimmerColor} skew-x-12 opacity-50`}
+          animate={{ 
+            x: [-150, 250]
+          }}
+          transition={{ 
+            repeat: Infinity,
+            duration: 2,
+            repeatDelay: 3
+          }}
+        />
+        <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center">
+            <Route className="h-6 w-6 text-white mr-2" strokeWidth={2} />
+            <h3 className="text-base font-bold kids-text uppercase tracking-wider text-white">
+              {t('points_total')}
+            </h3>
+          </div>
+          <motion.div 
+            animate={totalPoints > 0 ? { scale: [1, 1.2, 1] } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <p className="text-2xl font-bold kids-text text-white">
+              {totalPoints}
+            </p>
           </motion.div>
-          <h3 className={`text-xl ${textColor} kids-text font-normal`}>{t('points_total')}</h3>
         </div>
-        
-        <motion.p className={`text-3xl ${textColorDark} kids-text mt-1 font-normal`} animate={totalPoints > 0 ? {
-        scale: [1, 1.2, 1]
-      } : {}} transition={{
-        duration: 0.5
-      }}>
-          {totalPoints}
-        </motion.p>
-        
-        {/* Added Level Progress Bar */}
-        
       </motion.div>
       
-      {/* Level Panel */}
-      <motion.div className="rounded-lg p-4 bg-transparent shadow-lg text-center" initial={{
-      opacity: 0,
-      x: 20
-    }} animate={{
-      opacity: 1,
-      x: 0
-    }} transition={{
-      delay: 0.1
-    }} whileHover={{
-      scale: 1.02
-    }}>
-        <div className="flex items-center justify-center gap-2">
-          <motion.div className="relative" animate={{
-          rotate: [0, 10, -10, 0]
-        }} transition={{
-          duration: 2,
-          repeat: Infinity
-        }}>
-            {/* Colorful trophy icon with animation */}
-            <div className="h-14 w-14 flex items-center justify-center relative">
-              <Trophy className="h-12 w-12 text-amber-500" fill="rgba(245, 158, 11, 0.4)" strokeWidth={1.5} />
-              <motion.div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center" animate={{
-              scale: [1, 1.15, 1],
-              opacity: [0.7, 1, 0.7]
-            }} transition={{
-              repeat: Infinity,
-              duration: 3,
-              repeatType: "reverse"
-            }}>
-                <Star className="h-4 w-4 text-yellow-300" fill="gold" stroke="orange" />
-              </motion.div>
-            </div>
+      {/* Level Panel - Gamer Style */}
+      <motion.div 
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.1 }}
+        whileHover={{ scale: 1.03 }}
+        className={`rounded-lg p-3 shadow-lg ${bgGradient} relative overflow-hidden`}
+      >
+        {/* Shimmer effect */}
+        <motion.div 
+          className={`absolute top-0 left-0 w-20 h-full ${shimmerColor} skew-x-12 opacity-50`}
+          animate={{ 
+            x: [-150, 250]
+          }}
+          transition={{ 
+            repeat: Infinity,
+            duration: 2,
+            repeatDelay: 4,
+            delay: 1
+          }}
+        />
+        <div className="flex items-center justify-between relative z-10">
+          <div className="flex items-center">
+            <Trophy className="h-6 w-6 text-yellow-300 mr-2" fill="rgba(253, 224, 71, 0.3)" />
+            <h3 className="text-base font-bold kids-text uppercase tracking-wider text-white">
+              {t('level')}
+            </h3>
+          </div>
+          <motion.div
+            animate={level > 0 ? { scale: [1, 1.2, 1] } : {}}
+            transition={{ duration: 0.5 }}
+          >
+            <p className="text-2xl font-bold kids-text text-white">
+              {level}
+            </p>
           </motion.div>
-          <h3 className={`text-xl ${textColor} kids-text font-normal`}>{t('level')}</h3>
-        </div>
-        
-        <motion.p className={`text-3xl ${textColorDark} kids-text mt-1 font-normal`} animate={level > 0 ? {
-        scale: [1, 1.2, 1]
-      } : {}} transition={{
-        duration: 0.5
-      }}>
-          {level}
-        </motion.p>
-        
-        <div className="flex items-center justify-center gap-1 mt-1">
-          
-          
         </div>
       </motion.div>
-    </div>;
+    </div>
+  );
 };
+
 export default ScorePanel;
