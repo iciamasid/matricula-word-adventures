@@ -11,6 +11,8 @@ import CountryPage from "./pages/CountryPage";
 import NotFound from "./pages/NotFound";
 import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
+import AgeBonusPopup from "./components/AgeBonusPopup";
+import TripleNumbersPopup from "./components/TripleNumbersPopup";
 
 const queryClient = new QueryClient();
 
@@ -33,12 +35,15 @@ const App = () => {
                   </Routes>
                 </BrowserRouter>
                 
-                {/* Bonus popup for 6666 license plate - increased z-index to make sure it's visible */}
+                {/* Different types of bonus popups */}
                 <BonusPopup
                   open={showBonusPopup}
                   onClose={() => setShowBonusPopup(false)}
-                  points={bonusPoints || 200}
+                  points={bonusPoints || 500}
                 />
+                
+                <AgeBonusPopup />
+                <TripleNumbersPopup />
               </>
             )}
           </GameProvider>

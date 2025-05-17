@@ -2,21 +2,22 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Award, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Award, Star, Trophy } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useGame } from "@/context/GameContext";
 
-const AgeBonusPopup: React.FC = () => {
-  const { showAgeBonusPopup, playerAge } = useGame();
+const TripleNumbersPopup: React.FC = () => {
+  const { showTripleNumbersPopup, bonusPoints } = useGame();
   const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
   const { isEnglish } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   
   // Generate random stars for background animation
   useEffect(() => {
-    if (showAgeBonusPopup) {
+    if (showTripleNumbersPopup) {
       setIsVisible(true);
-      const newStars = Array.from({ length: 40 }, () => ({
+      const newStars = Array.from({ length: 50 }, () => ({
         x: Math.random() * 100,
         y: Math.random() * 100,
         size: Math.random() * 3 + 1,
@@ -27,7 +28,7 @@ const AgeBonusPopup: React.FC = () => {
       // Play bonus sound
       try {
         const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.6;
+        audio.volume = 0.7;
         audio.play();
       } catch (e) {
         console.error("Could not play bonus sound", e);
@@ -35,13 +36,13 @@ const AgeBonusPopup: React.FC = () => {
     } else {
       setIsVisible(false);
     }
-  }, [showAgeBonusPopup]);
+  }, [showTripleNumbersPopup]);
 
-  // Blue color theme  
+  // Teal color theme
   const colorTheme = {
-    gradient: "from-blue-700 via-blue-600 to-blue-800",
+    gradient: "from-teal-700 via-teal-600 to-teal-800",
     border: "border-yellow-400",
-    button: "bg-yellow-400 hover:bg-yellow-300 text-blue-900"
+    button: "bg-yellow-400 hover:bg-yellow-300 text-teal-900"
   };
 
   return (
@@ -49,7 +50,7 @@ const AgeBonusPopup: React.FC = () => {
       {isVisible && (
         <AlertDialog open={isVisible}>
           <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
-            <AlertDialogTitle className="sr-only">Age Bonus</AlertDialogTitle>
+            <AlertDialogTitle className="sr-only">Triple Numbers Bonus</AlertDialogTitle>
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -84,7 +85,7 @@ const AgeBonusPopup: React.FC = () => {
               </div>
               
               {/* Main bonus content */}
-              <div className={`bg-gradient-to-br ${colorTheme.gradient} p-8 rounded-2xl border-4 ${colorTheme.border} shadow-[0_0_30px_rgba(37,99,235,0.7)] relative z-10`}>
+              <div className={`bg-gradient-to-br ${colorTheme.gradient} p-8 rounded-2xl border-4 ${colorTheme.border} shadow-[0_0_30px_rgba(20,184,166,0.7)] relative z-10`}>
                 <div className="text-center">
                   <motion.div 
                     animate={{ scale: [1, 1.2, 1], rotate: [0, 5, 0, -5, 0] }}
@@ -92,7 +93,7 @@ const AgeBonusPopup: React.FC = () => {
                     className="flex justify-center items-center mb-4"
                   >
                     <div className="bg-yellow-500 p-2 rounded-full">
-                      <Award className="w-12 h-12 text-blue-900" />
+                      <Trophy className="w-12 h-12 text-teal-900" />
                     </div>
                   </motion.div>
                   
@@ -101,30 +102,52 @@ const AgeBonusPopup: React.FC = () => {
                     animate={{ scale: [1, 1.1, 1] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
                   >
-                    {isEnglish ? "IT'S YOUR AGE!" : "¡ES TU EDAD!"}
+                    {isEnglish ? "TRIPLE NUMBERS!" : "¡NÚMEROS TRIPLES!"}
                   </motion.h2>
                   
-                  <motion.div
-                    animate={{ 
-                      scale: [1, 1.2, 1],
-                      y: [0, -5, 0]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="text-5xl font-bold text-yellow-300 mx-auto my-4 bg-blue-900 w-20 h-20 rounded-full flex items-center justify-center"
-                  >
-                    {playerAge}
-                  </motion.div>
+                  <div className="flex justify-center items-center my-4">
+                    <motion.div
+                      animate={{ 
+                        rotateY: [0, 360],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
+                      className="text-5xl font-bold text-yellow-300 mx-2"
+                    >
+                      1
+                    </motion.div>
+                    <motion.div
+                      animate={{ 
+                        rotateY: [0, 360],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{ duration: 3, delay: 0.3, repeat: Infinity }}
+                      className="text-5xl font-bold text-yellow-300 mx-2"
+                    >
+                      1
+                    </motion.div>
+                    <motion.div
+                      animate={{ 
+                        rotateY: [0, 360],
+                        scale: [1, 1.2, 1]
+                      }}
+                      transition={{ duration: 3, delay: 0.6, repeat: Infinity }}
+                      className="text-5xl font-bold text-yellow-300 mx-2"
+                    >
+                      1
+                    </motion.div>
+                  </div>
                   
                   <motion.h3 
                     className="text-3xl font-bold mb-6 text-yellow-300"
                     animate={{ y: [0, -10, 0] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   >
-                    {isEnglish ? `BONUS OF 10 POINTS!` : `¡BONUS DE 10 PUNTOS!`}
+                    {isEnglish ? `BONUS OF ${bonusPoints} POINTS!` : `¡BONUS DE ${bonusPoints} PUNTOS!`}
                   </motion.h3>
                   
                   <div className="flex justify-center space-x-2 mb-4">
-                    {[1, 2].map((i) => (
+                    {[1, 2, 3].map((i) => (
                       <motion.div
                         key={i}
                         animate={{ 
@@ -151,4 +174,4 @@ const AgeBonusPopup: React.FC = () => {
   );
 };
 
-export default AgeBonusPopup;
+export default TripleNumbersPopup;

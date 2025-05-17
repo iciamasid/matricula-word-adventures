@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -38,6 +39,7 @@ interface GameContextType {
   totalPoints: number;
   highScore: number;
   gamesPlayed: number;
+  setTotalPoints: (points: number) => void;
   
   // License plate related
   licensePlate: string;
@@ -61,7 +63,9 @@ interface GameContextType {
   showBonusPopup: boolean;
   setShowBonusPopup: (show: boolean) => void;
   bonusPoints: number;
+  bonusType: string;
   showAgeBonusPopup: boolean;
+  showTripleNumbersPopup: boolean;
   showCompletionBanner: boolean;
   
   // Game control
@@ -135,7 +139,9 @@ export const GameProvider: React.FC<{
   // Popups and banners states
   const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
   const [bonusPoints, setBonusPoints] = useState<number>(500);
+  const [bonusType, setBonusType] = useState<string>('6666');
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState<boolean>(false);
+  const [showTripleNumbersPopup, setShowTripleNumbersPopup] = useState<boolean>(false);
   const [showCompletionBanner, setShowCompletionBanner] = useState<boolean>(false);
   
   // Track previous destination to set as origin when leveling up
@@ -313,40 +319,73 @@ export const GameProvider: React.FC<{
     }
   }, [totalPoints]);
   
-  // Check for special license plate patterns and player age bonus
+  // Check for special license plate patterns: 6666 pattern, triple numbers, and matching age
   useEffect(() => {
     if (licensePlate) {
       const numbers = licensePlate.substring(0, 4);
       
-      // Check for 6666 pattern (bonus points)
+      // First check for 6666 pattern (highest priority bonus)
       if (numbers === "6666" && !showBonusPopup) {
         setShowBonusPopup(true);
+        setBonusType('6666');
         
         // Add bonus points - 500 points
         const bonusAmount = 500;
         setBonusPoints(bonusAmount);
-        setTotalPoints(prev => prev + bonusAmount);
+        
+        // We won't add the points yet - we'll wait for the popup to close
         console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
         
-        // Auto-hide bonus popup after 5 seconds
+        // Auto-hide bonus popup after 2 seconds
         setTimeout(() => {
           setShowBonusPopup(false);
-        }, 5000);
+          // Add the bonus points after the popup closes
+          setTotalPoints(prev => prev + bonusAmount);
+        }, 2000);
+        
+        // Only show one popup at a time - return early
+        return;
+      }
+      
+      // Check if license plate has triple numbers
+      const hasTripleNumbers = /(\d)\1{2}/.test(numbers);
+      if (hasTripleNumbers && !showTripleNumbersPopup && !showBonusPopup) {
+        setShowTripleNumbersPopup(true);
+        setBonusType('triple');
+        
+        // Add triple numbers bonus (100 points)
+        const tripleBonusPoints = 100;
+        setBonusPoints(tripleBonusPoints);
+        
+        console.log(`🎲 Triple numbers bonus! +${tripleBonusPoints} points!`);
+        
+        // Auto-hide triple numbers popup after 2 seconds
+        setTimeout(() => {
+          setShowTripleNumbersPopup(false);
+          // Add the bonus points after popup closes
+          setTotalPoints(prev => prev + tripleBonusPoints);
+        }, 2000);
+        
+        // Only show one popup at a time - return early
+        return;
       }
       
       // Check if license plate matches player age for bonus
-      if (playerAge !== null && parseInt(numbers) === playerAge && !showAgeBonusPopup) {
+      if (playerAge !== null && parseInt(numbers) === playerAge && !showAgeBonusPopup && !showBonusPopup && !showTripleNumbersPopup) {
         setShowAgeBonusPopup(true);
+        setBonusType('age');
         
-        // Add age bonus points (20 points)
-        const ageBonusPoints = 20;
-        setTotalPoints(prev => prev + ageBonusPoints);
+        // Add age bonus points (10 points)
+        const ageBonusPoints = 10;
+        
         console.log(`🎂 Age match bonus! License plate matches your age (${playerAge})! +${ageBonusPoints} points!`);
         
-        // Auto-hide age bonus popup after 4 seconds
+        // Auto-hide age bonus popup after 2 seconds
         setTimeout(() => {
           setShowAgeBonusPopup(false);
-        }, 4000);
+          // Add bonus points after popup closes
+          setTotalPoints(prev => prev + ageBonusPoints);
+        }, 2000);
       }
     }
   }, [licensePlate, playerAge]);
@@ -463,23 +502,33 @@ export const GameProvider: React.FC<{
       
       newPlate = `6666${randomConsonants}`;
       console.log(`Generated special 6666 plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+    } 
+    // Every 7th game (not divisible by 5), generate a plate with triple numbers
+    else if ((gamesPlayed + 1) % 7 === 0) {
+      // Generate a plate with triple numbers (e.g., 1110, 2220, etc.)
+      const digit = Math.floor(Math.random() * 10).toString();
+      const spanishConsonants = "BCDFGHJKLMNPQRSTVZRRSTDLNC";
+      const randomConsonants = Array(3)
+        .fill("")
+        .map(() => spanishConsonants.charAt(Math.floor(Math.random() * spanishConsonants.length)))
+        .join("");
       
-      // Ensure bonus popup appears with the special plate
-      setShowBonusPopup(true);
+      newPlate = `${digit}${digit}${digit}${Math.floor(Math.random() * 10)}${randomConsonants}`;
+      console.log(`Generated triple numbers plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+    } 
+    // Every 10th game, generate a plate that matches player's age (if available)
+    else if ((gamesPlayed + 1) % 10 === 0 && playerAge !== null) {
+      // Create a plate that matches the player's age
+      const spanishConsonants = "BCDFGHJKLMNPQRSTVZRRSTDLNC";
+      const randomConsonants = Array(3)
+        .fill("")
+        .map(() => spanishConsonants.charAt(Math.floor(Math.random() * spanishConsonants.length)))
+        .join("");
       
-      // Add bonus points
-      const bonusAmount = 500;
-      setBonusPoints(bonusAmount);
-      setTotalPoints(prev => prev + bonusAmount);
-      
-      // Play bonus sound
-      try {
-        const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.6;
-        audio.play();
-      } catch (e) {
-        console.error("Could not play bonus sound", e);
-      }
+      // Format age to 4 digits (with leading zeros if needed)
+      const formattedAge = playerAge.toString().padStart(4, '0');
+      newPlate = `${formattedAge}${randomConsonants}`;
+      console.log(`Generated age matching plate: ${newPlate} (Game ${gamesPlayed + 1})`);
     } else {
       newPlate = generateLicensePlate();
       console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
@@ -599,6 +648,7 @@ export const GameProvider: React.FC<{
     totalPoints,
     highScore,
     gamesPlayed,
+    setTotalPoints,
     
     // License plate related
     licensePlate,
@@ -622,7 +672,9 @@ export const GameProvider: React.FC<{
     showBonusPopup,
     setShowBonusPopup,
     bonusPoints,
+    bonusType,
     showAgeBonusPopup,
+    showTripleNumbersPopup,
     showCompletionBanner,
     
     // Game control

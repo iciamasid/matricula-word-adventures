@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Award, Gift, Star } from "lucide-react";
+import { Gift, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface BonusPopupProps {
@@ -14,7 +13,7 @@ interface BonusPopupProps {
 
 const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
   const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
-  const { language, isEnglish } = useLanguage();
+  const { isEnglish } = useLanguage();
   
   // Generate random stars for background animation
   useEffect(() => {
@@ -27,11 +26,6 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
       }));
       setStars(newStars);
       
-      // Auto-close after 5 seconds
-      const timer = setTimeout(() => {
-        onClose();
-      }, 5000);
-      
       // Play bonus sound
       try {
         const audio = new Audio('/lovable-uploads/level-up.mp3');
@@ -40,25 +34,19 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
       } catch (e) {
         console.error("Could not play bonus sound", e);
       }
-      
-      return () => clearTimeout(timer);
     }
-  }, [open, onClose]);
+  }, [open]);
 
-  const colorTheme = isEnglish ? {
-    gradient: "from-orange-700 via-orange-600 to-orange-800",
-    border: "border-yellow-400",
-    button: "bg-yellow-400 hover:bg-yellow-300 text-orange-900"
-  } : {
-    gradient: "from-purple-700 via-purple-600 to-purple-800",
-    border: "border-yellow-400",
-    button: "bg-yellow-400 hover:bg-yellow-300 text-purple-900"
+  // Pink/purple theme for 6666 bonus
+  const colorTheme = {
+    gradient: "from-pink-700 via-pink-600 to-pink-800",
+    border: "border-yellow-400"
   };
 
   return (
     <AnimatePresence>
       {open && (
-        <AlertDialog open={open} onOpenChange={() => onClose()}>
+        <AlertDialog open={open}>
           <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
             <AlertDialogTitle className="sr-only">Bonus Points</AlertDialogTitle>
             <motion.div
@@ -95,7 +83,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
               </div>
               
               {/* Main bonus content */}
-              <div className={`bg-gradient-to-br ${colorTheme.gradient} p-8 rounded-2xl border-4 ${colorTheme.border} shadow-[0_0_30px_rgba(168,85,247,0.7)] relative z-10`}>
+              <div className={`bg-gradient-to-br ${colorTheme.gradient} p-8 rounded-2xl border-4 ${colorTheme.border} shadow-[0_0_30px_rgba(219,39,119,0.7)] relative z-10`}>
                 <div className="text-center">
                   <motion.div 
                     animate={{ scale: [1, 1.2, 1], rotate: [0, 5, 0, -5, 0] }}
@@ -103,7 +91,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
                     className="flex justify-center items-center mb-4"
                   >
                     <div className="bg-yellow-500 p-2 rounded-full">
-                      <Gift className="w-12 h-12 text-purple-900" />
+                      <Gift className="w-12 h-12 text-pink-900" />
                     </div>
                   </motion.div>
                   
@@ -184,17 +172,6 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
                       </motion.div>
                     ))}
                   </div>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                    onClick={onClose}
-                    className={`${colorTheme.button} font-bold py-3 px-8 rounded-full shadow-lg mt-4 flex items-center mx-auto`}
-                  >
-                    <Award className="mr-2" />
-                    {isEnglish ? "Great!" : "¡Fantástico!"}
-                  </motion.button>
                 </div>
               </div>
             </motion.div>
