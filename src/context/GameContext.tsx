@@ -3,6 +3,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
 import { WORLD_DESTINATIONS } from '@/utils/mapData';
+import { useLanguage } from '@/context/LanguageContext';
+import { toast } from '@/hooks/use-toast';
 
 interface CountryInfo {
   city: string;
@@ -71,8 +73,11 @@ interface GameContextType {
   // Game control
   resetGame: () => void;
   
-  // Adding the missing updateDestinations function
+  // Destinations update
   updateDestinations: (currentLevel: number) => void;
+  
+  // Added: previous license plate for bonus checking
+  previousLicensePlate: string;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -87,6 +92,9 @@ export const GameProvider: React.FC<{
     bonusPoints: number;
   }) => React.ReactNode);
 }> = ({ children }) => {
+  const { language } = useLanguage(); // Get current language
+  const currentLang = language === 'es' ? 'es' : 'en'; // Map to our expected type
+  
   // Initialize with default country information
   const [originInfo, setOriginInfo] = useState<CountryInfo>({ 
     city: 'Madrid', 
@@ -130,13 +138,14 @@ export const GameProvider: React.FC<{
   const [plateConsonants, setPlateConsonants] = useState<string>('');
   const [currentWord, setCurrentWord] = useState<string>('');
   const [isGeneratingLicensePlate, setIsGeneratingLicensePlate] = useState<boolean>(false);
+  const [previousLicensePlate, setPreviousLicensePlate] = useState<string>(''); // Add this to track previous license plate
   
   // Game feedback and messages states
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showLevelUp, setShowLevelUp] = useState<boolean>(false);
   
-  // Popups and banners states - Fix: removed duplicate declarations
+  // Popups and banners states
   const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
   const [bonusPoints, setBonusPoints] = useState<number>(500);
   const [bonusType, setBonusType] = useState<string>('6666');
@@ -247,6 +256,7 @@ export const GameProvider: React.FC<{
     setPlateConsonants('');
     setCurrentWord('');
     setIsGeneratingLicensePlate(false);
+    setPreviousLicensePlate(''); // Reset previous license plate
     
     setSubmitSuccess(null);
     setErrorMessage(null);
@@ -419,7 +429,7 @@ export const GameProvider: React.FC<{
     }, 2000);
   };
   
-  // Show triple numbers bonus popup - Fixed: renamed to showTripleNumbersPopupImpl
+  // Show triple numbers bonus popup 
   const showTripleNumbersPopupImpl = () => {
     setShowTripleNumbersPopup(true);
     setBonusType('triple');
@@ -450,7 +460,7 @@ export const GameProvider: React.FC<{
     }, 2000);
   };
   
-  // Show age match bonus popup - Fixed: renamed to showAgeBonusPopupImpl
+  // Show age match bonus popup
   const showAgeBonusPopupImpl = () => {
     setShowAgeBonusPopup(true);
     setBonusType('age');
@@ -479,18 +489,6 @@ export const GameProvider: React.FC<{
       checkPendingLevelUp();
     }, 2000);
   };
-  
-  // Country progression for the world tour
-  // Level 1: Spain -> France
-  // Level 2: France -> Italy
-  // Level 3: Italy -> Russia
-  // Level 4: Russia -> Japan
-  // Level 5: Japan -> Australia
-  // Level 6: Australia -> USA
-  // Level 7: USA -> Mexico
-  // Level 8: Mexico -> Peru
-  // Level 9: Peru -> Argentina
-  // Level 10: Argentina -> Spain
   
   // Function to get destinations based on level, using previous destination as new origin
   const updateDestinations = (currentLevel: number) => {
@@ -577,6 +575,9 @@ export const GameProvider: React.FC<{
   
   // Generate a new license plate using the utility functions
   const generateNewPlateImpl = () => {
+    // Save current license plate before generating a new one
+    setPreviousLicensePlate(licensePlate); 
+    
     let newPlate;
     setIsGeneratingLicensePlate(true);
     
@@ -638,6 +639,16 @@ export const GameProvider: React.FC<{
     generateNewPlateImpl();
   };
   
+  // Check if previous license plate had 6666 pattern and show bonus if needed
+  const checkPrevious6666Bonus = () => {
+    if (previousLicensePlate && previousLicensePlate.startsWith("6666")) {
+      console.log("Previous plate had 6666 pattern - showing bonus popup");
+      showBonusPopup6666();
+      return true;
+    }
+    return false;
+  };
+  
   // Submit word function
   const submitWord = () => {
     if (!currentWord || currentWord.length < 3) {
@@ -645,7 +656,7 @@ export const GameProvider: React.FC<{
       return;
     }
     
-    console.log(`Submitting word: ${currentWord}`);
+    console.log(`Submitting word: ${currentWord} in language mode: ${currentLang}`);
     
     // Check if word is valid
     import('@/utils/gameUtils').then(({ wordExists, isValidWord, calculateScore }) => {
@@ -653,24 +664,40 @@ export const GameProvider: React.FC<{
       if (!isValidWord(currentWord, plateConsonants)) {
         setErrorMessage('La palabra debe incluir al menos una consonante de la matrícula');
         console.log(`Word rejected: ${currentWord} (doesn't contain any consonant from ${plateConsonants})`);
+        // IMPORTANT: Subtract 20 points for invalid words
+        setTotalPoints(prev => Math.max(0, prev - 20));
         return;
       }
       
-      // Then check if the word exists in our dictionary
-      if (!wordExists(currentWord, 'es')) {
-        setErrorMessage('Palabra no válida: no existe esta palabra');
-        console.log(`Word rejected: ${currentWord} (not in dictionary)`);
+      // Then check if the word exists in our dictionary for the current language
+      if (!wordExists(currentWord, currentLang)) {
+        const errorMsg = currentLang === 'es' 
+          ? 'Palabra no válida: no existe esta palabra en español' 
+          : 'Invalid word: this word does not exist in English';
+          
+        setErrorMessage(errorMsg);
+        console.log(`Word rejected: ${currentWord} (not in dictionary for ${currentLang})`);
+        
+        // IMPORTANT: Subtract 20 points for invalid words
+        setTotalPoints(prev => Math.max(0, prev - 20));
         return;
       }
       
       // Calculate score based on word and current license plate
-      const calculatedScore = calculateScore(currentWord, plateConsonants, 'es');
+      const calculatedScore = calculateScore(currentWord, plateConsonants, currentLang);
       console.log(`Score calculated for ${currentWord}: ${calculatedScore}`);
       
       if (calculatedScore < 0) {
         // Word is invalid
-        setErrorMessage('Palabra no válida o no contiene las consonantes requeridas');
+        const errorMsg = currentLang === 'es' 
+          ? 'Palabra no válida o no contiene las consonantes requeridas' 
+          : 'Invalid word or does not contain required consonants';
+          
+        setErrorMessage(errorMsg);
         console.log(`Word rejected: ${currentWord} (negative score ${calculatedScore})`);
+        
+        // IMPORTANT: Subtract 20 points for invalid words
+        setTotalPoints(prev => Math.max(0, prev - 20));
         return;
       }
       
@@ -680,6 +707,7 @@ export const GameProvider: React.FC<{
       setTotalPoints(prev => prev + calculatedScore);
       console.log(`Word accepted: ${currentWord} (+${calculatedScore} points, total: ${totalPoints + calculatedScore})`);
       
+      // Show success message
       if (calculatedScore > 75) {
         setSubmitSuccess(`¡${currentWord} es correcta! +${calculatedScore} puntos`);
       } else {
@@ -694,6 +722,12 @@ export const GameProvider: React.FC<{
       
       // Reset current word
       setCurrentWord('');
+      
+      // Check if previous license plate had 6666 AFTER successful word submission
+      // This needs to happen after a short delay to ensure proper popup sequence
+      setTimeout(() => {
+        checkPrevious6666Bonus();
+      }, 500);
     });
   };
 
@@ -772,6 +806,9 @@ export const GameProvider: React.FC<{
     
     // Expose updateDestinations function
     updateDestinations,
+    
+    // Previous license plate
+    previousLicensePlate
   };
 
   // Check if children is a function to pass bonus popup state
