@@ -227,7 +227,7 @@ const GameContent = () => {
         }}>
             <div className="text-center">
               <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
-                <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-white text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 w-full bg-orange-600 hover:bg-orange-500">
+                <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 w-full text-slate-50 bg-orange-600 hover:bg-orange-500">
                   <div className="flex items-center justify-center">
                     {/* Car icon on the left */}
                     <motion.div animate={{
