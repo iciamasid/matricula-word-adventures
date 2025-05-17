@@ -27,10 +27,10 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
       }));
       setStars(newStars);
       
-      // Auto-close after 5 seconds
+      // Auto-close after 2 seconds (reduced from 5 seconds)
       const timer = setTimeout(() => {
         onClose();
-      }, 5000);
+      }, 2000);
       
       // Play bonus sound
       try {

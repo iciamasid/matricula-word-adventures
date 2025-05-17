@@ -15,7 +15,10 @@ const WordInput: React.FC = () => {
     submitWord,
     generateNewPlate,
     plateConsonants,
-    submitSuccess
+    submitSuccess,
+    errorMessage,
+    totalPoints,
+    setTotalPoints
   } = useGame();
   
   const { t, isEnglish } = useLanguage();
@@ -26,12 +29,8 @@ const WordInput: React.FC = () => {
   const [placeholderText, setPlaceholderText] = useState("");
   const [fullPlaceholder, setFullPlaceholder] = useState("");
   
-  // Focus the input when the component mounts
+  // Focus the input when the component mounts - REMOVED auto-focus
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-    
     // Set the full placeholder text based on language
     // Ensure plateConsonants is always an array we can join
     let consonantsText = "";
@@ -100,6 +99,14 @@ const WordInput: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [submitSuccess, generateNewPlate]);
+  
+  // Effect to deduct points when there's an error message
+  useEffect(() => {
+    if (errorMessage) {
+      // Deduct 20 points from total when a word is incorrect
+      setTotalPoints(prev => Math.max(0, prev - 20));
+    }
+  }, [errorMessage, setTotalPoints]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentWord(e.target.value.toUpperCase());

@@ -121,7 +121,7 @@ const LicensePlate: React.FC = () => {
           </motion.div>
         )}
       
-        {/* Only show the animated car (removed the static car) */}
+        {/* Only show the animated car */}
         {selectedCarColor && (
           <motion.img 
             src={`/lovable-uploads/${selectedCarColor.image}`} 
@@ -161,6 +161,15 @@ const LicensePlate: React.FC = () => {
             whileTap={{ scale: 0.95 }}
           />
         )}
+        
+        {/* Add permanent tooltip above the car */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="absolute -top-6 text-center w-full text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full shadow-sm"
+        >
+          {isEnglish ? "Tap car to change color" : "Pulsa en el coche para elegir otro"}
+        </motion.div>
       </div>
       
       {/* Vintage license plate with EU flag */}
@@ -188,7 +197,6 @@ const LicensePlate: React.FC = () => {
                 stiffness: 80
               }}
             >
-              {/* ... keep existing code (random digits animation) */}
               {isGeneratingLicensePlate ? (
                 <motion.div 
                   className="flex flex-col items-center"
@@ -243,7 +251,6 @@ const LicensePlate: React.FC = () => {
               }}
               whileHover={{ scale: 1.1 }}
             >
-              {/* ... keep existing code (random consonants animation) */}
               {isGeneratingLicensePlate ? (
                 <motion.div 
                   className="flex flex-col items-center"
