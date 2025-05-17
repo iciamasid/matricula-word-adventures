@@ -12,10 +12,12 @@ const AgeBonusPopup: React.FC = () => {
   const { isEnglish } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   
-  // Generate random stars for background animation
+  // Generate random stars for background animation and handle visibility
   useEffect(() => {
     if (showAgeBonusPopup) {
+      console.log("Age bonus popup should be visible now");
       setIsVisible(true);
+      
       const newStars = Array.from({ length: 40 }, () => ({
         x: Math.random() * 100,
         y: Math.random() * 100,

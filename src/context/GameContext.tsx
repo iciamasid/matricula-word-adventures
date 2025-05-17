@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -322,10 +321,13 @@ export const GameProvider: React.FC<{
   // Check for special license plate patterns: 6666 pattern, triple numbers, and matching age
   useEffect(() => {
     if (licensePlate) {
+      // Check if plate contains "6666" anywhere in the first 4 digits
       const numbers = licensePlate.substring(0, 4);
+      console.log(`Checking license plate ${licensePlate} for special patterns. Numbers part: ${numbers}`);
       
       // First check for 6666 pattern (highest priority bonus)
       if (numbers === "6666" && !showBonusPopup) {
+        console.log("🎉 6666 pattern detected in license plate!");
         setShowBonusPopup(true);
         setBonusType('6666');
         
@@ -343,13 +345,14 @@ export const GameProvider: React.FC<{
           setTotalPoints(prev => prev + bonusAmount);
         }, 2000);
         
-        // Only show one popup at a time - return early
+        // Don't check for other patterns if 6666 is found
         return;
       }
       
-      // Check if license plate has triple numbers
+      // Check if license plate has triple numbers (e.g. "111", "222", etc.)
       const hasTripleNumbers = /(\d)\1{2}/.test(numbers);
       if (hasTripleNumbers && !showTripleNumbersPopup && !showBonusPopup) {
+        console.log("🎲 Triple numbers detected in license plate!");
         setShowTripleNumbersPopup(true);
         setBonusType('triple');
         
@@ -366,26 +369,33 @@ export const GameProvider: React.FC<{
           setTotalPoints(prev => prev + tripleBonusPoints);
         }, 2000);
         
-        // Only show one popup at a time - return early
+        // Don't check for age match if triple numbers were found
         return;
       }
       
       // Check if license plate matches player age for bonus
-      if (playerAge !== null && parseInt(numbers) === playerAge && !showAgeBonusPopup && !showBonusPopup && !showTripleNumbersPopup) {
-        setShowAgeBonusPopup(true);
-        setBonusType('age');
+      if (playerAge !== null) {
+        // Format the player age as a string and check if it appears in the numbers part
+        const playerAgeStr = playerAge.toString();
+        const containsAge = numbers.includes(playerAgeStr);
         
-        // Add age bonus points (10 points)
-        const ageBonusPoints = 10;
-        
-        console.log(`🎂 Age match bonus! License plate matches your age (${playerAge})! +${ageBonusPoints} points!`);
-        
-        // Auto-hide age bonus popup after 2 seconds
-        setTimeout(() => {
-          setShowAgeBonusPopup(false);
-          // Add bonus points after popup closes
-          setTotalPoints(prev => prev + ageBonusPoints);
-        }, 2000);
+        if (containsAge && !showAgeBonusPopup && !showBonusPopup && !showTripleNumbersPopup) {
+          console.log(`🎂 Age ${playerAge} detected in license plate!`);
+          setShowAgeBonusPopup(true);
+          setBonusType('age');
+          
+          // Add age bonus points (10 points)
+          const ageBonusPoints = 10;
+          
+          console.log(`🎂 Age match bonus! License plate contains your age (${playerAge})! +${ageBonusPoints} points!`);
+          
+          // Auto-hide age bonus popup after 2 seconds
+          setTimeout(() => {
+            setShowAgeBonusPopup(false);
+            // Add bonus points after popup closes
+            setTotalPoints(prev => prev + ageBonusPoints);
+          }, 2000);
+        }
       }
     }
   }, [licensePlate, playerAge]);

@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,8 +27,8 @@ const WordInput: React.FC = () => {
   
   // Remove the auto-focus on the input so keyboard doesn't appear automatically
   useEffect(() => {
-    // Don't auto-focus the input
-    // This is intentionally left empty to prevent auto-focus
+    // Don't auto-focus the input, intentionally empty
+    // This is to prevent keyboard from showing on mobile
     
     // Set the full placeholder text based on language
     // Ensure plateConsonants is always an array we can join

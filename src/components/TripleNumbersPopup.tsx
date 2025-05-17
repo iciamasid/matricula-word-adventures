@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Award, Star, Trophy } from "lucide-react";
+import { Award, Star } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { useGame } from "@/context/GameContext";
 
@@ -13,10 +12,12 @@ const TripleNumbersPopup: React.FC = () => {
   const { isEnglish } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
   
-  // Generate random stars for background animation
+  // Generate random stars for background animation and handle visibility
   useEffect(() => {
     if (showTripleNumbersPopup) {
+      console.log("Triple numbers popup should be visible now");
       setIsVisible(true);
+      
       const newStars = Array.from({ length: 50 }, () => ({
         x: Math.random() * 100,
         y: Math.random() * 100,
@@ -93,7 +94,7 @@ const TripleNumbersPopup: React.FC = () => {
                     className="flex justify-center items-center mb-4"
                   >
                     <div className="bg-yellow-500 p-2 rounded-full">
-                      <Trophy className="w-12 h-12 text-teal-900" />
+                      <Award className="w-12 h-12 text-teal-900" />
                     </div>
                   </motion.div>
                   
