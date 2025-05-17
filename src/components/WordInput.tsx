@@ -17,8 +17,7 @@ const WordInput: React.FC = () => {
     plateConsonants,
     submitSuccess,
     errorMessage,
-    totalPoints,
-    setTotalPoints
+    totalPoints
   } = useGame();
   
   const { t, isEnglish } = useLanguage();
@@ -100,13 +99,13 @@ const WordInput: React.FC = () => {
     }
   }, [submitSuccess, generateNewPlate]);
   
-  // Effect to deduct points when there's an error message
+  // Effect to handle error message
   useEffect(() => {
     if (errorMessage) {
-      // Deduct 20 points from total when a word is incorrect
-      setTotalPoints(prev => Math.max(0, prev - 20));
+      // We don't need to directly modify the totalPoints here anymore
+      // The deduction is now handled in the GameContext
     }
-  }, [errorMessage, setTotalPoints]);
+  }, [errorMessage]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentWord(e.target.value.toUpperCase());

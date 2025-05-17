@@ -36,6 +36,7 @@ interface GameContextType {
   score: number;
   previousScore: number;
   totalPoints: number;
+  setTotalPoints: (points: number | ((prev: number) => number)) => void; // Add this line to expose the setter
   highScore: number;
   gamesPlayed: number;
   
@@ -598,6 +599,7 @@ export const GameProvider: React.FC<{
     score,
     previousScore,
     totalPoints,
+    setTotalPoints,
     highScore,
     gamesPlayed,
     
