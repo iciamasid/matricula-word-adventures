@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -28,7 +29,7 @@ const Index = () => {
   );
 };
 
-// Componente para manejar el contenido del juego
+// Component to handle the game content
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
@@ -81,7 +82,7 @@ const GameContent = () => {
   const borderColor = isEnglish ? "border-orange-300" : "border-purple-300";
   const hoverBgColor = isEnglish ? "hover:bg-orange-100" : "hover:bg-purple-100";
 
-  // Usamos sessionStorage para marcar cuando estamos navegando entre páginas
+  // Using sessionStorage to mark when we're navigating between pages
   const handleNavigation = () => {
     sessionStorage.setItem('navigatingBack', 'true');
   };

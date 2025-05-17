@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
 import { WORLD_DESTINATIONS } from '@/utils/mapData';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface CountryInfo {
   city: string;
@@ -83,6 +84,9 @@ export const GameProvider: React.FC<{
     bonusPoints: number;
   }) => React.ReactNode);
 }> = ({ children }) => {
+  // Get current language from LanguageContext
+  const { language } = useLanguage?.() || { language: 'es' };
+
   // Initialize with default country information
   const [originInfo, setOriginInfo] = useState<CountryInfo>({ 
     city: 'Madrid', 
@@ -499,39 +503,63 @@ export const GameProvider: React.FC<{
     generateNewPlateImpl();
   };
   
-  // Submit word function
+  // Submit word function - Updated to handle language-specific validation
   const submitWord = () => {
-    if (!currentWord || currentWord.length < 3) {
-      setErrorMessage('La palabra es demasiado corta');
+    if (!currentWord || currentWord.length < 4) {
+      // Error message based on language
+      const errorMsg = language === 'en' 
+        ? 'Word is too short (minimum 4 letters)'
+        : 'La palabra es demasiado corta (mínimo 4 letras)';
+      setErrorMessage(errorMsg);
       return;
     }
     
-    console.log(`Submitting word: ${currentWord}`);
+    console.log(`Submitting word: ${currentWord} in language: ${language}`);
     
     // Check if word is valid
     import('@/utils/gameUtils').then(({ wordExists, isValidWord, calculateScore }) => {
       // First check if the word contains at least one consonant from the license plate
       if (!isValidWord(currentWord, plateConsonants)) {
-        setErrorMessage('La palabra debe incluir al menos una consonante de la matrícula');
+        // Error message based on language
+        const errorMsg = language === 'en' 
+          ? 'Word must include at least one consonant from the license plate'
+          : 'La palabra debe incluir al menos una consonante de la matrícula';
+        setErrorMessage(errorMsg);
         console.log(`Word rejected: ${currentWord} (doesn't contain any consonant from ${plateConsonants})`);
+        
+        // IMPORTANT: Deduct points for invalid words
+        setTotalPoints(prev => Math.max(0, prev - 20));
         return;
       }
       
-      // Then check if the word exists in our dictionary
-      if (!wordExists(currentWord, 'es')) {
-        setErrorMessage('Palabra no válida: no existe esta palabra');
-        console.log(`Word rejected: ${currentWord} (not in dictionary)`);
+      // Then check if the word exists in our dictionary for the current language
+      if (!wordExists(currentWord, language as 'es' | 'en')) {
+        // Error message based on language
+        const errorMsg = language === 'en' 
+          ? 'Invalid word: this word does not exist'
+          : 'Palabra no válida: no existe esta palabra';
+        setErrorMessage(errorMsg);
+        console.log(`Word rejected: ${currentWord} (not in ${language} dictionary)`);
+        
+        // IMPORTANT: Deduct points for invalid words
+        setTotalPoints(prev => Math.max(0, prev - 20));
         return;
       }
       
-      // Calculate score based on word and current license plate
-      const calculatedScore = calculateScore(currentWord, plateConsonants, 'es');
+      // Calculate score based on word and current license plate, considering current language
+      const calculatedScore = calculateScore(currentWord, plateConsonants, language as 'es' | 'en');
       console.log(`Score calculated for ${currentWord}: ${calculatedScore}`);
       
       if (calculatedScore < 0) {
         // Word is invalid
-        setErrorMessage('Palabra no válida o no contiene las consonantes requeridas');
+        const errorMsg = language === 'en' 
+          ? 'Invalid word or does not contain required consonants'
+          : 'Palabra no válida o no contiene las consonantes requeridas';
+        setErrorMessage(errorMsg);
         console.log(`Word rejected: ${currentWord} (negative score ${calculatedScore})`);
+        
+        // IMPORTANT: Deduct points for invalid words (the negative score amount)
+        setTotalPoints(prev => Math.max(0, prev + calculatedScore)); // Add negative score
         return;
       }
       
@@ -541,10 +569,32 @@ export const GameProvider: React.FC<{
       setTotalPoints(prev => prev + calculatedScore);
       console.log(`Word accepted: ${currentWord} (+${calculatedScore} points, total: ${totalPoints + calculatedScore})`);
       
+      // Success message based on language
       if (calculatedScore > 75) {
-        setSubmitSuccess(`¡${currentWord} es correcta! +${calculatedScore} puntos`);
+        const successMsg = language === 'en' 
+          ? `${currentWord} is correct! +${calculatedScore} points`
+          : `¡${currentWord} es correcta! +${calculatedScore} puntos`;
+        setSubmitSuccess(successMsg);
       } else {
-        setSubmitSuccess(`¡Palabra correcta! +${calculatedScore} puntos`);
+        const successMsg = language === 'en' 
+          ? `Correct word! +${calculatedScore} points`
+          : `¡Palabra correcta! +${calculatedScore} puntos`;
+        setSubmitSuccess(successMsg);
+      }
+      
+      // Special bonus check for 6666 license plate
+      if (licensePlate.substring(0, 4) === "6666" && !showBonusPopup) {
+        console.log(`Special 6666 license plate detected!`);
+        setShowBonusPopup(true);
+        
+        // Add bonus points
+        setBonusPoints(500);
+        setTotalPoints(prev => prev + 500);
+        
+        // Auto-hide bonus popup after 5 seconds
+        setTimeout(() => {
+          setShowBonusPopup(false);
+        }, 5000);
       }
       
       // Track high score

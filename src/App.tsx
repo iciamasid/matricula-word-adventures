@@ -11,8 +11,51 @@ import CountryPage from "./pages/CountryPage";
 import NotFound from "./pages/NotFound";
 import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
+import AgeBonusPopup from "./components/AgeBonusPopup";
+import { useGame } from "./context/GameContext";
 
 const queryClient = new QueryClient();
+
+// Create a wrapper component to use game context hooks
+const GameApp = () => {
+  const { 
+    showBonusPopup, 
+    setShowBonusPopup, 
+    bonusPoints,
+    showAgeBonusPopup,
+    playerAge
+  } = useGame();
+  
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/country/:country" element={<CountryPage />} />
+          <Route path="/draw-game" element={<DrawGamePage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+      
+      {/* Bonus popup for 6666 license plate - increased z-index to make sure it's visible */}
+      <BonusPopup
+        open={showBonusPopup}
+        onClose={() => setShowBonusPopup(false)}
+        points={bonusPoints || 500}
+      />
+      
+      {/* Age bonus popup when license plate matches player age */}
+      {playerAge && (
+        <AgeBonusPopup
+          open={showAgeBonusPopup}
+          onClose={() => {}}
+          points={20}
+          age={playerAge}
+        />
+      )}
+    </>
+  );
+};
 
 const App = () => {
   return (
@@ -20,27 +63,9 @@ const App = () => {
       <TooltipProvider>
         <LanguageProvider>
           <GameProvider>
-            {({ showBonusPopup, setShowBonusPopup, bonusPoints }) => (
-              <>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/country/:country" element={<CountryPage />} />
-                    <Route path="/draw-game" element={<DrawGamePage />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </BrowserRouter>
-                
-                {/* Bonus popup for 6666 license plate - increased z-index to make sure it's visible */}
-                <BonusPopup
-                  open={showBonusPopup}
-                  onClose={() => setShowBonusPopup(false)}
-                  points={bonusPoints || 200}
-                />
-              </>
-            )}
+            <Toaster />
+            <Sonner />
+            <GameApp />
           </GameProvider>
         </LanguageProvider>
       </TooltipProvider>

@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -128,6 +129,12 @@ const WordInput: React.FC = () => {
   // Set font size based on mobile view
   const fontSize = isMobile ? "text-xl" : "text-3xl";
   
+  // Minimum word length for submit button to be enabled
+  const minWordLength = 4;
+
+  // Localized button text
+  const submitButtonLabel = isEnglish ? "Submit" : "Enviar";
+  
   return (
     <div className="w-full max-w-xs relative">      
       <div className="flex gap-2">
@@ -153,10 +160,13 @@ const WordInput: React.FC = () => {
           <Button 
             onClick={handleSubmit} 
             className={`h-full bg-gradient-to-r ${buttonGradient} ${isMobile ? "text-xl" : "text-2xl"} ${isAnimating ? "animate-bounce" : ""}`} 
-            disabled={currentWord.trim().length < 4} 
+            disabled={currentWord.trim().length < minWordLength} 
             size="lg"
           >
-            <ArrowRight className="w-7 h-7" />
+            {isEnglish ? 
+              <ArrowRight className="w-7 h-7" /> :  
+              <ArrowRight className="w-7 h-7" />
+            }
           </Button>
         </motion.div>
       </div>
