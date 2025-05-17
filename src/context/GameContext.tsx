@@ -136,7 +136,7 @@ export const GameProvider: React.FC<{
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showLevelUp, setShowLevelUp] = useState<boolean>(false);
   
-  // Popups and banners states
+  // Popups and banners states - Fix: removed duplicate declarations
   const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
   const [bonusPoints, setBonusPoints] = useState<number>(500);
   const [bonusType, setBonusType] = useState<string>('6666');
@@ -371,7 +371,7 @@ export const GameProvider: React.FC<{
     const hasTripleNumbers = /(\d)\1{2}/.test(numbers);
     if (hasTripleNumbers) {
       console.log("🎲 Triple numbers detected in license plate!");
-      showTripleNumbersPopup();
+      showTripleNumbersPopupImpl();
       return;
     }
     
@@ -383,7 +383,7 @@ export const GameProvider: React.FC<{
       
       if (containsAge) {
         console.log(`🎂 Age ${playerAge} detected in license plate!`);
-        showAgeBonusPopup();
+        showAgeBonusPopupImpl();
       }
     }
   }, [licensePlate]);
@@ -419,8 +419,8 @@ export const GameProvider: React.FC<{
     }, 2000);
   };
   
-  // Show triple numbers bonus popup
-  const showTripleNumbersPopup = () => {
+  // Show triple numbers bonus popup - Fixed: renamed to showTripleNumbersPopupImpl
+  const showTripleNumbersPopupImpl = () => {
     setShowTripleNumbersPopup(true);
     setBonusType('triple');
     setPopupInProgress(true);
@@ -450,8 +450,8 @@ export const GameProvider: React.FC<{
     }, 2000);
   };
   
-  // Show age match bonus popup
-  const showAgeBonusPopup = () => {
+  // Show age match bonus popup - Fixed: renamed to showAgeBonusPopupImpl
+  const showAgeBonusPopupImpl = () => {
     setShowAgeBonusPopup(true);
     setBonusType('age');
     setPopupInProgress(true);
