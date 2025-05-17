@@ -25,15 +25,6 @@ const TripleNumbersPopup: React.FC = () => {
         delay: Math.random() * 3
       }));
       setStars(newStars);
-      
-      // Play bonus sound
-      try {
-        const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.7;
-        audio.play();
-      } catch (e) {
-        console.error("Could not play bonus sound", e);
-      }
     } else {
       setIsVisible(false);
     }
@@ -46,10 +37,13 @@ const TripleNumbersPopup: React.FC = () => {
     button: "bg-yellow-400 hover:bg-yellow-300 text-teal-900"
   };
 
+  // Force the popup to be visible when showTripleNumbersPopup is true
+  console.log("Triple numbers popup visibility state:", isVisible, "showTripleNumbersPopup:", showTripleNumbersPopup);
+
   return (
     <AnimatePresence>
       {isVisible && (
-        <AlertDialog open={isVisible}>
+        <AlertDialog open={true} onOpenChange={() => {}}>
           <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
             <AlertDialogTitle className="sr-only">Triple Numbers Bonus</AlertDialogTitle>
             <motion.div

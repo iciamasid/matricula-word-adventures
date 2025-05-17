@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -146,6 +147,10 @@ export const GameProvider: React.FC<{
   // Track previous destination to set as origin when leveling up
   const [previousDestination, setPreviousDestination] = useState<CountryInfo | null>(null);
   
+  // Control popup queue and sequence
+  const [pendingLevelUp, setPendingLevelUp] = useState<boolean>(false);
+  const [popupInProgress, setPopupInProgress] = useState<boolean>(false);
+  
   // Clear feedback functions
   const clearSubmitSuccess = () => setSubmitSuccess(null);
   const clearError = () => setErrorMessage(null);
@@ -263,6 +268,8 @@ export const GameProvider: React.FC<{
     setShowBonusPopup(false);
     setShowAgeBonusPopup(false);
     setShowCompletionBanner(false);
+    setPopupInProgress(false);
+    setPendingLevelUp(false);
     
     // Reset previous destination
     setPreviousDestination(null);
@@ -294,23 +301,15 @@ export const GameProvider: React.FC<{
     if (newLevel > level) {
       // Save current destination as previous before updating
       setPreviousDestination({...destinationInfo});
-      
       setLevel(newLevel);
-      setShowLevelUp(true);
       
-      // Play level up sound (optional)
-      try {
-        const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.5;
-        audio.play();
-      } catch (e) {
-        console.error("Could not play level up sound", e);
+      // If a bonus popup is currently shown, delay the level up popup
+      if (popupInProgress) {
+        console.log("Delaying level up popup because bonus popup is active");
+        setPendingLevelUp(true);
+      } else {
+        showLevelUpPopup();
       }
-      
-      // Auto-hide level up message after 5 seconds
-      setTimeout(() => {
-        clearLevelUpMessage();
-      }, 5000);
       
       console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
       // Update destinations for the new level
@@ -318,87 +317,168 @@ export const GameProvider: React.FC<{
     }
   }, [totalPoints]);
   
+  // Show level up popup
+  const showLevelUpPopup = () => {
+    setShowLevelUp(true);
+    setPopupInProgress(true);
+    
+    // Play level up sound
+    try {
+      const audio = new Audio('/lovable-uploads/level-up.mp3');
+      audio.volume = 0.5;
+      audio.play();
+    } catch (e) {
+      console.error("Could not play level up sound", e);
+    }
+    
+    // Auto-hide level up message after 3 seconds
+    setTimeout(() => {
+      clearLevelUpMessage();
+      setPopupInProgress(false);
+      checkPendingLevelUp();
+    }, 3000);
+  };
+  
+  // Check if there is a pending level up popup to show after current popup closes
+  const checkPendingLevelUp = () => {
+    if (pendingLevelUp) {
+      setPendingLevelUp(false);
+      setTimeout(() => {
+        showLevelUpPopup();
+      }, 500); // Small delay before showing level up
+    }
+  };
+  
   // Check for special license plate patterns: 6666 pattern, triple numbers, and matching age
   useEffect(() => {
-    if (licensePlate) {
-      // Check if plate contains "6666" anywhere in the first 4 digits
-      const numbers = licensePlate.substring(0, 4);
-      console.log(`Checking license plate ${licensePlate} for special patterns. Numbers part: ${numbers}`);
+    if (!licensePlate || popupInProgress) {
+      // Skip this check if there's already a popup showing
+      return;
+    }
+    
+    // Extract the number part of the license plate
+    const numbers = licensePlate.substring(0, 4);
+    console.log(`Checking license plate ${licensePlate} for special patterns. Numbers part: ${numbers}`);
+    
+    // First check for 6666 pattern (highest priority bonus)
+    if (numbers === "6666") {
+      console.log("🎉 6666 pattern detected in license plate!");
+      showBonusPopup6666();
+      return;
+    }
+    
+    // Check if license plate has triple numbers (e.g. "111", "222", etc.)
+    const hasTripleNumbers = /(\d)\1{2}/.test(numbers);
+    if (hasTripleNumbers) {
+      console.log("🎲 Triple numbers detected in license plate!");
+      showTripleNumbersPopup();
+      return;
+    }
+    
+    // Check if license plate matches player age for bonus
+    if (playerAge !== null) {
+      // Format the player age as a string and check if it appears in the numbers part
+      const playerAgeStr = playerAge.toString();
+      const containsAge = numbers.includes(playerAgeStr);
       
-      // First check for 6666 pattern (highest priority bonus)
-      if (numbers === "6666" && !showBonusPopup) {
-        console.log("🎉 6666 pattern detected in license plate!");
-        setShowBonusPopup(true);
-        setBonusType('6666');
-        
-        // Add bonus points - 500 points
-        const bonusAmount = 500;
-        setBonusPoints(bonusAmount);
-        
-        // We won't add the points yet - we'll wait for the popup to close
-        console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
-        
-        // Auto-hide bonus popup after 2 seconds
-        setTimeout(() => {
-          setShowBonusPopup(false);
-          // Add the bonus points after the popup closes
-          setTotalPoints(prev => prev + bonusAmount);
-        }, 2000);
-        
-        // Don't check for other patterns if 6666 is found
-        return;
-      }
-      
-      // Check if license plate has triple numbers (e.g. "111", "222", etc.)
-      const hasTripleNumbers = /(\d)\1{2}/.test(numbers);
-      if (hasTripleNumbers && !showTripleNumbersPopup && !showBonusPopup) {
-        console.log("🎲 Triple numbers detected in license plate!");
-        setShowTripleNumbersPopup(true);
-        setBonusType('triple');
-        
-        // Add triple numbers bonus (100 points)
-        const tripleBonusPoints = 100;
-        setBonusPoints(tripleBonusPoints);
-        
-        console.log(`🎲 Triple numbers bonus! +${tripleBonusPoints} points!`);
-        
-        // Auto-hide triple numbers popup after 2 seconds
-        setTimeout(() => {
-          setShowTripleNumbersPopup(false);
-          // Add the bonus points after popup closes
-          setTotalPoints(prev => prev + tripleBonusPoints);
-        }, 2000);
-        
-        // Don't check for age match if triple numbers were found
-        return;
-      }
-      
-      // Check if license plate matches player age for bonus
-      if (playerAge !== null) {
-        // Format the player age as a string and check if it appears in the numbers part
-        const playerAgeStr = playerAge.toString();
-        const containsAge = numbers.includes(playerAgeStr);
-        
-        if (containsAge && !showAgeBonusPopup && !showBonusPopup && !showTripleNumbersPopup) {
-          console.log(`🎂 Age ${playerAge} detected in license plate!`);
-          setShowAgeBonusPopup(true);
-          setBonusType('age');
-          
-          // Add age bonus points (10 points)
-          const ageBonusPoints = 10;
-          
-          console.log(`🎂 Age match bonus! License plate contains your age (${playerAge})! +${ageBonusPoints} points!`);
-          
-          // Auto-hide age bonus popup after 2 seconds
-          setTimeout(() => {
-            setShowAgeBonusPopup(false);
-            // Add bonus points after popup closes
-            setTotalPoints(prev => prev + ageBonusPoints);
-          }, 2000);
-        }
+      if (containsAge) {
+        console.log(`🎂 Age ${playerAge} detected in license plate!`);
+        showAgeBonusPopup();
       }
     }
-  }, [licensePlate, playerAge]);
+  }, [licensePlate]);
+  
+  // Show 6666 bonus popup
+  const showBonusPopup6666 = () => {
+    setShowBonusPopup(true);
+    setBonusType('6666');
+    setPopupInProgress(true);
+    
+    // Set bonus points - 500 points
+    const bonusAmount = 500;
+    setBonusPoints(bonusAmount);
+    
+    console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
+    
+    // Play bonus sound
+    try {
+      const audio = new Audio('/lovable-uploads/level-up.mp3');
+      audio.volume = 0.7;
+      audio.play();
+    } catch (e) {
+      console.error("Could not play bonus sound", e);
+    }
+    
+    // Auto-hide bonus popup after 2 seconds
+    setTimeout(() => {
+      setShowBonusPopup(false);
+      // Add the bonus points after the popup closes
+      setTotalPoints(prev => prev + bonusAmount);
+      setPopupInProgress(false);
+      checkPendingLevelUp();
+    }, 2000);
+  };
+  
+  // Show triple numbers bonus popup
+  const showTripleNumbersPopup = () => {
+    setShowTripleNumbersPopup(true);
+    setBonusType('triple');
+    setPopupInProgress(true);
+    
+    // Add triple numbers bonus (100 points)
+    const tripleBonusPoints = 100;
+    setBonusPoints(tripleBonusPoints);
+    
+    console.log(`🎲 Triple numbers bonus! +${tripleBonusPoints} points!`);
+    
+    // Play bonus sound
+    try {
+      const audio = new Audio('/lovable-uploads/level-up.mp3');
+      audio.volume = 0.7;
+      audio.play();
+    } catch (e) {
+      console.error("Could not play bonus sound", e);
+    }
+    
+    // Auto-hide triple numbers popup after 2 seconds
+    setTimeout(() => {
+      setShowTripleNumbersPopup(false);
+      // Add the bonus points after popup closes
+      setTotalPoints(prev => prev + tripleBonusPoints);
+      setPopupInProgress(false);
+      checkPendingLevelUp();
+    }, 2000);
+  };
+  
+  // Show age match bonus popup
+  const showAgeBonusPopup = () => {
+    setShowAgeBonusPopup(true);
+    setBonusType('age');
+    setPopupInProgress(true);
+    
+    // Add age bonus points (10 points)
+    const ageBonusPoints = 10;
+    
+    console.log(`🎂 Age match bonus! License plate contains your age (${playerAge})! +${ageBonusPoints} points!`);
+    
+    // Play bonus sound
+    try {
+      const audio = new Audio('/lovable-uploads/level-up.mp3');
+      audio.volume = 0.6;
+      audio.play();
+    } catch (e) {
+      console.error("Could not play bonus sound", e);
+    }
+    
+    // Auto-hide age bonus popup after 2 seconds
+    setTimeout(() => {
+      setShowAgeBonusPopup(false);
+      // Add bonus points after popup closes
+      setTotalPoints(prev => prev + ageBonusPoints);
+      setPopupInProgress(false);
+      checkPendingLevelUp();
+    }, 2000);
+  };
   
   // Country progression for the world tour
   // Level 1: Spain -> France

@@ -25,15 +25,6 @@ const AgeBonusPopup: React.FC = () => {
         delay: Math.random() * 3
       }));
       setStars(newStars);
-      
-      // Play bonus sound
-      try {
-        const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.6;
-        audio.play();
-      } catch (e) {
-        console.error("Could not play bonus sound", e);
-      }
     } else {
       setIsVisible(false);
     }
@@ -46,10 +37,13 @@ const AgeBonusPopup: React.FC = () => {
     button: "bg-yellow-400 hover:bg-yellow-300 text-blue-900"
   };
 
+  // Force the popup to be visible when showAgeBonusPopup is true
+  console.log("Age bonus popup visibility state:", isVisible, "showAgeBonusPopup:", showAgeBonusPopup);
+
   return (
     <AnimatePresence>
       {isVisible && (
-        <AlertDialog open={isVisible}>
+        <AlertDialog open={true} onOpenChange={() => {}}>
           <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
             <AlertDialogTitle className="sr-only">Age Bonus</AlertDialogTitle>
             <motion.div

@@ -42,6 +42,7 @@ const App = () => {
                   points={bonusPoints || 500}
                 />
                 
+                {/* These popups are controlled by their own state flags in GameContext */}
                 <AgeBonusPopup />
                 <TripleNumbersPopup />
               </>

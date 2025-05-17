@@ -18,6 +18,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
   // Generate random stars for background animation
   useEffect(() => {
     if (open) {
+      console.log("6666 bonus popup should be visible now");
       const newStars = Array.from({ length: 50 }, () => ({
         x: Math.random() * 100,
         y: Math.random() * 100,
@@ -25,15 +26,6 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
         delay: Math.random() * 3
       }));
       setStars(newStars);
-      
-      // Play bonus sound
-      try {
-        const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.7;
-        audio.play();
-      } catch (e) {
-        console.error("Could not play bonus sound", e);
-      }
     }
   }, [open]);
 
@@ -43,10 +35,12 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
     border: "border-yellow-400"
   };
 
+  console.log("6666 bonus popup open state:", open);
+
   return (
     <AnimatePresence>
       {open && (
-        <AlertDialog open={open}>
+        <AlertDialog open={true} onOpenChange={() => {}}>
           <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
             <AlertDialogTitle className="sr-only">Bonus Points</AlertDialogTitle>
             <motion.div
