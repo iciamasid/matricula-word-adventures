@@ -7,7 +7,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Globe, RefreshCw, ArrowRight } from "lucide-react";
+import { Globe, RefreshCw } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -18,7 +18,7 @@ import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import LanguageSelector from "@/components/LanguageSelector";
 import { useLanguage } from "@/context/LanguageContext";
-import CarCustomization from "@/components/CarCustomization";
+import AdBanner from "@/components/AdBanner";
 
 const Index = () => {
   return (
@@ -171,6 +171,11 @@ const GameContent = () => {
       }} />)}
         </div>}
       
+      {/* Banner superior de anuncios */}
+      <div className="w-full max-w-5xl mx-auto px-4">
+        <AdBanner position="top" className="mb-4" />
+      </div>
+      
       <div className="relative w-full">
         <motion.img 
           src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" 
@@ -193,107 +198,139 @@ const GameContent = () => {
         <LanguageSelector />
       </div>
     
-      <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
-        {/* Player Registration Form */}
-        <PlayerRegistration />
-        
-        {/* This div will be the reference for scrolling */}
-        <div ref={licensePlateRef} className="w-full"></div>
-        
-        <div className="w-full max-w-md flex flex-col items-center space-y-4">
-          <LicensePlate />
-          <WordInput />
-          
-          {/* Score components in a single row */}
-          <ScorePanel />
-          
-          {/* Add World Tour Progress component */}
-          <WorldTourProgress />
-          
-          {/* Modified "Drive" button - PURPLE with car icon to the left and shorter text */}
-          <motion.div 
-            className="w-full rounded-lg p-4 shadow-lg bg-gradient-to-r from-purple-400 to-violet-300"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="text-center">
-              <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
-                <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-white text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 w-full">
-                  <div className="flex items-center justify-center">
-                    {/* Car icon on the left */}
-                    <motion.div 
-                      animate={{
-                        x: [-5, 5, -5],
-                        y: [-3, 3, -3],
-                        rotate: [0, 5, -5, 0]
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity
-                      }}
-                      className="mr-3 text-3xl"
-                    >
-                      🚗
-                    </motion.div>
-                    <span className="tracking-wide uppercase whitespace-normal px-2">
-                      {isEnglish ? "Drive!" : "¡CONDUCE!"}
-                    </span>
-                  </div>
-                  
-                  {/* Add decorative elements */}
-                  <motion.div 
-                    className="absolute -right-2 -top-2 w-12 h-12 rounded-full bg-yellow-300 opacity-80 z-0"
-                    animate={{
-                      scale: [1, 1.2, 1],
-                      opacity: [0.7, 0.9, 0.7]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity
-                    }}
-                  />
-                  <motion.div 
-                    className="absolute -left-1 -bottom-1 w-8 h-8 rounded-full bg-red-400 opacity-70 z-0"
-                    animate={{
-                      scale: [1, 1.3, 1],
-                      opacity: [0.6, 0.8, 0.6]
-                    }}
-                    transition={{
-                      duration: 1.5,
-                      repeat: Infinity,
-                      delay: 0.5
-                    }}
-                  />
-                </Button>
-              </Link>
+      <div className="w-full max-w-5xl mx-auto px-4">
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Columna izquierda (anuncios en desktop) */}
+          {!isMobile && (
+            <div className="hidden md:block md:w-[300px]">
+              <div className="sticky top-4">
+                <AdBanner position="sidebar" />
+              </div>
             </div>
-          </motion.div>
+          )}
           
-          {/* Reset Game Button - in theme color */}
-          <motion.div className="w-full max-w-xs mt-8" whileHover={{
-          scale: 1.03
-        }} transition={{
-          type: "spring",
-          stiffness: 400
-        }}>
-            <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal ${isEnglish ? "bg-orange-700 hover:bg-orange-600" : "bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}>
-              <RefreshCw className="mr-2 h-5 w-5" /> {t("reset_game")}
-            </Button>
-          </motion.div>
+          {/* Columna principal del juego */}
+          <div className="flex-1 w-full max-w-md mx-auto">
+            {/* Player Registration Form */}
+            <PlayerRegistration />
+            
+            {/* This div will be the reference for scrolling */}
+            <div ref={licensePlateRef} className="w-full"></div>
+            
+            {/* Anuncio en contenido (solo móvil) */}
+            {isMobile && <AdBanner position="in-content" className="my-4" />}
+            
+            <div className="w-full max-w-md flex flex-col items-center space-y-4">
+              <LicensePlate />
+              <WordInput />
+              
+              {/* Score components in a single row */}
+              <ScorePanel />
+              
+              {/* Add World Tour Progress component */}
+              <WorldTourProgress />
+              
+              {/* Anuncio en contenido para todos los dispositivos */}
+              <AdBanner position="in-content" className="my-4" />
+              
+              {/* Modified "Drive" button - PURPLE with car icon to the left and shorter text */}
+              <motion.div 
+                className="w-full rounded-lg p-4 shadow-lg bg-gradient-to-r from-purple-400 to-violet-300"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="text-center">
+                  <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
+                    <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-white text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 w-full">
+                      <div className="flex items-center justify-center">
+                        {/* Car icon on the left */}
+                        <motion.div 
+                          animate={{
+                            x: [-5, 5, -5],
+                            y: [-3, 3, -3],
+                            rotate: [0, 5, -5, 0]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity
+                          }}
+                          className="mr-3 text-3xl"
+                        >
+                          🚗
+                        </motion.div>
+                        <span className="tracking-wide uppercase whitespace-normal px-2">
+                          {isEnglish ? "Drive!" : "¡CONDUCE!"}
+                        </span>
+                      </div>
+                      
+                      {/* Add decorative elements */}
+                      <motion.div 
+                        className="absolute -right-2 -top-2 w-12 h-12 rounded-full bg-yellow-300 opacity-80 z-0"
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          opacity: [0.7, 0.9, 0.7]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity
+                        }}
+                      />
+                      <motion.div 
+                        className="absolute -left-1 -bottom-1 w-8 h-8 rounded-full bg-red-400 opacity-70 z-0"
+                        animate={{
+                          scale: [1, 1.3, 1],
+                          opacity: [0.6, 0.8, 0.6]
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          delay: 0.5
+                        }}
+                      />
+                    </Button>
+                  </Link>
+                </div>
+              </motion.div>
+              
+              {/* Reset Game Button - in theme color */}
+              <motion.div className="w-full max-w-xs mt-8" whileHover={{
+              scale: 1.03
+            }} transition={{
+              type: "spring",
+              stiffness: 400
+            }}>
+                <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal ${isEnglish ? "bg-orange-700 hover:bg-orange-600" : "bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}>
+                  <RefreshCw className="mr-2 h-5 w-5" /> {t("reset_game")}
+                </Button>
+              </motion.div>
+            </div>
+            
+            {/* Error Alert using GamePopup */}
+            <ErrorAlert />
+            
+            {/* Success Alert using GamePopup */}
+            <SuccessAlert />
+            
+            {/* Level Up Alert using GamePopup */}
+            <LevelUpAlert />
+            
+            {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
+            
+            {/* Anuncio inferior */}
+            <AdBanner position="bottom" className="mt-8" />
+          </div>
+          
+          {/* Columna derecha (anuncios en desktop) */}
+          {!isMobile && (
+            <div className="hidden md:block md:w-[300px]">
+              <div className="sticky top-4">
+                <AdBanner position="sidebar" />
+              </div>
+            </div>
+          )}
         </div>
-        
-        {/* Error Alert using GamePopup */}
-        <ErrorAlert />
-        
-        {/* Success Alert using GamePopup */}
-        <SuccessAlert />
-        
-        {/* Level Up Alert using GamePopup */}
-        <LevelUpAlert />
-        
-        {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
     </div>
