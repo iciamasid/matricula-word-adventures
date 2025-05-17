@@ -38,21 +38,10 @@ export const vowels = "AEIOUÁÉÍÓÚ";
 
 // Calculate score based on the word and license plate consonants, considering language
 export function calculateScore(word: string, plateConsonants: string, language: 'es' | 'en'): number {
-  // First check if word exists in the dictionary (specifically for the selected language)
+  // First check if word exists in the dictionary
   if (!wordExists(word, language)) {
-    console.log(`Word rejected as non-existent in ${language}: ${word}`);
+    console.log(`Word rejected as non-existent: ${word}`);
     return -20; // Return negative score immediately for non-existent words
-  }
-  
-  // IMPORTANT: Check for language match - only accept English words in English mode and Spanish words in Spanish mode
-  if (language === 'en' && !isEnglishWord(word)) {
-    console.log(`Word rejected: ${word} - not an English word in English mode`);
-    return -20;
-  }
-  
-  if (language === 'es' && !isSpanishWord(word)) {
-    console.log(`Word rejected: ${word} - not a Spanish word in Spanish mode`);
-    return -20;
   }
   
   const uppercaseWord = word.toUpperCase();
@@ -122,26 +111,26 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   if (score > 0) {
     if ((language === 'es' && isEnglishWord(word)) || 
         (language === 'en' && isSpanishWord(word))) {
-      const foreignBonus = 200;
-      score = Math.max(score, 0) + foreignBonus;
-      console.log(`Foreign language bonus: +${foreignBonus} points`);
+      score = Math.max(score, 0) + 200;
+      console.log(`Foreign language bonus: +200 points`);
     }
   }
 
   // Special license plate bonus checks
   if (score > 0) {
-    // Check for 6666 pattern in the license plate - moved to a separate function
-    // This is now handled in the context component after word submission
+    // Check for 6666 pattern in the license plate
+    if (plateConsonants.startsWith("6666")) {
+      score += 500; // Add 500 points bonus for 6666
+      console.log(`License plate 6666 bonus: +500 points`);
+    }
   }
   
   console.log(`Final score for ${word}: ${score}`);
   return score;
 }
 
-// Check if a word might be English (improved)
+// Check if a word might be English (simplified)
 export function isEnglishWord(word: string): boolean {
-  if (!word) return false;
-  
   const uppercaseWord = word.toUpperCase();
   
   // Check against English word list first
@@ -156,14 +145,11 @@ export function isEnglishWord(word: string): boolean {
     /ew$/, /dge$/, /ck$/, /mb$/, /kn/, /wr/
   ];
   
-  // For English validation, be more strict - only dictionary words are valid
-  return ENGLISH_WORDS.has(uppercaseWord);
+  return englishPatterns.some(pattern => pattern.test(uppercaseWord));
 }
 
-// Check if a word might be Spanish (improved)
+// Check if a word might be Spanish
 export function isSpanishWord(word: string): boolean {
-  if (!word) return false;
-  
   const uppercaseWord = word.toUpperCase();
   
   // Check against Spanish word list first
@@ -185,7 +171,7 @@ export function isSpanishWord(word: string): boolean {
     return true;
   }
   
-  return SPANISH_WORDS.has(uppercaseWord);
+  return false;
 }
 
 // Check if a word is potentially valid (contains at least one required consonant)
@@ -232,7 +218,7 @@ export function getDestination(level: number): string {
   return destinations[index];
 }
 
-// Word validation function - Enhanced to strictly validate based on language
+// Word validation function - Enhanced to accept more Spanish words
 export function wordExists(word: string, language: 'es' | 'en'): boolean {
   // First check if word length is sufficient
   if (word.length < 3) {
@@ -244,13 +230,37 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
   
   // For Spanish words
   if (language === 'es') {
-    // Check against our explicit dictionary
+    // 1. Check against our explicit dictionary
     if (SPANISH_WORDS.has(uppercaseWord)) {
       console.log(`Word ${word} found in Spanish dictionary`);
       return true;
     }
     
-    // Check common Spanish patterns for more flexible Spanish mode
+    // 2. Check against additional Spanish words list
+    const additionalSpanishWords = [
+      "MANTENIMIENTO", "HEREDERO", "HERIDA", "HERMANO", "HERMANA", "HERRAMIENTA", 
+      "HIERRO", "HARINA", "HELADERIA", "HELADO", "FARSANTE", "FARMACIA", "FARSALIA",
+      "FAROLA", "FAMOSO", "FANTASMA", "FANTASTICO", "FANTASIA", "FASCINANTE", 
+      "FASCINAR", "FASTIDIAR", "FASTIDIO", "FATAL", "FAVORITO", "FEBRERO", "FELICIDAD",
+      "FELIZ", "FEMENINO", "FENOMENO", "FERIA", "FEROZ", "FERTILIZANTE", "FESTIVAL",
+      "FEUDAL", "FIABLE", "FIANZA", "FICCION", "FIDELIDAD", "FIEBRE", "FIEREZA",
+      "FIESTA", "FIGURA", "FIJAR", "FILA", "FILOSOFIA", "FILTRAR", "FINAL", "FINALIZAR",
+      "FINANCIAR", "FINO", "FIRMA", "FIRME", "FISCAL", "FISICO", "FLAUTA", "FLECHA",
+      "FLOR", "FLOTAR", "FLUIR", "FOCO", "FOGATA", "FOLLETO", "FOMENTAR", "FONDO",
+      "FORMA", "FORMAL", "FORMATO", "FORMAR", "FORMULA", "FORTUNA", "FORZAR", "FOSA",
+      "FOTO", "FOTOGRAFIA", "FRACASAR", "FRACCION", "FRAGIL", "FRAGMENTO", "FRANCES",
+      "FRANQUEZA", "FRASE", "FRATERNIDAD", "FRAUDE", "FRECUENCIA", "FRENO", "FRENTE",
+      "FRESCO", "FREZA", "FRIGORIFICO", "FRIO", "FRONTERA", "FRUTA", "FUEGO", "FUENTE",
+      "FUERA", "FUERTE", "FUERZA", "FUNCION", "FUNCIONAR", "FUNDAMENTAL", "FUNDAMENTO",
+      "FUNDAR", "FUNERAL", "FUNESTO", "FURGONETA", "FURIOSO", "FUTBOL", "FUTURO"
+    ];
+    
+    if (additionalSpanishWords.includes(uppercaseWord)) {
+      console.log(`Word ${word} found in additional Spanish words list`);
+      return true;
+    }
+    
+    // 3. Check for Spanish patterns
     const spanishPatterns = [
       /ón$/, /ción$/, /sión$/, /ado$/, /ido$/, /ada$/, /ida$/, /mente$/, /idad$/,
       /aba$/, /ía$/, /ar$/, /er$/, /ir$/, /ñ/, /rr/, /ante$/, /ente$/, /anza$/,
@@ -262,9 +272,10 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
       return true;
     }
     
-    // More generous length validation for Spanish
+    // 4. More generous length validation for Spanish
     if (word.length >= 5) {
       // Words 5+ letters are likely valid if they follow basic Spanish structure
+      // Check that word follows vowel-consonant patterns typical in Spanish
       let vowelCount = 0;
       let consonantCount = 0;
       
@@ -277,6 +288,7 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
       }
       
       // Spanish words typically have good vowel-consonant ratio
+      // and don't have more than 3 consonants in a row
       if (vowelCount > 1 && consonantCount > 0 && !(/[^AEIOUÁÉÍÓÚ]{4,}/).test(uppercaseWord)) {
         console.log(`Word ${word} likely valid Spanish based on structure and length`);
         return true;
@@ -284,19 +296,24 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
     }
   }
   
-  // For English words - be more strict, only accept dictionary words
+  // For English words
   if (language === 'en') {
     if (ENGLISH_WORDS.has(uppercaseWord)) {
       console.log(`Word ${word} found in English dictionary`);
       return true;
     }
+    
+    if (isEnglishWord(word)) {
+      console.log(`Word ${word} validated by English patterns`);
+      return true;
+    }
   }
   
-  console.log(`Word ${word} not found in any dictionary or pattern match for language: ${language}`);
+  console.log(`Word ${word} not found in any dictionary or pattern match`);
   return false;
 }
 
-// Keep the existing SPANISH_WORDS and ENGLISH_WORDS sets
+// Keep the existing SPANISH_WORDS set 
 const SPANISH_WORDS = new Set([
   "CASA", "PERRO", "GATO", "MESA", "SILLA", "LIBRO", "PAPEL", "PLUMA", "CARRO",
   "MUNDO", "TIEMPO", "COLOR", "COMIDA", "AGUA", "TIERRA", "FUEGO", "AIRE", "VIDA",

@@ -1,170 +1,149 @@
 
 import React from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
+import { X, Target, Award, Star, Book, Zap, Check, Globe } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface GameInstructionsProps {
   onClose: () => void;
 }
 
 const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
-  const { isEnglish } = useLanguage();
+  const { t, isEnglish } = useLanguage();
+  
+  // Determine styling based on language
+  const primaryColor = isEnglish ? "orange" : "purple";
+  const bgGradient = isEnglish 
+    ? "from-orange-600 to-orange-800" 
+    : "from-purple-600 to-purple-800";
+  const iconColor = "text-yellow-300";
   
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="w-[90vw] max-w-lg rounded-2xl bg-gradient-to-br from-amber-50 to-orange-100 border-4 border-orange-300 dark:from-purple-900 dark:to-purple-800 dark:border-purple-500">
-        <DialogHeader className="text-center">
-          <DialogTitle className={`text-3xl font-bold ${isEnglish ? 'text-orange-800' : 'text-purple-800'} kids-text`}>
-            {isEnglish ? 'Game Instructions' : 'Instrucciones del Juego'}
-          </DialogTitle>
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            className="absolute right-4 top-4 rounded-full h-8 w-8 p-0"
+    <motion.div 
+      initial={{ opacity: 0 }} 
+      animate={{ opacity: 1 }} 
+      exit={{ opacity: 0 }} 
+      className="fixed inset-0 flex items-end justify-end z-50 bg-black/70 p-4" 
+      onClick={onClose}
+    >
+      <motion.div 
+        initial={{ scale: 0.9, opacity: 0, y: 50 }} 
+        animate={{ scale: 1, opacity: 1, y: 0 }} 
+        transition={{ duration: 0.3 }} 
+        className={`bg-gradient-to-br ${bgGradient} rounded-xl p-6 max-w-md w-full mb-4 mr-4 shadow-lg relative overflow-y-auto max-h-[80vh] border-4 border-yellow-400`} 
+        onClick={e => e.stopPropagation()}
+      >
+        <button onClick={onClose} className="absolute top-3 right-3 text-white hover:text-yellow-300">
+          <X className="w-6 h-6" />
+        </button>
+
+        <h2 className="text-3xl kids-text mb-4 text-white flex items-center gap-2">
+          <Book className={iconColor + " w-7 h-7"} />
+          {t('how_to_play')}
+        </h2>
+
+        <div className="space-y-5">
+          <motion.div 
+            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" 
+            whileHover={{ scale: 1.02 }} 
+            transition={{ type: "spring", stiffness: 300 }}
           >
-            <X className="h-4 w-4" />
-          </Button>
-        </DialogHeader>
-        
-        <div className={`p-4 space-y-6 text-lg ${isEnglish ? 'text-orange-900' : 'text-purple-900'}`}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <h3 className="font-bold text-xl mb-2">
-              {isEnglish ? 'How to Play' : 'Cómo Jugar'}
+            <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
+              <Target className={iconColor + " w-6 h-6"} />
+              {isEnglish ? "Game Objective" : "Objetivo del juego"}
             </h3>
-            <p className="mb-2">
-              {isEnglish
-                ? '1. Each license plate shows 3 consonants. You need to create words using those consonants!'
-                : '1. Cada matrícula muestra 3 consonantes. ¡Debes crear palabras usando esas consonantes!'}
-            </p>
-            <p>
-              {isEnglish
-                ? '2. Type a word that contains at least one of the consonants from the license plate.'
-                : '2. Escribe una palabra que contenga al menos una de las consonantes de la matrícula.'}
+            <p className="instruction-text kids-text text-white">
+              {isEnglish ? "Form words using the consonants from the car's license plate!" : "¡Forma palabras usando las consonantes de la matrícula del coche!"}
             </p>
           </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+
+          <motion.div 
+            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" 
+            whileHover={{ scale: 1.02 }} 
+            transition={{ type: "spring", stiffness: 300 }}
           >
-            <h3 className="font-bold text-xl mb-2">
-              {isEnglish ? 'Scoring System' : 'Sistema de Puntuación'}
+            <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
+              <Award className={iconColor + " w-6 h-6"} />
+              {isEnglish ? "Scoring" : "Puntuación"}
             </h3>
-            <ul className="list-disc pl-6 space-y-1">
-              <li>
-                {isEnglish
-                  ? '3 consonants in order: 100 points'
-                  : '3 consonantes en orden: 100 puntos'}
+            <ul className="list-none space-y-2">
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>{isEnglish ? "100 points for using all 3 consonants in the same order" : "100 puntos por usar las 3 consonantes en el mismo orden"}</span>
               </li>
-              <li>
-                {isEnglish
-                  ? '3 consonants not in order: 75 points'
-                  : '3 consonantes sin orden: 75 puntos'}
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>{isEnglish ? "75 points for using all 3 consonants in a different order" : "75 puntos por usar las 3 consonantes en otro orden"}</span>
               </li>
-              <li>
-                {isEnglish
-                  ? '2 consonants in order: 50 points'
-                  : '2 consonantes en orden: 50 puntos'}
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>{isEnglish ? "50 points for using 2 consonants in the same order" : "50 puntos por usar 2 consonantes en el mismo orden"}</span>
               </li>
-              <li>
-                {isEnglish
-                  ? '2 consonants not in order: 25 points'
-                  : '2 consonantes sin orden: 25 puntos'}
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>{isEnglish ? "25 points for using 2 consonants in a different order" : "25 puntos por usar 2 consonantes en otro orden"}</span>
               </li>
-              <li>
-                {isEnglish
-                  ? '1 consonant: 10 points'
-                  : '1 consonante: 10 puntos'}
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>{isEnglish ? "10 points for using 1 consonant" : "10 puntos por usar 1 consonante"}</span>
               </li>
-              <li className="font-semibold text-red-600">
-                {isEnglish
-                  ? 'Invalid word or no consonants: -20 points'
-                  : 'Palabra inválida o sin consonantes: -20 puntos'}
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>{isEnglish ? "200 bonus points for Spanish words!" : "¡Bonus de 200 puntos por palabras en inglés!"}</span>
+              </li>
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>
+                  {isEnglish 
+                    ? "500 bonus points if the license plate numbers are 6666! And 20 points if your age appears among the numbers." 
+                    : "¡Bonus de 500 puntos si los números de la matrícula son 6666! Y 20 puntos si aparece tu edad entre los números."
+                  }
+                </span>
+              </li>
+              <li className="instruction-text kids-text text-red-300 flex items-start gap-2">
+                <X className="w-5 h-5 text-red-400 mt-1 flex-shrink-0" /> 
+                <span>
+                  {isEnglish
+                    ? "20 points are deducted if the word doesn't exist or doesn't contain any consonant"
+                    : "Se restan 20 puntos si la palabra no existe o no contiene ninguna consonante"
+                  }
+                </span>
               </li>
             </ul>
           </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+
+          <motion.div 
+            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" 
+            whileHover={{ scale: 1.02 }} 
+            transition={{ type: "spring", stiffness: 300 }}
           >
-            <h3 className="font-bold text-xl mb-2">
-              {isEnglish ? 'Bonus Points' : 'Puntos Extra'}
+            <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
+              <Globe className={iconColor + " w-6 h-6"} />
+              {isEnglish ? "Levels and Travels" : "Niveles y viajes"}
             </h3>
-            <ul className="list-disc pl-6 space-y-1">
-              <li>
-                {isEnglish
-                  ? 'Longer words (>4 letters): Up to +50 points'
-                  : 'Palabras largas (>4 letras): Hasta +50 puntos'}
-              </li>
-              <li>
-                {isEnglish
-                  ? 'Words in the opposite language: +200 points'
-                  : 'Palabras en el idioma contrario: +200 puntos'}
-              </li>
-              <li>
-                {isEnglish
-                  ? 'License plate with 6666: +500 points'
-                  : 'Matrícula con 6666: +500 puntos'}
-              </li>
-              <li>
-                {isEnglish
-                  ? 'Triple numbers in plate: +100 points'
-                  : 'Triple número en la matrícula: +100 puntos'}
-              </li>
-              <li>
-                {isEnglish
-                  ? 'Plate contains your age: +10 points'
-                  : 'Matrícula contiene tu edad: +10 puntos'}
-              </li>
-            </ul>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-          >
-            <h3 className="font-bold text-xl mb-2">
-              {isEnglish ? 'Important Rules' : 'Reglas Importantes'}
-            </h3>
-            <p className="mb-2 font-semibold">
+            <p className="instruction-text kids-text text-white">
               {isEnglish
-                ? '- In English mode: Only English words are accepted!'
-                : '- En modo inglés: ¡Solo se aceptan palabras en inglés!'}
-            </p>
-            <p className="font-semibold">
-              {isEnglish
-                ? '- In Spanish mode: Only Spanish words are accepted!'
-                : '- En modo español: ¡Solo se aceptan palabras en español!'}
+                ? "For every 500 points, you'll level up and unlock a trip to a new country. Explore the world with your words and discover amazing places!"
+                : "Por cada 500 puntos, subirás de nivel y desbloquearás un viaje a un nuevo país. ¡Explora el mundo con tus palabras y descubre lugares increíbles!"
+              }
             </p>
           </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-            className="mt-4"
+
+          <motion.div 
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }} 
+            className="pt-2"
           >
-            <Button 
+            <button 
               onClick={onClose} 
-              className={`w-full py-6 text-lg kids-text ${isEnglish ? 'bg-orange-600 hover:bg-orange-700' : 'bg-purple-600 hover:bg-purple-700'}`}
+              className={`w-full bg-yellow-400 hover:bg-yellow-500 ${isEnglish ? "text-orange-900" : "text-purple-900"} py-3 px-4 rounded-lg kids-text text-xl font-bold`}
             >
-              {isEnglish ? "Let's Play!" : "¡Vamos a Jugar!"}
-            </Button>
+              {t('understood')}
+            </button>
           </motion.div>
         </div>
-      </DialogContent>
-    </Dialog>
+      </motion.div>
+    </motion.div>
   );
 };
 

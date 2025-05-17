@@ -1,10 +1,7 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
 import { WORLD_DESTINATIONS } from '@/utils/mapData';
-import { useLanguage } from '@/context/LanguageContext';
-import { toast } from '@/hooks/use-toast';
 
 interface CountryInfo {
   city: string;
@@ -41,7 +38,6 @@ interface GameContextType {
   totalPoints: number;
   highScore: number;
   gamesPlayed: number;
-  setTotalPoints: (points: number) => void;
   
   // License plate related
   licensePlate: string;
@@ -65,19 +61,14 @@ interface GameContextType {
   showBonusPopup: boolean;
   setShowBonusPopup: (show: boolean) => void;
   bonusPoints: number;
-  bonusType: string;
   showAgeBonusPopup: boolean;
-  showTripleNumbersPopup: boolean;
   showCompletionBanner: boolean;
   
   // Game control
   resetGame: () => void;
   
-  // Destinations update
+  // Adding the missing updateDestinations function
   updateDestinations: (currentLevel: number) => void;
-  
-  // Added: previous license plate for bonus checking
-  previousLicensePlate: string;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -92,9 +83,6 @@ export const GameProvider: React.FC<{
     bonusPoints: number;
   }) => React.ReactNode);
 }> = ({ children }) => {
-  const { language } = useLanguage(); // Get current language
-  const currentLang = language === 'es' ? 'es' : 'en'; // Map to our expected type
-  
   // Initialize with default country information
   const [originInfo, setOriginInfo] = useState<CountryInfo>({ 
     city: 'Madrid', 
@@ -138,7 +126,6 @@ export const GameProvider: React.FC<{
   const [plateConsonants, setPlateConsonants] = useState<string>('');
   const [currentWord, setCurrentWord] = useState<string>('');
   const [isGeneratingLicensePlate, setIsGeneratingLicensePlate] = useState<boolean>(false);
-  const [previousLicensePlate, setPreviousLicensePlate] = useState<string>(''); // Add this to track previous license plate
   
   // Game feedback and messages states
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
@@ -148,17 +135,11 @@ export const GameProvider: React.FC<{
   // Popups and banners states
   const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
   const [bonusPoints, setBonusPoints] = useState<number>(500);
-  const [bonusType, setBonusType] = useState<string>('6666');
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState<boolean>(false);
-  const [showTripleNumbersPopup, setShowTripleNumbersPopup] = useState<boolean>(false);
   const [showCompletionBanner, setShowCompletionBanner] = useState<boolean>(false);
   
   // Track previous destination to set as origin when leveling up
   const [previousDestination, setPreviousDestination] = useState<CountryInfo | null>(null);
-  
-  // Control popup queue and sequence
-  const [pendingLevelUp, setPendingLevelUp] = useState<boolean>(false);
-  const [popupInProgress, setPopupInProgress] = useState<boolean>(false);
   
   // Clear feedback functions
   const clearSubmitSuccess = () => setSubmitSuccess(null);
@@ -256,7 +237,6 @@ export const GameProvider: React.FC<{
     setPlateConsonants('');
     setCurrentWord('');
     setIsGeneratingLicensePlate(false);
-    setPreviousLicensePlate(''); // Reset previous license plate
     
     setSubmitSuccess(null);
     setErrorMessage(null);
@@ -278,8 +258,6 @@ export const GameProvider: React.FC<{
     setShowBonusPopup(false);
     setShowAgeBonusPopup(false);
     setShowCompletionBanner(false);
-    setPopupInProgress(false);
-    setPendingLevelUp(false);
     
     // Reset previous destination
     setPreviousDestination(null);
@@ -311,15 +289,23 @@ export const GameProvider: React.FC<{
     if (newLevel > level) {
       // Save current destination as previous before updating
       setPreviousDestination({...destinationInfo});
-      setLevel(newLevel);
       
-      // If a bonus popup is currently shown, delay the level up popup
-      if (popupInProgress) {
-        console.log("Delaying level up popup because bonus popup is active");
-        setPendingLevelUp(true);
-      } else {
-        showLevelUpPopup();
+      setLevel(newLevel);
+      setShowLevelUp(true);
+      
+      // Play level up sound (optional)
+      try {
+        const audio = new Audio('/lovable-uploads/level-up.mp3');
+        audio.volume = 0.5;
+        audio.play();
+      } catch (e) {
+        console.error("Could not play level up sound", e);
       }
+      
+      // Auto-hide level up message after 5 seconds
+      setTimeout(() => {
+        clearLevelUpMessage();
+      }, 5000);
       
       console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
       // Update destinations for the new level
@@ -327,168 +313,55 @@ export const GameProvider: React.FC<{
     }
   }, [totalPoints]);
   
-  // Show level up popup
-  const showLevelUpPopup = () => {
-    setShowLevelUp(true);
-    setPopupInProgress(true);
-    
-    // Play level up sound
-    try {
-      const audio = new Audio('/lovable-uploads/level-up.mp3');
-      audio.volume = 0.5;
-      audio.play();
-    } catch (e) {
-      console.error("Could not play level up sound", e);
-    }
-    
-    // Auto-hide level up message after 3 seconds
-    setTimeout(() => {
-      clearLevelUpMessage();
-      setPopupInProgress(false);
-      checkPendingLevelUp();
-    }, 3000);
-  };
-  
-  // Check if there is a pending level up popup to show after current popup closes
-  const checkPendingLevelUp = () => {
-    if (pendingLevelUp) {
-      setPendingLevelUp(false);
-      setTimeout(() => {
-        showLevelUpPopup();
-      }, 500); // Small delay before showing level up
-    }
-  };
-  
-  // Check for special license plate patterns: 6666 pattern, triple numbers, and matching age
+  // Check for special license plate patterns and player age bonus
   useEffect(() => {
-    if (!licensePlate || popupInProgress) {
-      // Skip this check if there's already a popup showing
-      return;
-    }
-    
-    // Extract the number part of the license plate
-    const numbers = licensePlate.substring(0, 4);
-    console.log(`Checking license plate ${licensePlate} for special patterns. Numbers part: ${numbers}`);
-    
-    // First check for 6666 pattern (highest priority bonus)
-    if (numbers === "6666") {
-      console.log("🎉 6666 pattern detected in license plate!");
-      showBonusPopup6666();
-      return;
-    }
-    
-    // Check if license plate has triple numbers (e.g. "111", "222", etc.)
-    const hasTripleNumbers = /(\d)\1{2}/.test(numbers);
-    if (hasTripleNumbers) {
-      console.log("🎲 Triple numbers detected in license plate!");
-      showTripleNumbersPopupImpl();
-      return;
-    }
-    
-    // Check if license plate matches player age for bonus
-    if (playerAge !== null) {
-      // Format the player age as a string and check if it appears in the numbers part
-      const playerAgeStr = playerAge.toString();
-      const containsAge = numbers.includes(playerAgeStr);
+    if (licensePlate) {
+      const numbers = licensePlate.substring(0, 4);
       
-      if (containsAge) {
-        console.log(`🎂 Age ${playerAge} detected in license plate!`);
-        showAgeBonusPopupImpl();
+      // Check for 6666 pattern (bonus points)
+      if (numbers === "6666" && !showBonusPopup) {
+        setShowBonusPopup(true);
+        
+        // Add bonus points - 500 points
+        const bonusAmount = 500;
+        setBonusPoints(bonusAmount);
+        setTotalPoints(prev => prev + bonusAmount);
+        console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
+        
+        // Auto-hide bonus popup after 5 seconds
+        setTimeout(() => {
+          setShowBonusPopup(false);
+        }, 5000);
+      }
+      
+      // Check if license plate matches player age for bonus
+      if (playerAge !== null && parseInt(numbers) === playerAge && !showAgeBonusPopup) {
+        setShowAgeBonusPopup(true);
+        
+        // Add age bonus points (20 points)
+        const ageBonusPoints = 20;
+        setTotalPoints(prev => prev + ageBonusPoints);
+        console.log(`🎂 Age match bonus! License plate matches your age (${playerAge})! +${ageBonusPoints} points!`);
+        
+        // Auto-hide age bonus popup after 4 seconds
+        setTimeout(() => {
+          setShowAgeBonusPopup(false);
+        }, 4000);
       }
     }
-  }, [licensePlate]);
+  }, [licensePlate, playerAge]);
   
-  // Show 6666 bonus popup
-  const showBonusPopup6666 = () => {
-    setShowBonusPopup(true);
-    setBonusType('6666');
-    setPopupInProgress(true);
-    
-    // Set bonus points - 500 points
-    const bonusAmount = 500;
-    setBonusPoints(bonusAmount);
-    
-    console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
-    
-    // Play bonus sound
-    try {
-      const audio = new Audio('/lovable-uploads/level-up.mp3');
-      audio.volume = 0.7;
-      audio.play();
-    } catch (e) {
-      console.error("Could not play bonus sound", e);
-    }
-    
-    // Auto-hide bonus popup after 2 seconds
-    setTimeout(() => {
-      setShowBonusPopup(false);
-      // Add the bonus points after the popup closes
-      setTotalPoints(prev => prev + bonusAmount);
-      setPopupInProgress(false);
-      checkPendingLevelUp();
-    }, 2000);
-  };
-  
-  // Show triple numbers bonus popup 
-  const showTripleNumbersPopupImpl = () => {
-    setShowTripleNumbersPopup(true);
-    setBonusType('triple');
-    setPopupInProgress(true);
-    
-    // Add triple numbers bonus (100 points)
-    const tripleBonusPoints = 100;
-    setBonusPoints(tripleBonusPoints);
-    
-    console.log(`🎲 Triple numbers bonus! +${tripleBonusPoints} points!`);
-    
-    // Play bonus sound
-    try {
-      const audio = new Audio('/lovable-uploads/level-up.mp3');
-      audio.volume = 0.7;
-      audio.play();
-    } catch (e) {
-      console.error("Could not play bonus sound", e);
-    }
-    
-    // Auto-hide triple numbers popup after 2 seconds
-    setTimeout(() => {
-      setShowTripleNumbersPopup(false);
-      // Add the bonus points after popup closes
-      setTotalPoints(prev => prev + tripleBonusPoints);
-      setPopupInProgress(false);
-      checkPendingLevelUp();
-    }, 2000);
-  };
-  
-  // Show age match bonus popup
-  const showAgeBonusPopupImpl = () => {
-    setShowAgeBonusPopup(true);
-    setBonusType('age');
-    setPopupInProgress(true);
-    
-    // Add age bonus points (10 points)
-    const ageBonusPoints = 10;
-    
-    console.log(`🎂 Age match bonus! License plate contains your age (${playerAge})! +${ageBonusPoints} points!`);
-    
-    // Play bonus sound
-    try {
-      const audio = new Audio('/lovable-uploads/level-up.mp3');
-      audio.volume = 0.6;
-      audio.play();
-    } catch (e) {
-      console.error("Could not play bonus sound", e);
-    }
-    
-    // Auto-hide age bonus popup after 2 seconds
-    setTimeout(() => {
-      setShowAgeBonusPopup(false);
-      // Add bonus points after popup closes
-      setTotalPoints(prev => prev + ageBonusPoints);
-      setPopupInProgress(false);
-      checkPendingLevelUp();
-    }, 2000);
-  };
+  // Country progression for the world tour
+  // Level 1: Spain -> France
+  // Level 2: France -> Italy
+  // Level 3: Italy -> Russia
+  // Level 4: Russia -> Japan
+  // Level 5: Japan -> Australia
+  // Level 6: Australia -> USA
+  // Level 7: USA -> Mexico
+  // Level 8: Mexico -> Peru
+  // Level 9: Peru -> Argentina
+  // Level 10: Argentina -> Spain
   
   // Function to get destinations based on level, using previous destination as new origin
   const updateDestinations = (currentLevel: number) => {
@@ -575,9 +448,6 @@ export const GameProvider: React.FC<{
   
   // Generate a new license plate using the utility functions
   const generateNewPlateImpl = () => {
-    // Save current license plate before generating a new one
-    setPreviousLicensePlate(licensePlate); 
-    
     let newPlate;
     setIsGeneratingLicensePlate(true);
     
@@ -593,33 +463,23 @@ export const GameProvider: React.FC<{
       
       newPlate = `6666${randomConsonants}`;
       console.log(`Generated special 6666 plate: ${newPlate} (Game ${gamesPlayed + 1})`);
-    } 
-    // Every 7th game (not divisible by 5), generate a plate with triple numbers
-    else if ((gamesPlayed + 1) % 7 === 0) {
-      // Generate a plate with triple numbers (e.g., 1110, 2220, etc.)
-      const digit = Math.floor(Math.random() * 10).toString();
-      const spanishConsonants = "BCDFGHJKLMNPQRSTVZRRSTDLNC";
-      const randomConsonants = Array(3)
-        .fill("")
-        .map(() => spanishConsonants.charAt(Math.floor(Math.random() * spanishConsonants.length)))
-        .join("");
       
-      newPlate = `${digit}${digit}${digit}${Math.floor(Math.random() * 10)}${randomConsonants}`;
-      console.log(`Generated triple numbers plate: ${newPlate} (Game ${gamesPlayed + 1})`);
-    } 
-    // Every 10th game, generate a plate that matches player's age (if available)
-    else if ((gamesPlayed + 1) % 10 === 0 && playerAge !== null) {
-      // Create a plate that matches the player's age
-      const spanishConsonants = "BCDFGHJKLMNPQRSTVZRRSTDLNC";
-      const randomConsonants = Array(3)
-        .fill("")
-        .map(() => spanishConsonants.charAt(Math.floor(Math.random() * spanishConsonants.length)))
-        .join("");
+      // Ensure bonus popup appears with the special plate
+      setShowBonusPopup(true);
       
-      // Format age to 4 digits (with leading zeros if needed)
-      const formattedAge = playerAge.toString().padStart(4, '0');
-      newPlate = `${formattedAge}${randomConsonants}`;
-      console.log(`Generated age matching plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+      // Add bonus points
+      const bonusAmount = 500;
+      setBonusPoints(bonusAmount);
+      setTotalPoints(prev => prev + bonusAmount);
+      
+      // Play bonus sound
+      try {
+        const audio = new Audio('/lovable-uploads/level-up.mp3');
+        audio.volume = 0.6;
+        audio.play();
+      } catch (e) {
+        console.error("Could not play bonus sound", e);
+      }
     } else {
       newPlate = generateLicensePlate();
       console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
@@ -639,16 +499,6 @@ export const GameProvider: React.FC<{
     generateNewPlateImpl();
   };
   
-  // Check if previous license plate had 6666 pattern and show bonus if needed
-  const checkPrevious6666Bonus = () => {
-    if (previousLicensePlate && previousLicensePlate.startsWith("6666")) {
-      console.log("Previous plate had 6666 pattern - showing bonus popup");
-      showBonusPopup6666();
-      return true;
-    }
-    return false;
-  };
-  
   // Submit word function
   const submitWord = () => {
     if (!currentWord || currentWord.length < 3) {
@@ -656,7 +506,7 @@ export const GameProvider: React.FC<{
       return;
     }
     
-    console.log(`Submitting word: ${currentWord} in language mode: ${currentLang}`);
+    console.log(`Submitting word: ${currentWord}`);
     
     // Check if word is valid
     import('@/utils/gameUtils').then(({ wordExists, isValidWord, calculateScore }) => {
@@ -664,40 +514,24 @@ export const GameProvider: React.FC<{
       if (!isValidWord(currentWord, plateConsonants)) {
         setErrorMessage('La palabra debe incluir al menos una consonante de la matrícula');
         console.log(`Word rejected: ${currentWord} (doesn't contain any consonant from ${plateConsonants})`);
-        // IMPORTANT: Subtract 20 points for invalid words
-        setTotalPoints(prev => Math.max(0, prev - 20));
         return;
       }
       
-      // Then check if the word exists in our dictionary for the current language
-      if (!wordExists(currentWord, currentLang)) {
-        const errorMsg = currentLang === 'es' 
-          ? 'Palabra no válida: no existe esta palabra en español' 
-          : 'Invalid word: this word does not exist in English';
-          
-        setErrorMessage(errorMsg);
-        console.log(`Word rejected: ${currentWord} (not in dictionary for ${currentLang})`);
-        
-        // IMPORTANT: Subtract 20 points for invalid words
-        setTotalPoints(prev => Math.max(0, prev - 20));
+      // Then check if the word exists in our dictionary
+      if (!wordExists(currentWord, 'es')) {
+        setErrorMessage('Palabra no válida: no existe esta palabra');
+        console.log(`Word rejected: ${currentWord} (not in dictionary)`);
         return;
       }
       
       // Calculate score based on word and current license plate
-      const calculatedScore = calculateScore(currentWord, plateConsonants, currentLang);
+      const calculatedScore = calculateScore(currentWord, plateConsonants, 'es');
       console.log(`Score calculated for ${currentWord}: ${calculatedScore}`);
       
       if (calculatedScore < 0) {
         // Word is invalid
-        const errorMsg = currentLang === 'es' 
-          ? 'Palabra no válida o no contiene las consonantes requeridas' 
-          : 'Invalid word or does not contain required consonants';
-          
-        setErrorMessage(errorMsg);
+        setErrorMessage('Palabra no válida o no contiene las consonantes requeridas');
         console.log(`Word rejected: ${currentWord} (negative score ${calculatedScore})`);
-        
-        // IMPORTANT: Subtract 20 points for invalid words
-        setTotalPoints(prev => Math.max(0, prev - 20));
         return;
       }
       
@@ -707,7 +541,6 @@ export const GameProvider: React.FC<{
       setTotalPoints(prev => prev + calculatedScore);
       console.log(`Word accepted: ${currentWord} (+${calculatedScore} points, total: ${totalPoints + calculatedScore})`);
       
-      // Show success message
       if (calculatedScore > 75) {
         setSubmitSuccess(`¡${currentWord} es correcta! +${calculatedScore} puntos`);
       } else {
@@ -722,12 +555,6 @@ export const GameProvider: React.FC<{
       
       // Reset current word
       setCurrentWord('');
-      
-      // Check if previous license plate had 6666 AFTER successful word submission
-      // This needs to happen after a short delay to ensure proper popup sequence
-      setTimeout(() => {
-        checkPrevious6666Bonus();
-      }, 500);
     });
   };
 
@@ -772,7 +599,6 @@ export const GameProvider: React.FC<{
     totalPoints,
     highScore,
     gamesPlayed,
-    setTotalPoints,
     
     // License plate related
     licensePlate,
@@ -796,9 +622,7 @@ export const GameProvider: React.FC<{
     showBonusPopup,
     setShowBonusPopup,
     bonusPoints,
-    bonusType,
     showAgeBonusPopup,
-    showTripleNumbersPopup,
     showCompletionBanner,
     
     // Game control
@@ -806,9 +630,6 @@ export const GameProvider: React.FC<{
     
     // Expose updateDestinations function
     updateDestinations,
-    
-    // Previous license plate
-    previousLicensePlate
   };
 
   // Check if children is a function to pass bonus popup state
