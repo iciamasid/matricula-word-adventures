@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,9 +14,7 @@ const WordInput: React.FC = () => {
     submitWord,
     generateNewPlate,
     plateConsonants,
-    submitSuccess,
-    errorMessage,
-    totalPoints
+    submitSuccess
   } = useGame();
   
   const { t, isEnglish } = useLanguage();
@@ -28,8 +25,11 @@ const WordInput: React.FC = () => {
   const [placeholderText, setPlaceholderText] = useState("");
   const [fullPlaceholder, setFullPlaceholder] = useState("");
   
-  // Focus the input when the component mounts - REMOVED auto-focus
+  // Remove the auto-focus on the input so keyboard doesn't appear automatically
   useEffect(() => {
+    // Don't auto-focus the input
+    // This is intentionally left empty to prevent auto-focus
+    
     // Set the full placeholder text based on language
     // Ensure plateConsonants is always an array we can join
     let consonantsText = "";
@@ -99,14 +99,6 @@ const WordInput: React.FC = () => {
     }
   }, [submitSuccess, generateNewPlate]);
   
-  // Effect to handle error message
-  useEffect(() => {
-    if (errorMessage) {
-      // We don't need to directly modify the totalPoints here anymore
-      // The deduction is now handled in the GameContext
-    }
-  }, [errorMessage]);
-  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentWord(e.target.value.toUpperCase());
   };
@@ -147,7 +139,8 @@ const WordInput: React.FC = () => {
           onKeyDown={handleKeyDown} 
           placeholder={placeholderText || " "} 
           className={`flex-1 text-center font-bold py-6 uppercase border-2 ${borderColor} shadow-md kids-text ${fontSize}`} 
-          autoComplete="off" 
+          autoComplete="off"
+          // Remove autofocus attribute to prevent keyboard from showing up automatically
         />
         <motion.div 
           whileHover={{

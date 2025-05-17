@@ -36,7 +36,6 @@ interface GameContextType {
   score: number;
   previousScore: number;
   totalPoints: number;
-  setTotalPoints: (points: number | ((prev: number) => number)) => void; // Add this line to expose the setter
   highScore: number;
   gamesPlayed: number;
   
@@ -326,17 +325,13 @@ export const GameProvider: React.FC<{
         // Add bonus points - 500 points
         const bonusAmount = 500;
         setBonusPoints(bonusAmount);
+        setTotalPoints(prev => prev + bonusAmount);
+        console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
         
-        // Do not automatically add points here - we'll do it after bonus popup closes
-        console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points ready!`);
-        
-        // Auto-hide bonus popup after 2 seconds and then apply the points
+        // Auto-hide bonus popup after 5 seconds
         setTimeout(() => {
           setShowBonusPopup(false);
-          // Now add the bonus points after showing the popup
-          setTotalPoints(prev => prev + bonusAmount);
-          console.log(`Bonus points (${bonusAmount}) added after popup closed`);
-        }, 2000);
+        }, 5000);
       }
       
       // Check if license plate matches player age for bonus
@@ -476,12 +471,15 @@ export const GameProvider: React.FC<{
       const bonusAmount = 500;
       setBonusPoints(bonusAmount);
       setTotalPoints(prev => prev + bonusAmount);
-      console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
       
-      // Auto-hide bonus popup after 5 seconds
-      setTimeout(() => {
-        setShowBonusPopup(false);
-      }, 5000);
+      // Play bonus sound
+      try {
+        const audio = new Audio('/lovable-uploads/level-up.mp3');
+        audio.volume = 0.6;
+        audio.play();
+      } catch (e) {
+        console.error("Could not play bonus sound", e);
+      }
     } else {
       newPlate = generateLicensePlate();
       console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
@@ -599,7 +597,6 @@ export const GameProvider: React.FC<{
     score,
     previousScore,
     totalPoints,
-    setTotalPoints,
     highScore,
     gamesPlayed,
     

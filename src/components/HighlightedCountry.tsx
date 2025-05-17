@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { getCountryPosition } from '@/utils/mapData';
 import { WORLD_DESTINATIONS } from '@/utils/mapData';
+import { useGame } from '@/context/GameContext';
 
 interface HighlightedCountryProps {
   country: string;
@@ -11,6 +12,8 @@ interface HighlightedCountryProps {
 const HighlightedCountry: React.FC<HighlightedCountryProps> = ({
   country
 }) => {
+  const { level } = useGame();
+  
   // Find the country's flag from the destinations data
   const countryData = WORLD_DESTINATIONS.find(dest => dest.country === country);
   const countryFlag = countryData?.flag || "🚩";
@@ -59,30 +62,24 @@ const HighlightedCountry: React.FC<HighlightedCountryProps> = ({
       
       {/* Marker container */}
       <div className="bg-white rounded-full p-1 shadow-lg relative z-20">
-        {/* Add car icon for current country/location */}
-        <motion.div
-          className="text-xl"
-          animate={{
-            rotate: [0, 10, 0, -10, 0]
-          }}
-          transition={{
-            duration: 2,
-            repeat: Infinity
-          }}
-        >
-          🚗
-        </motion.div>
+        {/* Show car icon for level 1 (Spain) */}
+        {level === 1 && country === "España" && (
+          <motion.div
+            animate={{
+              rotate: [0, 10, -10, 0],
+              y: [0, -2, 0, 2, 0]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="text-2xl"
+          >
+            🚗
+          </motion.div>
+        )}
       </div>
-      
-      {/* Country name label */}
-      <motion.div
-        className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded-md shadow-md text-xs font-bold whitespace-nowrap z-20"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
-      >
-        {countryFlag} {country}
-      </motion.div>
     </motion.div>
   );
 };
