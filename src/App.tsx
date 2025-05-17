@@ -13,7 +13,6 @@ import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import TripleNumbersPopup from "./components/TripleNumbersPopup";
-import AdBanner from "./components/AdBanner";
 
 const queryClient = new QueryClient();
 
@@ -28,11 +27,6 @@ const App = () => {
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
-                  {/* Banner superior de anuncios global */}
-                  <div className="w-full max-w-5xl mx-auto px-4 pt-3">
-                    <AdBanner position="top" />
-                  </div>
-                  
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/country/:country" element={<CountryPage />} />
