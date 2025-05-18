@@ -153,7 +153,7 @@ const CarCustomization: React.FC = () => {
               
               {/* Toggle indicator */}
               <div className="flex items-center mt-1 text-white kids-text">
-                <span className="mr-1 text-sm font-bold tracking-wide">
+                <span className="mr-1 tracking-wide text-violet-900 text-xl font-semibold">
                   {isPanelOpen ? "Cerrar" : "Selecciona coche"}
                 </span>
                 {isPanelOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
