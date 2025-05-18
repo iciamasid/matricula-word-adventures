@@ -126,6 +126,7 @@ const CountryPageContent = () => {
           imageAlt: isSpanish ? "Empire State Building, Nueva York" : "Empire State Building, New York"
         };
       case "méjico":
+      case "méxico":
       case "mexico":
         return {
           name: isSpanish ? "México" : "Mexico",
