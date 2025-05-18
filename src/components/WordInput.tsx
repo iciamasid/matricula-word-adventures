@@ -170,6 +170,13 @@ const WordInput: React.FC = () => {
           </Button>
         </motion.div>
       </div>
+      
+      {/* Warning for short words */}
+      {currentWord.trim().length > 0 && currentWord.trim().length < minWordLength && (
+        <p className={`text-sm mt-1 ${isEnglish ? "text-orange-600" : "text-purple-600"} font-medium kids-text text-center`}>
+          {isEnglish ? `Words must be at least ${minWordLength} letters long` : `Las palabras deben tener al menos ${minWordLength} letras`}
+        </p>
+      )}
     </div>
   );
 };

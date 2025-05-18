@@ -129,13 +129,26 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   return score;
 }
 
-// Check if a word might be English (simplified)
+// Check if a word might be English (improved)
 export function isEnglishWord(word: string): boolean {
   const uppercaseWord = word.toUpperCase();
   
   // Check against English word list first
   if (ENGLISH_WORDS.has(uppercaseWord)) {
     console.log(`Word ${word} found in English dictionary`);
+    return true;
+  }
+  
+  // Additional common English words for better validation
+  const additionalEnglishWords = [
+    "REMEMBER", "AMAZE", "GAME", "PLAY", "DRIVE", "QUICK", "JUMP", "ZONE",
+    "BRAVE", "CRASH", "DREAM", "FLIGHT", "GHOST", "HAPPY", "JUICE", "KNIFE",
+    "LOGIC", "MOVIE", "NORTH", "PLACE", "QUEEN", "SMILE", "THINK", "VOICE",
+    "WATER", "ZEBRA", "YOUNG", "XYLOPHONE", "LEVEL", "MAGIC", "NIGHT"
+  ];
+  
+  if (additionalEnglishWords.includes(uppercaseWord)) {
+    console.log(`Word ${word} found in additional English words`);
     return true;
   }
   
@@ -245,14 +258,7 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
       "FELIZ", "FEMENINO", "FENOMENO", "FERIA", "FEROZ", "FERTILIZANTE", "FESTIVAL",
       "FEUDAL", "FIABLE", "FIANZA", "FICCION", "FIDELIDAD", "FIEBRE", "FIEREZA",
       "FIESTA", "FIGURA", "FIJAR", "FILA", "FILOSOFIA", "FILTRAR", "FINAL", "FINALIZAR",
-      "FINANCIAR", "FINO", "FIRMA", "FIRME", "FISCAL", "FISICO", "FLAUTA", "FLECHA",
-      "FLOR", "FLOTAR", "FLUIR", "FOCO", "FOGATA", "FOLLETO", "FOMENTAR", "FONDO",
-      "FORMA", "FORMAL", "FORMATO", "FORMAR", "FORMULA", "FORTUNA", "FORZAR", "FOSA",
-      "FOTO", "FOTOGRAFIA", "FRACASAR", "FRACCION", "FRAGIL", "FRAGMENTO", "FRANCES",
-      "FRANQUEZA", "FRASE", "FRATERNIDAD", "FRAUDE", "FRECUENCIA", "FRENO", "FRENTE",
-      "FRESCO", "FREZA", "FRIGORIFICO", "FRIO", "FRONTERA", "FRUTA", "FUEGO", "FUENTE",
-      "FUERA", "FUERTE", "FUERZA", "FUNCION", "FUNCIONAR", "FUNDAMENTAL", "FUNDAMENTO",
-      "FUNDAR", "FUNERAL", "FUNESTO", "FURGONETA", "FURIOSO", "FUTBOL", "FUTURO"
+      // ... keep existing code (more Spanish words)
     ];
     
     if (additionalSpanishWords.includes(uppercaseWord)) {
@@ -308,13 +314,15 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
     
     // Additional English words - common English words that might not be in our limited dictionary
     const additionalEnglishWords = [
-      "GAME", "PLAY", "WORD", "DICE", "CARD", "RULE", "TEAM", "MOVE", "TIME",
+      "REMEMBER", "GAME", "PLAY", "WORD", "DICE", "CARD", "RULE", "TEAM", "MOVE", "TIME",
       "TURN", "ROOM", "WAVE", "RAIN", "SNOW", "WIND", "FIRE", "TREE", "ROAD",
       "FISH", "BIRD", "TOWN", "CITY", "HERO", "KING", "SAND", "LOGO", "SONG",
       "STAR", "BLUE", "PINK", "FAST", "SLOW", "WILD", "CALM", "GOOD", "EVIL",
       "GOLD", "DARK", "FARM", "LION", "FROG", "DOOR", "BAKE", "WEAR", "WEAK",
       "FACT", "FILM", "GOAL", "JUMP", "KISS", "LADY", "MILK", "NEWS", "PLAN",
-      "SAFE", "SHIP", "TOUR", "VIEW", "VOTE", "WIDE", "ZERO", "ZONE", "TAPE"
+      "SAFE", "SHIP", "TOUR", "VIEW", "VOTE", "WIDE", "ZERO", "ZONE", "TAPE",
+      "HOUSE", "MOUSE", "CLOUD", "STORE", "DRESS", "SPEED", "GREEN", "SWEET",
+      "SOUND", "LIGHT", "NIGHT", "THING", "PHONE", "PLACE", "WATER", "PAPER"
     ];
     
     if (additionalEnglishWords.includes(uppercaseWord)) {
@@ -361,7 +369,7 @@ const SPANISH_WORDS = new Set([
   // ... keep existing code (more Spanish words)
 ]);
 
-// Keep the existing ENGLISH_WORDS set and add more common English words
+// Expand the ENGLISH_WORDS set with more common English words
 const ENGLISH_WORDS = new Set([
   "HOUSE", "DOG", "CAT", "TABLE", "CHAIR", "BOOK", "PAPER", "PEN", "CAR",
   "WORLD", "TIME", "COLOR", "FOOD", "WATER", "EARTH", "FIRE", "AIR", "LIFE",
@@ -378,7 +386,12 @@ const ENGLISH_WORDS = new Set([
   "MUSIC", "MOVIE", "SPORT", "FOOTBALL", "BASKETBALL", "TENNIS", "SWIMMING", "FAMILY",
   "FRIEND", "NEIGHBOR", "BOSS", "COLLEAGUE", "TEACHER", "STUDENT", "DOCTOR", "PATIENT",
   "POLICE", "THIEF", "JUDGE", "LAWYER", "COOK", "WAITER", "SUMMER", "PARROT",
-  // Adding more common English words to improve validation
+  "REMEMBER", "FORGET", "THINK", "BELIEVE", "KNOW", "UNDERSTAND", "LEARN", "TEACH",
+  "SPEAK", "TALK", "LISTEN", "HEAR", "SEE", "LOOK", "WATCH", "READ", "WRITE",
+  "WALK", "RUN", "JUMP", "SWIM", "RIDE", "DRIVE", "FLY", "TRAVEL", "MOVE",
+  "STOP", "START", "FINISH", "BEGIN", "END", "OPEN", "CLOSE", "PLAY", "WORK",
+  "HELP", "GIVE", "TAKE", "MAKE", "CREATE", "BUILD", "BREAK", "DESTROY", "FIND",
+  "LOSE", "WIN", "FAIL", "SUCCEED", "TRY", "TEST", "PROVE", "SHOW", "HIDE",
   "ABOUT", "ABOVE", "AFTER", "AGAIN", "ALONG", "APPLE", "BEACH", "BEARD", "BELOW",
   "BERRY", "BIRTH", "BLOOD", "BOARD", "BRAIN", "BREAD", "BREAK", "BROWN", "BUNCH",
   "BUNCH", "CARRY", "CATCH", "CAUSE", "CHAIN", "CHAIR", "CHART", "CHECK", "CHEST",

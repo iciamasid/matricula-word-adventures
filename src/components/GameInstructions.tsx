@@ -53,7 +53,9 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
               {isEnglish ? "Game Objective" : "Objetivo del juego"}
             </h3>
             <p className="instruction-text kids-text text-white">
-              {isEnglish ? "Form words using the consonants from the car's license plate!" : "¡Forma palabras usando las consonantes de la matrícula del coche!"}
+              {isEnglish 
+                ? "Form words using the consonants from the car's license plate! Words must be at least 4 letters long." 
+                : "¡Forma palabras usando las consonantes de la matrícula del coche! Las palabras deben tener al menos 4 letras."}
             </p>
           </motion.div>
 
@@ -89,14 +91,28 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
               </li>
               <li className="instruction-text kids-text text-white flex items-start gap-2">
                 <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
-                <span>{isEnglish ? "200 bonus points for Spanish words!" : "¡Bonus de 200 puntos por palabras en inglés!"}</span>
+                <span>
+                  {isEnglish 
+                    ? "Length bonus: +5 points per letter for words longer than 4 letters (maximum 50 points)" 
+                    : "Bonus por longitud: +5 puntos por letra para palabras de más de 4 letras (máximo 50 puntos)"
+                  }
+                </span>
               </li>
               <li className="instruction-text kids-text text-white flex items-start gap-2">
                 <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
                 <span>
                   {isEnglish 
-                    ? "500 bonus points if the license plate numbers are 6666! And 20 points if your age appears among the numbers." 
-                    : "¡Bonus de 500 puntos si los números de la matrícula son 6666! Y 20 puntos si aparece tu edad entre los números."
+                    ? "+200 bonus points for valid Spanish words!" 
+                    : "+200 puntos extra por palabras válidas en inglés!"
+                  }
+                </span>
+              </li>
+              <li className="instruction-text kids-text text-white flex items-start gap-2">
+                <Check className="w-5 h-5 text-green-400 mt-1 flex-shrink-0" /> 
+                <span>
+                  {isEnglish 
+                    ? "+500 bonus points if the license plate numbers are 6666!" 
+                    : "+500 puntos extra si los números de la matrícula son 6666!"
                   }
                 </span>
               </li>
@@ -104,8 +120,8 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
                 <X className="w-5 h-5 text-red-400 mt-1 flex-shrink-0" /> 
                 <span>
                   {isEnglish
-                    ? "20 points are deducted if the word doesn't exist or doesn't contain any consonant"
-                    : "Se restan 20 puntos si la palabra no existe o no contiene ninguna consonante"
+                    ? "-20 points penalty if the word doesn't exist, is too short (less than 4 letters), or doesn't contain any license plate consonant"
+                    : "-20 puntos de penalización si la palabra no existe, es demasiado corta (menos de 4 letras), o no contiene ninguna consonante de la matrícula"
                   }
                 </span>
               </li>
@@ -138,7 +154,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
               onClick={onClose} 
               className={`w-full bg-yellow-400 hover:bg-yellow-500 ${isEnglish ? "text-orange-900" : "text-purple-900"} py-3 px-4 rounded-lg kids-text text-xl font-bold`}
             >
-              {t('understood')}
+              {isEnglish ? "I understand!" : "¡Entendido!"}
             </button>
           </motion.div>
         </div>

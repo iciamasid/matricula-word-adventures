@@ -9,7 +9,7 @@ const ErrorAlert: React.FC = () => {
   const { isEnglish } = useLanguage();
   
   // Localized points display
-  const explanation = isEnglish ? "-20 Kms" : "-20 Kms";
+  const explanation = isEnglish ? "-20 Points" : "-20 Puntos";
   
   return (
     <GamePopup

@@ -14,6 +14,7 @@ const countryPositions: Record<string, { left: string, top: string }> = {
   "Estados Unidos": { left: "20%", top: "38%" },
   "United States": { left: "20%", top: "38%" },
   "México": { left: "17%", top: "48%" },
+  "Méjico": { left: "17%", top: "48%" }, // Added alternate spelling
   "Mexico": { left: "17%", top: "48%" },
   "Australia": { left: "83%", top: "70%" },
   "Perú": { left: "25%", top: "57%" },
@@ -36,6 +37,7 @@ const countryImages: Record<string, string> = {
   "Estados Unidos": "/lovable-uploads/21e71de1-c8e4-4bbb-95d6-67ce7ae41316.png",
   "United States": "/lovable-uploads/21e71de1-c8e4-4bbb-95d6-67ce7ae41316.png",
   "México": "/lovable-uploads/2957a4f7-6a54-4e2f-bda1-2177609abc5f.png",
+  "Méjico": "/lovable-uploads/2957a4f7-6a54-4e2f-bda1-2177609abc5f.png", // Added alternate spelling
   "Mexico": "/lovable-uploads/2957a4f7-6a54-4e2f-bda1-2177609abc5f.png",
   "Australia": "/lovable-uploads/e27d86a7-9c73-425d-806e-1e86fd6c6e99.png",
   "Perú": "/lovable-uploads/24de870a-769c-4544-8001-8554fe29e7f0.png",
@@ -86,16 +88,16 @@ export const WORLD_DESTINATIONS = [
     fact: "¡En Tokio hay máquinas expendedoras que venden casi de todo: desde juguetes hasta paraguas! Hay más de 5 millones de máquinas en Japón."
   },
   {
+    city: "Sídney",
+    country: "Australia",
+    flag: "🇦🇺",
+    fact: "La Ópera de Sídney parece barcos con velas desplegadas en el puerto. ¡Tardaron 14 años en construirla!"
+  },
+  {
     city: "Nueva York",
     country: "Estados Unidos",
     flag: "🇺🇸",
     fact: "¡La Estatua de la Libertad fue un regalo de Francia a Estados Unidos! Mide 93 metros y su corona tiene 7 picos que representan los 7 continentes."
-  },
-  {
-    city: "Buenos Aires",
-    country: "Argentina",
-    flag: "🇦🇷",
-    fact: "¡En Buenos Aires hay una librería en un antiguo teatro! Es tan bonita que la llaman 'la librería más bella del mundo'."
   },
   {
     city: "Ciudad de México",
@@ -104,15 +106,15 @@ export const WORLD_DESTINATIONS = [
     fact: "Los antiguos aztecas construyeron Ciudad de México sobre un lago. ¡Todavía hay partes de la ciudad que se hunden un poco cada año!"
   },
   {
-    city: "Sídney",
-    country: "Australia",
-    flag: "🇦🇺",
-    fact: "La Ópera de Sídney parece barcos con velas desplegadas en el puerto. ¡Tardaron 14 años en construirla!"
-  },
-  {
     city: "Lima",
     country: "Perú",
     flag: "🇵🇪",
     fact: "¡En Perú hay más de 3,000 variedades diferentes de patatas (papas)!"
+  },
+  {
+    city: "Buenos Aires",
+    country: "Argentina",
+    flag: "🇦🇷",
+    fact: "¡En Buenos Aires hay una librería en un antiguo teatro! Es tan bonita que la llaman 'la librería más bella del mundo'."
   }
 ];
