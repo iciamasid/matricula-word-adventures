@@ -135,7 +135,7 @@ const CarCustomization: React.FC = () => {
       <div className="w-full flex flex-row items-center justify-center gap-4">
         {/* Car selection button with same styling as CONDUCE */}
         <motion.div 
-          className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg shadow-lg overflow-hidden"
+          className="flex-1 bg-gradient-to-r from-purple-500 to-violet-600 rounded-lg shadow-lg overflow-hidden border-2 border-purple-400"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           initial={{ opacity: 0, y: 20 }}
@@ -168,8 +168,8 @@ const CarCustomization: React.FC = () => {
               
               {/* Toggle indicator */}
               <div className="flex items-center mt-1 text-white kids-text">
-                <span className="mr-1 text-sm font-medium">
-                  {isPanelOpen ? "Cerrar" : "Cambiar coche"}
+                <span className="mr-1 text-sm font-bold tracking-wide">
+                  {isPanelOpen ? "Cerrar" : "Selecciona coche"}
                 </span>
                 {isPanelOpen ? (
                   <ChevronUp className="w-4 h-4" />
@@ -179,7 +179,7 @@ const CarCustomization: React.FC = () => {
               </div>
             </div>
             
-            {/* Decorative elements to match CONDUCE button */}
+            {/* Decorative elements to match game-style buttons */}
             <motion.div 
               className="absolute -right-1 -top-1 w-8 h-8 rounded-full bg-yellow-300 opacity-70 z-0" 
               animate={{
@@ -191,12 +191,24 @@ const CarCustomization: React.FC = () => {
                 repeat: Infinity
               }} 
             />
+            <motion.div 
+              className="absolute -left-1 -bottom-1 w-6 h-6 rounded-full bg-pink-400 opacity-60 z-0" 
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.5, 0.7, 0.5]
+              }} 
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0.5
+              }} 
+            />
           </button>
         </motion.div>
         
         {/* CONDUCE button with matching style */}
         <motion.div
-          className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg shadow-lg overflow-hidden"
+          className="flex-1 bg-gradient-to-r from-purple-500 to-violet-600 rounded-lg shadow-lg overflow-hidden border-2 border-purple-400"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
@@ -242,7 +254,7 @@ const CarCustomization: React.FC = () => {
               }} 
             />
             <motion.div 
-              className="absolute -left-1 -bottom-1 w-6 h-6 rounded-full bg-red-400 opacity-60 z-0" 
+              className="absolute -left-1 -bottom-1 w-6 h-6 rounded-full bg-pink-400 opacity-60 z-0" 
               animate={{
                 scale: [1, 1.3, 1],
                 opacity: [0.5, 0.7, 0.5]

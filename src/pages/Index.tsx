@@ -189,7 +189,12 @@ const GameContent = () => {
         {/* Player Registration Form */}
         <PlayerRegistration />
         
-        {/* Show moving car below player name when available */}
+        {/* Car selection and CONDUCE button in a unified design */}
+        <div className="w-full flex justify-center mb-4">
+          <CarCustomization />
+        </div>
+        
+        {/* Show moving car below the buttons when available */}
         {playerName && selectedCarColor && (
           <motion.div 
             className="w-32 h-24 my-2"
@@ -209,11 +214,6 @@ const GameContent = () => {
             />
           </motion.div>
         )}
-        
-        {/* Car selection and CONDUCE button in a unified design */}
-        <div className="w-full flex justify-center mb-4">
-          <CarCustomization />
-        </div>
         
         {/* This div will be the reference for scrolling */}
         <div ref={licensePlateRef} className="w-full"></div>

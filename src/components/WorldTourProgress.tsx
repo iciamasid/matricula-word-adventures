@@ -91,25 +91,18 @@ const getCountryCode = (level: number) => {
   }
 };
 
-// Add a safety check to ensure Spain is always unlocked
-const isCountryLocked = (countryCode: string, currentLevel: number) => {
-  // Spain is always unlocked
-  if (countryCode.toLowerCase() === 'es') {
-    return false;
+// IMPORTANT: Spain is ALWAYS unlocked regardless of level
+const isCountryUnlocked = (locationIndex: number, currentLevel: number) => {
+  // Spain (index 1) is ALWAYS unlocked from the beginning
+  if (locationIndex === 1) {
+    return true;
   }
-  
-  // Otherwise check level requirements
-  switch(countryCode.toLowerCase()) {
-    case 'fr': return currentLevel < 2;
-    case 'it': return currentLevel < 3;
-    case 'ru': return currentLevel < 4;
-    case 'jp': return currentLevel < 5;
-    case 'au': return currentLevel < 6;
-    case 'us': return currentLevel < 7;
-    case 'mx': return currentLevel < 8;
-    case 'ar': return currentLevel < 9;
-    default: return true; // Lock unknown countries
+  // Level 10 (back to Spain) also unlocked when level is 10 or above
+  if (locationIndex === 10 && currentLevel >= 10) {
+    return true;
   }
+  // For other countries, check if level is high enough
+  return currentLevel >= locationIndex;
 };
 
 const WorldTourProgress = () => {
@@ -197,8 +190,8 @@ const WorldTourProgress = () => {
     const angleRad = angle * Math.PI / 180;
 
     // Ellipse parameters (smaller radius to fit inside Earth image)
-    const radiusX = 25; // horizontal radius (reduced)
-    const radiusY = 20; // vertical radius (reduced)
+    const radiusX = 38; // horizontal radius
+    const radiusY = 30; // vertical radius
 
     // Calculate x and y position on an ellipse
     const x = 50 + radiusX * Math.cos(angleRad);
@@ -242,12 +235,6 @@ const WorldTourProgress = () => {
     return animatingLevel > locationIndex;
   };
 
-  // Modified function to check if a country is unlocked - ENSURE ESPAÑA IS ALWAYS UNLOCKED
-  const isCountryUnlocked = (locationIndex: number) => {
-    // Spain (index 1) is ALWAYS unlocked from the beginning
-    return locationIndex === 1 || level >= locationIndex;
-  };
-
   // Determine which icon to show as the moving vehicle
   const vehiclePosition = getVehiclePosition();
 
@@ -263,7 +250,7 @@ const WorldTourProgress = () => {
 
   // Handle country selection with lock check
   const handleCountrySelection = (levelIndex: number, countryName: string) => {
-    if (isCountryUnlocked(levelIndex)) {
+    if (isCountryUnlocked(levelIndex, level)) {
       // Country is unlocked - proceed with navigation
       handleNavigateToCountry(getCountryCode(levelIndex));
     } else {
@@ -313,6 +300,25 @@ const WorldTourProgress = () => {
             }} />
           </svg>
           
+          {/* Earth image in the center */}
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              className="relative"
+            >
+              <img 
+                src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" 
+                alt="Earth" 
+                className="w-[100px] h-[100px] object-contain"
+              />
+            </motion.div>
+          </div>
+          
           {/* Country flags positioned on the ellipse */}
           {[...Array(10)].map((_, i) => { // Changed from 11 to 10 (removed Peru)
             // Skip index 0 as it's just a placeholder
@@ -321,7 +327,7 @@ const WorldTourProgress = () => {
             const position = getEllipsePosition(i);
             const isCurrentLocation = animatingLevel === levelIndex;
             // IMPORTANT: Always unlock Spain (levelIndex 1)
-            const isUnlocked = isCountryUnlocked(levelIndex);
+            const isUnlocked = isCountryUnlocked(levelIndex, level);
             const countryName = getCountryName(levelIndex, isEnglish);
             const countryCode = getCountryCode(levelIndex);
             
@@ -391,26 +397,7 @@ const WorldTourProgress = () => {
             );
           })}
           
-          {/* Earth image - now larger to contain the path */}
-          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{
-                duration: 20,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              className="relative"
-            >
-              <img 
-                src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" 
-                alt="Earth" 
-                className="w-[100px] h-[100px] object-contain"
-              />
-            </motion.div>
-          </div>
-          
-          {/* Moving vehicle icon - now appears to travel around the Earth */}
+          {/* Moving vehicle icon - now appears to travel around path */}
           {progressValue > 0 && (
             <motion.div 
               className="absolute transform -translate-x-1/2 -translate-y-1/2" 
