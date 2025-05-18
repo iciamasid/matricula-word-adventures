@@ -1,9 +1,11 @@
+
 import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
 import { CarColor } from "./games/utils/carUtils";
+
 const LicensePlate: React.FC = () => {
   const {
     licensePlate,
@@ -47,6 +49,7 @@ const LicensePlate: React.FC = () => {
     const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
     return Array(10).fill('').map(() => consonants[Math.floor(Math.random() * consonants.length)]);
   };
+  
   return <motion.div className="w-full" initial={{
     scale: 0.9,
     opacity: 0
@@ -58,18 +61,34 @@ const LicensePlate: React.FC = () => {
   }}>
       {/* Car image with horizontal loop animation - no onClick handler now */}
       <div className="flex justify-center w-full mb-3 relative h-16 overflow-hidden">
-        {/* Only show the animated car - without click handler */}
-        {selectedCarColor}
-        
-        {!selectedCarColor && <motion.img src="/lovable-uploads/coche_portada.gif" alt="Coche predeterminado" initial={{
-        x: -200
-      }} animate={{
-        x: ["-100%", "100%"]
-      }} transition={{
-        duration: 6,
-        repeat: Infinity,
-        ease: "linear"
-      }} className="h-16 w-auto absolute" />}
+        {/* Render car image based on selectedCarColor or use default */}
+        {selectedCarColor ? (
+          <motion.img 
+            src={`/lovable-uploads/${selectedCarColor.image}`} 
+            alt={selectedCarColor.name} 
+            initial={{ x: -200 }}
+            animate={{ x: ["-100%", "100%"] }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="h-16 w-auto absolute"
+          />
+        ) : (
+          <motion.img 
+            src="/lovable-uploads/coche_portada.gif" 
+            alt="Coche predeterminado" 
+            initial={{ x: -200 }}
+            animate={{ x: ["-100%", "100%"] }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+            className="h-16 w-auto absolute"
+          />
+        )}
       </div>
       
       {/* Vintage license plate with EU flag */}
