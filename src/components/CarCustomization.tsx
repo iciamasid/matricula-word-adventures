@@ -159,7 +159,7 @@ const CarCustomization: React.FC = () => {
     }}>
           <p className="text-center text-sm text-purple-700 mb-1">Coche seleccionado:</p>
           
-          <p className="text-center text-purple-800 font-medium mt-1">{selectedCarColor.name}</p>
+          
         </motion.div>}
     </div>;
 };
