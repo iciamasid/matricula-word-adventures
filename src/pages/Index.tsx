@@ -17,10 +17,13 @@ import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import CarCustomization from "@/components/CarCustomization";
+
 const Index = () => {
-  return <GameProvider>
+  return (
+    <GameProvider>
       <GameContent />
-    </GameProvider>;
+    </GameProvider>
+  );
 };
 
 // Component to handle the game content
@@ -44,6 +47,14 @@ const GameContent = () => {
   // Asegura que la página comience desde la parte superior al cargar
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // IMPORTANT: Always make sure Spain is unlocked regardless of level
+  useEffect(() => {
+    // This ensures Spain is always unlocked when the game starts
+    if (level === 0) {
+      updateDestinations(level);
+    }
   }, []);
 
   // Check if we're navigating back from another page and restore proper destinations
@@ -87,8 +98,9 @@ const GameContent = () => {
 
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
-    const countries = [];
-    if (level >= 0) countries.push("España");
+    // IMPORTANT: Always include Spain regardless of level
+    const countries = ["España"];
+    
     if (level >= 1) countries.push("Francia");
     if (level >= 2) countries.push("Italia");
     if (level >= 3) countries.push("Rusia");
@@ -99,8 +111,10 @@ const GameContent = () => {
     if (level >= 8) countries.push("Perú");
     if (level >= 9) countries.push("Argentina");
     if (level >= 10) countries.push("España (vuelta completa)");
+    
     return countries;
   }, [level]);
+
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -110,45 +124,62 @@ const GameContent = () => {
       });
     }
   };
-  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
-    backgroundSize: "cover",
-    backgroundAttachment: "fixed"
-  }}>
+
+  return (
+    <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
+      backgroundSize: "cover",
+      backgroundAttachment: "fixed"
+    }}>
       {/* Special background effect when the world tour is completed */}
-      {level >= 10 && <div className="absolute inset-0 pointer-events-none">
+      {level >= 10 && (
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
           {[...Array(20)].map((_, i) => <motion.div key={i} className="absolute rounded-full bg-yellow-300 opacity-30" style={{
-        width: Math.random() * 10 + 5,
-        height: Math.random() * 10 + 5,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`
-      }} animate={{
-        y: [0, -100],
-        opacity: [0.3, 0]
-      }} transition={{
-        duration: Math.random() * 5 + 5,
-        repeat: Infinity,
-        repeatType: "loop",
-        delay: Math.random() * 5
-      }} />)}
-        </div>}
+            width: Math.random() * 10 + 5,
+            height: Math.random() * 10 + 5,
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`
+          }} animate={{
+            y: [0, -100],
+            opacity: [0.3, 0]
+          }} transition={{
+            duration: Math.random() * 5 + 5,
+            repeat: Infinity,
+            repeatType: "loop",
+            delay: Math.random() * 5
+          }} />)}
+        </div>
+      )}
       
       <div className="relative w-full">
-        <motion.img src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" alt="Matriculabra Cadabra" className="w-full object-contain mb-2 px-0" style={{
-        maxHeight: isMobile ? "28vh" : "25vh",
-        width: "100%"
-      }} initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        duration: 0.5
-      }} />
+        <motion.img 
+          src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" 
+          alt="Matriculabra Cadabra" 
+          className="w-full object-contain mb-2 px-0" 
+          style={{
+            maxHeight: isMobile ? "28vh" : "25vh",
+            width: "100%"
+          }}
+          initial={{
+            opacity: 0,
+            y: -20
+          }}
+          animate={{
+            opacity: 1,
+            y: 0
+          }}
+          transition={{
+            duration: 0.5
+          }}
+        />
         
         {/* Instructions button positioned at bottom right of the image */}
-        <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute bottom-4 right-4 ${'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowInstructions(true)}
+          className={`absolute bottom-4 right-4 ${'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}
+        >
           <Globe className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
       </div>
@@ -157,10 +188,7 @@ const GameContent = () => {
         {/* Player Registration Form */}
         <PlayerRegistration />
         
-        {/* Car selection instruction text AFTER player registration */}
-        
-        
-        {/* Car Customization component */}
+        {/* Car selection component */}
         <div className="w-full flex justify-center mb-4">
           <CarCustomization />
         </div>
@@ -256,6 +284,8 @@ const GameContent = () => {
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
