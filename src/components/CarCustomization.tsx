@@ -152,7 +152,7 @@ const CarCustomization: React.FC = () => {
             
             {/* Changed text to "Elige tu coche" */}
             <div className="flex items-center mt-1 text-white kids-text">
-              <span className="tracking-wide text-violet-900 font-semibold text-base">
+              <span className="tracking-wide text-violet-900 font-semibold text-base mx-[10px]">
                 {isPanelOpen ? "Cerrar" : "Elige tu coche"}
               </span>
               {isPanelOpen ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
