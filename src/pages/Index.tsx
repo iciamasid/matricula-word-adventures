@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -18,7 +17,6 @@ import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import CarCustomization from "@/components/CarCustomization";
-
 const Index = () => {
   return <GameProvider>
       <GameContent />
@@ -103,7 +101,6 @@ const GameContent = () => {
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
-  
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -113,7 +110,6 @@ const GameContent = () => {
       });
     }
   };
-  
   return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
@@ -162,7 +158,7 @@ const GameContent = () => {
         <PlayerRegistration />
         
         {/* Add car selection instruction text AFTER player registration */}
-        <p className="text-purple-800 text-center kids-text mb-2 animate-pulse text-base font-normal mt-2">
+        <p className="text-purple-800 text-center kids-text mb-2 animate-pulse text-base mt-2 font-normal">
           ¡Pincha sobre el coche para elegir otro!
         </p>
         
