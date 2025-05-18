@@ -1,4 +1,4 @@
-oe
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
@@ -27,13 +27,13 @@ const carColors: CarColor[] = [
   {
     id: "4",
     name: "Coche Morado con Llamas",
-    image: "cochecolores.png",
+    image: "160d2412-8e71-47e7-bbd0-475cb8948357.png",
     color: "bg-purple-500"
   },
   {
     id: "5",
     name: "Coche Verde",
-    image: "cocheverde.png",
+    image: "e69ac232-b23d-40ed-8082-76dd61260e93.png",
     color: "bg-green-500"
   }
 ];
