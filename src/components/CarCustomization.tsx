@@ -27,7 +27,7 @@ const carColors: CarColor[] = [
   {
     id: "4",
     name: "Coche Morado con Llamas",
-    image: "160d2412-8e71-47e7-bbd0-475cb8948357.png",
+    image: "cochecolores.png",
     color: "bg-purple-500"
   },
   {
