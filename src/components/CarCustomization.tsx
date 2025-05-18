@@ -131,101 +131,128 @@ const CarCustomization: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col items-center">
+      {/* Homogeneous design for car selection and CONDUCE buttons */}
       <div className="w-full flex flex-row items-center justify-center gap-4">
-        {/* Currently selected car (clickable to open panel) */}
+        {/* Car selection button with same styling as CONDUCE */}
         <motion.div 
-          className="flex flex-col items-center p-3 bg-white/80 rounded-lg shadow-md cursor-pointer hover:bg-purple-50 mb-2"
-          onClick={togglePanel}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg shadow-lg overflow-hidden"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
-          <div className="relative">
-            <img 
-              src={`/lovable-uploads/${currentCar.image}`} 
-              alt={currentCar.name} 
-              className="w-20 h-20 object-contain"
-            />
+          <button 
+            onClick={togglePanel}
+            className="w-full p-4 text-white flex items-center justify-center relative"
+          >
+            <div className="flex flex-col items-center">
+              {/* Car image */}
+              <div className="relative w-16 h-16 mb-1">
+                <img 
+                  src={`/lovable-uploads/${currentCar.image}`} 
+                  alt={currentCar.name} 
+                  className="w-full h-full object-contain"
+                />
+                
+                {/* Selected indicator */}
+                <motion.div 
+                  className="absolute -right-2 -top-2 w-5 h-5 bg-yellow-300 rounded-full flex items-center justify-center"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring" }}
+                >
+                  <span className="text-purple-800 text-xs">✓</span>
+                </motion.div>
+              </div>
+              
+              {/* Toggle indicator */}
+              <div className="flex items-center mt-1 text-white kids-text">
+                <span className="mr-1 text-sm font-medium">
+                  {isPanelOpen ? "Cerrar" : "Cambiar coche"}
+                </span>
+                {isPanelOpen ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </div>
+            </div>
             
-            {/* Selected indicator */}
+            {/* Decorative elements to match CONDUCE button */}
             <motion.div 
-              className="absolute -right-2 -top-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring" }}
-            >
-              <span className="text-white text-sm">✓</span>
-            </motion.div>
-          </div>
-          
-          {/* Toggle indicator */}
-          <div className="flex items-center mt-1 text-purple-700">
-            <span className="mr-1 text-sm font-medium">
-              {isPanelOpen ? "Cerrar" : "Cambiar coche"}
-            </span>
-            {isPanelOpen ? (
-              <ChevronUp className="w-4 h-4" />
-            ) : (
-              <ChevronDown className="w-4 h-4" />
-            )}
-          </div>
+              className="absolute -right-1 -top-1 w-8 h-8 rounded-full bg-yellow-300 opacity-70 z-0" 
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.6, 0.8, 0.6]
+              }} 
+              transition={{
+                duration: 2,
+                repeat: Infinity
+              }} 
+            />
+          </button>
         </motion.div>
         
-        {/* "Drive" button moved next to car selection */}
+        {/* CONDUCE button with matching style */}
         <motion.div
-          className="rounded-lg shadow-lg"
+          className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 rounded-lg shadow-lg overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
           whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <Link to="/draw-game" onClick={handleNavigation}>
-            <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 text-slate-50">
-              <div className="flex items-center justify-center">
-                {/* Car icon on the left */}
-                <motion.div 
-                  animate={{
-                    x: [-5, 5, -5],
-                    y: [-3, 3, -3],
-                    rotate: [0, 5, -5, 0]
-                  }} 
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }} 
-                  className="mr-3 text-3xl"
-                >
-                  🚗
-                </motion.div>
-                <span className="tracking-wide uppercase whitespace-normal px-2">
-                  ¡CONDUCE!
-                </span>
-              </div>
-              
-              {/* Add decorative elements */}
+          <Link 
+            to="/draw-game" 
+            onClick={handleNavigation}
+            className="block w-full p-4 text-white relative"
+          >
+            <div className="flex items-center justify-center">
+              {/* Car icon */}
               <motion.div 
-                className="absolute -right-2 -top-2 w-12 h-12 rounded-full bg-yellow-300 opacity-80 z-0" 
                 animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.7, 0.9, 0.7]
+                  x: [-3, 3, -3],
+                  y: [-2, 2, -2],
+                  rotate: [0, 2, -2, 0]
                 }} 
                 transition={{
                   duration: 2,
                   repeat: Infinity
                 }} 
-              />
-              <motion.div 
-                className="absolute -left-1 -bottom-1 w-8 h-8 rounded-full bg-red-400 opacity-70 z-0" 
-                animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.6, 0.8, 0.6]
-                }} 
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  delay: 0.5
-                }} 
-              />
-            </Button>
+                className="mr-3 text-2xl"
+              >
+                🚗
+              </motion.div>
+              <span className="tracking-wide uppercase kids-text font-bold text-xl whitespace-normal">
+                ¡CONDUCE!
+              </span>
+            </div>
+            
+            {/* Add decorative elements */}
+            <motion.div 
+              className="absolute -right-1 -top-1 w-8 h-8 rounded-full bg-yellow-300 opacity-70 z-0" 
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.7, 0.9, 0.7]
+              }} 
+              transition={{
+                duration: 2,
+                repeat: Infinity
+              }} 
+            />
+            <motion.div 
+              className="absolute -left-1 -bottom-1 w-6 h-6 rounded-full bg-red-400 opacity-60 z-0" 
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.5, 0.7, 0.5]
+              }} 
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: 0.5
+              }} 
+            />
           </Link>
         </motion.div>
       </div>
@@ -234,7 +261,7 @@ const CarCustomization: React.FC = () => {
       <AnimatePresence>
         {isPanelOpen && (
           <motion.div 
-            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 bg-white/80 rounded-lg shadow-md w-full max-w-xl"
+            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 bg-white/80 rounded-lg shadow-md w-full max-w-xl mt-3"
             initial={{ opacity: 0, height: 0, y: -10 }}
             animate={{ opacity: 1, height: 'auto', y: 0 }}
             exit={{ opacity: 0, height: 0, y: -10 }}
@@ -282,7 +309,7 @@ const CarCustomization: React.FC = () => {
                     )}
                   </div>
                   
-                  {/* Car name (without "Coche" word) */}
+                  {/* Car name without "Coche" word */}
                   <p className="text-xs text-center mt-1 text-purple-800 font-medium truncate w-full">
                     {car.name}
                     {isLocked && (

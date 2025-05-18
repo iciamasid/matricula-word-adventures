@@ -2,24 +2,17 @@
 import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
-import { toast } from "@/hooks/use-toast";
-import { useLanguage } from "@/context/LanguageContext";
-import { CarColor } from "./games/utils/carUtils";
 
 const LicensePlate: React.FC = () => {
   const {
     licensePlate,
     plateConsonants,
     isGeneratingLicensePlate,
-    selectedCarColor,
     submitSuccess,
     generateNewPlate
   } = useGame();
   
-  const { t, isEnglish } = useLanguage();
-  const [showTooltip, setShowTooltip] = useState(false); // Don't show tooltip by default now
-  
-  // Car colors for the license plate letters - map to exact car colors
+  // Car colors for the license plate letters
   const CONSONANT_COLORS = ["bg-red-500", "bg-blue-600", "bg-yellow-500"];
 
   // Get the numbers part (first 4 characters) from the license plate
@@ -57,44 +50,6 @@ const LicensePlate: React.FC = () => {
       animate={{ scale: 1, opacity: 1 }} 
       transition={{ duration: 0.5 }}
     >
-      {/* Car image with horizontal loop animation - no onClick handler now */}
-      <div className="flex justify-center w-full mb-3 relative h-16 overflow-hidden">
-        {/* Only show the animated car - without click handler */}
-        {selectedCarColor && (
-          <motion.img 
-            src={`/lovable-uploads/${selectedCarColor.image}`} 
-            alt="Coche personalizado" 
-            initial={{ x: -200 }}
-            animate={{ 
-              x: ["-100%", "100%"] 
-            }}
-            transition={{ 
-              duration: 6, 
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="h-16 w-auto absolute"
-          />
-        )}
-        
-        {!selectedCarColor && (
-          <motion.img 
-            src="/lovable-uploads/coche_portada.gif" 
-            alt="Coche predeterminado" 
-            initial={{ x: -200 }}
-            animate={{ 
-              x: ["-100%", "100%"] 
-            }}
-            transition={{ 
-              duration: 6, 
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="h-16 w-auto absolute"
-          />
-        )}
-      </div>
-      
       {/* Vintage license plate with EU flag */}
       <div 
         className="relative bg-gray-100 p-3 rounded-md border-2 border-gray-400 w-full flex items-center justify-center shadow-md" 

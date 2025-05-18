@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -174,7 +175,7 @@ const WorldTourProgress = () => {
       case 5:
         return "🇦🇺"; // Destino Australia
       case 6:
-        return "🇺���"; // Destino EEUU
+        return "🇺🇸"; // Destino EEUU
       case 7:
         return "🇲🇽"; // Destino México
       case 8:
@@ -186,7 +187,7 @@ const WorldTourProgress = () => {
     }
   };
 
-  // Calculate positions for an elliptical layout - now with 10 points (removing Peru)
+  // Calculate positions for an elliptical layout - now with 10 points (removed Peru)
   const getEllipsePosition = (index: number, totalPoints: number = 10) => {
     // Calculate angle for evenly distributed points around an ellipse
     // Subtract from 360 to go clockwise, and adjust starting point to top (270 degrees)
@@ -195,9 +196,9 @@ const WorldTourProgress = () => {
     // Convert to radians
     const angleRad = angle * Math.PI / 180;
 
-    // Ellipse parameters (horizontal radius a bit larger than vertical radius)
-    const radiusX = 42; // horizontal radius
-    const radiusY = 32; // vertical radius
+    // Ellipse parameters (smaller radius to fit inside Earth image)
+    const radiusX = 25; // horizontal radius (reduced)
+    const radiusY = 20; // vertical radius (reduced)
 
     // Calculate x and y position on an ellipse
     const x = 50 + radiusX * Math.cos(angleRad);
@@ -241,9 +242,9 @@ const WorldTourProgress = () => {
     return animatingLevel > locationIndex;
   };
 
-  // Modified function to check if a country is unlocked
-  // España (index 1) siempre estará desbloqueada desde el inicio
+  // Modified function to check if a country is unlocked - ENSURE ESPAÑA IS ALWAYS UNLOCKED
   const isCountryUnlocked = (locationIndex: number) => {
+    // Spain (index 1) is ALWAYS unlocked from the beginning
     return locationIndex === 1 || level >= locationIndex;
   };
 
@@ -294,9 +295,9 @@ const WorldTourProgress = () => {
         {isEnglish ? "Your world tour!" : "¡TU VUELTA AL MUNDO!"}
       </h3>
       
-      {/* Add the new text about clicking flags */}
+      {/* Update text about clicking flags */}
       <p className="text-violet-900 font-normal text-base">
-        {isEnglish ? "Click on each flag to explore the country!" : "¡Pincha sobre cada bandera para explorar el país!"}
+        {isEnglish ? "Click on the flags and explore that country!" : "¡Pincha sobre las banderas y explora ese país!"}
       </p>
       
       {/* Elliptical world tour visualization */}
@@ -319,6 +320,7 @@ const WorldTourProgress = () => {
             const flag = getLevelFlag(levelIndex);
             const position = getEllipsePosition(i);
             const isCurrentLocation = animatingLevel === levelIndex;
+            // IMPORTANT: Always unlock Spain (levelIndex 1)
             const isUnlocked = isCountryUnlocked(levelIndex);
             const countryName = getCountryName(levelIndex, isEnglish);
             const countryCode = getCountryCode(levelIndex);
@@ -389,7 +391,26 @@ const WorldTourProgress = () => {
             );
           })}
           
-          {/* Moving vehicle icon */}
+          {/* Earth image - now larger to contain the path */}
+          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
+            <motion.div 
+              animate={{ rotate: 360 }}
+              transition={{
+                duration: 20,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              className="relative"
+            >
+              <img 
+                src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" 
+                alt="Earth" 
+                className="w-[100px] h-[100px] object-contain"
+              />
+            </motion.div>
+          </div>
+          
+          {/* Moving vehicle icon - now appears to travel around the Earth */}
           {progressValue > 0 && (
             <motion.div 
               className="absolute transform -translate-x-1/2 -translate-y-1/2" 
@@ -408,25 +429,6 @@ const WorldTourProgress = () => {
               )}
             </motion.div>
           )}
-          
-          {/* Updated Earth image */}
-          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{
-                duration: 20,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              className="relative"
-            >
-              <img 
-                src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" 
-                alt="Earth" 
-                className="w-[60px] h-[60px] object-contain"
-              />
-            </motion.div>
-          </div>
         </div>
       </div>
       

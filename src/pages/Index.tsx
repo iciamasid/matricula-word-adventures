@@ -194,11 +194,10 @@ const GameContent = () => {
           <motion.div 
             className="w-32 h-24 my-2"
             animate={{
-              x: [0, 10, 0, -10, 0],
-              rotate: [0, 1, 0, -1, 0]
+              x: ["-100%", "100%"]
             }}
             transition={{
-              duration: 4,
+              duration: 6,
               repeat: Infinity,
               ease: "linear"
             }}
@@ -211,7 +210,7 @@ const GameContent = () => {
           </motion.div>
         )}
         
-        {/* Car selection component with CONDUCE button moved inside */}
+        {/* Car selection and CONDUCE button in a unified design */}
         <div className="w-full flex justify-center mb-4">
           <CarCustomization />
         </div>
