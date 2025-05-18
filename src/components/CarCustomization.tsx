@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
@@ -25,11 +26,6 @@ const CarCustomization: React.FC = () => {
     selectedCarColor
   } = useGame();
   return <div className="w-full flex flex-col items-center">
-      {/* Added instruction text above the car */}
-      <p className="text-purple-800 text-center kids-text mb-2 animate-pulse text-base font-normal">
-        ¡Pincha sobre el coche para elegir otro!
-      </p>
-      
       <motion.div whileHover={{
       scale: 1.1
     }} className="flex justify-center">

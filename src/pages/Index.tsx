@@ -157,14 +157,19 @@ const GameContent = () => {
         </Button>
       </div>
 
-      {/* Car Customization with instruction text */}
-      <div className="w-full flex justify-center mb-4">
-        <CarCustomization />
-      </div>
-    
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
         {/* Player Registration Form */}
         <PlayerRegistration />
+        
+        {/* Add car selection instruction text AFTER player registration */}
+        <p className="text-purple-800 text-center kids-text mb-2 animate-pulse text-base font-normal mt-2">
+          ¡Pincha sobre el coche para elegir otro!
+        </p>
+        
+        {/* Car Customization component */}
+        <div className="w-full flex justify-center mb-4">
+          <CarCustomization />
+        </div>
         
         {/* This div will be the reference for scrolling */}
         <div ref={licensePlateRef} className="w-full"></div>

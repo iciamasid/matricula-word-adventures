@@ -82,7 +82,7 @@ const PlayerRegistration: React.FC = () => {
           {/* Player info display */}
           <motion.div className="flex items-center justify-center mb-2">
             <div className="flex items-center justify-center">
-              {playerGender === t('boy') ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
+              {playerGender === 'niño' ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
               <span className={`font-medium ${textColor} kids-text text-3xl`}>
                 {playerName} {playerAge} {t('years')}
               </span>

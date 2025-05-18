@@ -53,25 +53,9 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
         </div>
       )}
       
-      {/* Active drawing instructions */}
-      {isDrawing && canvasReady && (
-        <motion.div 
-          className="text-center p-3 bg-green-100 rounded-lg border-2 border-green-300 shadow-md mb-4"
-          animate={{ 
-            scale: [1, 1.03, 1],
-            transition: { repeat: Infinity, duration: 1.5 }
-          }}
-        >
-          <div className="flex items-center justify-center gap-2">
-            <span role="img" aria-label="pencil" className="text-2xl">✏️</span>
-            <p className="font-bold text-green-700 kids-text text-xl">
-              {"¡Dibuja un camino para el coche!"}
-            </p>
-          </div>
-        </motion.div>
-      )}
+      {/* Removed the "Draw a path" notification */}
       
-      {/* Animation completion message - now shown directly in the game interface */}
+      {/* Animation completion message - Using GamePopup style instead */}
       {animationCompleted && (
         <motion.div 
           className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300 shadow-md mb-4"
