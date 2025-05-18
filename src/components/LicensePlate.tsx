@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
@@ -12,35 +13,12 @@ const LicensePlate: React.FC = () => {
     isGeneratingLicensePlate,
     selectedCarColor,
     submitSuccess,
-    generateNewPlate,
-    setSelectedCarColor
+    generateNewPlate
   } = useGame();
   
   const { t, isEnglish } = useLanguage();
-  const [showTooltip, setShowTooltip] = useState(true); // Start with tooltip visible
+  const [showTooltip, setShowTooltip] = useState(false); // Don't show tooltip by default now
   
-  // Available car colors for cycling
-  const carColors: CarColor[] = [
-    {
-      id: "1",
-      name: "Coche Rojo",
-      image: "cocherojo.png",
-      color: "bg-red-500"
-    }, 
-    {
-      id: "2",
-      name: "Coche Azul",
-      image: "cocheazul.png",
-      color: "bg-blue-500"
-    }, 
-    {
-      id: "3",
-      name: "Coche Amarillo",
-      image: "cocheamarillo.png",
-      color: "bg-yellow-500"
-    }
-  ];
-
   // Car colors for the license plate letters - map to exact car colors
   const CONSONANT_COLORS = ["bg-red-500", "bg-blue-600", "bg-yellow-500"];
 
@@ -72,34 +50,6 @@ const LicensePlate: React.FC = () => {
     return Array(10).fill('').map(() => consonants[Math.floor(Math.random() * consonants.length)]);
   };
   
-  // Show tooltip and hide after 5 seconds on initial render
-  useEffect(() => {
-    setShowTooltip(true);
-    const timer = setTimeout(() => {
-      setShowTooltip(false);
-    }, 5000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-  
-  // Function to cycle through available cars
-  const handleCycleCar = () => {
-    // Get current car index
-    const currentIndex = selectedCarColor ? carColors.findIndex(car => car.id === selectedCarColor.id) : 0;
-    
-    // Calculate next index (cycle through the array)
-    const nextIndex = (currentIndex + 1) % carColors.length;
-    
-    // Update selected car
-    setSelectedCarColor(carColors[nextIndex]);
-    
-    // Show toast with car name
-    toast({
-      title: isEnglish ? "Car changed!" : "¡Coche cambiado!",
-      description: carColors[nextIndex].name
-    });
-  };
-  
   return (
     <motion.div 
       className="w-full" 
@@ -107,19 +57,9 @@ const LicensePlate: React.FC = () => {
       animate={{ scale: 1, opacity: 1 }} 
       transition={{ duration: 0.5 }}
     >
-      {/* Car image with horizontal loop animation and tooltip */}
+      {/* Car image with horizontal loop animation - no onClick handler now */}
       <div className="flex justify-center w-full mb-3 relative h-16 overflow-hidden">
-        {/* Tooltip message - always visible for 5 seconds */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: showTooltip ? 1 : 0, y: showTooltip ? 0 : -10 }}
-          exit={{ opacity: 0, y: -10 }}
-          className="absolute -top-10 bg-purple-100 text-purple-800 px-3 py-1 rounded-full shadow-md text-sm kids-text"
-        >
-          {isEnglish ? "Click on the car to choose another one!" : "¡Pulsa en el coche para elegir otro!"}
-        </motion.div>
-      
-        {/* Only show the animated car */}
+        {/* Only show the animated car - without click handler */}
         {selectedCarColor && (
           <motion.img 
             src={`/lovable-uploads/${selectedCarColor.image}`} 
@@ -133,10 +73,7 @@ const LicensePlate: React.FC = () => {
               repeat: Infinity,
               ease: "linear"
             }}
-            className="h-16 w-auto absolute cursor-pointer"
-            onClick={handleCycleCar}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            className="h-16 w-auto absolute"
           />
         )}
         
@@ -153,10 +90,7 @@ const LicensePlate: React.FC = () => {
               repeat: Infinity,
               ease: "linear"
             }}
-            className="h-16 w-auto absolute cursor-pointer"
-            onClick={handleCycleCar}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+            className="h-16 w-auto absolute"
           />
         )}
       </div>

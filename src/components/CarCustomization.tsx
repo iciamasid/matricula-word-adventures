@@ -1,16 +1,9 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { CarColor } from "./games/utils/carUtils";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import { Car, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 // Available car colors - reordered and added new cars
@@ -77,14 +70,8 @@ const CarCustomization: React.FC = () => {
     level
   } = useGame();
 
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
   // Handle car selection
-  const handleCarSelect = (carId: string) => {
-    const car = carColors.find(car => car.id === carId);
-    
-    if (!car) return;
-    
+  const handleCarSelect = (car: CarColor) => {
     // Check if car is unlocked based on level
     if (level < car.unlockedAtLevel) {
       // Show toast for locked car
@@ -114,74 +101,73 @@ const CarCustomization: React.FC = () => {
   
   return (
     <div className="w-full flex flex-col items-center">
-      <div className="w-full max-w-sm mb-4">
-        <Select onValueChange={handleCarSelect} value={selectedCarColor?.id}>
-          <SelectTrigger className="w-full bg-white/90 border-purple-300">
-            <div className="flex items-center gap-2">
-              {selectedCarColor && (
+      {/* Car selection instruction */}
+      <h3 className="text-purple-800 text-center kids-text mb-4 text-lg font-semibold">
+        ¡Selecciona el coche que conducirás!
+      </h3>
+      
+      {/* Visual car grid */}
+      <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 bg-white/80 rounded-lg shadow-md w-full max-w-xl">
+        {/* Unlocked cars */}
+        {carColors.map((car) => {
+          const isLocked = level < car.unlockedAtLevel;
+          const isSelected = selectedCarColor?.id === car.id;
+          
+          return (
+            <motion.div 
+              key={car.id}
+              className={`relative flex flex-col items-center p-2 rounded-lg cursor-pointer transition-all duration-200
+                ${isSelected ? 'bg-purple-100 ring-2 ring-purple-500' : 'hover:bg-purple-50'}
+                ${isLocked ? 'opacity-70' : ''}
+              `}
+              onClick={() => handleCarSelect(car)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <div className="relative">
+                {/* Car image */}
                 <img 
-                  src={`/lovable-uploads/${selectedCarColor.image}`} 
-                  alt={selectedCarColor.name} 
-                  className="w-8 h-8 object-contain"
+                  src={`/lovable-uploads/${car.image}`}
+                  alt={car.name}
+                  className={`w-16 h-16 object-contain ${isLocked ? 'grayscale opacity-70' : ''}`}
                 />
-              )}
-              <SelectValue placeholder="Selecciona un coche" />
-            </div>
-          </SelectTrigger>
-          <SelectContent className="max-h-[300px] overflow-y-auto">
-            {/* Unlocked cars first */}
-            {unlockedCars.map((car) => (
-              <SelectItem key={car.id} value={car.id} className="cursor-pointer">
-                <div className="flex items-center gap-2">
-                  <img 
-                    src={`/lovable-uploads/${car.image}`}
-                    alt={car.name}
-                    className="w-8 h-8 object-contain"
-                  />
-                  <span>{car.name}</span>
-                  {car.unlockedAtLevel === 0 && (
-                    <span className="ml-auto text-xs text-purple-500">(Siempre desbloqueado)</span>
-                  )}
-                </div>
-              </SelectItem>
-            ))}
-            
-            {/* Show locked cars with a lock icon */}
-            {lockedCars.length > 0 && (
-              <>
-                <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
-                  Coches bloqueados
-                </div>
-                {lockedCars.map((car) => (
-                  <SelectItem key={car.id} value={car.id} className="cursor-pointer opacity-60">
-                    <div className="flex items-center gap-2">
-                      <div className="relative">
-                        <img 
-                          src={`/lovable-uploads/${car.image}`}
-                          alt={car.name}
-                          className="w-8 h-8 object-contain grayscale"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded">
-                          <Lock className="w-4 h-4 text-white" />
-                        </div>
-                      </div>
-                      <span>{car.name}</span>
-                      <span className="ml-auto text-xs text-muted-foreground">
-                        (Nivel {car.unlockedAtLevel})
-                      </span>
+                
+                {/* Lock overlay for locked cars */}
+                {isLocked && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="bg-black/30 rounded-full p-1">
+                      <Lock className="w-6 h-6 text-white" />
                     </div>
-                  </SelectItem>
-                ))}
-              </>
-            )}
-          </SelectContent>
-        </Select>
+                  </div>
+                )}
+                
+                {/* Selected indicator */}
+                {isSelected && (
+                  <motion.div 
+                    className="absolute -right-2 -top-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring" }}
+                  >
+                    <span className="text-white text-sm">✓</span>
+                  </motion.div>
+                )}
+              </div>
+              
+              {/* Car name (small) */}
+              <p className="text-xs text-center mt-1 text-purple-800 font-medium truncate w-full">
+                {car.name.split(" ")[0]}
+                {isLocked && <span className="block text-gray-500">(Nivel {car.unlockedAtLevel})</span>}
+              </p>
+            </motion.div>
+          );
+        })}
       </div>
       
       {/* Display selected car larger */}
       {selectedCarColor && (
         <motion.div 
-          className="mt-2 mb-4" 
+          className="mt-4 mb-2" 
           initial={{
             opacity: 0,
             y: 20
@@ -194,11 +180,13 @@ const CarCustomization: React.FC = () => {
             duration: 0.3
           }}
         >
+          <p className="text-center text-sm text-purple-700 mb-1">Coche seleccionado:</p>
           <img 
             src={`/lovable-uploads/${selectedCarColor.image}`}
             alt={selectedCarColor.name}
-            className="w-32 h-32 object-contain"
+            className="w-28 h-28 object-contain"
           />
+          <p className="text-center text-purple-800 font-medium mt-1">{selectedCarColor.name}</p>
         </motion.div>
       )}
     </div>

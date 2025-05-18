@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -106,6 +105,28 @@ const getCountryCode = (level: number) => {
       return "España";
     default:
       return "España";
+  }
+};
+
+// Add a safety check to ensure Spain is always unlocked
+const isCountryLocked = (countryCode: string, currentLevel: number) => {
+  // Spain is always unlocked
+  if (countryCode.toLowerCase() === 'es') {
+    return false;
+  }
+  
+  // Otherwise check level requirements
+  switch(countryCode.toLowerCase()) {
+    case 'fr': return currentLevel < 1;
+    case 'it': return currentLevel < 2;
+    case 'ru': return currentLevel < 3;
+    case 'jp': return currentLevel < 4;
+    case 'au': return currentLevel < 5;
+    case 'us': return currentLevel < 6;
+    case 'mx': return currentLevel < 7;
+    case 'pe': return currentLevel < 8;
+    case 'ar': return currentLevel < 9;
+    default: return true; // Lock unknown countries
   }
 };
 
