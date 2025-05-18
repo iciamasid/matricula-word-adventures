@@ -280,7 +280,12 @@ const CarCustomization: React.FC = () => {
                   </div>
                   
                   {/* Car name without "Coche" word */}
-                  
+                  <p className="text-xs text-center mt-1 text-purple-800 font-medium truncate w-full">
+                    {car.name}
+                    {isLocked && <span className="block text-gray-500">
+                        (Nivel {car.unlockedAtLevel})
+                      </span>}
+                  </p>
                 </motion.div>;
         })}
           </motion.div>}
