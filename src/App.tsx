@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
+import CompletionConfetti from "./components/CompletionConfetti";
 import { useGame } from "./context/GameContext";
 
 const queryClient = new QueryClient();
@@ -23,7 +24,8 @@ const GameApp = () => {
     setShowBonusPopup, 
     bonusPoints,
     showAgeBonusPopup,
-    playerAge
+    playerAge,
+    showCompletionBanner
   } = useGame();
   
   return (
@@ -52,6 +54,11 @@ const GameApp = () => {
           points={20}
           age={playerAge}
         />
+      )}
+      
+      {/* Completion confetti when reaching level 10 */}
+      {showCompletionBanner && (
+        <CompletionConfetti onClose={() => {}} />
       )}
     </>
   );

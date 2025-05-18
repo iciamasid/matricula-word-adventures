@@ -297,26 +297,46 @@ export const GameProvider: React.FC<{
       // Save current destination as previous before updating
       setPreviousDestination({...destinationInfo});
       
-      setLevel(newLevel);
-      setShowLevelUp(true);
-      
-      // Play level up sound (optional)
-      try {
-        const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.5;
-        audio.play();
-      } catch (e) {
-        console.error("Could not play level up sound", e);
+      // Check if reaching level 10, reset back to level 1
+      if (newLevel >= 10 && level < 10) {
+        // Show completion banner/confetti
+        setShowCompletionBanner(true);
+        
+        // Reset to level 1 but keep the player's info
+        setLevel(1);
+        setTotalPoints(0);
+        
+        // Auto-hide completion banner after 8 seconds
+        setTimeout(() => {
+          setShowCompletionBanner(false);
+        }, 8000);
+        
+        console.log("¡Reached level 10! Game restarting back to level 1.");
+        
+        // Update destinations to level 1 (Spain -> France)
+        updateDestinations(1);
+      } else if (newLevel < 10) {
+        setLevel(newLevel);
+        setShowLevelUp(true);
+        
+        // Play level up sound (optional)
+        try {
+          const audio = new Audio('/lovable-uploads/level-up.mp3');
+          audio.volume = 0.5;
+          audio.play();
+        } catch (e) {
+          console.error("Could not play level up sound", e);
+        }
+        
+        // Auto-hide level up message after 5 seconds
+        setTimeout(() => {
+          clearLevelUpMessage();
+        }, 5000);
+        
+        console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
+        // Update destinations for the new level
+        updateDestinations(newLevel);
       }
-      
-      // Auto-hide level up message after 5 seconds
-      setTimeout(() => {
-        clearLevelUpMessage();
-      }, 5000);
-      
-      console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
-      // Update destinations for the new level
-      updateDestinations(newLevel);
     }
   }, [totalPoints]);
   
@@ -358,7 +378,7 @@ export const GameProvider: React.FC<{
     }
   }, [licensePlate, playerAge]);
   
-  // Country progression for the world tour
+  // Modified World Tour progression (removing Peru)
   // Level 1: Spain -> France
   // Level 2: France -> Italy
   // Level 3: Italy -> Russia
@@ -366,9 +386,8 @@ export const GameProvider: React.FC<{
   // Level 5: Japan -> Australia
   // Level 6: Australia -> USA
   // Level 7: USA -> Mexico
-  // Level 8: Mexico -> Peru
-  // Level 9: Peru -> Argentina
-  // Level 10: Argentina -> Spain
+  // Level 8: Mexico -> Argentina
+  // Level 9: Argentina -> Spain (complete the world tour)
   
   // Function to get destinations based on level, using previous destination as new origin
   const updateDestinations = (currentLevel: number) => {
@@ -423,16 +442,10 @@ export const GameProvider: React.FC<{
       case 8:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México') || 
                         { city: 'Ciudad de México', country: 'México', flag: '🇲🇽', fact: '¡México tiene 34 sitios declarados Patrimonio de la Humanidad por la UNESCO!' };
-        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Perú') || 
-                        { city: 'Lima', country: 'Perú', flag: '🇵🇪', fact: '¡Machu Picchu en Perú fue construido hace más de 500 años sin usar ruedas ni animales de tiro!' };
-        break;
-      case 9:
-        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Perú') || 
-                        { city: 'Lima', country: 'Perú', flag: '🇵🇪', fact: '¡Machu Picchu en Perú fue construido hace más de 500 años sin usar ruedas ni animales de tiro!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina') || 
                         { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
         break;
-      case 10:
+      case 9:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina') || 
                         { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
@@ -618,7 +631,7 @@ export const GameProvider: React.FC<{
     }
   }, [licensePlate]);
   
-  // Initial setup - ensure Level 1 has correct origin/destination
+  // Initial setup - ensure Spain is always unlocked
   useEffect(() => {
     console.log(`Initial setup for level ${level}`);
     updateDestinations(level);

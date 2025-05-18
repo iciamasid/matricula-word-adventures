@@ -10,41 +10,27 @@ import LockedCountryPopup from './LockedCountryPopup';
 const getLevelFlag = (level: number) => {
   switch (level) {
     case 1:
-      return "🇪🇸";
-    // Origen España
+      return "🇪🇸"; // Origen España
     case 2:
-      return "🇫🇷";
-    // Origen Francia
+      return "🇫🇷"; // Origen Francia
     case 3:
-      return "🇮🇹";
-    // Origen Italia
+      return "🇮🇹"; // Origen Italia
     case 4:
-      return "🇷🇺";
-    // Origen Rusia
+      return "🇷🇺"; // Origen Rusia
     case 5:
-      return "🇯🇵";
-    // Origen Japón
+      return "🇯🇵"; // Origen Japón
     case 6:
-      return "🇦🇺";
-    // Origen Australia
+      return "🇦🇺"; // Origen Australia
     case 7:
-      return "🇺🇸";
-    // Origen EEUU
+      return "🇺🇸"; // Origen EEUU
     case 8:
-      return "🇲🇽";
-    // Origen México
+      return "🇲🇽"; // Origen México
     case 9:
-      return "🇵🇪";
-    // Origen Perú
+      return "🇦🇷"; // Origen Argentina
     case 10:
-      return "🇦🇷";
-    // Origen Argentina
-    case 11:
-      return "🇪🇸";
-    // Vuelta a España
+      return "🇪🇸"; // Vuelta a España
     default:
-      return "🇪🇸";
-    // Default España
+      return "🇪🇸"; // Default España
   }
 };
 
@@ -68,10 +54,8 @@ const getCountryName = (level: number, isEnglish: boolean) => {
     case 8:
       return isEnglish ? "Mexico" : "México";
     case 9:
-      return isEnglish ? "Peru" : "Perú";
-    case 10:
       return isEnglish ? "Argentina" : "Argentina";
-    case 11:
+    case 10:
       return isEnglish ? "Spain (complete)" : "España (completo)";
     default:
       return isEnglish ? "Spain" : "España";
@@ -98,10 +82,8 @@ const getCountryCode = (level: number) => {
     case 8:
       return "México";
     case 9:
-      return "Perú";
-    case 10:
       return "Argentina";
-    case 11:
+    case 10:
       return "España";
     default:
       return "España";
@@ -117,14 +99,13 @@ const isCountryLocked = (countryCode: string, currentLevel: number) => {
   
   // Otherwise check level requirements
   switch(countryCode.toLowerCase()) {
-    case 'fr': return currentLevel < 1;
-    case 'it': return currentLevel < 2;
-    case 'ru': return currentLevel < 3;
-    case 'jp': return currentLevel < 4;
-    case 'au': return currentLevel < 5;
-    case 'us': return currentLevel < 6;
-    case 'mx': return currentLevel < 7;
-    case 'pe': return currentLevel < 8;
+    case 'fr': return currentLevel < 2;
+    case 'it': return currentLevel < 3;
+    case 'ru': return currentLevel < 4;
+    case 'jp': return currentLevel < 5;
+    case 'au': return currentLevel < 6;
+    case 'us': return currentLevel < 7;
+    case 'mx': return currentLevel < 8;
     case 'ar': return currentLevel < 9;
     default: return true; // Lock unknown countries
   }
@@ -132,7 +113,7 @@ const isCountryLocked = (countryCode: string, currentLevel: number) => {
 
 const WorldTourProgress = () => {
   const { level } = useGame();
-  const { t, isEnglish } = useLanguage();
+  const { t, isEnglish } = useLanguage?.() || { language: 'es' };
   const [animatingLevel, setAnimatingLevel] = useState(0);
   const [progressValue, setProgressValue] = useState(0);
   const [hoveredCountry, setHoveredCountry] = useState<number | null>(null);
@@ -145,9 +126,9 @@ const WorldTourProgress = () => {
   const accentColor = isEnglish ? "bg-orange-400" : "bg-purple-400";
   const completedColor = isEnglish ? "bg-orange-500" : "bg-purple-500";
 
-  // Modified animation to show circular path progress
+  // Modified animation to show circular path progress - using 9 steps now instead of 10
   useEffect(() => {
-    const targetValue = (level - 1) / 10 * 100;
+    const targetValue = (level - 1) / 9 * 100;
     let animationActive = true;
     const runAnimation = async () => {
       while (animationActive) {
@@ -162,7 +143,7 @@ const WorldTourProgress = () => {
           setProgressValue(currentProgress);
 
           // Update current animating level based on progress
-          const currentLevelBasedOnProgress = Math.ceil(currentProgress / 100 * 10) + 1;
+          const currentLevelBasedOnProgress = Math.ceil(currentProgress / 100 * 9) + 1;
           setAnimatingLevel(Math.min(currentLevelBasedOnProgress, level));
 
           // Slow down animation with a small delay
@@ -183,43 +164,30 @@ const WorldTourProgress = () => {
   const getDestinationFlag = (level: number) => {
     switch (level) {
       case 1:
-        return "🇫🇷";
-      // Destino Francia
+        return "🇫🇷"; // Destino Francia
       case 2:
-        return "🇮🇹";
-      // Destino Italia
+        return "🇮🇹"; // Destino Italia 
       case 3:
-        return "🇷🇺";
-      // Destino Rusia
+        return "🇷🇺"; // Destino Rusia
       case 4:
-        return "🇯🇵";
-      // Destino Japón
+        return "🇯🇵"; // Destino Japón
       case 5:
-        return "🇦🇺";
-      // Destino Australia
+        return "🇦🇺"; // Destino Australia
       case 6:
-        return "🇺🇸";
-      // Destino EEUU
+        return "🇺���"; // Destino EEUU
       case 7:
-        return "🇲🇽";
-      // Destino México
+        return "🇲🇽"; // Destino México
       case 8:
-        return "🇵🇪";
-      // Destino Perú
+        return "🇦🇷"; // Destino Argentina
       case 9:
-        return "🇦🇷";
-      // Destino Argentina
-      case 10:
-        return "🇪🇸";
-      // Destino España (vuelta completa)
+        return "🇪🇸"; // Destino España (vuelta completa)
       default:
-        return "🇫🇷";
-      // Default Francia
+        return "🇫🇷"; // Default Francia
     }
   };
 
-  // Calculate positions for an elliptical layout
-  const getEllipsePosition = (index: number, totalPoints: number = 11) => {
+  // Calculate positions for an elliptical layout - now with 10 points (removing Peru)
+  const getEllipsePosition = (index: number, totalPoints: number = 10) => {
     // Calculate angle for evenly distributed points around an ellipse
     // Subtract from 360 to go clockwise, and adjust starting point to top (270 degrees)
     const angle = (360 / (totalPoints - 1) * index + 270) % 360;
@@ -243,7 +211,7 @@ const WorldTourProgress = () => {
   // Determine position of the moving vehicle
   const getVehiclePosition = () => {
     // Calculate how many full segments the vehicle has completed
-    const segmentSize = 100 / 10; // 10 segments in total
+    const segmentSize = 100 / 9; // 9 segments in total (changed from 10)
     const completedSegments = Math.floor(progressValue / segmentSize);
 
     // Calculate progress within the current segment (0 to 1)
@@ -285,7 +253,7 @@ const WorldTourProgress = () => {
   // Helper to create SVG path for the elliptical journey
   const createEllipsePath = () => {
     const points = [];
-    for (let i = 0; i < 11; i++) {
+    for (let i = 0; i < 10; i++) { // Changed from 11 to 10 points (removed Peru)
       const pos = getEllipsePosition(i);
       points.push(`${pos.x},${pos.y}`);
     }
@@ -345,7 +313,7 @@ const WorldTourProgress = () => {
           </svg>
           
           {/* Country flags positioned on the ellipse */}
-          {[...Array(11)].map((_, i) => {
+          {[...Array(10)].map((_, i) => { // Changed from 11 to 10 (removed Peru)
             // Skip index 0 as it's just a placeholder
             const levelIndex = i + 1;
             const flag = getLevelFlag(levelIndex);
@@ -470,7 +438,7 @@ const WorldTourProgress = () => {
       </div>
       
       {/* Current destination indicator */}
-      {level <= 10 && (
+      {level <= 9 && (
         <div className="mt-2 text-center">
           <span className="text-xl font-normal text-fuchsia-800">
             {isEnglish ? "Next destination:" : "Próximo destino:"} {getDestinationFlag(level)} {getCountryName(level + 1, isEnglish)}

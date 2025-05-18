@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -38,7 +39,8 @@ const GameContent = () => {
     resetGame,
     plateConsonants,
     selectedCarColor,
-    updateDestinations
+    updateDestinations,
+    playerName
   } = useGame();
 
   // Ref to the license plate section
@@ -101,14 +103,13 @@ const GameContent = () => {
     // IMPORTANT: Always include Spain regardless of level
     const countries = ["España"];
     
-    if (level >= 1) countries.push("Francia");
-    if (level >= 2) countries.push("Italia");
-    if (level >= 3) countries.push("Rusia");
-    if (level >= 4) countries.push("Japón");
-    if (level >= 5) countries.push("Australia");
-    if (level >= 6) countries.push("Estados Unidos");
-    if (level >= 7) countries.push("Méjico");
-    if (level >= 8) countries.push("Perú");
+    if (level >= 2) countries.push("Francia");
+    if (level >= 3) countries.push("Italia");
+    if (level >= 4) countries.push("Rusia");
+    if (level >= 5) countries.push("Japón");
+    if (level >= 6) countries.push("Australia");
+    if (level >= 7) countries.push("Estados Unidos");
+    if (level >= 8) countries.push("Méjico");
     if (level >= 9) countries.push("Argentina");
     if (level >= 10) countries.push("España (vuelta completa)");
     
@@ -188,7 +189,29 @@ const GameContent = () => {
         {/* Player Registration Form */}
         <PlayerRegistration />
         
-        {/* Car selection component */}
+        {/* Show moving car below player name when available */}
+        {playerName && selectedCarColor && (
+          <motion.div 
+            className="w-32 h-24 my-2"
+            animate={{
+              x: [0, 10, 0, -10, 0],
+              rotate: [0, 1, 0, -1, 0]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          >
+            <img 
+              src={`/lovable-uploads/${selectedCarColor.image}`} 
+              alt={selectedCarColor.name}
+              className="w-full h-full object-contain"
+            />
+          </motion.div>
+        )}
+        
+        {/* Car selection component with CONDUCE button moved inside */}
         <div className="w-full flex justify-center mb-4">
           <CarCustomization />
         </div>
@@ -205,59 +228,6 @@ const GameContent = () => {
           
           {/* Add World Tour Progress component */}
           <WorldTourProgress />
-          
-          {/* "Drive" button */}
-          <motion.div className="w-full rounded-lg p-4 shadow-lg bg-gradient-to-r from-purple-400 to-violet-300" initial={{
-          opacity: 0,
-          y: 20
-        }} animate={{
-          opacity: 1,
-          y: 0
-        }} transition={{
-          delay: 0.4
-        }} whileHover={{
-          scale: 1.02
-        }}>
-            <div className="text-center">
-              <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
-                <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 w-full text-slate-50">
-                  <div className="flex items-center justify-center">
-                    {/* Car icon on the left */}
-                    <motion.div animate={{
-                    x: [-5, 5, -5],
-                    y: [-3, 3, -3],
-                    rotate: [0, 5, -5, 0]
-                  }} transition={{
-                    duration: 2,
-                    repeat: Infinity
-                  }} className="mr-3 text-3xl">
-                      🚗
-                    </motion.div>
-                    <span className="tracking-wide uppercase whitespace-normal px-2">
-                      {"¡CONDUCE!"}
-                    </span>
-                  </div>
-                  
-                  {/* Add decorative elements */}
-                  <motion.div className="absolute -right-2 -top-2 w-12 h-12 rounded-full bg-yellow-300 opacity-80 z-0" animate={{
-                  scale: [1, 1.2, 1],
-                  opacity: [0.7, 0.9, 0.7]
-                }} transition={{
-                  duration: 2,
-                  repeat: Infinity
-                }} />
-                  <motion.div className="absolute -left-1 -bottom-1 w-8 h-8 rounded-full bg-red-400 opacity-70 z-0" animate={{
-                  scale: [1, 1.3, 1],
-                  opacity: [0.6, 0.8, 0.6]
-                }} transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  delay: 0.5
-                }} />
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
           
           {/* Reset Game Button */}
           <motion.div className="w-full max-w-xs mt-8" whileHover={{
