@@ -97,7 +97,7 @@ const CarCustomization: React.FC = () => {
     }} transition={{
       duration: 0.3
     }}>
-          <img src={`/lovable-uploads/${selectedCarColor.image}`} alt={selectedCarColor.name} className="w-48 h-32 object-contain" />
+          
           
         </motion.div>}
     </div>;
