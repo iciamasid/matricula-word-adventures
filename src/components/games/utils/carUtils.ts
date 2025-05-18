@@ -259,4 +259,5 @@ export interface CarColor {
   name: string;
   image: string;
   color: string;
+  unlockedAtLevel?: number; // Add this property for tracking when car unlocks
 }

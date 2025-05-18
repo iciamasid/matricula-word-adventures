@@ -104,12 +104,14 @@ export const GameProvider: React.FC<{
   
   const [originWord, setOriginWord] = useState<string>('');
   const [destinationWord, setDestinationWord] = useState<string>('');
-  // Set the default selected car to the blue one (id: "2")
+  
+  // Set the default selected car to the blue one (id: "2") which is always unlocked
   const [selectedCarColor, setSelectedCarColor] = useState<CarColor | null>({ 
     id: "2", 
     name: "Coche Azul", 
     image: "cocheazul.png", 
-    color: "bg-blue-500" 
+    color: "bg-blue-500",
+    unlockedAtLevel: 0 // Always unlocked
   });
   
   // Player information states
@@ -223,7 +225,8 @@ export const GameProvider: React.FC<{
       id: "2", 
       name: "Coche Azul", 
       image: "cocheazul.png", 
-      color: "bg-blue-500" 
+      color: "bg-blue-500",
+      unlockedAtLevel: 0
     });
     
     setPlayerName('');

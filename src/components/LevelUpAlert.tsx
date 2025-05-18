@@ -19,8 +19,8 @@ const LevelUpAlert: React.FC = () => {
     }
   }, [clearLevelUpMessage]);
 
-  // Get the newly unlocked country based on level
-  const getUnlockedCountry = () => {
+  // Get the current country based on level (not the next one)
+  const getCurrentCountry = () => {
     switch(level) {
       case 1:
         return isEnglish ? "France" : "Francia";
@@ -43,7 +43,7 @@ const LevelUpAlert: React.FC = () => {
       case 10:
         return isEnglish ? "Spain (Full World Tour!)" : "España (¡Vuelta al mundo completa!)";
       default:
-        return "";
+        return isEnglish ? "Spain" : "España";
     }
   };
   
@@ -52,15 +52,15 @@ const LevelUpAlert: React.FC = () => {
     ? `Level ${level}` 
     : `Nivel ${level}`;
   
-  // Modified message to say "Now you are in" instead of "You can now travel to"
-  const unlockedCountry = getUnlockedCountry();
-  const unlockedMessage = unlockedCountry 
+  // Message now says "Now you are in" instead of "You can now travel to"
+  const currentCountry = getCurrentCountry();
+  const countryMessage = currentCountry 
     ? (isEnglish 
-        ? `Now you are in ${unlockedCountry}!` 
-        : `¡Ahora estás en ${unlockedCountry}!`) 
+        ? `Now you are in ${currentCountry}!` 
+        : `¡Ahora estás en ${currentCountry}!`) 
     : "";
   
-  const explanation = `${baseExplanation}${unlockedMessage ? "\n" + unlockedMessage : ""}`;
+  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}`;
   
   return (
     <GamePopup
