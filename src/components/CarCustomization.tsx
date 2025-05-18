@@ -33,7 +33,7 @@ const carColors: CarColor[] = [
   {
     id: "5",
     name: "Coche Verde",
-    image: "e69ac232-b23d-40ed-8082-76dd61260e93.png",
+    image: "cocheverde.png",
     color: "bg-green-500"
   }
 ];
