@@ -1,11 +1,9 @@
-
 import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
 import { CarColor } from "./games/utils/carUtils";
-
 const LicensePlate: React.FC = () => {
   const {
     licensePlate,
@@ -49,7 +47,6 @@ const LicensePlate: React.FC = () => {
     const consonants = "BCDFGHJKLMNPQRSTVWXYZ";
     return Array(10).fill('').map(() => consonants[Math.floor(Math.random() * consonants.length)]);
   };
-  
   return <motion.div className="w-full" initial={{
     scale: 0.9,
     opacity: 0
@@ -60,36 +57,7 @@ const LicensePlate: React.FC = () => {
     duration: 0.5
   }}>
       {/* Car image with horizontal loop animation - no onClick handler now */}
-      <div className="flex justify-center w-full mb-3 relative h-16 overflow-hidden">
-        {/* Render car image based on selectedCarColor or use default */}
-        {selectedCarColor ? (
-          <motion.img 
-            src={`/lovable-uploads/${selectedCarColor.image}`} 
-            alt={selectedCarColor.name} 
-            initial={{ x: -200 }}
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="h-16 w-auto absolute"
-          />
-        ) : (
-          <motion.img 
-            src="/lovable-uploads/coche_portada.gif" 
-            alt="Coche predeterminado" 
-            initial={{ x: -200 }}
-            animate={{ x: ["-100%", "100%"] }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="h-16 w-auto absolute"
-          />
-        )}
-      </div>
+      
       
       {/* Vintage license plate with EU flag */}
       <div className="relative bg-gray-100 p-3 rounded-md border-2 border-gray-400 w-full flex items-center justify-center shadow-md" style={{
