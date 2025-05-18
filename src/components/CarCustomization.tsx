@@ -1,8 +1,9 @@
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { CarColor } from "./games/utils/carUtils";
-import { Lock, ChevronDown, ChevronUp } from "lucide-react";
+import { Lock, ChevronDown, ChevronUp, Route } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import LockedCarPopup from "./LockedCarPopup";
 import { Button } from "./ui/button";
@@ -64,6 +65,7 @@ const carColors: CarColor[] = [{
   color: "bg-amber-300",
   unlockedAtLevel: 9
 }];
+
 const CarCustomization: React.FC = () => {
   const {
     selectedCarColor,
@@ -119,7 +121,7 @@ const CarCustomization: React.FC = () => {
   return <div className="w-full flex flex-col items-center">
       {/* Homogeneous design for car selection and CONDUCE buttons */}
       <div className="w-full flex flex-row items-center justify-center gap-4">
-        {/* Car selection button with same styling as CONDUCE */}
+        {/* Car selection button with reduced height */}
         <motion.div className="flex-1 bg-gradient-to-r from-purple-500 to-violet-600 rounded-lg shadow-lg overflow-hidden border-2 border-purple-400" whileHover={{
         scale: 1.02
       }} whileTap={{
@@ -133,31 +135,29 @@ const CarCustomization: React.FC = () => {
       }} transition={{
         delay: 0.2
       }}>
-          <button onClick={togglePanel} className="w-full p-4 flex items-center justify-center relative text-violet-900 text-3xl rounded-3xl bg-slate-50">
-            <div className="flex flex-col items-center">
-              {/* Car image */}
-              <div className="relative w-16 h-16 mb-1">
-                <img src={`/lovable-uploads/${currentCar.image}`} alt={currentCar.name} className="w-full h-full object-contain" />
-                
-                {/* Selected indicator */}
-                <motion.div className="absolute -right-2 -top-2 w-5 h-5 bg-yellow-300 rounded-full flex items-center justify-center" initial={{
+          <button onClick={togglePanel} className="w-full py-2 px-3 flex flex-col items-center justify-center relative text-violet-900 text-xl rounded-3xl bg-slate-50">
+            {/* Car image */}
+            <div className="relative w-12 h-12">
+              <img src={`/lovable-uploads/${currentCar.image}`} alt={currentCar.name} className="w-full h-full object-contain" />
+              
+              {/* Selected indicator */}
+              <motion.div className="absolute -right-2 -top-2 w-5 h-5 bg-yellow-300 rounded-full flex items-center justify-center" initial={{
                 scale: 0
               }} animate={{
                 scale: 1
               }} transition={{
                 type: "spring"
               }}>
-                  <span className="text-purple-800 text-xs">✓</span>
-                </motion.div>
-              </div>
-              
-              {/* Toggle indicator */}
-              <div className="flex items-center mt-1 text-white kids-text">
-                <span className="mr-1 tracking-wide text-violet-900 text-xl font-semibold">
-                  {isPanelOpen ? "Cerrar" : "Selecciona coche"}
-                </span>
-                {isPanelOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-              </div>
+                <span className="text-purple-800 text-xs">✓</span>
+              </motion.div>
+            </div>
+            
+            {/* Changed text to "Elige tu coche" */}
+            <div className="flex items-center mt-1 text-white kids-text">
+              <span className="tracking-wide text-violet-900 text-lg font-semibold">
+                {isPanelOpen ? "Cerrar" : "Elige tu coche"}
+              </span>
+              {isPanelOpen ? <ChevronUp className="w-4 h-4 ml-1" /> : <ChevronDown className="w-4 h-4 ml-1" />}
             </div>
             
             {/* Decorative elements to match game-style buttons */}
@@ -179,7 +179,7 @@ const CarCustomization: React.FC = () => {
           </button>
         </motion.div>
         
-        {/* CONDUCE button with matching style */}
+        {/* CONDUCE button with matching style and Route icon */}
         <motion.div className="flex-1 bg-gradient-to-r from-purple-500 to-violet-600 rounded-lg shadow-lg overflow-hidden border-2 border-purple-400" initial={{
         opacity: 0,
         y: 20
@@ -193,20 +193,18 @@ const CarCustomization: React.FC = () => {
       }} whileTap={{
         scale: 0.98
       }}>
-          <Link to="/draw-game" onClick={handleNavigation} className="block w-full p-4 text-white relative">
-            <div className="flex items-center justify-center">
-              {/* Car icon */}
+          <Link to="/draw-game" onClick={handleNavigation} className="block w-full py-2 px-3 text-white relative">
+            <div className="flex flex-col items-center justify-center">
+              {/* Route icon instead of car */}
               <motion.div animate={{
-              x: [-3, 3, -3],
-              y: [-2, 2, -2],
-              rotate: [0, 2, -2, 0]
+              rotate: [0, 10, -10, 0]
             }} transition={{
-              duration: 2,
+              duration: 3,
               repeat: Infinity
-            }} className="mr-3 text-2xl">
-                🚗
+            }} className="text-2xl mb-1">
+                <Route size={28} className="text-yellow-300" />
               </motion.div>
-              <span className="tracking-wide uppercase kids-text font-bold text-xl whitespace-normal">
+              <span className="tracking-wide uppercase kids-text font-bold text-lg whitespace-normal">
                 ¡CONDUCE!
               </span>
             </div>
