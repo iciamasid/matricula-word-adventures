@@ -194,7 +194,7 @@ const GameContent = () => {
           <CarCustomization />
         </div>
         
-        {/* Show moving car below the buttons when available */}
+        {/* Show moving car BELOW the buttons */}
         {playerName && selectedCarColor && (
           <motion.div 
             className="w-32 h-24 my-2"

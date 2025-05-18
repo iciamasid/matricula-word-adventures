@@ -58,8 +58,25 @@ const GamePopup: React.FC<GamePopupProps> = ({
     }, 300);
   };
 
+  // Check if this is the special completion popup (level 10)
+  const isCompletion = type === "levelUp" && level === 10;
+
   // Define colors and icons based on type
   const getColors = () => {
+    // Special case for completion popup (level 10)
+    if (isCompletion) {
+      return {
+        from: "from-amber-500",
+        via: "via-yellow-500",
+        to: "to-amber-600",
+        border: "border-purple-400",
+        icon: <Trophy className="w-14 h-14 text-amber-800" />,
+        bgIconColor: "bg-purple-200", 
+        shadow: "shadow-[0_0_40px_rgba(245,158,11,0.9)]",
+        textColor: "text-amber-800"
+      };
+    }
+    
     switch(type) {
       case "success":
         return {
@@ -125,7 +142,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
     <AnimatePresence>
       {open && (
         <AlertDialog open={isVisible} onOpenChange={() => handleClose()}>
-          <AlertDialogContent className="max-w-sm border-0 p-0 bg-transparent">
+          <AlertDialogContent className={`max-w-sm border-0 p-0 bg-transparent ${isCompletion ? 'scale-110' : ''}`}>
             {/* Hidden, but needed for accessibility */}
             <AlertDialogTitle className="sr-only">{message}</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">{explanation}</AlertDialogDescription>
@@ -142,19 +159,19 @@ const GamePopup: React.FC<GamePopupProps> = ({
                 {stars.map((star, index) => (
                   <motion.div
                     key={index}
-                    className="absolute rounded-full bg-yellow-300"
+                    className={`absolute rounded-full ${isCompletion ? 'bg-purple-300' : 'bg-yellow-300'}`}
                     style={{ 
                       left: `${star.x}%`,
                       top: `${star.y}%`,
-                      width: `${star.size}px`,
-                      height: `${star.size}px`
+                      width: `${isCompletion ? star.size * 1.5 : star.size}px`,
+                      height: `${isCompletion ? star.size * 1.5 : star.size}px`
                     }}
                     animate={{ 
                       opacity: [0, 1, 0],
                       scale: [0, 1, 0]
                     }}
                     transition={{ 
-                      duration: 2,
+                      duration: isCompletion ? 2.5 : 2,
                       delay: star.delay,
                       repeat: Infinity,
                       repeatDelay: 3
@@ -164,11 +181,11 @@ const GamePopup: React.FC<GamePopupProps> = ({
               </div>
               
               {/* Main popup content */}
-              <div className={`bg-gradient-to-br ${colors.from} ${colors.via} ${colors.to} p-6 rounded-2xl border-4 ${colors.border} ${colors.shadow} relative z-10`}>
+              <div className={`bg-gradient-to-br ${colors.from} ${colors.via} ${colors.to} p-6 rounded-2xl border-4 ${colors.border} ${colors.shadow} relative z-10 ${isCompletion ? 'p-8' : ''}`}>
                 <div className="text-center">
                   <motion.div 
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
+                    animate={{ scale: isCompletion ? [1, 1.3, 1] : [1, 1.2, 1] }}
+                    transition={{ duration: isCompletion ? 2 : 1.5, repeat: Infinity }}
                     className="flex justify-center items-center mb-4"
                   >
                     <div className={`${colors.bgIconColor} p-2 rounded-full`}>
@@ -176,16 +193,32 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     </div>
                   </motion.div>
                   
-                  <motion.h2 
-                    className="text-3xl font-bold mb-2 text-white kids-text"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    {message}
-                  </motion.h2>
+                  {/* For level 10 completion, show a more emphatic message */}
+                  {isCompletion ? (
+                    <motion.div 
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      className="space-y-2"
+                    >
+                      <h2 className="text-4xl font-bold text-white kids-text">
+                        ¡¡¡ENHORABUENA!!!
+                      </h2>
+                      <p className="text-2xl font-bold text-purple-200 kids-text">
+                        ¡HAS SUPERADO TODOS LOS NIVELES!
+                      </p>
+                    </motion.div>
+                  ) : (
+                    <motion.h2 
+                      className="text-3xl font-bold mb-2 text-white kids-text"
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      {message}
+                    </motion.h2>
+                  )}
                   
                   {/* New simplified explanation text for kilometers */}
-                  {explanation && (
+                  {explanation && !isCompletion && (
                     <motion.div 
                       className="text-2xl font-bold mb-2 text-yellow-300 kids-text"
                       animate={{ y: [0, -10, 0] }}
@@ -195,7 +228,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     </motion.div>
                   )}
                   
-                  {level && type === "levelUp" && (
+                  {level && type === "levelUp" && !isCompletion && (
                     <div className="mb-4">
                       <motion.div
                         className="text-4xl font-bold text-yellow-300 kids-text"
@@ -222,6 +255,28 @@ const GamePopup: React.FC<GamePopupProps> = ({
                           </motion.div>
                         ))}
                       </div>
+                    </div>
+                  )}
+                  
+                  {/* For level 10 completion - extra stars */}
+                  {isCompletion && (
+                    <div className="flex justify-center space-x-3 mt-4">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <motion.div
+                          key={i}
+                          animate={{ 
+                            rotate: 360,
+                            scale: [1, 1.8, 1]
+                          }}
+                          transition={{ 
+                            duration: 2,
+                            delay: i * 0.2,
+                            repeat: Infinity
+                          }}
+                        >
+                          <Star className="h-8 w-8 text-purple-200" />
+                        </motion.div>
+                      ))}
                     </div>
                   )}
                   

@@ -297,29 +297,47 @@ export const GameProvider: React.FC<{
       // Save current destination as previous before updating
       setPreviousDestination({...destinationInfo});
       
-      // Check if reaching level 10, reset back to level 1
-      if (newLevel >= 10 && level < 10) {
-        // Show completion banner/confetti
-        setShowCompletionBanner(true);
+      // Check if reaching level 10 or above
+      if (newLevel >= 10) {
+        // Show completion banner/confetti if we're just now reaching level 10
+        if (level < 10) {
+          setShowCompletionBanner(true);
+          
+          // Auto-hide completion banner after 8 seconds
+          setTimeout(() => {
+            setShowCompletionBanner(false);
+          }, 8000);
+          
+          console.log("¡Reached level 10! Showing special completion message.");
+        }
         
-        // Reset to level 1 but keep the player's info
-        setLevel(1);
-        setTotalPoints(0);
-        
-        // Auto-hide completion banner after 8 seconds
-        setTimeout(() => {
-          setShowCompletionBanner(false);
-        }, 8000);
-        
-        console.log("¡Reached level 10! Game restarting back to level 1.");
-        
-        // Update destinations to level 1 (Spain -> France)
-        updateDestinations(1);
-      } else if (newLevel < 10) {
+        // Update to level 10 (or whatever the new level is)
         setLevel(newLevel);
         setShowLevelUp(true);
         
-        // Play level up sound (optional)
+        // Play special completion sound
+        try {
+          const audio = new Audio('/lovable-uploads/level-up.mp3');
+          audio.volume = 0.8;
+          audio.play();
+        } catch (e) {
+          console.error("Could not play completion sound", e);
+        }
+        
+        // Auto-hide level up message after 5 seconds
+        setTimeout(() => {
+          clearLevelUpMessage();
+        }, 5000);
+        
+        console.log(`Advanced to level ${newLevel}! Showing completion congratulations!`);
+        
+        // Update destinations for level 10
+        updateDestinations(10);
+      } else {
+        setLevel(newLevel);
+        setShowLevelUp(true);
+        
+        // Play level up sound
         try {
           const audio = new Audio('/lovable-uploads/level-up.mp3');
           audio.volume = 0.5;
@@ -450,6 +468,13 @@ export const GameProvider: React.FC<{
                         { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
                         { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡Has completado la vuelta al mundo y has regresado a España!' };
+        break;
+      case 10:
+        // Special case for level 10 - you completed the world tour!
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡ENHORABUENA! ¡Has completado la vuelta al mundo!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡Has completado la vuelta al mundo y eres una estrella de la geografía!' };
         break;
       default:
         // Default to level 1 case
