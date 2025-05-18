@@ -3,7 +3,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { CarColor } from "./games/utils/carUtils";
-import { useLanguage } from "@/context/LanguageContext";
 
 // Available car colors
 const carColors: CarColor[] = [
@@ -29,10 +28,14 @@ const carColors: CarColor[] = [
 
 const CarCustomization: React.FC = () => {
   const { selectedCarColor } = useGame();
-  const { isEnglish } = useLanguage();
   
   return (
-    <div className="w-full flex justify-center">
+    <div className="w-full flex flex-col items-center">
+      {/* Added instruction text above the car */}
+      <p className="text-purple-800 text-center text-lg kids-text font-semibold mb-2 animate-pulse">
+        ¡Pincha sobre el coche para elegir otro!
+      </p>
+      
       <motion.div 
         whileHover={{ scale: 1.1 }} 
         className="flex justify-center"

@@ -3,7 +3,6 @@ import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Objec
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
-import { toast } from '@/hooks/use-toast';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
 import { Point } from './utils/pathUtils';
@@ -12,8 +11,6 @@ import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
 import { useGame } from '@/context/GameContext';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { useLanguage } from '@/context/LanguageContext';
 
 interface DrawPathGameProps {
   onError?: (message: string) => void;
@@ -28,10 +25,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     selectedCarColor,
     setSelectedCarColor
   } = useGame();
-  const {
-    t,
-    isEnglish
-  } = useLanguage();
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDrawing, setIsDrawing] = useState<boolean>(false);
@@ -210,28 +204,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       }); // Reset car position
       setShowCarImage(true); // Always show car image overlay
       fabricCanvas.isDrawingMode = false;
-      toast({
-        title: "¡Tablero limpio!",
-        description: "Dibuja un nuevo camino para el coche."
-      });
     } catch (error) {
       console.error("Error clearing canvas:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo limpiar el tablero. Inténtalo de nuevo.",
-        variant: "destructive"
-      });
     }
   };
 
   // Start animation along the path
   const handlePlay = () => {
     if (path.length === 0) {
-      toast({
-        title: "¡No hay camino!",
-        description: "Dibuja un camino primero.",
-        variant: "destructive"
-      });
       return;
     }
     console.log("Starting animation with path points:", path.length);
@@ -286,11 +266,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   const handleDrawMode = () => {
     if (!fabricCanvas) {
       console.log("Canvas not initialized yet");
-      toast({
-        title: "Error",
-        description: "El juego no está listo aún. Por favor, espera un momento.",
-        variant: "destructive"
-      });
       return;
     }
     try {
@@ -313,17 +288,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       }
       fabricCanvas.isDrawingMode = true;
       fabricCanvas.renderAll();
-      toast({
-        title: "Modo dibujo activado",
-        description: "Dibuja un camino para el coche con tu dedo o ratón."
-      });
     } catch (error) {
       console.error("Error activating drawing mode:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo activar el modo dibujo. Inténtalo de nuevo.",
-        variant: "destructive"
-      });
     }
   };
 
@@ -374,11 +340,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   const getSelectedCarImage = () => {
     if (!selectedCarColor) return "";
     return `/lovable-uploads/${selectedCarColor.image}`;
-  };
-
-  // Get destination text based on language
-  const getDestinationText = () => {
-    return isEnglish ? "Arriving at destination..." : "Llegando a tu destino...";
   };
 
   return (
@@ -440,7 +401,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
             {isPlaying && interpolatedPath.length > 0 && (
               <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
                 <div className="flex flex-col items-center gap-1 px-4">
-                  <span className="text-xs font-medium kids-text">{getDestinationText()}</span>
+                  <span className="text-xs font-medium kids-text">Llegando a tu destino...</span>
                   <Progress value={animationProgress} className="h-3 w-full" />
                   <span className="text-xs kids-text">{animationProgress}%</span>
                 </div>

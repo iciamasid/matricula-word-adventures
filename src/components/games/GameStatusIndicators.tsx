@@ -3,7 +3,6 @@ import React from 'react';
 import { Progress } from "@/components/ui/progress";
 import { Trophy, AlertCircle, Globe } from "lucide-react";
 import { motion } from "framer-motion";
-import { useLanguage } from '@/context/LanguageContext';
 
 interface GameStatusIndicatorsProps {
   isInitializing: boolean;
@@ -24,8 +23,6 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
   interpolatedPathLength,
   animationCompleted
 }) => {
-  const { isEnglish, t } = useLanguage();
-  
   return (
     <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-md px-4">
       {/* Loading indicator */}
@@ -38,7 +35,7 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
           <div className="flex items-center justify-center gap-2">
             <div className="w-8 h-8 border-4 border-purple-800 border-t-transparent rounded-full animate-spin"></div>
             <p className="font-bold text-purple-800 kids-text text-xl">
-              {isEnglish ? "Loading..." : "Cargando..."}
+              {"Cargando..."}
             </p>
           </div>
         </motion.div>
@@ -50,7 +47,7 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
           <div className="flex items-center justify-center gap-2">
             <AlertCircle className="w-7 h-7 text-red-600" />
             <p className="font-bold text-red-600 kids-text text-lg">
-              {isEnglish ? "Oops! The game couldn't load 🙁" : "¡Ups! No se pudo cargar el juego 🙁"}
+              {"¡Ups! No se pudo cargar el juego 🙁"}
             </p>
           </div>
         </div>
@@ -68,33 +65,34 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
           <div className="flex items-center justify-center gap-2">
             <span role="img" aria-label="pencil" className="text-2xl">✏️</span>
             <p className="font-bold text-green-700 kids-text text-xl">
-              {isEnglish ? "Draw a path for the car!" : "¡Dibuja un camino para el coche!"}
+              {"¡Dibuja un camino para el coche!"}
             </p>
           </div>
         </motion.div>
       )}
       
-      {/* Animation completion message */}
+      {/* Animation completion message - now shown directly in the game interface */}
       {animationCompleted && (
         <motion.div 
-          className="text-center p-3 bg-yellow-100 rounded-lg border-2 border-yellow-300 shadow-md mb-4"
+          className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300 shadow-md mb-4"
           initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+          animate={{ opacity: 1, y: 0, scale: [1, 1.05, 1] }}
+          transition={{ type: "spring", stiffness: 400, damping: 10, scale: { repeat: Infinity, duration: 2 } }}
         >
-          <div className="flex items-center justify-center gap-2">
-            <motion.div
-              animate={{
-                rotate: [0, 360],
-                transition: { repeat: Infinity, duration: 8, ease: "linear" }
-              }}
-              className="inline-block"
+          <div className="flex flex-col items-center justify-center gap-2">
+            <div className="flex items-center gap-3">
+              <Trophy className="w-7 h-7 text-yellow-600" />
+              <p className="font-bold text-yellow-700 kids-text text-2xl">
+                {"¡Has llegado a la meta! 🎉"}
+              </p>
+              <Trophy className="w-7 h-7 text-yellow-600" />
+            </div>
+            <button 
+              className="mt-2 bg-purple-600 text-white kids-text py-2 px-4 rounded-md hover:bg-purple-700"
+              onClick={() => window.history.back()}
             >
-              <Globe className="w-7 h-7 text-blue-600" />
-            </motion.div>
-            <p className="font-bold text-yellow-700 kids-text text-xl">
-              {isEnglish ? "You've reached the destination! 🎉" : "¡Has llegado a la meta! 🎉"}
-            </p>
+              Volver al juego
+            </button>
           </div>
         </motion.div>
       )}

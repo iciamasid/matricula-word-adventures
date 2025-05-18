@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -7,7 +8,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Globe, RefreshCw, ArrowRight } from "lucide-react";
+import { Globe, RefreshCw } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,9 +17,8 @@ import { toast } from "@/hooks/use-toast";
 import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
-import LanguageSelector from "@/components/LanguageSelector";
-import { useLanguage } from "@/context/LanguageContext";
 import CarCustomization from "@/components/CarCustomization";
+
 const Index = () => {
   return <GameProvider>
       <GameContent />
@@ -29,11 +29,6 @@ const Index = () => {
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
-  const {
-    language,
-    t,
-    isEnglish
-  } = useLanguage();
   const {
     totalPoints,
     destinationInfo,
@@ -74,80 +69,51 @@ const GameContent = () => {
     }
   }, []);
 
-  // Determine the color theme based on language
-  const bgColor = isEnglish ? "bg-orange-100" : "bg-bba7ca";
-  const panelBgColor = isEnglish ? "bg-orange-200" : "bg-purple-200";
-  const panelGradientBg = isEnglish ? "bg-gradient-to-r from-orange-300 to-orange-200" : "bg-gradient-to-r from-purple-300 to-purple-200";
-  const buttonBgColor = isEnglish ? "bg-orange-600 hover:bg-orange-700" : "bg-purple-600 hover:bg-purple-700";
-  const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
-  const textColorLight = isEnglish ? "text-orange-700" : "text-purple-700";
-  const borderColor = isEnglish ? "border-orange-300" : "border-purple-300";
-  const hoverBgColor = isEnglish ? "hover:bg-orange-100" : "hover:bg-purple-100";
+  // Determine the color theme (always using Spanish/Purple since we removed English)
+  const bgColor = "bg-bba7ca";
+  const panelBgColor = "bg-purple-200";
+  const panelGradientBg = "bg-gradient-to-r from-purple-300 to-purple-200";
+  const buttonBgColor = "bg-purple-600 hover:bg-purple-700";
+  const textColor = "text-purple-800";
+  const textColorLight = "text-purple-700";
+  const borderColor = "border-purple-300";
+  const hoverBgColor = "hover:bg-purple-100";
 
   // Using sessionStorage to mark when we're navigating between pages
   const handleNavigation = () => {
     sessionStorage.setItem('navigatingBack', 'true');
   };
 
-  // Helper function to get localized country names
-  const getLocalizedCountry = (country: string) => {
-    if (!isEnglish) return country;
-
-    // Map Spanish country names to English
-    switch (country) {
-      case "España":
-        return "Spain";
-      case "Francia":
-        return "France";
-      case "Italia":
-        return "Italy";
-      case "Rusia":
-        return "Russia";
-      case "Japón":
-        return "Japan";
-      case "Australia":
-        return "Australia";
-      // Same in both languages
-      case "Estados Unidos":
-        return "United States";
-      case "Méjico":
-      case "México":
-        return "Mexico";
-      case "Perú":
-        return "Peru";
-      case "Argentina":
-        return "Argentina";
-      // Same in both languages
-      default:
-        return country;
-    }
-  };
+  // Helper function to get localized country names (now only Spanish)
+  const getLocalizedCountry = (country: string) => country;
 
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
     const countries = [];
-    if (level >= 0) countries.push(language === 'es' ? "España" : "Spain");
-    if (level >= 1) countries.push(language === 'es' ? "Francia" : "France");
-    if (level >= 2) countries.push(language === 'es' ? "Italia" : "Italy");
-    if (level >= 3) countries.push(language === 'es' ? "Rusia" : "Russia");
-    if (level >= 4) countries.push(language === 'es' ? "Japón" : "Japan");
-    if (level >= 5) countries.push(language === 'es' ? "Australia" : "Australia");
-    if (level >= 6) countries.push(language === 'es' ? "Estados Unidos" : "United States");
-    if (level >= 7) countries.push(language === 'es' ? "Méjico" : "Mexico");
-    if (level >= 8) countries.push(language === 'es' ? "Perú" : "Peru");
-    if (level >= 9) countries.push(language === 'es' ? "Argentina" : "Argentina");
-    if (level >= 10) countries.push(language === 'es' ? "España (vuelta completa)" : "Spain (full tour)");
+    if (level >= 0) countries.push("España");
+    if (level >= 1) countries.push("Francia");
+    if (level >= 2) countries.push("Italia");
+    if (level >= 3) countries.push("Rusia");
+    if (level >= 4) countries.push("Japón");
+    if (level >= 5) countries.push("Australia");
+    if (level >= 6) countries.push("Estados Unidos");
+    if (level >= 7) countries.push("Méjico");
+    if (level >= 8) countries.push("Perú");
+    if (level >= 9) countries.push("Argentina");
+    if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
-  }, [level, language]);
+  }, [level]);
+  
   const handleResetGame = () => {
-    if (confirm(t("reset_confirm"))) {
+    if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
       toast({
-        title: t("game_reset"),
-        description: t("reset_points")
+        title: "¡Juego reiniciado!",
+        description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
       });
     }
   };
+  
   return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
@@ -186,14 +152,14 @@ const GameContent = () => {
       }} />
         
         {/* Instructions button positioned at bottom right of the image */}
-        <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute bottom-4 right-4 ${isEnglish ? 'bg-orange-100/90 hover:bg-orange-200 text-orange-900 border-orange-300' : 'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}>
-          <Globe className="w-4 h-4 mr-1" /> {t("help")}
+        <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute bottom-4 right-4 ${'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}>
+          <Globe className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
       </div>
 
-      {/* Language Selector below the image */}
+      {/* Car Customization with instruction text */}
       <div className="w-full flex justify-center mb-4">
-        <LanguageSelector />
+        <CarCustomization />
       </div>
     
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
@@ -213,7 +179,7 @@ const GameContent = () => {
           {/* Add World Tour Progress component */}
           <WorldTourProgress />
           
-          {/* Modified "Drive" button - PURPLE with car icon to the left and shorter text */}
+          {/* "Drive" button */}
           <motion.div className="w-full rounded-lg p-4 shadow-lg bg-gradient-to-r from-purple-400 to-violet-300" initial={{
           opacity: 0,
           y: 20
@@ -227,7 +193,7 @@ const GameContent = () => {
         }}>
             <div className="text-center">
               <Link to="/draw-game" onClick={handleNavigation} className="flex justify-center">
-                <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 w-full text-slate-50 bg-orange-600 hover:bg-orange-500">
+                <Button className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-600 text-xl kids-text px-8 py-6 font-bold relative shadow-lg hover:shadow-xl transition-all duration-300 w-full text-slate-50">
                   <div className="flex items-center justify-center">
                     {/* Car icon on the left */}
                     <motion.div animate={{
@@ -241,7 +207,7 @@ const GameContent = () => {
                       🚗
                     </motion.div>
                     <span className="tracking-wide uppercase whitespace-normal px-2">
-                      {isEnglish ? "Drive!" : "¡CONDUCE!"}
+                      {"¡CONDUCE!"}
                     </span>
                   </div>
                   
@@ -266,15 +232,15 @@ const GameContent = () => {
             </div>
           </motion.div>
           
-          {/* Reset Game Button - in theme color */}
+          {/* Reset Game Button */}
           <motion.div className="w-full max-w-xs mt-8" whileHover={{
           scale: 1.03
         }} transition={{
           type: "spring",
           stiffness: 400
         }}>
-            <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal ${isEnglish ? "bg-orange-700 hover:bg-orange-600" : "bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}>
-              <RefreshCw className="mr-2 h-5 w-5" /> {t("reset_game")}
+            <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal ${"bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}>
+              <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
             </Button>
           </motion.div>
         </div>
