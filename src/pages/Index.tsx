@@ -158,9 +158,7 @@ const GameContent = () => {
         <PlayerRegistration />
         
         {/* Car selection instruction text AFTER player registration */}
-        <p className="text-purple-800 text-center kids-text mb-2 animate-pulse text-base mt-2 font-normal">
-          ¡Pincha sobre el coche para elegir otro!
-        </p>
+        
         
         {/* Car Customization component */}
         <div className="w-full flex justify-center mb-4">
