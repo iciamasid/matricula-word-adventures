@@ -157,7 +157,7 @@ const CarCustomization: React.FC = () => {
     }} transition={{
       duration: 0.3
     }}>
-          <p className="text-center text-sm text-purple-700 mb-1">Coche seleccionado:</p>
+          
           
           
         </motion.div>}
