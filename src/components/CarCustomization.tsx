@@ -32,22 +32,22 @@ const carColors: CarColor[] = [{
 }, {
   id: "6",
   name: "Coche Negro",
-  image: "12171735-860b-4648-a9d5-68c40d99816a.png",
+  image: "cochenegro.png",
   color: "bg-gray-900"
 }, {
   id: "7",
   name: "Coche Blanco",
-  image: "53647de1-30b5-4788-a00b-4cc594416196.png",
+  image: "cocheblanco.png",
   color: "bg-gray-100"
 }, {
   id: "8",
   name: "Coche Azul Racing",
-  image: "f60241f3-ebd3-437f-ab1c-e76beebce433.png",
+  image: "cocheformulauno.png",
   color: "bg-sky-400"
 }, {
   id: "9",
   name: "Coche Dorado",
-  image: "5842b5a5-c01a-4d77-a3e3-a8f21bc1c290.png",
+  image: "cocheoro.png",
   color: "bg-amber-300"
 }];
 const CarCustomization: React.FC = () => {
