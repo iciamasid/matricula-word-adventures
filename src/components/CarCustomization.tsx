@@ -26,7 +26,7 @@ const CarCustomization: React.FC = () => {
   } = useGame();
   return <div className="w-full flex flex-col items-center">
       {/* Added instruction text above the car */}
-      <p className="text-purple-800 text-center text-lg kids-text font-semibold mb-2 animate-pulse">
+      <p className="text-purple-800 text-center kids-text mb-2 animate-pulse text-base font-normal">
         ¡Pincha sobre el coche para elegir otro!
       </p>
       
