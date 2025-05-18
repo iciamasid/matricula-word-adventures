@@ -52,12 +52,12 @@ const LevelUpAlert: React.FC = () => {
     ? `Level ${level}` 
     : `Nivel ${level}`;
   
-  // Add unlocked country information
+  // Modified message to say "Now you are in" instead of "You can now travel to"
   const unlockedCountry = getUnlockedCountry();
   const unlockedMessage = unlockedCountry 
     ? (isEnglish 
-        ? `You can now travel to ${unlockedCountry}!` 
-        : `¡Ahora puedes viajar a ${unlockedCountry}!`) 
+        ? `Now you are in ${unlockedCountry}!` 
+        : `¡Ahora estás en ${unlockedCountry}!`) 
     : "";
   
   const explanation = `${baseExplanation}${unlockedMessage ? "\n" + unlockedMessage : ""}`;

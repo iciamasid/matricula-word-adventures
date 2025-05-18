@@ -252,9 +252,10 @@ const WorldTourProgress = () => {
     return animatingLevel > locationIndex;
   };
 
-  // Helper function to check if a country is unlocked
+  // Modified function to check if a country is unlocked
+  // España (index 1) siempre estará desbloqueada desde el inicio
   const isCountryUnlocked = (locationIndex: number) => {
-    return level >= locationIndex;
+    return locationIndex === 1 || level >= locationIndex;
   };
 
   // Determine which icon to show as the moving vehicle
