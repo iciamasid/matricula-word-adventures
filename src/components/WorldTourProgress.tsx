@@ -1,9 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-import { Car, Plane } from 'lucide-react';
+import { Car, Plane, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import LockedCountryPopup from './LockedCountryPopup';
 
 // Function to get the flag emoji based on level
 const getLevelFlag = (level: number) => {
@@ -113,6 +115,8 @@ const WorldTourProgress = () => {
   const [animatingLevel, setAnimatingLevel] = useState(0);
   const [progressValue, setProgressValue] = useState(0);
   const [hoveredCountry, setHoveredCountry] = useState<number | null>(null);
+  const [showLockedPopup, setShowLockedPopup] = useState(false);
+  const [lockedCountry, setLockedCountry] = useState("");
 
   // Set background color based on language
   const bgColor = isEnglish ? "bg-orange-100" : "bg-purple-100";
@@ -248,6 +252,11 @@ const WorldTourProgress = () => {
     return animatingLevel > locationIndex;
   };
 
+  // Helper function to check if a country is unlocked
+  const isCountryUnlocked = (locationIndex: number) => {
+    return level >= locationIndex;
+  };
+
   // Determine which icon to show as the moving vehicle
   const vehiclePosition = getVehiclePosition();
 
@@ -259,6 +268,18 @@ const WorldTourProgress = () => {
       points.push(`${pos.x},${pos.y}`);
     }
     return `M ${points.join(" L ")}`;
+  };
+
+  // Handle country selection with lock check
+  const handleCountrySelection = (levelIndex: number, countryName: string) => {
+    if (isCountryUnlocked(levelIndex)) {
+      // Country is unlocked - proceed with navigation
+      handleNavigateToCountry(getCountryCode(levelIndex));
+    } else {
+      // Country is locked - show popup
+      setLockedCountry(countryName);
+      setShowLockedPopup(true);
+    }
   };
 
   // Prepare for navigation when clicking on a flag
@@ -308,14 +329,14 @@ const WorldTourProgress = () => {
             const flag = getLevelFlag(levelIndex);
             const position = getEllipsePosition(i);
             const isCurrentLocation = animatingLevel === levelIndex;
-            const countryCode = getCountryCode(levelIndex);
+            const isUnlocked = isCountryUnlocked(levelIndex);
+            const countryName = getCountryName(levelIndex, isEnglish);
             
             return (
-              <Link 
+              <div 
                 key={i}
-                to={`/country/${countryCode}`} 
-                onClick={() => handleNavigateToCountry(countryCode)}
-                className="absolute transform -translate-x-1/2 -translate-y-1/2" 
+                onClick={() => handleCountrySelection(levelIndex, countryName)}
+                className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${!isUnlocked ? 'opacity-60' : ''}`} 
                 style={{
                   left: `${position.x}%`,
                   top: `${position.y}%`,
@@ -335,21 +356,36 @@ const WorldTourProgress = () => {
                     }
                   } : {}}
                 >
-                  <motion.span 
-                    className="text-3xl z-10" 
+                  <motion.div 
+                    className="relative"
                     whileHover={{ scale: 1.3 }}
                   >
-                    {flag}
-                  </motion.span>
+                    <span className="text-3xl z-10">{flag}</span>
+                    
+                    {/* Lock icon for locked countries */}
+                    {!isUnlocked && (
+                      <motion.div 
+                        className="absolute -top-2 -right-2 bg-pink-500 rounded-full p-1" 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring" }}
+                      >
+                        <Lock className="w-3 h-3 text-white" />
+                      </motion.div>
+                    )}
+                  </motion.div>
                   
                   {/* Country name tooltip */}
                   {hoveredCountry === levelIndex && (
                     <div className="absolute -bottom-12 bg-white/90 px-2 py-1 rounded shadow-md text-xs whitespace-nowrap z-20">
-                      {getCountryName(levelIndex, isEnglish)}
+                      {countryName}
+                      {!isUnlocked && (
+                        <span className="ml-1 text-pink-600">{isEnglish ? "(Locked)" : "(Bloqueado)"}</span>
+                      )}
                     </div>
                   )}
                 </motion.div>
-              </Link>
+              </div>
             );
           })}
           
@@ -408,6 +444,14 @@ const WorldTourProgress = () => {
             {isEnglish ? "Next destination:" : "Próximo destino:"} {getDestinationFlag(level)} {getCountryName(level + 1, isEnglish)}
           </span>
         </div>
+      )}
+
+      {/* Locked country popup */}
+      {showLockedPopup && (
+        <LockedCountryPopup 
+          country={lockedCountry}
+          onClose={() => setShowLockedPopup(false)}
+        />
       )}
     </motion.div>
   );
