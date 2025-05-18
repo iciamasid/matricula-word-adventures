@@ -133,7 +133,7 @@ const CarCustomization: React.FC = () => {
       }} transition={{
         delay: 0.2
       }}>
-          <button onClick={togglePanel} className="w-full py-2 px-3 flex flex-col items-center justify-center relative text-xl rounded-3xl bg-slate-50 text-transparent">
+          <button onClick={togglePanel} className="w-full py-2 px-3 flex flex-col items-center justify-center relative text-xl bg-slate-50 text-transparent rounded-none">
             {/* Car image */}
             <div className="relative w-12 h-12">
               <img src={`/lovable-uploads/${currentCar.image}`} alt={currentCar.name} className="w-full h-full object-contain" />
