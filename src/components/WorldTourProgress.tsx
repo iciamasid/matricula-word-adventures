@@ -332,6 +332,7 @@ const WorldTourProgress = () => {
             const isCurrentLocation = animatingLevel === levelIndex;
             const isUnlocked = isCountryUnlocked(levelIndex);
             const countryName = getCountryName(levelIndex, isEnglish);
+            const countryCode = getCountryCode(levelIndex);
             
             return (
               <div 
@@ -357,14 +358,23 @@ const WorldTourProgress = () => {
                     }
                   } : {}}
                 >
-                  <motion.div 
-                    className="relative"
-                    whileHover={{ scale: 1.3 }}
-                  >
-                    <span className="text-3xl z-10">{flag}</span>
-                    
-                    {/* Lock icon for locked countries */}
-                    {!isUnlocked && (
+                  {isUnlocked ? (
+                    <Link to={`/country/${countryCode}`} onClick={() => handleNavigateToCountry(countryCode)}>
+                      <motion.div 
+                        className="relative"
+                        whileHover={{ scale: 1.3 }}
+                      >
+                        <span className="text-3xl z-10">{flag}</span>
+                      </motion.div>
+                    </Link>
+                  ) : (
+                    <motion.div 
+                      className="relative"
+                      whileHover={{ scale: 1.3 }}
+                    >
+                      <span className="text-3xl z-10">{flag}</span>
+                      
+                      {/* Lock icon for locked countries */}
                       <motion.div 
                         className="absolute -top-2 -right-2 bg-pink-500 rounded-full p-1" 
                         initial={{ scale: 0 }}
@@ -373,8 +383,8 @@ const WorldTourProgress = () => {
                       >
                         <Lock className="w-3 h-3 text-white" />
                       </motion.div>
-                    )}
-                  </motion.div>
+                    </motion.div>
+                  )}
                   
                   {/* Country name tooltip */}
                   {hoveredCountry === levelIndex && (
