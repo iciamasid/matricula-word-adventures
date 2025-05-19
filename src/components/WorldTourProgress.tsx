@@ -133,64 +133,20 @@ const WorldTourProgress = () => {
   // Define the estimated path length for the SVG path
   const estimatedPathLength = 225; // Approximate length of the elliptical path
   
-  // Get path color based on level - UPDATED to support level 1 with path
+  // Get path color based on level - gray dashed for level 1, colored for higher levels
   const getPathStrokeColor = () => {
-    // Even at level 1, show a colored path as long as there's progress
     if (level <= 1 && progressValue === 0) {
-      return "#D1D5DB"; // Gray color only for initial state with zero progress
+      return "#D1D5DB"; // Gray color for initial path
     }
     return level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6";
   };
 
-  // Define segment weights to fix Mexico and Argentina path issues
-  // These weights represent the relative length of each segment in the path
-  const segmentWeights = [
-    1,    // Spain -> France
-    1,    // France -> Italy
-    1,    // Italy -> Russia
-    1.1,  // Russia -> Japan
-    1.2,  // Japan -> Australia
-    1.4,  // Australia -> USA
-    1,    // USA -> Mexico
-    1,    // Mexico -> Argentina
-    1.1   // Argentina -> Spain
-  ];
-  
-  // Calculate the sum of all weights
-  const totalWeight = segmentWeights.reduce((sum, weight) => sum + weight, 0);
-  
-  // Calculate the accumulated weights up to each segment
-  const accumulatedWeights = segmentWeights.reduce((acc, weight, index) => {
-    const prevSum = index === 0 ? 0 : acc[index - 1];
-    acc.push(prevSum + weight);
-    return acc;
-  }, [] as number[]);
-  
-  // UPDATED: Animation to ensure path and car are visible at all levels
+  // Modified animation to ensure the path only reaches the current country flag
   useEffect(() => {
-    // MODIFIED: For level 1, we still want to show some progress (not zero)
-    // For level 1, show a small amount of progress (10% of first segment)
+    // Calculate target value based on current level
+    // For level 1, we show zero progress (no purple line)
     // For other levels, the path should reach exactly the previous country (level - 1)
-    const targetLevel = level <= 1 ? 0.1 : level - 1;
-    
-    // Calculate target percentage based on weighted segments
-    let targetValue = 0;
-    if (targetLevel > 0) {
-      // Get the accumulated weight up to the target level (index = targetLevel - 1)
-      const targetWeight = targetLevel < 1 ? 
-        (segmentWeights[0] * targetLevel) : // For partial progress at level 1
-        accumulatedWeights[Math.floor(targetLevel) - 1];
-      
-      // Convert to percentage of total weight
-      targetValue = (targetWeight / totalWeight) * 100;
-    } else if (targetLevel > 0 && targetLevel < 1) {
-      // For level 1, show partial progress (10% of first segment)
-      targetValue = (segmentWeights[0] * targetLevel / totalWeight) * 100;
-    }
-    
-    // IMPORTANT: Ensure there's always at least 5% progress to show the car
-    // This guarantees the car is visible even at level 1
-    targetValue = Math.max(targetValue, 5);
+    const targetValue = level <= 1 ? 0 : (level - 1) / 9 * 100;
     
     let animationActive = true;
     const runAnimation = async () => {
@@ -199,7 +155,7 @@ const WorldTourProgress = () => {
         setProgressValue(0);
         setAnimatingLevel(1);
 
-        // Smoothly increase to target value
+        // Smoothly increase to target value but never exceed current level's position
         for (let i = 0; i <= 100; i += 2) {
           if (!animationActive) break;
           
@@ -208,21 +164,9 @@ const WorldTourProgress = () => {
           setProgressValue(currentProgress);
 
           // Update current animating level based on progress
-          // Convert current progress percentage back to a level
-          let animatingLevelValue = 1; // Default to level 1 (Spain)
-          
-          // Find which segment we're in based on the current progress
-          const progressRatio = currentProgress / 100;
-          const weightAtProgress = progressRatio * totalWeight;
-          
-          for (let j = 0; j < accumulatedWeights.length; j++) {
-            if (weightAtProgress > accumulatedWeights[j]) {
-              animatingLevelValue = j + 2; // +2 because levels start at 1 and we're already showing the next level
-            }
-          }
-          
-          // Ensure we don't exceed the current level
-          setAnimatingLevel(Math.min(animatingLevelValue, level));
+          // This ensures the animating level matches the path completion
+          const currentLevelBasedOnProgress = Math.ceil(currentProgress / 100 * 9) + 1;
+          setAnimatingLevel(Math.min(currentLevelBasedOnProgress, level));
 
           // Slow down animation with a small delay
           await new Promise(resolve => setTimeout(resolve, 30));
@@ -236,7 +180,7 @@ const WorldTourProgress = () => {
     return () => {
       animationActive = false;
     };
-  }, [level, accumulatedWeights, totalWeight, segmentWeights]);
+  }, [level]);
 
   // Get destination flag for current level
   const getDestinationFlag = (level: number) => {
@@ -324,7 +268,7 @@ const WorldTourProgress = () => {
     return segments.reduce((sum, length) => sum + length, 0);
   };
   
-  // UPDATED: Calculate stroke-dashoffset using weighted segments to ensure proper highlighting
+  // UPDATED: Calculate stroke-dashoffset to ensure path stops exactly at country flags
   const calculateStrokeDashOffset = () => {
     const totalLength = estimatedPathLength;
     
@@ -333,54 +277,40 @@ const WorldTourProgress = () => {
       return totalLength;
     }
     
-    // Convert progress percentage to a position along the weighted path
-    const progressRatio = progressValue / 100;
-    const weightedPosition = progressRatio * totalWeight;
+    // FIXED: Calculate exact segment progress to ensure path stops at flags
+    // Calculate which segment we're currently in
+    const segmentSize = 100 / 9; // 9 segments total
+    const currentSegmentIndex = Math.floor(progressValue / segmentSize);
     
-    // Calculate which weighted segment we're in
-    let segmentIndex = 0;
-    for (let i = 0; i < accumulatedWeights.length; i++) {
-      if (weightedPosition <= accumulatedWeights[i]) {
-        segmentIndex = i;
-        break;
-      }
-      segmentIndex = i;
-    }
+    // Calculate progress within the current segment (0 to 1)
+    const progressInSegment = (progressValue % segmentSize) / segmentSize;
     
-    // Calculate progress within the current segment
-    const prevAccumulatedWeight = segmentIndex > 0 ? accumulatedWeights[segmentIndex - 1] : 0;
-    const progressInSegment = (weightedPosition - prevAccumulatedWeight) / segmentWeights[segmentIndex];
+    // Calculate the exact position along the path based on completed segments
+    // and partial progress in current segment
+    const completedSegmentsRatio = currentSegmentIndex / 9;
+    const progressInCurrentSegmentRatio = progressInSegment * (1/9);
     
-    // Calculate the ratio of the path that should be highlighted
-    const completedRatio = progressRatio;
+    // The combined ratio determines how much of the path is highlighted
+    const combinedRatio = completedSegmentsRatio + progressInCurrentSegmentRatio;
     
     // The dashoffset is inversely proportional to progress
-    return totalLength * (1 - completedRatio);
+    // When progress is 0, dashoffset = full length (no highlight)
+    // When progress is 100%, dashoffset = 0 (fully highlighted)
+    return totalLength * (1 - combinedRatio);
   };
 
-  // Determine position of the moving vehicle based on weighted segments
+  // Determine position of the moving vehicle
   const getVehiclePosition = () => {
-    // Convert progress percentage to a position along the weighted path
-    const progressRatio = progressValue / 100;
-    const weightedPosition = progressRatio * totalWeight;
-    
-    // Calculate which weighted segment we're in
-    let segmentIndex = 0;
-    for (let i = 0; i < accumulatedWeights.length; i++) {
-      if (weightedPosition <= accumulatedWeights[i]) {
-        segmentIndex = i;
-        break;
-      }
-      segmentIndex = i;
-    }
-    
-    // Calculate progress within the current segment
-    const prevAccumulatedWeight = segmentIndex > 0 ? accumulatedWeights[segmentIndex - 1] : 0;
-    const progressInSegment = (weightedPosition - prevAccumulatedWeight) / segmentWeights[segmentIndex];
-    
+    // Calculate how many full segments the vehicle has completed
+    const segmentSize = 100 / 9; // 9 segments in total
+    const completedSegments = Math.floor(progressValue / segmentSize);
+
+    // Calculate progress within the current segment (0 to 1)
+    const progressInSegment = progressValue % segmentSize / segmentSize;
+
     // Calculate the current and next point positions
-    const currentPoint = getEllipsePosition(segmentIndex);
-    const nextPoint = getEllipsePosition(segmentIndex + 1);
+    const currentPoint = getEllipsePosition(completedSegments);
+    const nextPoint = getEllipsePosition(completedSegments + 1);
 
     // Interpolate between the two points based on progress in segment
     const x = currentPoint.x + (nextPoint.x - currentPoint.x) * progressInSegment;
@@ -592,8 +522,8 @@ const WorldTourProgress = () => {
             );
           })}
           
-          {/* MODIFIED: Moving vehicle icon - removed level > 1 condition to show car at level 1 */}
-          {progressValue > 0 && (
+          {/* Moving vehicle icon - shown only when there is progress */}
+          {progressValue > 0 && level > 1 && (
             <motion.div 
               className="absolute transform -translate-x-1/2 -translate-y-1/2" 
               style={{
