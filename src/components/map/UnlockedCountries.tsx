@@ -8,9 +8,27 @@ interface UnlockedCountriesProps {
 }
 
 const UnlockedCountries: React.FC<UnlockedCountriesProps> = ({ countries, highlightCountry }) => {
+  // Process countries to ensure Spain is always included
+  // and to handle different name variations
+  const processCountries = (countryList: string[]) => {
+    // Spain must always be included
+    const hasSpain = countryList.some(country => 
+      country.toLowerCase().includes("españa") || 
+      country.toLowerCase().includes("spain")
+    );
+    
+    if (!hasSpain) {
+      return [...countryList, "España"];
+    }
+    
+    return countryList;
+  };
+  
+  const finalCountries = processCountries(countries);
+  
   return (
     <>
-      {countries.map((country, index) => (
+      {finalCountries.map((country, index) => (
         <CountryMarker 
           key={`${country}-${index}`}
           country={country} 

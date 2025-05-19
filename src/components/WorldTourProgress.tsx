@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -91,16 +90,26 @@ const getCountryCode = (level: number) => {
   }
 };
 
-// IMPORTANT: Spain is ALWAYS unlocked regardless of level
-const isCountryUnlocked = (locationIndex: number, currentLevel: number) => {
+// IMPORTANT: Updated function to ensure Spain is ALWAYS unlocked regardless of level
+const isCountryUnlocked = (locationIndex: number, currentLevel: number, countryName?: string) => {
   // Spain (index 1) is ALWAYS unlocked from the beginning
   if (locationIndex === 1) {
     return true;
   }
+  
+  // Check if the country name indicates it's Spain - this is an additional check
+  if (countryName) {
+    const normalizedName = countryName.toLowerCase();
+    if (normalizedName === "españa" || normalizedName === "spain" || normalizedName.includes("españa") || normalizedName.includes("spain")) {
+      return true;
+    }
+  }
+  
   // Level 10 (back to Spain) also unlocked when level is 10 or above
   if (locationIndex === 10 && currentLevel >= 10) {
     return true;
   }
+  
   // For other countries, check if level is high enough
   return currentLevel >= locationIndex;
 };
@@ -250,7 +259,7 @@ const WorldTourProgress = () => {
 
   // Handle country selection with lock check
   const handleCountrySelection = (levelIndex: number, countryName: string) => {
-    if (isCountryUnlocked(levelIndex, level)) {
+    if (isCountryUnlocked(levelIndex, level, countryName)) {
       // Country is unlocked - proceed with navigation
       handleNavigateToCountry(getCountryCode(levelIndex));
     } else {
@@ -337,9 +346,9 @@ const WorldTourProgress = () => {
             const flag = getLevelFlag(levelIndex);
             const position = getEllipsePosition(i);
             const isCurrentLocation = animatingLevel === levelIndex;
-            // IMPORTANT: Always unlock Spain (levelIndex 1)
-            const isUnlocked = isCountryUnlocked(levelIndex, level);
             const countryName = getCountryName(levelIndex, isEnglish);
+            // IMPORTANT: Use the updated function that checks both index and name
+            const isUnlocked = isCountryUnlocked(levelIndex, level, countryName);
             const countryCode = getCountryCode(levelIndex);
             
             return (

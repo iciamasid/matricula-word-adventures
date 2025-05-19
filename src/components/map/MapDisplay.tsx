@@ -17,6 +17,18 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
   // Add auto-zoom effect when country changes
   const [currentZoom, setCurrentZoom] = useState(zoom);
   
+  // Ensure Spain is always in the unlockedCountries list
+  const ensureSpainIsIncluded = () => {
+    if (!unlockedCountries.some(c => 
+        c.toLowerCase() === "españa" || 
+        c.toLowerCase() === "spain")) {
+      return [...unlockedCountries, "España"];
+    }
+    return unlockedCountries;
+  };
+  
+  const finalUnlockedCountries = ensureSpainIsIncluded();
+  
   useEffect(() => {
     // Set initial zoom from props
     setCurrentZoom(zoom);
@@ -63,7 +75,7 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
           {/* Enhanced country markers component */}
           <CountryMarkers 
             highlightCountry={highlightCountry} 
-            unlockedCountries={unlockedCountries} 
+            unlockedCountries={finalUnlockedCountries} 
           />
         </motion.div>
       </AnimatePresence>

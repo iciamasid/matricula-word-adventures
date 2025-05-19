@@ -16,6 +16,19 @@ const LockedCountryPopup: React.FC<LockedCountryPopupProps> = ({
 }) => {
   const { isEnglish } = useLanguage();
 
+  // Check if the country is Spain and prevent showing the popup
+  // This is an additional safeguard in case some part of the code still tries to lock Spain
+  const isSpain = country.toLowerCase().includes("spain") || 
+                  country.toLowerCase().includes("españa") || 
+                  country.toLowerCase() === "spain" || 
+                  country.toLowerCase() === "españa";
+
+  // If it's Spain, close the popup immediately
+  if (isSpain) {
+    onClose();
+    return null;
+  }
+
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50">
       <motion.div

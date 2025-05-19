@@ -12,6 +12,22 @@ const CountryMarkers: React.FC<CountryMarkersProps> = ({
   highlightCountry, 
   unlockedCountries = [] 
 }) => {
+  // Make sure Spain is always included in unlockedCountries
+  const ensureSpainIsUnlocked = (countries: string[]) => {
+    const hasSpain = countries.some(country => 
+      country.toLowerCase() === "españa" || 
+      country.toLowerCase() === "spain"
+    );
+    
+    if (!hasSpain) {
+      return [...countries, "España"];
+    }
+    
+    return countries;
+  };
+  
+  const finalUnlockedCountries = ensureSpainIsUnlocked(unlockedCountries);
+  
   return (
     <>
       {/* Conditionally render highlighted country */}
@@ -21,7 +37,7 @@ const CountryMarkers: React.FC<CountryMarkersProps> = ({
 
       {/* Render unlocked countries */}
       <UnlockedCountries 
-        countries={unlockedCountries} 
+        countries={finalUnlockedCountries} 
         highlightCountry={highlightCountry} 
       />
     </>
