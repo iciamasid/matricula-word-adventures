@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-import { Car, Plane, Lock } from 'lucide-react';
+import { Car } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import LockedCountryPopup from './LockedCountryPopup';
 
@@ -282,10 +281,21 @@ const WorldTourProgress = () => {
         {isEnglish ? "Your world tour!" : "¡TU VUELTA AL MUNDO!"}
       </h3>
       
-      {/* Update text about clicking flags */}
-      <p className="text-violet-900 font-normal text-base">
-        {isEnglish ? "Click on the flags and explore that country!" : "¡Pincha sobre las banderas y explora ese país!"}
-      </p>
+      {/* Current country indicator - MOVED to top */}
+      <div className="mt-2 text-center">
+        <span className="text-xl font-normal text-fuchsia-800">
+          {isEnglish ? "You are in:" : "Estás en:"} {getLevelFlag(level)} {getCurrentCountry()}
+        </span>
+      </div>
+      
+      {/* Current destination indicator - MOVED to top */}
+      {level <= 9 && (
+        <div className="mt-2 text-center mb-3">
+          <span className="text-xl font-normal text-fuchsia-800">
+            {isEnglish ? "Next destination:" : "Próximo destino:"} {getDestinationFlag(level)} {getCountryName(level + 1, isEnglish)}
+          </span>
+        </div>
+      )}
       
       {/* Elliptical world tour visualization */}
       <div className="relative pt-2 pb-4">
@@ -320,7 +330,7 @@ const WorldTourProgress = () => {
           </div>
           
           {/* Country flags positioned on the ellipse */}
-          {[...Array(10)].map((_, i) => { // Changed from 11 to 10 (removed Peru)
+          {[...Array(10)].map((_, i) => { 
             // Skip index 0 as it's just a placeholder
             const levelIndex = i + 1;
             const flag = getLevelFlag(levelIndex);
@@ -397,7 +407,7 @@ const WorldTourProgress = () => {
             );
           })}
           
-          {/* Moving vehicle icon - now appears to travel around path */}
+          {/* Moving vehicle icon - Always use Car icon */}
           {progressValue > 0 && (
             <motion.div 
               className="absolute transform -translate-x-1/2 -translate-y-1/2" 
@@ -409,31 +419,16 @@ const WorldTourProgress = () => {
               }}
               initial={false}
             >
-              {progressValue <= 50 ? (
-                <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
-              ) : (
-                <Plane className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
-              )}
+              <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
             </motion.div>
           )}
         </div>
       </div>
       
-      {/* Current country indicator */}
-      <div className="mt-2 text-center">
-        <span className="text-xl font-normal text-fuchsia-800">
-          {isEnglish ? "You are in:" : "Estás en:"} {getLevelFlag(level)} {getCurrentCountry()}
-        </span>
-      </div>
-      
-      {/* Current destination indicator */}
-      {level <= 9 && (
-        <div className="mt-2 text-center">
-          <span className="text-xl font-normal text-fuchsia-800">
-            {isEnglish ? "Next destination:" : "Próximo destino:"} {getDestinationFlag(level)} {getCountryName(level + 1, isEnglish)}
-          </span>
-        </div>
-      )}
+      {/* Update text about clicking flags - MOVED below the graph */}
+      <p className="text-violet-900 font-normal text-base text-center mt-2">
+        {isEnglish ? "Click on the flags and explore that country!" : "¡Pincha sobre las banderas y explora ese país!"}
+      </p>
 
       {/* Locked country popup */}
       {showLockedPopup && (

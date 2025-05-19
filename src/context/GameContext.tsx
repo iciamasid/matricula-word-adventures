@@ -496,39 +496,9 @@ export const GameProvider: React.FC<{
     let newPlate;
     setIsGeneratingLicensePlate(true);
     
-    // Every 5th game, generate a special 6666 plate for bonus
-    if ((gamesPlayed + 1) % 5 === 0) {
-      // Create a plate that starts with 6666
-      // More Spanish-friendly consonants (weighted)
-      const spanishConsonants = "BCDFGHJKLMNPQRSTVZRRSTDLNC";
-      const randomConsonants = Array(3)
-        .fill("")
-        .map(() => spanishConsonants.charAt(Math.floor(Math.random() * spanishConsonants.length)))
-        .join("");
-      
-      newPlate = `6666${randomConsonants}`;
-      console.log(`Generated special 6666 plate: ${newPlate} (Game ${gamesPlayed + 1})`);
-      
-      // Ensure bonus popup appears with the special plate
-      setShowBonusPopup(true);
-      
-      // Add bonus points
-      const bonusAmount = 500;
-      setBonusPoints(bonusAmount);
-      setTotalPoints(prev => prev + bonusAmount);
-      
-      // Play bonus sound
-      try {
-        const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.6;
-        audio.play();
-      } catch (e) {
-        console.error("Could not play bonus sound", e);
-      }
-    } else {
-      newPlate = generateLicensePlate();
-      console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
-    }
+    // REMOVED: Special plate generation code with 6666 for bonus
+    newPlate = generateLicensePlate();
+    console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
     
     setLicensePlate(newPlate);
     const extractedConsonants = getConsonantsFromPlate(newPlate);
@@ -623,20 +593,7 @@ export const GameProvider: React.FC<{
         setSubmitSuccess(successMsg);
       }
       
-      // Special bonus check for 6666 license plate
-      if (licensePlate.substring(0, 4) === "6666" && !showBonusPopup) {
-        console.log(`Special 6666 license plate detected!`);
-        setShowBonusPopup(true);
-        
-        // Add bonus points
-        setBonusPoints(500);
-        setTotalPoints(prev => prev + 500);
-        
-        // Auto-hide bonus popup after 5 seconds
-        setTimeout(() => {
-          setShowBonusPopup(false);
-        }, 5000);
-      }
+      // REMOVED: Special bonus check for 6666 license plate
       
       // Track high score
       if (calculatedScore > highScore) {

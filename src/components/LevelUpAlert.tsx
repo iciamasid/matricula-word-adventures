@@ -5,7 +5,7 @@ import GamePopup from "@/components/GamePopup";
 import { useLanguage } from "@/context/LanguageContext";
 
 const LevelUpAlert: React.FC = () => {
-  const { level, showLevelUp, clearLevelUpMessage, originInfo } = useGame();
+  const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame } = useGame();
   const { isEnglish } = useLanguage();
   
   // Verificar si estamos navegando entre páginas
@@ -18,6 +18,19 @@ const LevelUpAlert: React.FC = () => {
       sessionStorage.removeItem('navigatingBack');
     }
   }, [clearLevelUpMessage]);
+  
+  // Special handling for level 10 completion - reset the game
+  useEffect(() => {
+    if (showLevelUp && level >= 10) {
+      // Reset game after the popup is shown and closed (8 seconds)
+      const timer = setTimeout(() => {
+        resetGame();
+        clearLevelUpMessage();
+      }, 8000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
 
   // Get the current country based on origin info
   const getCurrentCountry = () => {
