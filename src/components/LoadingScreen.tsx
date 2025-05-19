@@ -54,7 +54,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
             </h1>
             <div className="flex justify-center">
               <motion.img 
-                src="/lovable-uploads/coche_portada.gif" 
+                src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" 
                 alt="Game logo" 
                 className="h-40 object-contain"
                 animate={{ 
