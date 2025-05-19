@@ -128,10 +128,21 @@ const WorldTourProgress = () => {
   const textColor = isEnglish ? "text-orange-800" : "text-purple-800";
   const accentColor = isEnglish ? "bg-orange-400" : "bg-purple-400";
   const completedColor = isEnglish ? "bg-orange-500" : "bg-purple-500";
+  
+  // Get path color based on level - gray dashed for level 1, colored for higher levels
+  const getPathStrokeColor = () => {
+    if (level <= 1 && progressValue === 0) {
+      return "#D1D5DB"; // Gray color for initial path
+    }
+    return level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6";
+  };
 
   // Modified animation to show circular path progress - using 9 steps now instead of 10
   useEffect(() => {
-    const targetValue = (level - 1) / 9 * 100;
+    // Calculate target value based on current level, but don't go further than current level
+    // For level 1, we should show zero progress (no purple line)
+    const targetValue = level <= 1 ? 0 : (level - 1) / 9 * 100;
+    
     let animationActive = true;
     const runAnimation = async () => {
       while (animationActive) {
@@ -209,6 +220,75 @@ const WorldTourProgress = () => {
       x,
       y
     };
+  };
+
+  // Calculate the path segment lengths for proper progress visualization
+  const calculateSegmentLengths = () => {
+    const segmentLengths = [];
+    const totalSegments = 9; // Total number of segments (10 countries - 1)
+    
+    for (let i = 0; i < totalSegments; i++) {
+      const startPos = getEllipsePosition(i);
+      const endPos = getEllipsePosition(i + 1);
+      
+      // Calculate distance between points (simplified for this visualization)
+      const dx = endPos.x - startPos.x;
+      const dy = endPos.y - startPos.y;
+      const length = Math.sqrt(dx * dx + dy * dy);
+      
+      segmentLengths.push(length);
+    }
+    
+    return segmentLengths;
+  };
+  
+  // Calculate the total path length up to a specific segment
+  const getPathLengthUpToSegment = (segmentIndex: number) => {
+    const segments = calculateSegmentLengths();
+    let totalLength = 0;
+    
+    for (let i = 0; i < segmentIndex && i < segments.length; i++) {
+      totalLength += segments[i];
+    }
+    
+    return totalLength;
+  };
+  
+  // Calculate the total path length
+  const getTotalPathLength = () => {
+    const segments = calculateSegmentLengths();
+    return segments.reduce((sum, length) => sum + length, 0);
+  };
+  
+  // Calculate stroke-dashoffset based on current progress and segment lengths
+  const calculateStrokeDashOffset = () => {
+    const totalLength = getTotalPathLength();
+    
+    // For level 1 with no progress, show the entire path as unhighlighted
+    if (level <= 1 && progressValue === 0) {
+      return totalLength;
+    }
+    
+    // Calculate which segment we're currently in
+    const segmentSize = 100 / 9; // 9 segments total
+    const currentSegmentIndex = Math.floor(progressValue / segmentSize);
+    
+    // Calculate progress within the current segment (0 to 1)
+    const progressInSegment = (progressValue % segmentSize) / segmentSize;
+    
+    // Get length up to the current segment
+    const lengthUpToCurrentSegment = getPathLengthUpToSegment(currentSegmentIndex);
+    
+    // Get current segment length
+    const segments = calculateSegmentLengths();
+    const currentSegmentLength = currentSegmentIndex < segments.length ? 
+      segments[currentSegmentIndex] : 0;
+    
+    // Calculate the exact position along the path
+    const progressLength = lengthUpToCurrentSegment + (currentSegmentLength * progressInSegment);
+    
+    // Calculate the dashoffset (total length minus progress)
+    return totalLength - progressLength;
   };
 
   // Determine position of the moving vehicle
@@ -312,12 +392,29 @@ const WorldTourProgress = () => {
         <div className="w-full h-[220px] relative"> 
           {/* Background elliptical path (dotted line) */}
           <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-            <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="3,3" />
+            {/* Background path always shown as gray dashed */}
+            <path 
+              d={createEllipsePath()} 
+              fill="none" 
+              stroke="#D1D5DB" 
+              strokeWidth="1.5" 
+              strokeLinecap="round" 
+              strokeDasharray="3,3" 
+            />
             
             {/* Highlighted portion of the path based on progress */}
-            <path d={createEllipsePath()} fill="none" strokeWidth="2.5" stroke={level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6"} strokeLinecap="round" strokeDasharray={progressValue === 0 ? "0" : "282"} style={{
-              strokeDashoffset: `${(1 - progressValue / 100) * 282}px`
-            }} />
+            <path 
+              d={createEllipsePath()} 
+              fill="none" 
+              strokeWidth="2.5" 
+              stroke={getPathStrokeColor()} 
+              strokeLinecap="round" 
+              strokeDasharray={estimatedPathLength}
+              strokeDashoffset={calculateStrokeDashOffset()}
+              style={{
+                display: level <= 1 && progressValue === 0 ? 'none' : 'block'
+              }}
+            />
           </svg>
           
           {/* Earth image in the center */}
@@ -417,8 +514,8 @@ const WorldTourProgress = () => {
             );
           })}
           
-          {/* Moving vehicle icon - Always use Car icon */}
-          {progressValue > 0 && (
+          {/* Moving vehicle icon - shown only when there is progress */}
+          {progressValue > 0 && level > 1 && (
             <motion.div 
               className="absolute transform -translate-x-1/2 -translate-y-1/2" 
               style={{
