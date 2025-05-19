@@ -13,6 +13,8 @@ import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionConfetti from "./components/CompletionConfetti";
+import { useState, useEffect } from "react";
+import LoadingScreen from "./components/LoadingScreen";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,6 +27,7 @@ const queryClient = new QueryClient({
 
 // Create a wrapper component to use game context hooks
 const GameApp = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const { 
     showBonusPopup, 
     setShowBonusPopup, 
@@ -34,8 +37,16 @@ const GameApp = () => {
     showCompletionBanner
   } = useGame();
   
+  const handleLoadComplete = () => {
+    setIsLoading(false);
+  };
+  
   return (
     <>
+      {isLoading && (
+        <LoadingScreen onLoadComplete={handleLoadComplete} />
+      )}
+      
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />

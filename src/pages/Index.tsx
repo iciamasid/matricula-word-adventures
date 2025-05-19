@@ -153,28 +153,9 @@ const GameContent = () => {
       )}
       
       <div className="relative w-full">
-        <motion.img 
-          src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" 
-          alt="Matriculabra Cadabra" 
-          className="w-full object-contain mb-2 px-0" 
-          style={{
-            maxHeight: isMobile ? "28vh" : "25vh",
-            width: "100%"
-          }}
-          initial={{
-            opacity: 0,
-            y: -20
-          }}
-          animate={{
-            opacity: 1,
-            y: 0
-          }}
-          transition={{
-            duration: 0.5
-          }}
-        />
+        {/* Eliminada la imagen inicial como se solicitó */}
         
-        {/* Instructions button positioned at bottom right of the image */}
+        {/* Instructions button positioned at bottom right of the image area */}
         <Button
           variant="outline"
           size="sm"
