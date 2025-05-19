@@ -8,7 +8,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Globe, RefreshCw } from "lucide-react";
+import { Globe, RefreshCw, ChevronDown, HelpCircle } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -31,6 +31,7 @@ const Index = () => {
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
+  const worldTourRef = useRef<HTMLDivElement>(null);
   const {
     totalPoints,
     destinationInfo,
@@ -79,6 +80,15 @@ const GameContent = () => {
       }
     }
   }, []);
+
+  // Function to scroll to world tour section
+  const scrollToWorldTour = () => {
+    if (worldTourRef.current) {
+      worldTourRef.current.scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+  };
 
   // Determine the color theme (always using Spanish/Purple since we removed English)
   const bgColor = "bg-bba7ca";
@@ -152,17 +162,16 @@ const GameContent = () => {
         </div>
       )}
       
-      <div className="relative w-full">
-        {/* Eliminada la imagen inicial como se solicitó */}
-        
-        {/* Instructions button positioned at bottom right of the image area */}
+      {/* Added more space at the top with pt-8 (padding top) */}
+      <div className="relative w-full pt-8">
+        {/* Instructions button positioned at top right of the screen */}
         <Button
           variant="outline"
           size="sm"
           onClick={() => setShowInstructions(true)}
-          className={`absolute bottom-4 right-4 ${'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}
+          className={`absolute top-2 right-4 ${'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}
         >
-          <Globe className="w-4 h-4 mr-1" /> {"Ayuda"}
+          <HelpCircle className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
       </div>
 
@@ -206,16 +215,35 @@ const GameContent = () => {
           {/* Score components in a single row */}
           <ScorePanel />
           
+          {/* Scroll down indicator pointing to world tour */}
+          <motion.div 
+            className="w-full flex flex-col items-center mt-6 mb-2 cursor-pointer"
+            onClick={scrollToWorldTour}
+            animate={{ y: [0, 5, 0] }}
+            transition={{ 
+              duration: 1.5, 
+              repeat: Infinity,
+              repeatType: "loop",
+            }}
+            whileHover={{ scale: 1.05 }}
+          >
+            <p className="text-purple-800 kids-text text-xl mb-1">Tu vuelta al mundo ↓</p>
+            <ChevronDown className="text-purple-800 w-6 h-6" />
+          </motion.div>
+          
+          {/* Add ref for world tour section */}
+          <div ref={worldTourRef}></div>
+          
           {/* Add World Tour Progress component */}
           <WorldTourProgress />
           
           {/* Reset Game Button */}
-          <motion.div className="w-full max-w-xs mt-8" whileHover={{
-          scale: 1.03
-        }} transition={{
-          type: "spring",
-          stiffness: 400
-        }}>
+          <motion.div className="w-full max-w-xs mt-8 mb-12" whileHover={{
+            scale: 1.03
+          }} transition={{
+            type: "spring",
+            stiffness: 400
+          }}>
             <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal ${"bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}>
               <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
             </Button>
