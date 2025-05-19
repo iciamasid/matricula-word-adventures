@@ -5,9 +5,14 @@ import CountryMarker from './CountryMarker';
 interface UnlockedCountriesProps {
   countries: string[];
   highlightCountry?: string;
+  requiredVisitCountry?: string | null;
 }
 
-const UnlockedCountries: React.FC<UnlockedCountriesProps> = ({ countries, highlightCountry }) => {
+const UnlockedCountries: React.FC<UnlockedCountriesProps> = ({ 
+  countries, 
+  highlightCountry,
+  requiredVisitCountry 
+}) => {
   // Process countries to ensure Spain is always included
   // and to handle different name variations
   const processCountries = (countryList: string[]) => {
