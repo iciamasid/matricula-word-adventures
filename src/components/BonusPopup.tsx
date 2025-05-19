@@ -1,10 +1,8 @@
 
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { AlertDialog, AlertDialogContent, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Award, Gift, Star } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
+import React, { useEffect } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { motion } from "framer-motion";
+import { Gift, Star } from "lucide-react";
 
 interface BonusPopupProps {
   open: boolean;
@@ -13,29 +11,17 @@ interface BonusPopupProps {
 }
 
 const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
-  const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
-  const { language, isEnglish } = useLanguage();
-  
-  // Generate random stars for background animation
+  // Auto-close after 6 seconds
   useEffect(() => {
     if (open) {
-      const newStars = Array.from({ length: 50 }, () => ({
-        x: Math.random() * 100,
-        y: Math.random() * 100,
-        size: Math.random() * 3 + 1,
-        delay: Math.random() * 3
-      }));
-      setStars(newStars);
-      
-      // Auto-close after 5 seconds
       const timer = setTimeout(() => {
         onClose();
-      }, 5000);
+      }, 6000);
       
       // Play bonus sound
       try {
         const audio = new Audio('/lovable-uploads/level-up.mp3');
-        audio.volume = 0.7;
+        audio.volume = 0.5;
         audio.play();
       } catch (e) {
         console.error("Could not play bonus sound", e);
@@ -45,163 +31,77 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
     }
   }, [open, onClose]);
 
-  const colorTheme = isEnglish ? {
-    gradient: "from-orange-700 via-orange-600 to-orange-800",
-    border: "border-yellow-400",
-    button: "bg-yellow-400 hover:bg-yellow-300 text-orange-900"
-  } : {
-    gradient: "from-purple-700 via-purple-600 to-purple-800",
-    border: "border-yellow-400",
-    button: "bg-yellow-400 hover:bg-yellow-300 text-purple-900"
-  };
-
   return (
-    <AnimatePresence>
-      {open && (
-        <AlertDialog open={open} onOpenChange={() => onClose()}>
-          <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
-            <AlertDialogTitle className="sr-only">Bonus Points</AlertDialogTitle>
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="bg-gradient-to-b from-gray-100 to-gray-300 p-6 rounded-lg border-4 border-gray-400 shadow-xl max-w-sm">
+        <div className="flex flex-col items-center text-center space-y-4">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 260,
+              damping: 20
+            }}
+            className="bg-gray-400 rounded-full p-4"
+          >
             <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ type: "spring", stiffness: 300, damping: 15 }}
-              className="relative w-full max-w-lg mx-auto"
+              animate={{ 
+                rotate: [0, 10, -10, 0],
+                scale: [1, 1.1, 1]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
             >
-              {/* Background with stars animation */}
-              <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                {stars.map((star, index) => (
-                  <motion.div
-                    key={index}
-                    className="absolute rounded-full bg-yellow-300"
-                    style={{ 
-                      left: `${star.x}%`,
-                      top: `${star.y}%`,
-                      width: `${star.size}px`,
-                      height: `${star.size}px`
-                    }}
-                    animate={{ 
-                      opacity: [0, 1, 0],
-                      scale: [0, 1, 0]
-                    }}
-                    transition={{ 
-                      duration: 2,
-                      delay: star.delay,
-                      repeat: Infinity,
-                      repeatDelay: 3
-                    }}
-                  />
-                ))}
-              </div>
-              
-              {/* Main bonus content */}
-              <div className={`bg-gradient-to-br ${colorTheme.gradient} p-8 rounded-2xl border-4 ${colorTheme.border} shadow-[0_0_30px_rgba(168,85,247,0.7)] relative z-10`}>
-                <div className="text-center">
-                  <motion.div 
-                    animate={{ scale: [1, 1.2, 1], rotate: [0, 5, 0, -5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                    className="flex justify-center items-center mb-4"
-                  >
-                    <div className="bg-yellow-500 p-2 rounded-full">
-                      <Gift className="w-12 h-12 text-purple-900" />
-                    </div>
-                  </motion.div>
-                  
-                  <motion.h2 
-                    className="text-4xl font-bold mb-2 text-white"
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    {isEnglish ? "LUCKY NUMBER!" : "¡NÚMERO DE LA SUERTE!"}
-                  </motion.h2>
-                  
-                  <div className="flex justify-center items-center my-4">
-                    <motion.div
-                      animate={{ 
-                        rotateY: [0, 360],
-                        scale: [1, 1.2, 1]
-                      }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="text-5xl font-bold text-yellow-300 mx-2"
-                    >
-                      6
-                    </motion.div>
-                    <motion.div
-                      animate={{ 
-                        rotateY: [0, 360],
-                        scale: [1, 1.2, 1]
-                      }}
-                      transition={{ duration: 4, delay: 0.3, repeat: Infinity }}
-                      className="text-5xl font-bold text-yellow-300 mx-2"
-                    >
-                      6
-                    </motion.div>
-                    <motion.div
-                      animate={{ 
-                        rotateY: [0, 360],
-                        scale: [1, 1.2, 1]
-                      }}
-                      transition={{ duration: 4, delay: 0.6, repeat: Infinity }}
-                      className="text-5xl font-bold text-yellow-300 mx-2"
-                    >
-                      6
-                    </motion.div>
-                    <motion.div
-                      animate={{ 
-                        rotateY: [0, 360],
-                        scale: [1, 1.2, 1]
-                      }}
-                      transition={{ duration: 4, delay: 0.9, repeat: Infinity }}
-                      className="text-5xl font-bold text-yellow-300 mx-2"
-                    >
-                      6
-                    </motion.div>
-                  </div>
-                  
-                  <motion.h3 
-                    className="text-3xl font-bold mb-6 text-yellow-300"
-                    animate={{ y: [0, -10, 0] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  >
-                    {isEnglish ? `BONUS OF ${points} POINTS!` : `¡BONUS DE ${points} PUNTOS!`}
-                  </motion.h3>
-                  
-                  <div className="flex justify-center space-x-2 mb-4">
-                    {[1, 2, 3, 4, 5].map((i) => (
-                      <motion.div
-                        key={i}
-                        animate={{ 
-                          rotate: [0, 360],
-                          scale: [1, 1.5, 1]
-                        }}
-                        transition={{ 
-                          duration: 2,
-                          delay: i * 0.3,
-                          repeat: Infinity
-                        }}
-                      >
-                        <Star className="h-8 w-8 text-yellow-300" />
-                      </motion.div>
-                    ))}
-                  </div>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                    onClick={onClose}
-                    className={`${colorTheme.button} font-bold py-3 px-8 rounded-full shadow-lg mt-4 flex items-center mx-auto`}
-                  >
-                    <Award className="mr-2" />
-                    {isEnglish ? "Great!" : "¡Fantástico!"}
-                  </motion.button>
-                </div>
-              </div>
+              <Gift className="h-10 w-10 text-gray-700" />
             </motion.div>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
-    </AnimatePresence>
+          </motion.div>
+          
+          <div>
+            <motion.h2 
+              className="text-2xl font-bold text-gray-800 kids-text"
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              ¡BONUS ESPECIAL!
+            </motion.h2>
+            <p className="mt-2 text-gray-700 kids-text text-lg">
+              ¡Has encontrado la matrícula legendaria!
+            </p>
+            <div className="mt-4 bg-white p-3 rounded-lg shadow-inner">
+              <motion.p 
+                className="text-3xl font-bold text-green-600 kids-text"
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 0.7, repeat: Infinity }}
+              >
+                +{points} kms
+              </motion.p>
+            </div>
+          </div>
+
+          <motion.div
+            className="w-full mt-2"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex justify-center space-x-2">
+              {[1, 2, 3].map((i) => (
+                <motion.div
+                  key={i}
+                  animate={{ 
+                    rotate: [0, 360],
+                    scale: [1, 1.5, 1]
+                  }}
+                  transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
+                >
+                  <Star className="h-6 w-6 text-gray-500" />
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

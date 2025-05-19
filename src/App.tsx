@@ -56,7 +56,7 @@ const GameApp = () => {
         </Routes>
       </BrowserRouter>
       
-      {/* Bonus popup for 6666 license plate - increased z-index to make sure it's visible */}
+      {/* Bonus popup for 6666 license plate */}
       <BonusPopup
         open={showBonusPopup}
         onClose={() => setShowBonusPopup(false)}

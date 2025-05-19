@@ -12,12 +12,12 @@ interface BirthdayBonusPopupProps {
 }
 
 const BirthdayBonusPopup: React.FC<BirthdayBonusPopupProps> = ({ open, onClose, birthYear, points }) => {
-  // Auto-close after 3 seconds
+  // Auto-close after 6 seconds (increased from 3)
   useEffect(() => {
     if (open) {
       const timer = setTimeout(() => {
         onClose();
-      }, 3000);
+      }, 6000);
       
       // Play bonus sound
       try {
