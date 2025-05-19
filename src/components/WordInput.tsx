@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -143,6 +144,9 @@ const WordInput: React.FC = () => {
   // Localized button text
   const submitButtonLabel = isEnglish ? "Submit" : "Enviar";
   
+  // Show hint about accents in Spanish mode
+  const showAccentHint = !isEnglish && currentWord.trim().length > 0;
+  
   return (
     <div className="w-full max-w-xs relative">      
       <div className="flex gap-2">
@@ -183,6 +187,13 @@ const WordInput: React.FC = () => {
       {currentWord.trim().length > 0 && currentWord.trim().length < minWordLength && (
         <p className={`text-sm mt-1 ${isEnglish ? "text-orange-600" : "text-purple-600"} font-medium kids-text text-center`}>
           {isEnglish ? `Words must be at least ${minWordLength} letters long` : `Las palabras deben tener al menos ${minWordLength} letras`}
+        </p>
+      )}
+      
+      {/* Hint about accents in Spanish mode */}
+      {showAccentHint && (
+        <p className="text-xs mt-1 text-purple-500 italic kids-text text-center">
+          Consejo: Las palabras con o sin tildes son válidas
         </p>
       )}
     </div>

@@ -37,6 +37,14 @@ export function getConsonantsFromPlate(plate: string): string {
 // Get a list of possible Spanish vowels
 export const vowels = "AEIOUÁÉÍÓÚ";
 
+// Function to normalize Spanish text (remove accents/tildes)
+export function normalizeSpanishText(text: string): string {
+  return text
+    .normalize('NFD') // Normalize to decomposed form
+    .replace(/[\u0300-\u036f]/g, '') // Remove accent marks
+    .toUpperCase(); // Convert to uppercase for consistency
+}
+
 // Spanish dictionary cache
 let spanishDictionary: Set<string> | null = null;
 let isLoadingDictionary = false;
@@ -69,18 +77,18 @@ async function loadSpanishDictionary(): Promise<Set<string>> {
     
     const data = await response.json();
     
-    // FIXED: Process the dictionary data correctly based on its structure
+    // Process the dictionary data correctly based on its structure
     // If data is an array of strings, use map directly
     // If it's an object with words as keys, use Object.keys
     let wordSet: Set<string>;
     
     if (Array.isArray(data)) {
-      // Data is an array of words, map directly
-      wordSet = new Set(data.map((word: string) => word.toUpperCase()));
+      // Data is an array of words, map directly - store already normalized
+      wordSet = new Set(data.map((word: string) => normalizeSpanishText(word)));
       console.log(`Loaded Spanish dictionary with ${wordSet.size} words (array format)`);
     } else {
-      // Data is an object, extract keys
-      wordSet = new Set(Object.keys(data).map(word => word.toUpperCase()));
+      // Data is an object, extract keys - store already normalized
+      wordSet = new Set(Object.keys(data).map(word => normalizeSpanishText(word)));
       console.log(`Loaded Spanish dictionary with ${wordSet.size} words (object format)`);
     }
     
@@ -223,18 +231,18 @@ export function isEnglishWord(word: string): boolean {
 
 // Check if a word might be Spanish - now using dictionary.json
 export async function isSpanishWord(word: string): Promise<boolean> {
-  const uppercaseWord = word.toUpperCase();
+  const normalizedWord = normalizeSpanishText(word);
   
   try {
     // Load the Spanish dictionary from the JSON file
     const dictionary = await loadSpanishDictionary();
     
-    // Check if the word exists in the dictionary
-    const exists = dictionary.has(uppercaseWord);
+    // Check if the normalized word exists in the dictionary
+    const exists = dictionary.has(normalizedWord);
     if (exists) {
-      console.log(`Spanish word verification: "${word}" found in dictionary`);
+      console.log(`Spanish word verification: "${word}" found in dictionary as "${normalizedWord}"`);
     } else {
-      console.log(`Spanish word verification: "${word}" NOT found in dictionary`);
+      console.log(`Spanish word verification: "${word}" NOT found in dictionary as "${normalizedWord}"`);
     }
     return exists;
   } catch (error) {
@@ -295,21 +303,22 @@ export async function wordExists(word: string, language: 'es' | 'en'): Promise<b
     return false;
   }
   
-  const uppercaseWord = word.toUpperCase();
-  
-  // For Spanish words - check against Spanish dictionary from JSON file
+  // For Spanish words - check against Spanish dictionary from JSON file with normalization
   if (language === 'es') {
     try {
+      // Normalize the word (remove tildes) before checking
+      const normalizedWord = normalizeSpanishText(word);
+      
       // Load the Spanish dictionary
       const dictionary = await loadSpanishDictionary();
       
-      // Check if the word exists in the dictionary
-      const exists = dictionary.has(uppercaseWord);
+      // Check if the normalized word exists in the dictionary
+      const exists = dictionary.has(normalizedWord);
       
       if (exists) {
-        console.log(`Word "${word}" found in Spanish dictionary JSON file`);
+        console.log(`Word "${word}" found in Spanish dictionary JSON file as "${normalizedWord}"`);
       } else {
-        console.log(`Word "${word}" NOT found in Spanish dictionary JSON file (dictionary size: ${dictionary.size})`);
+        console.log(`Word "${word}" NOT found in Spanish dictionary JSON file as "${normalizedWord}" (dictionary size: ${dictionary.size})`);
       }
       
       return exists;
@@ -321,6 +330,8 @@ export async function wordExists(word: string, language: 'es' | 'en'): Promise<b
   
   // For English words - keep existing validation logic
   if (language === 'en') {
+    const uppercaseWord = word.toUpperCase();
+    
     if (ENGLISH_WORDS.has(uppercaseWord)) {
       console.log(`Word ${word} found in English dictionary`);
       return true;
@@ -423,3 +434,4 @@ const ENGLISH_WORDS = new Set([
   "WOMAN", "WORDS", "WORLD", "WORRY", "WORSE", "WORST", "WORTH", "WOULD", "WOUND",
   "WRITE", "WRONG", "WROTE", "YIELD", "YOUNG", "YOURS", "YOUTH", "ZEBRA", "PHONE"
 ]);
+
