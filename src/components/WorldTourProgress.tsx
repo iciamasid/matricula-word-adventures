@@ -129,6 +129,10 @@ const WorldTourProgress = () => {
   const accentColor = isEnglish ? "bg-orange-400" : "bg-purple-400";
   const completedColor = isEnglish ? "bg-orange-500" : "bg-purple-500";
   
+  // Define the estimated path length for the SVG path
+  // This value is used for the strokeDasharray property
+  const estimatedPathLength = 225; // Approximate length of the elliptical path
+  
   // Get path color based on level - gray dashed for level 1, colored for higher levels
   const getPathStrokeColor = () => {
     if (level <= 1 && progressValue === 0) {
