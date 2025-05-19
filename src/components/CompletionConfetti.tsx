@@ -1,13 +1,17 @@
+
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 import confetti from 'canvas-confetti';
+import { useLanguage } from '@/context/LanguageContext';
 
 interface CompletionConfettiProps {
   onClose: () => void;
 }
 
 const CompletionConfetti: React.FC<CompletionConfettiProps> = ({ onClose }) => {
+  const { isEnglish } = useLanguage();
+  
   useEffect(() => {
     // Fire confetti when the component mounts
     const duration = 5 * 1000;
@@ -49,8 +53,10 @@ const CompletionConfetti: React.FC<CompletionConfettiProps> = ({ onClose }) => {
     
     // Show celebratory toast message
     toast({
-      title: "¡Felicidades!",
-      description: "¡Has completado la vuelta al mundo! El juego vuelve a empezar desde el nivel 1.",
+      title: isEnglish ? "Congratulations!" : "¡Felicidades!",
+      description: isEnglish 
+        ? "You've completed the world tour! The game will restart at level 1." 
+        : "¡Has completado la vuelta al mundo! El juego vuelve a empezar desde el nivel 1.",
       duration: 5000
     });
     
@@ -62,7 +68,7 @@ const CompletionConfetti: React.FC<CompletionConfettiProps> = ({ onClose }) => {
     return () => {
       clearTimeout(timer);
     };
-  }, []);
+  }, [isEnglish, onClose]);
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/20 pointer-events-none">
@@ -87,15 +93,19 @@ const CompletionConfetti: React.FC<CompletionConfettiProps> = ({ onClose }) => {
         </motion.div>
         
         <h2 className="text-3xl font-bold kids-text text-amber-900 mb-4">
-          ¡Nivel 10 completado!
+          {isEnglish ? "Level 10 completed!" : "¡Nivel 10 completado!"}
         </h2>
         
         <p className="text-xl text-amber-800 mb-6 kids-text">
-          ¡Felicidades! ¡Has completado la vuelta al mundo!
+          {isEnglish 
+            ? "Congratulations! You've completed the world tour!" 
+            : "¡Felicidades! ¡Has completado la vuelta al mundo!"}
         </p>
         
         <p className="text-amber-700 kids-text">
-          El juego volverá a empezar en el nivel 1. ¡Sigue jugando para superar tu récord!
+          {isEnglish
+            ? "The game will restart at level 1. Keep playing to beat your record!"
+            : "El juego volverá a empezar en el nivel 1. ¡Sigue jugando para superar tu récord!"}
         </p>
       </motion.div>
     </div>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -141,12 +140,45 @@ const WorldTourProgress = () => {
     return level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6";
   };
 
+  // Define segment weights to fix Mexico and Argentina path issues
+  // These weights represent the relative length of each segment in the path
+  const segmentWeights = [
+    1,    // Spain -> France
+    1,    // France -> Italy
+    1,    // Italy -> Russia
+    1.1,  // Russia -> Japan
+    1.2,  // Japan -> Australia
+    1.4,  // Australia -> USA
+    1,    // USA -> Mexico
+    1,    // Mexico -> Argentina
+    1.1   // Argentina -> Spain
+  ];
+  
+  // Calculate the sum of all weights
+  const totalWeight = segmentWeights.reduce((sum, weight) => sum + weight, 0);
+  
+  // Calculate the accumulated weights up to each segment
+  const accumulatedWeights = segmentWeights.reduce((acc, weight, index) => {
+    const prevSum = index === 0 ? 0 : acc[index - 1];
+    acc.push(prevSum + weight);
+    return acc;
+  }, [] as number[]);
+  
   // Modified animation to ensure the path only reaches the current country flag
   useEffect(() => {
     // Calculate target value based on current level
     // For level 1, we show zero progress (no purple line)
     // For other levels, the path should reach exactly the previous country (level - 1)
-    const targetValue = level <= 1 ? 0 : (level - 1) / 9 * 100;
+    const targetLevel = level <= 1 ? 0 : level - 1;
+    
+    // Calculate target percentage based on weighted segments
+    let targetValue = 0;
+    if (targetLevel > 0) {
+      // Get the accumulated weight up to the target level (index = targetLevel - 1)
+      const targetWeight = accumulatedWeights[targetLevel - 1];
+      // Convert to percentage of total weight
+      targetValue = (targetWeight / totalWeight) * 100;
+    }
     
     let animationActive = true;
     const runAnimation = async () => {
@@ -155,7 +187,7 @@ const WorldTourProgress = () => {
         setProgressValue(0);
         setAnimatingLevel(1);
 
-        // Smoothly increase to target value but never exceed current level's position
+        // Smoothly increase to target value
         for (let i = 0; i <= 100; i += 2) {
           if (!animationActive) break;
           
@@ -164,9 +196,21 @@ const WorldTourProgress = () => {
           setProgressValue(currentProgress);
 
           // Update current animating level based on progress
-          // This ensures the animating level matches the path completion
-          const currentLevelBasedOnProgress = Math.ceil(currentProgress / 100 * 9) + 1;
-          setAnimatingLevel(Math.min(currentLevelBasedOnProgress, level));
+          // Convert current progress percentage back to a level
+          let animatingLevelValue = 1; // Default to level 1 (Spain)
+          
+          // Find which segment we're in based on the current progress
+          const progressRatio = currentProgress / 100;
+          const weightAtProgress = progressRatio * totalWeight;
+          
+          for (let j = 0; j < accumulatedWeights.length; j++) {
+            if (weightAtProgress > accumulatedWeights[j]) {
+              animatingLevelValue = j + 2; // +2 because levels start at 1 and we're already showing the next level
+            }
+          }
+          
+          // Ensure we don't exceed the current level
+          setAnimatingLevel(Math.min(animatingLevelValue, level));
 
           // Slow down animation with a small delay
           await new Promise(resolve => setTimeout(resolve, 30));
@@ -180,7 +224,7 @@ const WorldTourProgress = () => {
     return () => {
       animationActive = false;
     };
-  }, [level]);
+  }, [level, accumulatedWeights, totalWeight]);
 
   // Get destination flag for current level
   const getDestinationFlag = (level: number) => {
@@ -268,7 +312,7 @@ const WorldTourProgress = () => {
     return segments.reduce((sum, length) => sum + length, 0);
   };
   
-  // UPDATED: Calculate stroke-dashoffset to ensure path stops exactly at country flags
+  // UPDATED: Calculate stroke-dashoffset using weighted segments to ensure proper highlighting
   const calculateStrokeDashOffset = () => {
     const totalLength = estimatedPathLength;
     
@@ -277,40 +321,54 @@ const WorldTourProgress = () => {
       return totalLength;
     }
     
-    // FIXED: Calculate exact segment progress to ensure path stops at flags
-    // Calculate which segment we're currently in
-    const segmentSize = 100 / 9; // 9 segments total
-    const currentSegmentIndex = Math.floor(progressValue / segmentSize);
+    // Convert progress percentage to a position along the weighted path
+    const progressRatio = progressValue / 100;
+    const weightedPosition = progressRatio * totalWeight;
     
-    // Calculate progress within the current segment (0 to 1)
-    const progressInSegment = (progressValue % segmentSize) / segmentSize;
+    // Calculate which weighted segment we're in
+    let segmentIndex = 0;
+    for (let i = 0; i < accumulatedWeights.length; i++) {
+      if (weightedPosition <= accumulatedWeights[i]) {
+        segmentIndex = i;
+        break;
+      }
+      segmentIndex = i;
+    }
     
-    // Calculate the exact position along the path based on completed segments
-    // and partial progress in current segment
-    const completedSegmentsRatio = currentSegmentIndex / 9;
-    const progressInCurrentSegmentRatio = progressInSegment * (1/9);
+    // Calculate progress within the current segment
+    const prevAccumulatedWeight = segmentIndex > 0 ? accumulatedWeights[segmentIndex - 1] : 0;
+    const progressInSegment = (weightedPosition - prevAccumulatedWeight) / segmentWeights[segmentIndex];
     
-    // The combined ratio determines how much of the path is highlighted
-    const combinedRatio = completedSegmentsRatio + progressInCurrentSegmentRatio;
+    // Calculate the ratio of the path that should be highlighted
+    const completedRatio = progressRatio;
     
     // The dashoffset is inversely proportional to progress
-    // When progress is 0, dashoffset = full length (no highlight)
-    // When progress is 100%, dashoffset = 0 (fully highlighted)
-    return totalLength * (1 - combinedRatio);
+    return totalLength * (1 - completedRatio);
   };
 
-  // Determine position of the moving vehicle
+  // Determine position of the moving vehicle based on weighted segments
   const getVehiclePosition = () => {
-    // Calculate how many full segments the vehicle has completed
-    const segmentSize = 100 / 9; // 9 segments in total
-    const completedSegments = Math.floor(progressValue / segmentSize);
-
-    // Calculate progress within the current segment (0 to 1)
-    const progressInSegment = progressValue % segmentSize / segmentSize;
-
+    // Convert progress percentage to a position along the weighted path
+    const progressRatio = progressValue / 100;
+    const weightedPosition = progressRatio * totalWeight;
+    
+    // Calculate which weighted segment we're in
+    let segmentIndex = 0;
+    for (let i = 0; i < accumulatedWeights.length; i++) {
+      if (weightedPosition <= accumulatedWeights[i]) {
+        segmentIndex = i;
+        break;
+      }
+      segmentIndex = i;
+    }
+    
+    // Calculate progress within the current segment
+    const prevAccumulatedWeight = segmentIndex > 0 ? accumulatedWeights[segmentIndex - 1] : 0;
+    const progressInSegment = (weightedPosition - prevAccumulatedWeight) / segmentWeights[segmentIndex];
+    
     // Calculate the current and next point positions
-    const currentPoint = getEllipsePosition(completedSegments);
-    const nextPoint = getEllipsePosition(completedSegments + 1);
+    const currentPoint = getEllipsePosition(segmentIndex);
+    const nextPoint = getEllipsePosition(segmentIndex + 1);
 
     // Interpolate between the two points based on progress in segment
     const x = currentPoint.x + (nextPoint.x - currentPoint.x) * progressInSegment;
