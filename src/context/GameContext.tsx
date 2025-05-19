@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -73,11 +74,6 @@ interface GameContextType {
   setShowBirthdayBonusPopup: (show: boolean) => void;
   birthYearBonus: number;
   
-  // Special 6666 bonus properties
-  showBonusPopup: boolean;
-  setShowBonusPopup: (show: boolean) => void;
-  bonusPoints: number;
-  
   // Add updateDestinations function to the interface
   updateDestinations: (level: number) => void;
 }
@@ -148,7 +144,7 @@ export const GameProvider: React.FC<{
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showLevelUp, setShowLevelUp] = useState<boolean>(false);
   
-  // Popups and banners states
+  // Popups and banners states - CONSOLIDATED
   const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
   const [bonusPoints, setBonusPoints] = useState<number>(500);
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState<boolean>(false);
@@ -157,14 +153,12 @@ export const GameProvider: React.FC<{
   // Track previous destination to set as origin when leveling up
   const [previousDestination, setPreviousDestination] = useState<CountryInfo | null>(null);
   
-  // Birthday bonus states - MOVED HERE before they're used
+  // Birthday bonus states
   const [showBirthdayBonusPopup, setShowBirthdayBonusPopup] = useState<boolean>(false);
   const [birthYearBonus, setBirthYearBonus] = useState<number>(50);
   const [lastBirthYearShow, setLastBirthYearShow] = useState<number>(0);
   
-  // Special 6666 bonus states
-  const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
-  const [bonusPoints, setBonusPoints] = useState<number>(500);
+  // Special 6666 bonus tracking
   const [has6666Triggered, setHas6666Triggered] = useState<boolean>(false);
   
   // Clear feedback functions
@@ -285,6 +279,7 @@ export const GameProvider: React.FC<{
     setShowBonusPopup(false);
     setShowAgeBonusPopup(false);
     setShowCompletionBanner(false);
+    setShowBirthdayBonusPopup(false);
     
     // Reset previous destination
     setPreviousDestination(null);
@@ -384,8 +379,9 @@ export const GameProvider: React.FC<{
       const numbers = licensePlate.substring(0, 4);
       
       // Check for 6666 pattern (bonus points)
-      if (numbers === "6666" && !showBonusPopup) {
+      if (numbers === "6666" && !showBonusPopup && !has6666Triggered) {
         setShowBonusPopup(true);
+        setHas6666Triggered(true);
         
         // Add bonus points - 500 points
         const bonusAmount = 500;
@@ -393,10 +389,15 @@ export const GameProvider: React.FC<{
         setTotalPoints(prev => prev + bonusAmount);
         console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
         
-        // Auto-hide bonus popup after 5 seconds
+        // Auto-hide bonus popup after 6 seconds
         setTimeout(() => {
           setShowBonusPopup(false);
-        }, 5000);
+          
+          // Reset the trigger after 30 seconds
+          setTimeout(() => {
+            setHas6666Triggered(false);
+          }, 24000); // 30 - 6 = 24 seconds remaining after popup closes
+        }, 6000);
       }
       
       // Check if license plate matches player age for bonus
@@ -429,30 +430,18 @@ export const GameProvider: React.FC<{
           console.log(`Found birth year ${birthYear} in license plate`);
           
           // Add bonus points and show popup
-          setTotalPointsUpdated(prev => prev + birthYearBonus);
+          setTotalPoints(prev => prev + birthYearBonus);
           setShowBirthdayBonusPopup(true);
           setLastBirthYearShow(gamesPlayed);
+          
+          // Auto-hide birthday bonus popup after 6 seconds
+          setTimeout(() => {
+            setShowBirthdayBonusPopup(false);
+          }, 6000);
         }
       }
     }
   }, [licensePlate, playerAge, gamesPlayed]);
-
-  // Check for 6666 in license plate
-  useEffect(() => {
-    if (licensePlate && licensePlate.includes('6666') && !has6666Triggered) {
-      console.log('Found 6666 in license plate!');
-      
-      // Add bonus points and show popup
-      setTotalPointsUpdated(prev => prev + bonusPoints);
-      setShowBonusPopup(true);
-      setHas6666Triggered(true); // Only trigger once per session
-      
-      // Reset the trigger after the popup is closed (30 seconds)
-      setTimeout(() => {
-        setHas6666Triggered(false);
-      }, 30000);
-    }
-  }, [licensePlate, has6666Triggered, bonusPoints]);
 
   // Modified World Tour progression (removing Peru)
   // Level 1: Spain -> France
@@ -755,11 +744,6 @@ export const GameProvider: React.FC<{
     showBirthdayBonusPopup,
     setShowBirthdayBonusPopup,
     birthYearBonus,
-    
-    // Special 6666 bonus properties
-    showBonusPopup,
-    setShowBonusPopup,
-    bonusPoints,
     
     // Add updateDestinations function to the context value
     updateDestinations,
