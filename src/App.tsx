@@ -12,8 +12,7 @@ import NotFound from "./pages/NotFound";
 import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
-import CompletionBanner from "./components/CompletionBanner";
-import LevelUpAlert from "./components/LevelUpAlert";
+import CompletionConfetti from "./components/CompletionConfetti";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -32,9 +31,7 @@ const GameApp = () => {
     bonusPoints,
     showAgeBonusPopup,
     playerAge,
-    showCompletionBanner,
-    showLevelUp,
-    level
+    showCompletionBanner
   } = useGame();
   
   return (
@@ -47,9 +44,6 @@ const GameApp = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
-      
-      {/* Level Up Alert (already contains completion confetti for level 10) */}
-      <LevelUpAlert />
       
       {/* Bonus popup for 6666 license plate - increased z-index to make sure it's visible */}
       <BonusPopup
@@ -68,12 +62,9 @@ const GameApp = () => {
         />
       )}
       
-      {/* Completion banner when reaching level 10 */}
+      {/* Completion confetti when reaching level 10 */}
       {showCompletionBanner && (
-        <CompletionBanner
-          open={showCompletionBanner}
-          onClose={() => {}}
-        />
+        <CompletionConfetti onClose={() => {}} />
       )}
     </>
   );

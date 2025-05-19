@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
 import { useLanguage } from "@/context/LanguageContext";
-import CompletionConfetti from "./CompletionConfetti";
 
 const LevelUpAlert: React.FC = () => {
   const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame } = useGame();
@@ -23,11 +22,8 @@ const LevelUpAlert: React.FC = () => {
   // Special handling for level 10 completion - reset the game
   useEffect(() => {
     if (showLevelUp && level >= 10) {
-      console.log("Level 10 reached! Showing completion message before resetting game.");
-      
       // Reset game after the popup is shown and closed (8 seconds)
       const timer = setTimeout(() => {
-        console.log("Resetting game after level 10 completion...");
         resetGame();
         clearLevelUpMessage();
       }, 8000);
@@ -56,23 +52,15 @@ const LevelUpAlert: React.FC = () => {
   
   const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}`;
   
-  // Show both the level up popup and the completion confetti for level 10
   return (
-    <>
-      <GamePopup
-        open={showLevelUp}
-        onClose={clearLevelUpMessage}
-        type="levelUp"
-        message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
-        level={level}
-        explanation={explanation}
-      />
-      
-      {/* Show completion confetti only at level 10 */}
-      {showLevelUp && level >= 10 && (
-        <CompletionConfetti onClose={clearLevelUpMessage} />
-      )}
-    </>
+    <GamePopup
+      open={showLevelUp}
+      onClose={clearLevelUpMessage}
+      type="levelUp"
+      message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
+      level={level}
+      explanation={explanation}
+    />
   );
 };
 
