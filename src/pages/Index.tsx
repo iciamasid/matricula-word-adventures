@@ -17,7 +17,7 @@ import GameInstructions from "@/components/GameInstructions";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import TotalPointsPanel from "@/components/TotalPointsPanel";
 import NewGameButton from "@/components/NewGameButton";
-import { Help } from "lucide-react";
+import { CircleHelp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface IndexProps {
@@ -73,7 +73,7 @@ const Index: React.FC<IndexProps> = ({ hideInitialImage = false }) => {
               className="absolute top-0 right-0" 
               onClick={() => setShowInstructions(true)}
             >
-              <Help className="h-6 w-6" />
+              <CircleHelp className="h-6 w-6" />
             </Button>
           </div>
 
