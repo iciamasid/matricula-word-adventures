@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import PlayerNameInput from "@/components/PlayerNameInput";
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
-
 const PlayerRegistration: React.FC = () => {
   const {
     playerName,
@@ -44,14 +42,12 @@ const PlayerRegistration: React.FC = () => {
       }
     }
   }, [playerName, playerGender, setPlayerGender]);
-
   useEffect(() => {
     // If we have both name and age, hide the form
     if (playerName && playerAge) {
       setShowForm(false);
     }
   }, [playerName, playerAge]);
-
   return <>
       {showForm ? <motion.div className={`w-full max-w-md ${bgColor} rounded-lg p-5 shadow-lg mb-4`} initial={{
       opacity: 0,
@@ -83,7 +79,7 @@ const PlayerRegistration: React.FC = () => {
           <motion.div className="flex items-center justify-center mb-2">
             <div className="flex items-center justify-center">
               {playerGender === 'niño' ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
-              <span className={`font-medium ${textColor} kids-text text-3xl`}>
+              <span className="text-4xl font-medium text-purple-900">
                 {playerName} {playerAge} {t('years')}
               </span>
             </div>
@@ -94,5 +90,4 @@ const PlayerRegistration: React.FC = () => {
         </motion.div>}
     </>;
 };
-
 export default PlayerRegistration;
