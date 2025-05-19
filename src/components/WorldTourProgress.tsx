@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-import { Car } from 'lucide-react';
+import { Car, LockKeyhole } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import LockedCountryPopup from './LockedCountryPopup';
 
@@ -388,7 +389,7 @@ const WorldTourProgress = () => {
                         animate={{ scale: 1 }}
                         transition={{ type: "spring" }}
                       >
-                        <Lock className="w-3 h-3 text-white" />
+                        <LockKeyhole className="w-3 h-3 text-white" />
                       </motion.div>
                     </motion.div>
                   )}
