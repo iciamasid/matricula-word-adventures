@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -130,7 +131,6 @@ const WorldTourProgress = () => {
   const completedColor = isEnglish ? "bg-orange-500" : "bg-purple-500";
   
   // Define the estimated path length for the SVG path
-  // This value is used for the strokeDasharray property
   const estimatedPathLength = 225; // Approximate length of the elliptical path
   
   // Get path color based on level - gray dashed for level 1, colored for higher levels
@@ -141,10 +141,11 @@ const WorldTourProgress = () => {
     return level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6";
   };
 
-  // Modified animation to show circular path progress - using 9 steps now instead of 10
+  // Modified animation to ensure the path only reaches the current country flag
   useEffect(() => {
-    // Calculate target value based on current level, but don't go further than current level
-    // For level 1, we should show zero progress (no purple line)
+    // Calculate target value based on current level
+    // For level 1, we show zero progress (no purple line)
+    // For other levels, the path should reach exactly the previous country (level - 1)
     const targetValue = level <= 1 ? 0 : (level - 1) / 9 * 100;
     
     let animationActive = true;
@@ -154,13 +155,16 @@ const WorldTourProgress = () => {
         setProgressValue(0);
         setAnimatingLevel(1);
 
-        // Smoothly increase to target value
+        // Smoothly increase to target value but never exceed current level's position
         for (let i = 0; i <= 100; i += 2) {
           if (!animationActive) break;
+          
+          // Make sure we don't exceed the target value
           const currentProgress = Math.min(i / 100 * targetValue, targetValue);
           setProgressValue(currentProgress);
 
           // Update current animating level based on progress
+          // This ensures the animating level matches the path completion
           const currentLevelBasedOnProgress = Math.ceil(currentProgress / 100 * 9) + 1;
           setAnimatingLevel(Math.min(currentLevelBasedOnProgress, level));
 
@@ -264,15 +268,16 @@ const WorldTourProgress = () => {
     return segments.reduce((sum, length) => sum + length, 0);
   };
   
-  // Calculate stroke-dashoffset based on current progress and segment lengths
+  // UPDATED: Calculate stroke-dashoffset to ensure path stops exactly at country flags
   const calculateStrokeDashOffset = () => {
-    const totalLength = getTotalPathLength();
+    const totalLength = estimatedPathLength;
     
-    // For level 1 with no progress, show the entire path as unhighlighted
+    // For level 1 with no progress, show the entire path as unhighlighted (gray dashed)
     if (level <= 1 && progressValue === 0) {
       return totalLength;
     }
     
+    // FIXED: Calculate exact segment progress to ensure path stops at flags
     // Calculate which segment we're currently in
     const segmentSize = 100 / 9; // 9 segments total
     const currentSegmentIndex = Math.floor(progressValue / segmentSize);
@@ -280,25 +285,24 @@ const WorldTourProgress = () => {
     // Calculate progress within the current segment (0 to 1)
     const progressInSegment = (progressValue % segmentSize) / segmentSize;
     
-    // Get length up to the current segment
-    const lengthUpToCurrentSegment = getPathLengthUpToSegment(currentSegmentIndex);
+    // Calculate the exact position along the path based on completed segments
+    // and partial progress in current segment
+    const completedSegmentsRatio = currentSegmentIndex / 9;
+    const progressInCurrentSegmentRatio = progressInSegment * (1/9);
     
-    // Get current segment length
-    const segments = calculateSegmentLengths();
-    const currentSegmentLength = currentSegmentIndex < segments.length ? 
-      segments[currentSegmentIndex] : 0;
+    // The combined ratio determines how much of the path is highlighted
+    const combinedRatio = completedSegmentsRatio + progressInCurrentSegmentRatio;
     
-    // Calculate the exact position along the path
-    const progressLength = lengthUpToCurrentSegment + (currentSegmentLength * progressInSegment);
-    
-    // Calculate the dashoffset (total length minus progress)
-    return totalLength - progressLength;
+    // The dashoffset is inversely proportional to progress
+    // When progress is 0, dashoffset = full length (no highlight)
+    // When progress is 100%, dashoffset = 0 (fully highlighted)
+    return totalLength * (1 - combinedRatio);
   };
 
   // Determine position of the moving vehicle
   const getVehiclePosition = () => {
     // Calculate how many full segments the vehicle has completed
-    const segmentSize = 100 / 9; // 9 segments in total (changed from 10)
+    const segmentSize = 100 / 9; // 9 segments in total
     const completedSegments = Math.floor(progressValue / segmentSize);
 
     // Calculate progress within the current segment (0 to 1)
