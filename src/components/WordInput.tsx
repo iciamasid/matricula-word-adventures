@@ -4,7 +4,7 @@ import { useGame } from "@/context/GameContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Globe, MapPin, AlertTriangle } from "lucide-react";
+import { Globe, MapPin, AlertTriangle, Flag } from "lucide-react";
 import { motion } from "framer-motion";
 
 const WordInput: React.FC = () => {
@@ -13,7 +13,8 @@ const WordInput: React.FC = () => {
     currentWord, 
     setCurrentWord, 
     submitWord, 
-    countryVisitRequired 
+    countryVisitRequired,
+    level 
   } = useGame();
   const { isEnglish, t } = useLanguage?.() || { isEnglish: false };
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -70,12 +71,28 @@ const WordInput: React.FC = () => {
     ? isFormDisabled ? "bg-gray-400" : "bg-orange-600 hover:bg-orange-700" 
     : isFormDisabled ? "bg-gray-400" : "bg-purple-600 hover:bg-purple-700";
   
+  // Helper function to get the next country name based on level
+  const getNextCountryName = () => {
+    switch (level) {
+      case 1: return isEnglish ? "France" : "Francia";
+      case 2: return isEnglish ? "Italy" : "Italia";
+      case 3: return isEnglish ? "Russia" : "Rusia";
+      case 4: return isEnglish ? "Japan" : "Japón";
+      case 5: return isEnglish ? "Australia" : "Australia";
+      case 6: return isEnglish ? "United States" : "Estados Unidos";
+      case 7: return isEnglish ? "Mexico" : "México";
+      case 8: return isEnglish ? "Argentina" : "Argentina";
+      case 9: return isEnglish ? "Spain" : "España";
+      default: return isEnglish ? "the next country" : "el siguiente país";
+    }
+  };
+  
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="relative">
         {countryVisitRequired && (
           <motion.div 
-            className="absolute -top-16 left-0 right-0 bg-yellow-100 p-3 rounded-lg border-2 border-yellow-400 z-10 shadow-md"
+            className="absolute -top-24 left-0 right-0 bg-yellow-100 p-4 rounded-lg border-2 border-yellow-400 z-10 shadow-lg"
             initial={{ opacity: 0, y: -10 }}
             animate={{ 
               opacity: 1, 
@@ -87,19 +104,37 @@ const WordInput: React.FC = () => {
               borderColor: { repeat: Infinity, duration: 2 }
             }}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-center mb-2">
               <AlertTriangle className="h-5 w-5 text-yellow-600" />
-              <p className="text-yellow-800 font-bold kids-text text-sm">
+              <p className="text-yellow-800 font-bold kids-text text-md">
                 {isEnglish 
-                  ? "Visit the unlocked country on the map to continue!" 
-                  : "¡Visita el país desbloqueado en el mapa para continuar!"}
+                  ? "IMPORTANT MISSION" 
+                  : "MISIÓN IMPORTANTE"}
+              </p>
+              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            </div>
+            
+            <div className="flex items-center gap-2 justify-center">
+              <Flag className="h-5 w-5 text-yellow-600" />
+              <p className="text-yellow-800 font-bold kids-text text-md">
+                {isEnglish 
+                  ? `Visit ${getNextCountryName()} on the map to continue!` 
+                  : `¡Visita ${getNextCountryName()} en el mapa para continuar!`}
               </p>
               <Globe className="h-5 w-5 text-yellow-600" />
             </div>
+            
+            <motion.div 
+              className="flex justify-center mt-2"
+              animate={{ y: [0, -3, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <MapPin className="h-6 w-6 text-yellow-600" />
+            </motion.div>
           </motion.div>
         )}
         
-        <div className="flex items-stretch">
+        <div className="flex items-stretch mt-4">
           <input
             type="text"
             value={currentWord}
@@ -118,12 +153,12 @@ const WordInput: React.FC = () => {
         </div>
         
         {countryVisitRequired && (
-          <div className="mt-2 flex items-center gap-2">
+          <div className="mt-2 flex items-center gap-2 justify-center">
             <MapPin className="h-4 w-4 text-pink-600" />
-            <p className="text-sm text-pink-600 kids-text">
+            <p className="text-sm text-pink-600 kids-text font-bold">
               {isEnglish 
-                ? "Click on the map flags to explore countries!" 
-                : "¡Haz clic en las banderas del mapa para explorar países!"}
+                ? "Click on the country flags on the map to explore!" 
+                : "¡Haz clic en las banderas de países en el mapa para explorar!"}
             </p>
           </div>
         )}

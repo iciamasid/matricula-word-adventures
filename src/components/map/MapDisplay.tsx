@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CountryMarkers from './CountryMarkers';
+import { useGame } from "@/context/GameContext";
 
 interface MapDisplayProps {
   zoom: number;
@@ -14,8 +15,29 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
   highlightCountry,
   unlockedCountries = []
 }) => {
+  const { level, countryVisitRequired } = useGame();
   // Add auto-zoom effect when country changes
   const [currentZoom, setCurrentZoom] = useState(zoom);
+  
+  // Determine the country that needs to be visited based on current level
+  const getRequiredCountryToVisit = () => {
+    if (!countryVisitRequired) return null;
+    
+    switch (level) {
+      case 1: return "Francia";
+      case 2: return "Italia";
+      case 3: return "Rusia";
+      case 4: return "Japón";
+      case 5: return "Australia";
+      case 6: return "Estados Unidos";
+      case 7: return "México";
+      case 8: return "Argentina";
+      case 9: return "España";
+      default: return null;
+    }
+  };
+  
+  const requiredVisitCountry = getRequiredCountryToVisit();
   
   // Ensure Spain is always in the unlockedCountries list
   const ensureSpainIsIncluded = () => {
@@ -76,6 +98,7 @@ const MapDisplay: React.FC<MapDisplayProps> = ({
           <CountryMarkers 
             highlightCountry={highlightCountry} 
             unlockedCountries={finalUnlockedCountries} 
+            requiredVisitCountry={requiredVisitCountry} // Pass the country that needs to be visited
           />
         </motion.div>
       </AnimatePresence>
