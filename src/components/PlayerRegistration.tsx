@@ -83,7 +83,7 @@ const PlayerRegistration: React.FC = () => {
                 {playerName} {playerAge} {t('years')}
               </span>
             </div>
-            <Button size="sm" variant="outline" className={`${btnColor} ml-2`} onClick={() => setShowForm(true)}>
+            <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-base text-violet-900 bg-transparent rounded-xl">
               {t('edit')}
             </Button>
           </motion.div>
