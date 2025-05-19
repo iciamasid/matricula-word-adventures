@@ -1,3 +1,4 @@
+
 // Generates a random license plate with 4 numbers and 3 consonants
 export function generateLicensePlate(): string {
   const numbers = Array(4)
@@ -67,10 +68,28 @@ async function loadSpanishDictionary(): Promise<Set<string>> {
     }
     
     const data = await response.json();
-    // Convert to uppercase for case-insensitive comparison
-    const wordSet = new Set(Object.keys(data).map(word => word.toUpperCase()));
+    
+    // FIXED: Process the dictionary data correctly based on its structure
+    // If data is an array of strings, use map directly
+    // If it's an object with words as keys, use Object.keys
+    let wordSet: Set<string>;
+    
+    if (Array.isArray(data)) {
+      // Data is an array of words, map directly
+      wordSet = new Set(data.map((word: string) => word.toUpperCase()));
+      console.log(`Loaded Spanish dictionary with ${wordSet.size} words (array format)`);
+    } else {
+      // Data is an object, extract keys
+      wordSet = new Set(Object.keys(data).map(word => word.toUpperCase()));
+      console.log(`Loaded Spanish dictionary with ${wordSet.size} words (object format)`);
+    }
+    
     spanishDictionary = wordSet;
-    console.log(`Loaded Spanish dictionary with ${wordSet.size} words`);
+    
+    // Log a sample of words to verify
+    console.log("Sample words from dictionary:", 
+      Array.from(wordSet).slice(0, 5).join(", "));
+    
     return spanishDictionary;
   } catch (error) {
     console.error('Failed to load Spanish dictionary:', error);
@@ -211,7 +230,13 @@ export async function isSpanishWord(word: string): Promise<boolean> {
     const dictionary = await loadSpanishDictionary();
     
     // Check if the word exists in the dictionary
-    return dictionary.has(uppercaseWord);
+    const exists = dictionary.has(uppercaseWord);
+    if (exists) {
+      console.log(`Spanish word verification: "${word}" found in dictionary`);
+    } else {
+      console.log(`Spanish word verification: "${word}" NOT found in dictionary`);
+    }
+    return exists;
   } catch (error) {
     console.error('Error checking if word is Spanish:', error);
     return false;
@@ -282,9 +307,9 @@ export async function wordExists(word: string, language: 'es' | 'en'): Promise<b
       const exists = dictionary.has(uppercaseWord);
       
       if (exists) {
-        console.log(`Word ${word} found in Spanish dictionary JSON file`);
+        console.log(`Word "${word}" found in Spanish dictionary JSON file`);
       } else {
-        console.log(`Word ${word} NOT found in Spanish dictionary JSON file`);
+        console.log(`Word "${word}" NOT found in Spanish dictionary JSON file (dictionary size: ${dictionary.size})`);
       }
       
       return exists;
