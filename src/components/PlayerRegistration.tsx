@@ -79,7 +79,7 @@ const PlayerRegistration: React.FC = () => {
       opacity: 1,
       y: 0
     }} className="w-full max-w-md flex flex-col gap-3 mb-4">
-          {/* Player info display - UPDATED to show name in uppercase with age below */}
+          {/* Player info display - Updated to show name in uppercase with age below */}
           <motion.div className="flex flex-col items-center justify-center mb-2">
             <div className="flex flex-col items-center justify-center">
               <span className="text-4xl font-bold text-purple-900 uppercase">

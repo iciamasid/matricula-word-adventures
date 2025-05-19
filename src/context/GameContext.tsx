@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -72,6 +73,9 @@ interface GameContextType {
   showBirthdayBonusPopup: boolean;
   setShowBirthdayBonusPopup: (show: boolean) => void;
   birthYearBonus: number;
+  
+  // Add updateDestinations function to the interface
+  updateDestinations: (level: number) => void;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -148,6 +152,11 @@ export const GameProvider: React.FC<{
   
   // Track previous destination to set as origin when leveling up
   const [previousDestination, setPreviousDestination] = useState<CountryInfo | null>(null);
+  
+  // Birthday bonus states - MOVED HERE before they're used
+  const [showBirthdayBonusPopup, setShowBirthdayBonusPopup] = useState<boolean>(false);
+  const [birthYearBonus, setBirthYearBonus] = useState<number>(50);
+  const [lastBirthYearShow, setLastBirthYearShow] = useState<number>(0);
   
   // Clear feedback functions
   const clearSubmitSuccess = () => setSubmitSuccess(null);
@@ -424,7 +433,7 @@ export const GameProvider: React.FC<{
         }
       }
     }
-  }, [licensePlate, playerAge, gamesPlayed, showBirthdayBonusPopup]);
+  }, [licensePlate, playerAge, gamesPlayed]);
   
   // Modified World Tour progression (removing Peru)
   // Level 1: Spain -> France
@@ -665,11 +674,6 @@ export const GameProvider: React.FC<{
     console.log(`Initial setup for level ${level}`);
     updateDestinations(level);
   }, []);
-
-  // Birthday bonus states
-  const [showBirthdayBonusPopup, setShowBirthdayBonusPopup] = useState<boolean>(false);
-  const [birthYearBonus, setBirthYearBonus] = useState<number>(50);
-  const [lastBirthYearShow, setLastBirthYearShow] = useState<number>(0);
   
   // Create the context value
   const contextValue: GameContextType = {
@@ -732,6 +736,9 @@ export const GameProvider: React.FC<{
     showBirthdayBonusPopup,
     setShowBirthdayBonusPopup,
     birthYearBonus,
+    
+    // Add updateDestinations function to the context value
+    updateDestinations,
   };
 
   // Check if children is a function to pass bonus popup state
