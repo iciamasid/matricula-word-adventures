@@ -45,7 +45,7 @@ interface GameContextType {
   plateConsonants: string;
   currentWord: string;
   setCurrentWord: (word: string) => void;
-  submitWord: () => void;
+  submitWord: () => Promise<void>;
   generateNewPlate: () => void;
   isGeneratingLicensePlate: boolean;
   setIsGeneratingLicensePlate: (isGenerating: boolean) => void;
@@ -515,7 +515,7 @@ export const GameProvider: React.FC<{
   };
   
   // Submit word function - Updated to handle language-specific validation
-  const submitWord = () => {
+  const submitWord = async () => {
     if (!currentWord || currentWord.length < 4) {
       // Error message based on language
       const errorMsg = language === 'en' 
@@ -528,7 +528,9 @@ export const GameProvider: React.FC<{
     console.log(`Submitting word: ${currentWord} in language: ${language}`);
     
     // Check if word is valid
-    import('@/utils/gameUtils').then(({ wordExists, isValidWord, calculateScore }) => {
+    try {
+      const { wordExists, isValidWord, calculateScore } = await import('@/utils/gameUtils');
+      
       // First check if the word contains at least one consonant from the license plate
       if (!isValidWord(currentWord, plateConsonants)) {
         // Error message based on language
@@ -544,7 +546,8 @@ export const GameProvider: React.FC<{
       }
       
       // Then check if the word exists in our dictionary for the current language
-      if (!wordExists(currentWord, language as 'es' | 'en')) {
+      const isValid = await wordExists(currentWord, language as 'es' | 'en');
+      if (!isValid) {
         // Error message based on language
         const errorMsg = language === 'en' 
           ? 'Invalid word: this word does not exist'
@@ -558,7 +561,7 @@ export const GameProvider: React.FC<{
       }
       
       // Calculate score based on word and current license plate, considering current language
-      const calculatedScore = calculateScore(currentWord, plateConsonants, language as 'es' | 'en');
+      const calculatedScore = await calculateScore(currentWord, plateConsonants, language as 'es' | 'en');
       console.log(`Score calculated for ${currentWord}: ${calculatedScore}`);
       
       if (calculatedScore < 0) {
@@ -593,8 +596,6 @@ export const GameProvider: React.FC<{
         setSubmitSuccess(successMsg);
       }
       
-      // REMOVED: Special bonus check for 6666 license plate
-      
       // Track high score
       if (calculatedScore > highScore) {
         setHighScore(calculatedScore);
@@ -603,7 +604,10 @@ export const GameProvider: React.FC<{
       
       // Reset current word
       setCurrentWord('');
-    });
+    } catch (error) {
+      console.error('Error submitting word:', error);
+      setErrorMessage('Error processing word');
+    }
   };
 
   // Generate a plate on initial load if there isn't one already

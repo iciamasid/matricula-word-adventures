@@ -86,9 +86,10 @@ async function loadSpanishDictionary(): Promise<Set<string>> {
 loadSpanishDictionary().catch(console.error);
 
 // Calculate score based on the word and license plate consonants, considering language
-export function calculateScore(word: string, plateConsonants: string, language: 'es' | 'en'): number {
+export async function calculateScore(word: string, plateConsonants: string, language: 'es' | 'en'): Promise<number> {
   // First check if word exists in the dictionary for the corresponding language
-  if (!wordExists(word, language)) {
+  const isValidWord = await wordExists(word, language);
+  if (!isValidWord) {
     console.log(`Word rejected as non-existent in ${language}: ${word}`);
     return -20; // Return negative score immediately for non-existent words
   }
@@ -159,21 +160,12 @@ export function calculateScore(word: string, plateConsonants: string, language: 
   // Bonus for words in the opposite language (200 points)
   if (score > 0) {
     if ((language === 'es' && isEnglishWord(word)) || 
-        (language === 'en' && isSpanishWord(word))) {
+        (language === 'en' && await isSpanishWord(word))) {
       score = Math.max(score, 0) + 200;
       console.log(`Foreign language bonus: +200 points`);
     }
   }
 
-  // Special license plate bonus checks
-  if (score > 0) {
-    // Check for 6666 pattern in the license plate
-    if (plateConsonants.startsWith("6666")) {
-      score += 500; // Add 500 points bonus for 6666
-      console.log(`License plate 6666 bonus: +500 points`);
-    }
-  }
-  
   console.log(`Final score for ${word}: ${score}`);
   return score;
 }
