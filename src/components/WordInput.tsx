@@ -25,6 +25,7 @@ const WordInput: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [placeholderText, setPlaceholderText] = useState("");
   const [fullPlaceholder, setFullPlaceholder] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Remove the auto-focus on the input so keyboard doesn't appear automatically
   useEffect(() => {
@@ -105,15 +106,23 @@ const WordInput: React.FC = () => {
   };
   
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !isSubmitting) {
       handleSubmit();
     }
   };
   
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
     setIsAnimating(true);
-    submitWord();
-    setTimeout(() => setIsAnimating(false), 500);
+    
+    try {
+      await submitWord();
+    } finally {
+      setIsAnimating(false);
+      setIsSubmitting(false);
+    }
   };
   
   // Determine border color based on language
@@ -160,7 +169,7 @@ const WordInput: React.FC = () => {
           <Button 
             onClick={handleSubmit} 
             className={`h-full bg-gradient-to-r ${buttonGradient} ${isMobile ? "text-xl" : "text-2xl"} ${isAnimating ? "animate-bounce" : ""}`} 
-            disabled={currentWord.trim().length < minWordLength} 
+            disabled={currentWord.trim().length < minWordLength || isSubmitting} 
             size="lg"
           >
             {isEnglish ? 

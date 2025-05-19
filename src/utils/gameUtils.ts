@@ -36,6 +36,55 @@ export function getConsonantsFromPlate(plate: string): string {
 // Get a list of possible Spanish vowels
 export const vowels = "AEIOUÁÉÍÓÚ";
 
+// Spanish dictionary cache
+let spanishDictionary: Set<string> | null = null;
+let isLoadingDictionary = false;
+
+// Load Spanish dictionary from JSON file
+async function loadSpanishDictionary(): Promise<Set<string>> {
+  if (spanishDictionary !== null) {
+    return spanishDictionary;
+  }
+  
+  if (isLoadingDictionary) {
+    // If already loading, wait until it completes
+    return new Promise((resolve) => {
+      const checkInterval = setInterval(() => {
+        if (spanishDictionary !== null) {
+          clearInterval(checkInterval);
+          resolve(spanishDictionary);
+        }
+      }, 100);
+    });
+  }
+  
+  isLoadingDictionary = true;
+  
+  try {
+    const response = await fetch('/lovable-uploads/diccionario.json');
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    // Convert to uppercase for case-insensitive comparison
+    const wordSet = new Set(Object.keys(data).map(word => word.toUpperCase()));
+    spanishDictionary = wordSet;
+    console.log(`Loaded Spanish dictionary with ${wordSet.size} words`);
+    return spanishDictionary;
+  } catch (error) {
+    console.error('Failed to load Spanish dictionary:', error);
+    // Fallback to empty set to avoid crashes
+    spanishDictionary = new Set();
+    return spanishDictionary;
+  } finally {
+    isLoadingDictionary = false;
+  }
+}
+
+// Initialize dictionary loading immediately
+loadSpanishDictionary().catch(console.error);
+
 // Calculate score based on the word and license plate consonants, considering language
 export function calculateScore(word: string, plateConsonants: string, language: 'es' | 'en'): number {
   // First check if word exists in the dictionary for the corresponding language
@@ -161,30 +210,20 @@ export function isEnglishWord(word: string): boolean {
   return englishPatterns.some(pattern => pattern.test(uppercaseWord));
 }
 
-// Check if a word might be Spanish
-export function isSpanishWord(word: string): boolean {
+// Check if a word might be Spanish - now using dictionary.json
+export async function isSpanishWord(word: string): Promise<boolean> {
   const uppercaseWord = word.toUpperCase();
   
-  // Check against Spanish word list first
-  if (SPANISH_WORDS.has(uppercaseWord)) {
-    console.log(`Word ${word} found in Spanish dictionary`);
-    return true;
+  try {
+    // Load the Spanish dictionary from the JSON file
+    const dictionary = await loadSpanishDictionary();
+    
+    // Check if the word exists in the dictionary
+    return dictionary.has(uppercaseWord);
+  } catch (error) {
+    console.error('Error checking if word is Spanish:', error);
+    return false;
   }
-  
-  // Check common Spanish word patterns
-  const spanishPatterns = [
-    /ón$/, /ción$/, /sión$/, /ado$/, /ido$/, /ada$/, /ida$/, /mente$/, /idad$/,
-    /aba$/, /ía$/, /ar$/, /er$/, /ir$/, /ñ/, /rr/, /ante$/, /ente$/, /anza$/,
-    /enza$/, /eza$/, /ible$/, /able$/, /oso$/, /osa$/, /ísimo$/, /ísima$/
-  ];
-  
-  const matchesPattern = spanishPatterns.some(pattern => pattern.test(uppercaseWord));
-  if (matchesPattern) {
-    console.log(`Word ${word} matches Spanish pattern`);
-    return true;
-  }
-  
-  return false;
 }
 
 // Check if a word is potentially valid (contains at least one required consonant)
@@ -231,8 +270,8 @@ export function getDestination(level: number): string {
   return destinations[index];
 }
 
-// Word validation function - Enhanced to correctly validate words by language
-export function wordExists(word: string, language: 'es' | 'en'): boolean {
+// Word validation function - Updated to use dictionary.json for Spanish words
+export async function wordExists(word: string, language: 'es' | 'en'): Promise<boolean> {
   // First check if word length is sufficient
   if (word.length < 4) {
     console.log(`Word ${word} rejected: too short (less than 4 letters)`);
@@ -241,71 +280,29 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
   
   const uppercaseWord = word.toUpperCase();
   
-  // For Spanish words - check against Spanish dictionary
+  // For Spanish words - check against Spanish dictionary from JSON file
   if (language === 'es') {
-    // 1. Check against our explicit dictionary
-    if (SPANISH_WORDS.has(uppercaseWord)) {
-      console.log(`Word ${word} found in Spanish dictionary`);
-      return true;
-    }
-    
-    // 2. Check against additional Spanish words list
-    const additionalSpanishWords = [
-      "MANTENIMIENTO", "HEREDERO", "HERIDA", "HERMANO", "HERMANA", "HERRAMIENTA", 
-      "HIERRO", "HARINA", "HELADERIA", "HELADO", "FARSANTE", "FARMACIA", "FARSALIA",
-      "FAROLA", "FAMOSO", "FANTASMA", "FANTASTICO", "FANTASIA", "FASCINANTE", 
-      "FASCINAR", "FASTIDIAR", "FASTIDIO", "FATAL", "FAVORITO", "FEBRERO", "FELICIDAD",
-      "FELIZ", "FEMENINO", "FENOMENO", "FERIA", "FEROZ", "FERTILIZANTE", "FESTIVAL",
-      "FEUDAL", "FIABLE", "FIANZA", "FICCION", "FIDELIDAD", "FIEBRE", "FIEREZA",
-      "FIESTA", "FIGURA", "FIJAR", "FILA", "FILOSOFIA", "FILTRAR", "FINAL", "FINALIZAR",
-      // ... keep existing code (more Spanish words)
-    ];
-    
-    if (additionalSpanishWords.includes(uppercaseWord)) {
-      console.log(`Word ${word} found in additional Spanish words list`);
-      return true;
-    }
-    
-    // 3. Check for Spanish patterns
-    const spanishPatterns = [
-      /ón$/, /ción$/, /sión$/, /ado$/, /ido$/, /ada$/, /ida$/, /mente$/, /idad$/,
-      /aba$/, /ía$/, /ar$/, /er$/, /ir$/, /ñ/, /rr/, /ante$/, /ente$/, /anza$/,
-      /enza$/, /eza$/, /ible$/, /able$/, /oso$/, /osa$/, /ísimo$/, /ísima$/
-    ];
-    
-    if (spanishPatterns.some(pattern => pattern.test(uppercaseWord))) {
-      console.log(`Word ${word} validated by Spanish patterns`);
-      return true;
-    }
-    
-    // 4. More generous length validation for Spanish
-    if (word.length >= 5) {
-      // Words 5+ letters are likely valid if they follow basic Spanish structure
-      // Check that word follows vowel-consonant patterns typical in Spanish
-      let vowelCount = 0;
-      let consonantCount = 0;
+    try {
+      // Load the Spanish dictionary
+      const dictionary = await loadSpanishDictionary();
       
-      for (const char of uppercaseWord) {
-        if ("AEIOUÁÉÍÓÚ".includes(char)) {
-          vowelCount++;
-        } else if ("BCDFGHJKLMNPQRSTVWXYZ".includes(char)) {
-          consonantCount++;
-        }
+      // Check if the word exists in the dictionary
+      const exists = dictionary.has(uppercaseWord);
+      
+      if (exists) {
+        console.log(`Word ${word} found in Spanish dictionary JSON file`);
+      } else {
+        console.log(`Word ${word} NOT found in Spanish dictionary JSON file`);
       }
       
-      // Spanish words typically have good vowel-consonant ratio
-      // and don't have more than 3 consonants in a row
-      if (vowelCount > 1 && consonantCount > 0 && !(/[^AEIOUÁÉÍÓÚ]{4,}/).test(uppercaseWord)) {
-        console.log(`Word ${word} likely valid Spanish based on structure and length`);
-        return true;
-      }
+      return exists;
+    } catch (error) {
+      console.error('Error checking if word exists in Spanish dictionary:', error);
+      return false;
     }
-    
-    console.log(`Word ${word} not found in Spanish dictionary or patterns`);
-    return false;
   }
   
-  // For English words - check against English dictionary
+  // For English words - keep existing validation logic
   if (language === 'en') {
     if (ENGLISH_WORDS.has(uppercaseWord)) {
       console.log(`Word ${word} found in English dictionary`);
@@ -349,27 +346,7 @@ export function wordExists(word: string, language: 'es' | 'en'): boolean {
   return false;
 }
 
-// Keep the existing SPANISH_WORDS set 
-const SPANISH_WORDS = new Set([
-  "CASA", "PERRO", "GATO", "MESA", "SILLA", "LIBRO", "PAPEL", "PLUMA", "CARRO",
-  "MUNDO", "TIEMPO", "COLOR", "COMIDA", "AGUA", "TIERRA", "FUEGO", "AIRE", "VIDA",
-  "AMOR", "ODIO", "FELIZ", "TRISTE", "GRANDE", "PEQUEÑO", "ALTO", "BAJO", "BUENO",
-  "MALO", "NEGRO", "BLANCO", "ROJO", "VERDE", "AZUL", "AMARILLO", "SOL", "LUNA",
-  "ESTRELLA", "CIELO", "MAR", "RIO", "MONTAÑA", "BOSQUE", "ARBOL", "FLOR", "FRUTA",
-  "CAMINO", "CALLE", "CIUDAD", "PAIS", "MUNDO", "HOMBRE", "MUJER", "NIÑO", "NIÑA",
-  "MANO", "PIE", "CABEZA", "OJO", "NARIZ", "BOCA", "OREJA", "PELO", "DIENTE", "BARCO",
-  "TREN", "AVION", "MOTO", "CAMION", "CASA", "PUERTA", "VENTANA", "TECHO", "PARED",
-  "PISO", "COCINA", "BAÑO", "COMEDOR", "DORMITORIO", "FRIO", "CALOR", "NIEVE", "LLUVIA",
-  "VIENTO", "NUBE", "DIA", "NOCHE", "MAÑANA", "TARDE", "HORA", "MINUTO", "SEGUNDO",
-  "SEMANA", "MES", "AÑO", "SIGLO", "TRABAJO", "ESCUELA", "UNIVERSIDAD", "TIENDA",
-  "HOSPITAL", "BANCO", "CARTA", "TELEFONO", "TELEVISION", "COMPUTADORA", "INTERNET",
-  "MUSICA", "PELICULA", "DEPORTE", "FUTBOL", "BALONCESTO", "TENIS", "NATACION", "FAMILIA",
-  "AMIGO", "VECINO", "JEFE", "COMPAÑERO", "PROFESOR", "ESTUDIANTE", "MEDICO", "PACIENTE",
-  "POLICIA", "LADRON", "JUEZ", "ABOGADO", "COCINERO", "CAMARERO", "VERANO", "LORO",
-  // ... keep existing code (more Spanish words)
-]);
-
-// Expand the ENGLISH_WORDS set with more common English words
+// Keep the ENGLISH_WORDS set for English validation
 const ENGLISH_WORDS = new Set([
   "HOUSE", "DOG", "CAT", "TABLE", "CHAIR", "BOOK", "PAPER", "PEN", "CAR",
   "WORLD", "TIME", "COLOR", "FOOD", "WATER", "EARTH", "FIRE", "AIR", "LIFE",

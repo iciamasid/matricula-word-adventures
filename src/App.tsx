@@ -14,7 +14,14 @@ import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionConfetti from "./components/CompletionConfetti";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: false
+    },
+  },
+});
 
 // Create a wrapper component to use game context hooks
 const GameApp = () => {
