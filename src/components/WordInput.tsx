@@ -1,202 +1,134 @@
 
-import React, { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
-import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+import { Globe, MapPin, AlertTriangle } from "lucide-react";
+import { motion } from "framer-motion";
 
 const WordInput: React.FC = () => {
-  const {
-    currentWord,
-    setCurrentWord,
-    submitWord,
-    generateNewPlate,
-    plateConsonants,
-    submitSuccess
+  const { 
+    plateConsonants, 
+    currentWord, 
+    setCurrentWord, 
+    submitWord, 
+    countryVisitRequired 
   } = useGame();
+  const { isEnglish, t } = useLanguage?.() || { isEnglish: false };
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
-  const { t, isEnglish } = useLanguage();
-  const isMobile = useIsMobile();
-  
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [placeholderText, setPlaceholderText] = useState("");
-  const [fullPlaceholder, setFullPlaceholder] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Remove the auto-focus on the input so keyboard doesn't appear automatically
-  useEffect(() => {
-    // Don't auto-focus the input
-    // This is intentionally left empty to prevent auto-focus
-    
-    // Set the full placeholder text based on language
-    // Ensure plateConsonants is always an array we can join
-    let consonantsText = "";
-    
-    if (Array.isArray(plateConsonants)) {
-      // If it's already an array, use it
-      consonantsText = plateConsonants.join(', ');
-    } else if (typeof plateConsonants === 'string') {
-      // If it's a string, convert to array if possible or use as is
-      consonantsText = plateConsonants;
-    } else if (plateConsonants) {
-      // If it's another truthy value, convert to string
-      consonantsText = String(plateConsonants);
-    }
-    
-    // Now set the text using the simplified message
-    const text = isEnglish 
-      ? `USE THESE LETTERS: ${consonantsText}` 
-      : `USA ESAS LETRAS: ${consonantsText}`;
-    setFullPlaceholder(text);
-  }, [plateConsonants, isEnglish]);
-  
-  // Animated placeholder effect
-  useEffect(() => {
-    if (!fullPlaceholder) return;
-    
-    let currentIndex = 0;
-    let direction = 1; // 1 for forward, -1 for backward
-    
-    const interval = setInterval(() => {
-      if (direction === 1) {
-        // Moving forward, adding characters
-        currentIndex += 1;
-        if (currentIndex >= fullPlaceholder.length) {
-          // When reaching the end, pause before going backward
-          setTimeout(() => {
-            direction = -1;
-          }, 1000); 
-        }
-      } else {
-        // Moving backward, removing characters
-        currentIndex -= 1;
-        if (currentIndex <= 0) {
-          // When reaching the start, pause before going forward
-          setTimeout(() => {
-            direction = 1;
-          }, 500);
-        }
-      }
-      
-      setPlaceholderText(fullPlaceholder.substring(0, currentIndex));
-    }, 100);
-    
-    return () => clearInterval(interval);
-  }, [fullPlaceholder]);
-  
-  // Generate new plate automatically after successful word submission
-  useEffect(() => {
-    // If there was a successful submission
-    if (submitSuccess) {
-      // Wait for 3 seconds before generating a new plate
-      const timer = setTimeout(() => {
-        generateNewPlate();
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [submitSuccess, generateNewPlate]);
-  
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentWord(e.target.value.toUpperCase());
+  const handleWordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Convert to lowercase and only allow letters
+    const value = event.target.value.toLowerCase().replace(/[^a-zñáéíóúü]/gi, '');
+    setCurrentWord(value);
   };
   
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !isSubmitting) {
-      handleSubmit();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    
+    if (countryVisitRequired) {
+      // Show toast message if country visit is required
+      toast({
+        title: isEnglish ? "Visit required!" : "¡Visita requerida!",
+        description: isEnglish 
+          ? "You must visit the newly unlocked country before continuing." 
+          : "Debes visitar el país desbloqueado antes de continuar.",
+        variant: "destructive"
+      });
+      return;
     }
-  };
-  
-  const handleSubmit = async () => {
-    if (isSubmitting) return;
+    
+    if (currentWord.length === 0) {
+      return;
+    }
     
     setIsSubmitting(true);
-    setIsAnimating(true);
     
     try {
       await submitWord();
+    } catch (error) {
+      console.error("Error submitting word:", error);
     } finally {
-      setIsAnimating(false);
       setIsSubmitting(false);
     }
   };
   
-  // Determine border color based on language
-  const borderColor = isEnglish 
-    ? "border-orange-400" 
-    : "border-purple-400";
+  // Reset word input field when plateConsonants changes
+  useEffect(() => {
+    setCurrentWord("");
+  }, [plateConsonants, setCurrentWord]);
   
-  // Determine gradient colors for button based on language
-  const buttonGradient = isEnglish
-    ? "from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800"
-    : "from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800";
+  // Determine if form should be disabled
+  const isFormDisabled = countryVisitRequired || isSubmitting;
   
-  // Set font size based on mobile view
-  const fontSize = isMobile ? "text-xl" : "text-3xl";
-  
-  // Minimum word length for submit button to be enabled
-  const minWordLength = 4;
-
-  // Localized button text
-  const submitButtonLabel = isEnglish ? "Submit" : "Enviar";
-  
-  // Show hint about accents in Spanish mode
-  const showAccentHint = !isEnglish && currentWord.trim().length > 0;
+  // Get input background color based on language
+  const inputBgColor = isEnglish ? "bg-orange-50" : "bg-purple-50";
+  const inputBorderColor = isEnglish ? "border-orange-300" : "border-purple-300";
+  const inputTextColor = isEnglish ? "text-orange-900" : "text-purple-900";
+  const buttonBgColor = isEnglish 
+    ? isFormDisabled ? "bg-gray-400" : "bg-orange-600 hover:bg-orange-700" 
+    : isFormDisabled ? "bg-gray-400" : "bg-purple-600 hover:bg-purple-700";
   
   return (
-    <div className="w-full max-w-xs relative">      
-      <div className="flex gap-2">
-        <Input 
-          ref={inputRef} 
-          type="text" 
-          value={currentWord} 
-          onChange={handleInputChange} 
-          onKeyDown={handleKeyDown} 
-          placeholder={placeholderText || " "} 
-          className={`flex-1 text-center font-bold py-6 uppercase border-2 ${borderColor} shadow-md kids-text ${fontSize}`} 
-          autoComplete="off"
-          // Remove autofocus attribute to prevent keyboard from showing up automatically
-        />
-        <motion.div 
-          whileHover={{
-            scale: 1.05
-          }} 
-          whileTap={{
-            scale: 0.95
-          }}
-        >
-          <Button 
-            onClick={handleSubmit} 
-            className={`h-full bg-gradient-to-r ${buttonGradient} ${isMobile ? "text-xl" : "text-2xl"} ${isAnimating ? "animate-bounce" : ""}`} 
-            disabled={currentWord.trim().length < minWordLength || isSubmitting} 
-            size="lg"
+    <form onSubmit={handleSubmit} className="w-full">
+      <div className="relative">
+        {countryVisitRequired && (
+          <motion.div 
+            className="absolute -top-16 left-0 right-0 bg-yellow-100 p-3 rounded-lg border-2 border-yellow-400 z-10 shadow-md"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ 
+              opacity: 1, 
+              y: 0,
+              borderColor: ['#FBBF24', '#F59E0B', '#FBBF24']
+            }}
+            transition={{ 
+              duration: 0.3,
+              borderColor: { repeat: Infinity, duration: 2 }
+            }}
           >
-            {isEnglish ? 
-              <ArrowRight className="w-7 h-7" /> :  
-              <ArrowRight className="w-7 h-7" />
-            }
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+              <p className="text-yellow-800 font-bold kids-text text-sm">
+                {isEnglish 
+                  ? "Visit the unlocked country on the map to continue!" 
+                  : "¡Visita el país desbloqueado en el mapa para continuar!"}
+              </p>
+              <Globe className="h-5 w-5 text-yellow-600" />
+            </div>
+          </motion.div>
+        )}
+        
+        <div className="flex items-stretch">
+          <input
+            type="text"
+            value={currentWord}
+            onChange={handleWordChange}
+            disabled={isFormDisabled}
+            className={`flex-grow py-3 px-4 rounded-l-md ${inputBgColor} ${inputBorderColor} ${inputTextColor} kids-text text-xl font-normal border-2 focus:outline-none focus:ring-2 focus:ring-purple-400 disabled:bg-gray-100 disabled:text-gray-400 disabled:border-gray-300`}
+            placeholder={isEnglish ? "Type a word..." : "Escribe una palabra..."}
+          />
+          <Button 
+            type="submit" 
+            disabled={isFormDisabled} 
+            className={`rounded-r-md ${buttonBgColor} text-white kids-text text-xl font-normal px-6`}
+          >
+            {isEnglish ? "GO!" : "¡VAMOS!"}
           </Button>
-        </motion.div>
+        </div>
+        
+        {countryVisitRequired && (
+          <div className="mt-2 flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-pink-600" />
+            <p className="text-sm text-pink-600 kids-text">
+              {isEnglish 
+                ? "Click on the map flags to explore countries!" 
+                : "¡Haz clic en las banderas del mapa para explorar países!"}
+            </p>
+          </div>
+        )}
       </div>
-      
-      {/* Warning for short words */}
-      {currentWord.trim().length > 0 && currentWord.trim().length < minWordLength && (
-        <p className={`text-sm mt-1 ${isEnglish ? "text-orange-600" : "text-purple-600"} font-medium kids-text text-center`}>
-          {isEnglish ? `Words must be at least ${minWordLength} letters long` : `Las palabras deben tener al menos ${minWordLength} letras`}
-        </p>
-      )}
-      
-      {/* Hint about accents in Spanish mode */}
-      {showAccentHint && (
-        <p className="text-xs mt-1 text-purple-500 italic kids-text text-center">
-          Consejo: Las palabras con o sin tildes son válidas
-        </p>
-      )}
-    </div>
+    </form>
   );
 };
 

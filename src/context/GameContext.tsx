@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -76,6 +75,10 @@ interface GameContextType {
   
   // Add updateDestinations function to the interface
   updateDestinations: (level: number) => void;
+  
+  // Visit country requirement
+  countryVisitRequired: boolean;
+  setCountryVisitRequired: (required: boolean) => void;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -215,6 +218,9 @@ export const GameProvider: React.FC<{
       console.error('Error saving game state:', error);
     }
   }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor]);
+  
+  // Add state for country visit requirement
+  const [countryVisitRequired, setCountryVisitRequired] = useState<boolean>(false);
   
   // Game control functions
   const resetGame = () => {
@@ -683,7 +689,40 @@ export const GameProvider: React.FC<{
     updateDestinations(level);
   }, []);
   
-  // Create the context value
+  // Load saved game state from localStorage
+  useEffect(() => {
+    try {
+      const savedState = localStorage.getItem(GAME_STATE_KEY);
+      if (savedState) {
+        const parsedState = JSON.parse(savedState);
+        
+        // Restore game state
+        if (parsedState.level) setLevel(parsedState.level);
+        if (parsedState.totalPoints) setTotalPoints(parsedState.totalPoints);
+        if (parsedState.gamesPlayed) setGamesPlayed(parsedState.gamesPlayed);
+        if (parsedState.highScore) setHighScore(parsedState.highScore);
+        if (parsedState.playerName) setPlayerName(parsedState.playerName);
+        if (parsedState.playerAge) setPlayerAge(parsedState.playerAge);
+        if (parsedState.playerGender) setPlayerGender(parsedState.playerGender);
+        if (parsedState.selectedCarColor) setSelectedCarColor(parsedState.selectedCarColor);
+        
+        console.log('Game state loaded from localStorage:', parsedState);
+        
+        // Generate level appropriate destinations
+        if (parsedState.level) {
+          updateDestinations(parsedState.level);
+        }
+      }
+      
+      // Always clear the country visit requirement when loading
+      // so players aren't stuck if they refresh the page
+      setCountryVisitRequired(false);
+    } catch (error) {
+      console.error("Error loading game state:", error);
+    }
+  }, []);
+  
+  // Extract contextValue to include new values
   const contextValue: GameContextType = {
     originInfo,
     destinationInfo,
@@ -747,6 +786,10 @@ export const GameProvider: React.FC<{
     
     // Add updateDestinations function to the context value
     updateDestinations,
+    
+    // Visit country requirement
+    countryVisitRequired,
+    setCountryVisitRequired,
   };
 
   // Check if children is a function to pass bonus popup state
