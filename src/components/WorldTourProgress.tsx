@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -164,24 +163,6 @@ const WorldTourProgress = () => {
     acc.push(prevSum + weight);
     return acc;
   }, [] as number[]);
-
-  // Calculate position for the level dots along the path segments
-  const getLevelDotPosition = (levelIndex: number) => {
-    // If it's level 1 (Spain) or level 10 (return to Spain), use exact positions
-    if (levelIndex === 1 || levelIndex === 10) {
-      return getEllipsePosition(levelIndex - 1);
-    }
-    
-    // For levels 2-9, position the dot in the middle of the path segment
-    const startPos = getEllipsePosition(levelIndex - 2); // Previous country
-    const endPos = getEllipsePosition(levelIndex - 1);   // Current country
-    
-    // Position the circle in the middle of the path segment
-    return {
-      x: (startPos.x + endPos.x) / 2,
-      y: (startPos.y + endPos.y) / 2
-    };
-  };
   
   // Modified animation to ensure the path only reaches the current country flag
   useEffect(() => {
@@ -500,42 +481,6 @@ const WorldTourProgress = () => {
                 display: level <= 1 && progressValue === 0 ? 'none' : 'block'
               }}
             />
-            
-            {/* Level indicator circles on the path */}
-            {[...Array(9)].map((_, i) => {
-              // Start from level 2 (France) since level 1 (Spain) is the starting point
-              const levelIndex = i + 2;
-              const dotPosition = getLevelDotPosition(levelIndex);
-              
-              // Only show circles for levels that are part of the current progress path
-              const shouldShowDot = levelIndex <= level;
-              
-              return shouldShowDot ? (
-                <g key={`level-dot-${levelIndex}`}>
-                  {/* Circle with number inside */}
-                  <circle 
-                    cx={dotPosition.x} 
-                    cy={dotPosition.y} 
-                    r="2.8" 
-                    fill={isEnglish ? "#F97316" : "#8B5CF6"}
-                    stroke="white"
-                    strokeWidth="0.5"
-                  />
-                  {/* Level number */}
-                  <text 
-                    x={dotPosition.x} 
-                    y={dotPosition.y} 
-                    textAnchor="middle" 
-                    dominantBaseline="central"
-                    fill="white"
-                    fontSize="3"
-                    fontWeight="bold"
-                  >
-                    {levelIndex}
-                  </text>
-                </g>
-              ) : null;
-            })}
           </svg>
           
           {/* Earth image in the center */}
