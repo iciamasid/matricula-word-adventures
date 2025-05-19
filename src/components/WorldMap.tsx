@@ -17,9 +17,7 @@ const WorldMap: React.FC<WorldMapProps> = ({
   }} transition={{
     duration: 0.5
   }}>
-      <AspectRatio ratio={2 / 1} className="bg-blue-50">
-        
-      </AspectRatio>
+      
     </motion.div>;
 };
 export default WorldMap;
