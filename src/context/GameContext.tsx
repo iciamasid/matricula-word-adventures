@@ -68,8 +68,10 @@ interface GameContextType {
   // Game control
   resetGame: () => void;
   
-  // Adding the missing updateDestinations function
-  updateDestinations: (currentLevel: number) => void;
+  // Birthday bonus properties
+  showBirthdayBonusPopup: boolean;
+  setShowBirthdayBonusPopup: (show: boolean) => void;
+  birthYearBonus: number;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -396,6 +398,34 @@ export const GameProvider: React.FC<{
     }
   }, [licensePlate, playerAge]);
   
+  // Check for birth year in license plate
+  useEffect(() => {
+    if (licensePlate && playerAge) {
+      const numbers = licensePlate.substring(0, 4);
+      const currentYear = new Date().getFullYear();
+      const birthYear = currentYear - playerAge;
+      
+      // Check if license plate contains birth year
+      if (numbers === String(birthYear) && !showBirthdayBonusPopup) {
+        // Only show if we haven't shown it recently (approx every 10 plates)
+        if (gamesPlayed - lastBirthYearShow >= 10 || lastBirthYearShow === 0) {
+          setShowBirthdayBonusPopup(true);
+          setLastBirthYearShow(gamesPlayed);
+          
+          // Add bonus points (50 points)
+          const birthYearBonusPoints = 50;
+          setTotalPoints(prev => prev + birthYearBonusPoints);
+          console.log(`🎂 Birth year match bonus! License plate shows birth year (${birthYear})! +${birthYearBonusPoints} points!`);
+          
+          // Auto-hide bonus popup after 3 seconds
+          setTimeout(() => {
+            setShowBirthdayBonusPopup(false);
+          }, 3000);
+        }
+      }
+    }
+  }, [licensePlate, playerAge, gamesPlayed, showBirthdayBonusPopup]);
+  
   // Modified World Tour progression (removing Peru)
   // Level 1: Spain -> France
   // Level 2: France -> Italy
@@ -496,9 +526,22 @@ export const GameProvider: React.FC<{
     let newPlate;
     setIsGeneratingLicensePlate(true);
     
-    // REMOVED: Special plate generation code with 6666 for bonus
-    newPlate = generateLicensePlate();
-    console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+    // Special condition: if close to 10th game after last birth year shown, increase chance of birth year
+    if (playerAge && gamesPlayed - lastBirthYearShow >= 9) {
+      const birthYear = new Date().getFullYear() - playerAge;
+      
+      // 50% chance to show birth year
+      if (Math.random() > 0.5) {
+        newPlate = String(birthYear) + generateLicensePlate().substring(4);
+        console.log(`Generated special birth year plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+      } else {
+        newPlate = generateLicensePlate();
+        console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+      }
+    } else {
+      newPlate = generateLicensePlate();
+      console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+    }
     
     setLicensePlate(newPlate);
     const extractedConsonants = getConsonantsFromPlate(newPlate);
@@ -623,6 +666,11 @@ export const GameProvider: React.FC<{
     updateDestinations(level);
   }, []);
 
+  // Birthday bonus states
+  const [showBirthdayBonusPopup, setShowBirthdayBonusPopup] = useState<boolean>(false);
+  const [birthYearBonus, setBirthYearBonus] = useState<number>(50);
+  const [lastBirthYearShow, setLastBirthYearShow] = useState<number>(0);
+  
   // Create the context value
   const contextValue: GameContextType = {
     originInfo,
@@ -680,8 +728,10 @@ export const GameProvider: React.FC<{
     // Game control
     resetGame,
     
-    // Expose updateDestinations function
-    updateDestinations,
+    // Birthday bonus properties
+    showBirthdayBonusPopup,
+    setShowBirthdayBonusPopup,
+    birthYearBonus,
   };
 
   // Check if children is a function to pass bonus popup state

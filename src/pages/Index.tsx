@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -18,6 +17,8 @@ import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
 import CarCustomization from "@/components/CarCustomization";
+import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
+import AgeBonusPopup from "@/components/AgeBonusPopup";
 
 const Index = () => {
   return (
@@ -41,7 +42,13 @@ const GameContent = () => {
     plateConsonants,
     selectedCarColor,
     updateDestinations,
-    playerName
+    playerName,
+    playerAge,
+    licensePlate,
+    showBirthdayBonusPopup,
+    setShowBirthdayBonusPopup,
+    birthYearBonus,
+    showAgeBonusPopup
   } = useGame();
 
   // Ref to the license plate section
@@ -260,6 +267,24 @@ const GameContent = () => {
         
         {/* Level Up Alert using GamePopup */}
         <LevelUpAlert />
+        
+        {/* Birthday Bonus Popup */}
+        {playerAge && (
+          <BirthdayBonusPopup 
+            open={showBirthdayBonusPopup}
+            onClose={() => setShowBirthdayBonusPopup(false)}
+            birthYear={new Date().getFullYear() - (playerAge || 0)}
+            points={50}
+          />
+        )}
+
+        {/* Age Bonus Alert */}
+        <AgeBonusPopup 
+          open={showAgeBonusPopup} 
+          onClose={() => {}} 
+          points={20} 
+          age={playerAge || 0} 
+        />
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>

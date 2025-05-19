@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import PlayerNameInput from "@/components/PlayerNameInput";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
+
 const PlayerRegistration: React.FC = () => {
   const {
     playerName,
@@ -42,12 +44,14 @@ const PlayerRegistration: React.FC = () => {
       }
     }
   }, [playerName, playerGender, setPlayerGender]);
+  
   useEffect(() => {
     // If we have both name and age, hide the form
     if (playerName && playerAge) {
       setShowForm(false);
     }
   }, [playerName, playerAge]);
+  
   return <>
       {showForm ? <motion.div className={`w-full max-w-md ${bgColor} rounded-lg p-5 shadow-lg mb-4`} initial={{
       opacity: 0,
@@ -75,19 +79,25 @@ const PlayerRegistration: React.FC = () => {
       opacity: 1,
       y: 0
     }} className="w-full max-w-md flex flex-col gap-3 mb-4">
-          {/* Player info display */}
-          <motion.div className="flex items-center justify-center mb-2">
-            <div className="flex items-center justify-center">
-              {playerGender === 'niño' ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
-              <span className="text-4xl font-medium text-purple-900">
-                {playerName} {playerAge} {t('years')}
+          {/* Player info display - UPDATED to show name in uppercase with age below */}
+          <motion.div className="flex flex-col items-center justify-center mb-2">
+            <div className="flex flex-col items-center justify-center">
+              <span className="text-4xl font-bold text-purple-900 uppercase">
+                {playerName}
               </span>
+              <div className="flex items-center justify-center mt-1">
+                {playerGender === 'niño' ? <span className="text-xl mr-2">👦</span> : <span className="text-xl mr-2">👧</span>}
+                <span className="text-3xl font-medium text-purple-800">
+                  {playerAge} {t('years')}
+                </span>
+              </div>
             </div>
-            <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-base text-violet-900 bg-transparent rounded-xl">
+            <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-base text-violet-900 bg-transparent rounded-xl mt-2">
               {t('edit')}
             </Button>
           </motion.div>
         </motion.div>}
     </>;
 };
+
 export default PlayerRegistration;
