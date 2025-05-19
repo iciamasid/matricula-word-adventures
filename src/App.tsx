@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./context/LanguageContext";
 import { GameProvider, useGame } from "./context/GameContext";
+import { useState, useEffect } from "react";
 import Index from "./pages/Index";
 import CountryPage from "./pages/CountryPage";
 import NotFound from "./pages/NotFound";
@@ -14,6 +15,7 @@ import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionBanner from "./components/CompletionBanner";
 import LevelUpAlert from "./components/LevelUpAlert";
+import LoadingScreen from "./components/LoadingScreen";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,6 +28,7 @@ const queryClient = new QueryClient({
 
 // Create a wrapper component to use game context hooks
 const GameApp = () => {
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
   const { 
     showBonusPopup, 
     setShowBonusPopup, 
@@ -37,11 +40,33 @@ const GameApp = () => {
     level
   } = useGame();
   
+  // Check if user has already seen the loading screen this session
+  useEffect(() => {
+    const hasSeenLoading = sessionStorage.getItem('hasSeenLoadingScreen');
+    if (hasSeenLoading === 'true') {
+      setShowLoadingScreen(false);
+    } else {
+      // Set a flag in sessionStorage
+      setTimeout(() => {
+        sessionStorage.setItem('hasSeenLoadingScreen', 'true');
+      }, 500);
+    }
+  }, []);
+  
+  const handleLoadComplete = () => {
+    setShowLoadingScreen(false);
+  };
+  
   return (
     <>
+      {/* Loading screen */}
+      {showLoadingScreen && (
+        <LoadingScreen onLoadComplete={handleLoadComplete} loadingTime={2000} />
+      )}
+    
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Index hideInitialImage={!showLoadingScreen} />} />
           <Route path="/country/:country" element={<CountryPage />} />
           <Route path="/draw-game" element={<DrawGamePage />} />
           <Route path="*" element={<NotFound />} />
