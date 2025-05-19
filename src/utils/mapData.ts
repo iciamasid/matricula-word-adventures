@@ -55,7 +55,8 @@ export const getCountryImage = (country: string) => {
   return countryImages[country] || "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png";
 };
 
-// World destinations data for country flags
+// Modified World destinations data for country flags
+// Important: Removing Peru from the world tour path
 export const WORLD_DESTINATIONS = [
   {
     city: "Madrid",
@@ -106,15 +107,10 @@ export const WORLD_DESTINATIONS = [
     fact: "Los antiguos aztecas construyeron Ciudad de México sobre un lago. ¡Todavía hay partes de la ciudad que se hunden un poco cada año!"
   },
   {
-    city: "Lima",
-    country: "Perú",
-    flag: "🇵🇪",
-    fact: "¡En Perú hay más de 3,000 variedades diferentes de patatas (papas)!"
-  },
-  {
     city: "Buenos Aires",
     country: "Argentina",
     flag: "🇦🇷",
     fact: "¡En Buenos Aires hay una librería en un antiguo teatro! Es tan bonita que la llaman 'la librería más bella del mundo'."
   }
 ];
+
