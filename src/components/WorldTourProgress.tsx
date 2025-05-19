@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -132,10 +133,11 @@ const WorldTourProgress = () => {
   // Define the estimated path length for the SVG path
   const estimatedPathLength = 225; // Approximate length of the elliptical path
   
-  // Get path color based on level - gray dashed for level 1, colored for higher levels
+  // Get path color based on level - UPDATED to support level 1 with path
   const getPathStrokeColor = () => {
+    // Even at level 1, show a colored path as long as there's progress
     if (level <= 1 && progressValue === 0) {
-      return "#D1D5DB"; // Gray color for initial path
+      return "#D1D5DB"; // Gray color only for initial state with zero progress
     }
     return level >= 10 ? "#FBBF24" : isEnglish ? "#F97316" : "#8B5CF6";
   };
@@ -164,21 +166,31 @@ const WorldTourProgress = () => {
     return acc;
   }, [] as number[]);
   
-  // Modified animation to ensure the path only reaches the current country flag
+  // UPDATED: Animation to ensure path and car are visible at all levels
   useEffect(() => {
-    // Calculate target value based on current level
-    // For level 1, we show zero progress (no purple line)
+    // MODIFIED: For level 1, we still want to show some progress (not zero)
+    // For level 1, show a small amount of progress (10% of first segment)
     // For other levels, the path should reach exactly the previous country (level - 1)
-    const targetLevel = level <= 1 ? 0 : level - 1;
+    const targetLevel = level <= 1 ? 0.1 : level - 1;
     
     // Calculate target percentage based on weighted segments
     let targetValue = 0;
     if (targetLevel > 0) {
       // Get the accumulated weight up to the target level (index = targetLevel - 1)
-      const targetWeight = accumulatedWeights[targetLevel - 1];
+      const targetWeight = targetLevel < 1 ? 
+        (segmentWeights[0] * targetLevel) : // For partial progress at level 1
+        accumulatedWeights[Math.floor(targetLevel) - 1];
+      
       // Convert to percentage of total weight
       targetValue = (targetWeight / totalWeight) * 100;
+    } else if (targetLevel > 0 && targetLevel < 1) {
+      // For level 1, show partial progress (10% of first segment)
+      targetValue = (segmentWeights[0] * targetLevel / totalWeight) * 100;
     }
+    
+    // IMPORTANT: Ensure there's always at least 5% progress to show the car
+    // This guarantees the car is visible even at level 1
+    targetValue = Math.max(targetValue, 5);
     
     let animationActive = true;
     const runAnimation = async () => {
@@ -224,7 +236,7 @@ const WorldTourProgress = () => {
     return () => {
       animationActive = false;
     };
-  }, [level, accumulatedWeights, totalWeight]);
+  }, [level, accumulatedWeights, totalWeight, segmentWeights]);
 
   // Get destination flag for current level
   const getDestinationFlag = (level: number) => {
@@ -580,8 +592,8 @@ const WorldTourProgress = () => {
             );
           })}
           
-          {/* Moving vehicle icon - shown only when there is progress */}
-          {progressValue > 0 && level > 1 && (
+          {/* MODIFIED: Moving vehicle icon - removed level > 1 condition to show car at level 1 */}
+          {progressValue > 0 && (
             <motion.div 
               className="absolute transform -translate-x-1/2 -translate-y-1/2" 
               style={{
