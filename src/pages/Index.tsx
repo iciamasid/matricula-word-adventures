@@ -162,8 +162,8 @@ const GameContent = () => {
         </div>
       )}
       
-      {/* Added more space at the top with pt-8 (padding top) */}
-      <div className="relative w-full pt-8">
+      {/* Added more space at the top with pt-12 (increased from pt-8) */}
+      <div className="relative w-full pt-12">
         {/* Instructions button positioned at top right of the screen */}
         <Button
           variant="outline"
@@ -176,8 +176,10 @@ const GameContent = () => {
       </div>
 
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
-        {/* Player Registration Form */}
-        <PlayerRegistration />
+        {/* Player Registration Form with additional top margin */}
+        <div className="mt-4">
+          <PlayerRegistration />
+        </div>
         
         {/* Car selection and CONDUCE button in a unified design */}
         <div className="w-full flex justify-center mb-4">
@@ -215,7 +217,7 @@ const GameContent = () => {
           {/* Score components in a single row */}
           <ScorePanel />
           
-          {/* Scroll down indicator pointing to world tour */}
+          {/* Scroll down indicator pointing to world tour - UPDATED TEXT */}
           <motion.div 
             className="w-full flex flex-col items-center mt-6 mb-2 cursor-pointer"
             onClick={scrollToWorldTour}
@@ -227,7 +229,7 @@ const GameContent = () => {
             }}
             whileHover={{ scale: 1.05 }}
           >
-            <p className="text-purple-800 kids-text text-xl mb-1">Tu vuelta al mundo ↓</p>
+            <p className="text-purple-800 kids-text text-xl mb-1">Da la vuelta al mundo sumando kms.!</p>
             <ChevronDown className="text-purple-800 w-6 h-6" />
           </motion.div>
           
@@ -237,8 +239,8 @@ const GameContent = () => {
           {/* Add World Tour Progress component */}
           <WorldTourProgress />
           
-          {/* Reset Game Button */}
-          <motion.div className="w-full max-w-xs mt-8 mb-12" whileHover={{
+          {/* Reset Game Button - Added more bottom margin (mb-16) */}
+          <motion.div className="w-full max-w-xs mt-8 mb-16" whileHover={{
             scale: 1.03
           }} transition={{
             type: "spring",
