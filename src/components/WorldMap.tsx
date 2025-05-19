@@ -9,27 +9,29 @@ interface WorldMapProps {
   unlockedCountries: string[];
 }
 
-const WorldMap: React.FC<WorldMapProps> = ({
-  highlightCountry,
-  unlockedCountries
-}) => {
+const WorldMap: React.FC<WorldMapProps> = ({ highlightCountry, unlockedCountries }) => {
   return (
     <motion.div 
-      className="relative w-full rounded-lg overflow-hidden shadow-md" 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
+      className="relative w-full rounded-lg overflow-hidden shadow-md"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <AspectRatio ratio={16 / 9} className="bg-blue-100">
-        <div className="absolute inset-0 bg-blue-50 bg-opacity-70">
-          {/* World map background could go here */}
+      <AspectRatio ratio={2 / 1} className="bg-blue-50">
+        <div className="relative w-full h-full">
+          {/* World Map Background */}
+          <img 
+            src="/lovable-uploads/310987b9-7b6d-48c9-8dec-f37f4487ca8c.png" 
+            alt="World Map" 
+            className="w-full h-full object-cover"
+          />
+          
+          {/* Country Markers - Now using the CountryMarkers component */}
+          <CountryMarkers 
+            highlightCountry={highlightCountry} 
+            unlockedCountries={unlockedCountries} 
+          />
         </div>
-        
-        {/* Country markers */}
-        <CountryMarkers 
-          highlightCountry={highlightCountry} 
-          unlockedCountries={unlockedCountries} 
-        />
       </AspectRatio>
     </motion.div>
   );

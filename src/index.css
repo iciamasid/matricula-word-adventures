@@ -341,13 +341,3 @@
     padding: 1rem 1.5rem;
   }
 }
-
-/* Add text shadow utility class */
-.text-shadow-lg {
-  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-/* Add glow effect for loading screen */
-.glow {
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.8));
-}
