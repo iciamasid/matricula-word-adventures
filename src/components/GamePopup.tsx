@@ -13,7 +13,7 @@ export interface GamePopupProps {
   level?: number;
   explanation?: string;
   icon?: React.ReactNode;
-  points?: number; // Added missing points prop
+  points?: number;
 }
 
 const GamePopup: React.FC<GamePopupProps> = ({
@@ -33,29 +33,39 @@ const GamePopup: React.FC<GamePopupProps> = ({
 
   // Determine background color based on type
   let bgColor = 'bg-blue-100';
+  let bgGradient = 'from-blue-50 to-blue-100';
   let textColor = 'text-blue-800';
   let borderColor = 'border-blue-300';
+  let buttonColor = 'bg-blue-500 hover:bg-blue-600';
   
   switch (type) {
     case 'success':
       bgColor = 'bg-green-100';
+      bgGradient = 'from-green-50 to-green-100';
       textColor = 'text-green-800';
       borderColor = 'border-green-300';
+      buttonColor = 'bg-green-500 hover:bg-green-600';
       break;
     case 'error':
       bgColor = 'bg-red-100';
+      bgGradient = 'from-red-50 to-red-100';
       textColor = 'text-red-800';
       borderColor = 'border-red-300';
+      buttonColor = 'bg-red-500 hover:bg-red-600';
       break;
     case 'info':
       bgColor = 'bg-blue-100';
+      bgGradient = 'from-blue-50 to-blue-100';
       textColor = 'text-blue-800';
       borderColor = 'border-blue-300';
+      buttonColor = 'bg-blue-500 hover:bg-blue-600';
       break;
     case 'levelUp':
       bgColor = 'bg-yellow-100';
+      bgGradient = 'from-yellow-50 to-amber-100';
       textColor = 'text-yellow-800';
       borderColor = 'border-yellow-300';
+      buttonColor = 'bg-yellow-500 hover:bg-yellow-600';
       break;
     default:
       break;
@@ -69,7 +79,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className={`rounded-lg shadow-xl p-6 ${bgColor} ${borderColor} border relative max-w-md w-full mx-4`}
+        className={`rounded-lg shadow-xl p-6 bg-gradient-to-b ${bgGradient} ${borderColor} border-4 relative max-w-md w-full mx-4`}
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: -50, opacity: 0 }}
@@ -87,43 +97,85 @@ const GamePopup: React.FC<GamePopupProps> = ({
 
         {/* Icon if provided */}
         {icon && (
-          <div className="flex justify-center mb-4">
+          <motion.div 
+            className="flex justify-center mb-4"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring" }}
+          >
             {icon}
-          </div>
+          </motion.div>
         )}
 
         {/* Message */}
-        <h2 className={`text-2xl font-bold ${textColor} mb-4 text-center kids-text`}>
+        <motion.h2 
+          className={`text-2xl font-bold ${textColor} mb-4 text-center kids-text`}
+          animate={{ 
+            scale: type === 'levelUp' ? [1, 1.05, 1] : 1 
+          }}
+          transition={{ 
+            duration: 2, 
+            repeat: type === 'levelUp' ? Infinity : 0,
+            repeatType: "reverse"
+          }}
+        >
           {message}
-        </h2>
+        </motion.h2>
 
         {/* Level if provided */}
         {level && (
-          <p className="text-gray-700 mb-2 text-center">
-            {isEnglish ? "Level" : "Nivel"}: {level}
-          </p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            <p className={`${textColor} mb-2 text-center text-xl font-bold`}>
+              {isEnglish ? "Level" : "Nivel"}: {level}
+            </p>
+          </motion.div>
         )}
 
         {/* Points if provided */}
         {points !== undefined && (
-          <p className="text-gray-700 mb-2 text-center">
-            {isEnglish ? "Points" : "Puntos"}: {points}
-          </p>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white/80 rounded-lg p-2 mb-3 shadow-inner"
+          >
+            <p className={`${textColor} text-center text-xl font-bold`}>
+              {isEnglish ? "Points" : "Puntos"}: +{points}
+            </p>
+          </motion.div>
         )}
 
         {/* Explanation if provided */}
         {explanation && (
-          <p className="text-gray-700 mb-4 text-center kids-text">
-            {explanation}
-          </p>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            <p className="text-gray-700 mb-4 text-center kids-text">
+              {explanation}
+            </p>
+          </motion.div>
         )}
 
         {/* Close button */}
-        <div className="text-center">
-          <Button onClick={onClose}>
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <Button 
+            onClick={onClose} 
+            className={`${buttonColor} text-white kids-text`}
+          >
             {isEnglish ? "Close" : "Cerrar"}
           </Button>
-        </div>
+        </motion.div>
       </motion.div>
     </motion.div>
   );

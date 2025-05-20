@@ -21,6 +21,15 @@ const SilverBonusPopup: React.FC<SilverBonusPopupProps> = ({ open, onClose, poin
         onClose();
       }, 6000);
       
+      // Play bonus sound
+      try {
+        const audio = new Audio('/lovable-uploads/level-up.mp3');
+        audio.volume = 0.5;
+        audio.play();
+      } catch (e) {
+        console.error("Could not play bonus sound", e);
+      }
+      
       return () => clearTimeout(timer);
     }
   }, [open, onClose]);
@@ -43,7 +52,7 @@ const SilverBonusPopup: React.FC<SilverBonusPopupProps> = ({ open, onClose, poin
       >
         {/* Fondo brillante plateado */}
         <motion.div 
-          className="absolute -inset-6 bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 rounded-lg blur-xl opacity-70"
+          className="absolute -inset-6 bg-gradient-to-r from-silver-300 via-gray-100 to-silver-400 rounded-lg blur-xl opacity-70"
           animate={{
             scale: [1, 1.02, 1],
             opacity: [0.7, 0.9, 0.7],
@@ -56,7 +65,7 @@ const SilverBonusPopup: React.FC<SilverBonusPopupProps> = ({ open, onClose, poin
         />
         
         {/* Contenido principal */}
-        <div className="relative bg-gradient-to-b from-gray-100 to-gray-300 border-4 border-gray-400 p-6 rounded-lg shadow-xl min-w-[280px] md:min-w-[350px] text-center">
+        <div className="relative bg-gradient-to-b from-gray-100 to-silver-300 border-4 border-silver-400 p-6 rounded-lg shadow-xl min-w-[280px] md:min-w-[350px] text-center">
           {/* Estrella plateada en la parte superior */}
           <motion.div 
             className="absolute -top-10 left-1/2 transform -translate-x-1/2 text-5xl"
@@ -84,7 +93,7 @@ const SilverBonusPopup: React.FC<SilverBonusPopupProps> = ({ open, onClose, poin
           
           {/* Número mágico */}
           <motion.div 
-            className="text-4xl font-bold mb-4 text-gray-800"
+            className="text-4xl font-bold mb-4 text-silver-800"
             animate={{
               scale: [1, 1.2, 1],
               color: ["#666666", "#AAAAAA", "#666666"]
@@ -105,7 +114,7 @@ const SilverBonusPopup: React.FC<SilverBonusPopupProps> = ({ open, onClose, poin
           
           {/* Puntos */}
           <motion.div 
-            className="bg-gray-800 text-white py-2 px-4 rounded-lg inline-block"
+            className="bg-silver-800 text-white py-2 px-4 rounded-lg inline-block"
             animate={{
               scale: [1, 1.05, 1],
               boxShadow: [

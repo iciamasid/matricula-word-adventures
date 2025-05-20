@@ -5,37 +5,37 @@ import { getCountryFacts, getCountryImage, WORLD_DESTINATIONS } from '@/utils/ma
 import { useLanguage } from "@/context/LanguageContext";
 import { ArrowLeftCircle } from 'lucide-react';
 import { useGame } from '@/context/GameContext';
-import CountryPageIcons from '@/components/CountryPageIcons'; // Fixed import
+import CountryPageIcons from '@/components/CountryPageIcons'; 
 import { motion } from 'framer-motion';
 
 const CountryPage = () => {
-  const { countryId } = useParams<{ countryId: string }>();
-  const { isEnglish } = useLanguage?.() || { isEnglish: false };
+  const { country } = useParams<{ country: string }>();
+  const { isEnglish } = useLanguage();
   const { updateDestinations, level, totalPoints } = useGame();
   
   // Marca el país como visitado cuando se carga la página
   useEffect(() => {
-    if (countryId) {
-      console.log(`Visiting country: ${countryId}`);
+    if (country) {
+      console.log(`Visiting country: ${country}`);
       // Guardar país visitado en session storage para procesarlo al volver
-      sessionStorage.setItem('visitedCountry', decodeURIComponent(countryId));
+      sessionStorage.setItem('visitedCountry', decodeURIComponent(country));
     }
-  }, [countryId]);
+  }, [country]);
   
   // Get country data based on countryId from URL
   const getCountryData = () => {
-    if (!countryId) return null;
+    if (!country) return null;
     
     // Decode URI component to handle encoded characters
-    const decodedCountryId = decodeURIComponent(countryId);
+    const decodedCountry = decodeURIComponent(country);
     
     // Find matching country with case-insensitive comparison
     return WORLD_DESTINATIONS.find(destination => 
-      destination.country.toLowerCase() === decodedCountryId.toLowerCase()
+      destination.country.toLowerCase() === decodedCountry.toLowerCase()
     );
   };
   
-  // Use query parameter for country data
+  // Use country parameter for country data
   const countryData = getCountryData();
   
   // Generate facts for country

@@ -1,14 +1,36 @@
 
-// Import the necessary dependencies
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Award } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import GamePopup from './GamePopup';
 import { useGame } from '@/context/GameContext';
+import { motion } from 'framer-motion';
 
 const LevelUpAlert = () => {
   const { showLevelUp, level, clearLevelUpMessage, pendingCountryVisit } = useGame();
   const { isEnglish } = useLanguage();
+  
+  useEffect(() => {
+    if (showLevelUp) {
+      // Auto-close after 8 seconds unless there's a pending country
+      if (!pendingCountryVisit) {
+        const timer = setTimeout(() => {
+          clearLevelUpMessage();
+        }, 8000);
+        
+        // Play level up sound
+        try {
+          const audio = new Audio('/lovable-uploads/level-up.mp3');
+          audio.volume = 0.4;
+          audio.play();
+        } catch (e) {
+          console.error("Could not play level up sound", e);
+        }
+        
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [showLevelUp, clearLevelUpMessage, pendingCountryVisit]);
   
   const handleClose = () => {
     clearLevelUpMessage();
@@ -43,7 +65,21 @@ const LevelUpAlert = () => {
   };
   
   // Create award icon element
-  const awardIcon = <Award className="h-12 w-12 text-yellow-500" />;
+  const awardIcon = (
+    <motion.div
+      animate={{ 
+        scale: [1, 1.2, 1],
+        rotate: [0, 5, -5, 0] 
+      }}
+      transition={{ 
+        duration: 2, 
+        repeat: Infinity,
+        repeatType: "reverse" 
+      }}
+    >
+      <Award className="h-16 w-16 text-yellow-500" />
+    </motion.div>
+  );
 
   return (
     <GamePopup
