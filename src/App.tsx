@@ -13,6 +13,7 @@ import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionConfetti from "./components/CompletionConfetti";
+import SilverBonusPopup from "./components/SilverBonusPopup";
 import { useState, useEffect } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import { useGame } from "./context/GameContext";
@@ -48,8 +49,8 @@ const GameRoutes = () => {
         </Routes>
       </BrowserRouter>
       
-      {/* Bonus popup for 6666 license plate */}
-      <BonusPopup
+      {/* Silver bonus popup for 6666 license plate */}
+      <SilverBonusPopup
         open={showBonusPopup}
         onClose={() => setShowBonusPopup(false)}
         points={bonusPoints || 500}
