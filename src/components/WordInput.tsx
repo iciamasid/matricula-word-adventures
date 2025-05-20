@@ -29,9 +29,6 @@ const WordInput: React.FC = () => {
   
   // Remove the auto-focus on the input so keyboard doesn't appear automatically
   useEffect(() => {
-    // Don't auto-focus the input
-    // This is intentionally left empty to prevent auto-focus
-    
     // Set the full placeholder text based on language
     // Ensure plateConsonants is always an array we can join
     let consonantsText = "";
@@ -144,9 +141,6 @@ const WordInput: React.FC = () => {
   // Localized button text
   const submitButtonLabel = isEnglish ? "Submit" : "Enviar";
   
-  // Show hint about accents in Spanish mode
-  const showAccentHint = !isEnglish && currentWord.trim().length > 0;
-  
   return (
     <div className="w-full max-w-xs relative">      
       <div className="flex gap-2">
@@ -159,7 +153,6 @@ const WordInput: React.FC = () => {
           placeholder={placeholderText || " "} 
           className={`flex-1 text-center font-bold py-6 uppercase border-2 ${borderColor} shadow-md kids-text ${fontSize}`} 
           autoComplete="off"
-          // Remove autofocus attribute to prevent keyboard from showing up automatically
         />
         <motion.div 
           whileHover={{
@@ -182,20 +175,6 @@ const WordInput: React.FC = () => {
           </Button>
         </motion.div>
       </div>
-      
-      {/* Warning for short words - INCREASED TEXT SIZE */}
-      {currentWord.trim().length > 0 && currentWord.trim().length < minWordLength && (
-        <p className={`text-lg mt-2 ${isEnglish ? "text-orange-600" : "text-purple-600"} font-medium kids-text text-center`}>
-          {isEnglish ? `Words must be at least ${minWordLength} letters long` : `Las palabras deben tener al menos ${minWordLength} letras`}
-        </p>
-      )}
-      
-      {/* Hint about accents in Spanish mode - INCREASED TEXT SIZE */}
-      {showAccentHint && (
-        <p className="text-lg mt-2 text-purple-500 italic kids-text text-center">
-          Consejo: Las palabras con o sin tildes son válidas
-        </p>
-      )}
     </div>
   );
 };

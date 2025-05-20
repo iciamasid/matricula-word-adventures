@@ -33,7 +33,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-gradient-to-b from-gray-100 to-gray-300 p-6 rounded-lg border-4 border-gray-400 shadow-xl max-w-sm">
+      <DialogContent className="bg-gradient-to-b from-gray-300 to-gray-500 p-6 rounded-lg border-4 border-gray-400 shadow-xl max-w-sm">
         <div className="flex flex-col items-center text-center space-y-4">
           <motion.div
             initial={{ scale: 0 }}
@@ -43,7 +43,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
               stiffness: 260,
               damping: 20
             }}
-            className="bg-gray-400 rounded-full p-4"
+            className="bg-gray-600 rounded-full p-4"
           >
             <motion.div
               animate={{ 
@@ -52,20 +52,20 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
               }}
               transition={{ duration: 2, repeat: Infinity }}
             >
-              <Gift className="h-10 w-10 text-gray-700" />
+              <Gift className="h-10 w-10 text-gray-300" />
             </motion.div>
           </motion.div>
           
           <div>
             <motion.h2 
-              className="text-2xl font-bold text-gray-800 kids-text"
+              className="text-2xl font-bold text-gray-100 kids-text"
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
               ¡BONUS ESPECIAL!
             </motion.h2>
-            <p className="mt-2 text-gray-700 kids-text text-lg">
-              ¡Has encontrado la matrícula legendaria!
+            <p className="mt-2 text-gray-200 kids-text text-lg">
+              ¡Has encontrado la matrícula legendaria 6666!
             </p>
             <div className="mt-4 bg-white p-3 rounded-lg shadow-inner">
               <motion.p 
@@ -94,7 +94,7 @@ const BonusPopup: React.FC<BonusPopupProps> = ({ open, onClose, points }) => {
                   }}
                   transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
                 >
-                  <Star className="h-6 w-6 text-gray-500" />
+                  <Star className="h-6 w-6 text-gray-300" />
                 </motion.div>
               ))}
             </div>

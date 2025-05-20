@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -19,10 +20,13 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import CarCustomization from "@/components/CarCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
+
 const Index = () => {
-  return <GameProvider>
+  return (
+    <GameProvider>
       <GameContent />
-    </GameProvider>;
+    </GameProvider>
+  );
 };
 
 // Component to handle the game content
@@ -127,6 +131,7 @@ const GameContent = () => {
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
+
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
@@ -136,33 +141,55 @@ const GameContent = () => {
       });
     }
   };
-  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
-    backgroundSize: "cover",
-    backgroundAttachment: "fixed"
-  }}>
+
+  return (
+    <div 
+      className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
+      style={{
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed"
+      }}
+    >
       {/* Special background effect when the world tour is completed */}
-      {level >= 10 && <div className="absolute inset-0 pointer-events-none">
+      {level >= 10 && (
+        <div className="absolute inset-0 pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
-          {[...Array(20)].map((_, i) => <motion.div key={i} className="absolute rounded-full bg-yellow-300 opacity-30" style={{
-        width: Math.random() * 10 + 5,
-        height: Math.random() * 10 + 5,
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`
-      }} animate={{
-        y: [0, -100],
-        opacity: [0.3, 0]
-      }} transition={{
-        duration: Math.random() * 5 + 5,
-        repeat: Infinity,
-        repeatType: "loop",
-        delay: Math.random() * 5
-      }} />)}
-        </div>}
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-yellow-300 opacity-30"
+              style={{
+                width: Math.random() * 10 + 5,
+                height: Math.random() * 10 + 5,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`
+              }}
+              animate={{
+                y: [0, -100],
+                opacity: [0.3, 0]
+              }}
+              transition={{
+                duration: Math.random() * 5 + 5,
+                repeat: Infinity,
+                repeatType: "loop",
+                delay: Math.random() * 5
+              }}
+            />
+          ))}
+        </div>
+      )}
       
       {/* Added more space at the top with pt-12 (increased from pt-8) */}
       <div className="relative w-full pt-12">
         {/* Instructions button positioned at top right of the screen */}
-        <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute top-2 right-4 ${'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'} kids-text text-base font-normal`}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowInstructions(true)}
+          className={`absolute top-2 right-4 ${
+            'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'
+          } kids-text text-base font-normal`}
+        >
           <HelpCircle className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
       </div>
@@ -179,15 +206,25 @@ const GameContent = () => {
         </div>
         
         {/* Show moving car BELOW the buttons */}
-        {playerName && selectedCarColor && <motion.div className="w-32 h-24 my-2" animate={{
-        x: ["-100%", "100%"]
-      }} transition={{
-        duration: 6,
-        repeat: Infinity,
-        ease: "linear"
-      }}>
-            <img src={`/lovable-uploads/${selectedCarColor.image}`} alt={selectedCarColor.name} className="w-full h-full object-contain" />
-          </motion.div>}
+        {playerName && selectedCarColor && (
+          <motion.div
+            className="w-32 h-24 my-2"
+            animate={{
+              x: ["-100%", "100%"]
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "linear"
+            }}
+          >
+            <img 
+              src={`/lovable-uploads/${selectedCarColor.image}`}
+              alt={selectedCarColor.name} 
+              className="w-full h-full object-contain" 
+            />
+          </motion.div>
+        )}
         
         {/* This div will be the reference for scrolling */}
         <div ref={licensePlateRef} className="w-full"></div>
@@ -196,35 +233,34 @@ const GameContent = () => {
           <LicensePlate />
           <WordInput />
           
-          {/* Score components in a single row - removed space-y-4 class */}
-          <ScorePanel />
+          {/* Score components with reduced spacing (removed space-y-4 class) */}
+          <div className="w-full mt-2">
+            <ScorePanel />
+          </div>
           
-          {/* Reduced space between score panel and world tour - removed mt-6 mb-2 */}
-          <motion.div className="w-full flex flex-col items-center cursor-pointer" onClick={scrollToWorldTour} animate={{
-          y: [0, 5, 0]
-        }} transition={{
-          duration: 1.5,
-          repeat: Infinity,
-          repeatType: "loop"
-        }} whileHover={{
-          scale: 1.05
-        }}>
-          </motion.div>
-          
-          {/* Add ref for world tour section - reduced spacing */}
-          <div ref={worldTourRef} className="mt-2"></div>
-          
-          {/* Add World Tour Progress component */}
-          <WorldTourProgress />
+          {/* World Tour Progress - moved closer (reduced mt-6 to mt-1) */}
+          <div ref={worldTourRef} className="mt-1 w-full">
+            <WorldTourProgress />
+          </div>
           
           {/* Reset Game Button - Added more bottom margin (mb-16) */}
-          <motion.div className="w-full max-w-xs mt-8 mb-16" whileHover={{
-          scale: 1.03
-        }} transition={{
-          type: "spring",
-          stiffness: 400
-        }}>
-            <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal ${"bg-purple-700 hover:bg-purple-600"} px-[10px] mx-0 my-0 py-[20px]`}>
+          <motion.div
+            className="w-full max-w-xs mt-8 mb-16"
+            whileHover={{
+              scale: 1.03
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 400
+            }}
+          >
+            <Button
+              onClick={handleResetGame}
+              size="lg"
+              className={`w-full text-white kids-text text-xl font-normal ${
+                "bg-purple-700 hover:bg-purple-600"
+              } px-[10px] mx-0 my-0 py-[20px]`}
+            >
               <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
             </Button>
           </motion.div>
@@ -240,14 +276,28 @@ const GameContent = () => {
         <LevelUpAlert />
         
         {/* Birthday Bonus Popup */}
-        {playerAge && <BirthdayBonusPopup open={showBirthdayBonusPopup} onClose={() => setShowBirthdayBonusPopup(false)} birthYear={new Date().getFullYear() - (playerAge || 0)} points={50} />}
+        {playerAge && (
+          <BirthdayBonusPopup 
+            open={showBirthdayBonusPopup} 
+            onClose={() => setShowBirthdayBonusPopup(false)} 
+            birthYear={new Date().getFullYear() - (playerAge || 0)} 
+            points={50} 
+          />
+        )}
 
         {/* Age Bonus Alert */}
-        <AgeBonusPopup open={showAgeBonusPopup} onClose={() => {}} points={20} age={playerAge || 0} />
+        <AgeBonusPopup 
+          open={showAgeBonusPopup} 
+          onClose={() => {}} 
+          points={20} 
+          age={playerAge || 0} 
+        />
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
