@@ -12,7 +12,8 @@ interface GamePopupProps {
   message: string;
   points?: number;
   level?: number;
-  explanation?: string; // Added explanation prop
+  explanation?: string;
+  icon?: React.ReactNode; // Add the icon prop to the interface
 }
 
 const GamePopup: React.FC<GamePopupProps> = ({ 

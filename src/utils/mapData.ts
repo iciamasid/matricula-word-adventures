@@ -1,4 +1,3 @@
-
 // Country positions on the map
 const countryPositions: Record<string, { left: string, top: string }> = {
   "España": { left: "47.5%", top: "38.5%" },
@@ -53,6 +52,68 @@ export const getCountryPosition = (country: string) => {
 // Get country flag image
 export const getCountryImage = (country: string) => {
   return countryImages[country] || "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png";
+};
+
+// Add the missing getCountryFacts function
+export const getCountryFacts = (country: string): string[] => {
+  // Facts about each country
+  const facts: Record<string, string[]> = {
+    "España": [
+      "La Sagrada Familia de Barcelona lleva en construcción desde 1882.",
+      "España tiene 47 sitios declarados Patrimonio de la Humanidad por la UNESCO.",
+      "El español es el segundo idioma más hablado del mundo como lengua materna."
+    ],
+    "Francia": [
+      "La Torre Eiffel fue construida para la Exposición Universal de 1889.",
+      "Francia es el país más visitado del mundo, con más de 89 millones de turistas al año.",
+      "El sistema de metro de París es uno de los más antiguos del mundo."
+    ],
+    "Italia": [
+      "El Coliseo de Roma podía albergar hasta 50,000 espectadores.",
+      "Italia tiene más sitios Patrimonio de la Humanidad que cualquier otro país.",
+      "La pizza margherita fue nombrada en honor a la reina Margherita de Savoya."
+    ],
+    "Rusia": [
+      "El Transiberiano es la línea ferroviaria más larga del mundo.",
+      "La Plaza Roja de Moscú no debe su nombre al color rojo ni al comunismo.",
+      "Rusia tiene 11 husos horarios diferentes a lo largo de su territorio."
+    ],
+    "Japón": [
+      "Japón tiene más de 6,800 islas.",
+      "Los japoneses tienen la mayor esperanza de vida del mundo.",
+      "Hay más de 5 millones de máquinas expendedoras en Japón."
+    ],
+    "Australia": [
+      "Australia es el único país que ocupa un continente entero.",
+      "Más del 80% de los animales y plantas de Australia son únicos.",
+      "La Gran Barrera de Coral es el organismo vivo más grande del planeta."
+    ],
+    "Estados Unidos": [
+      "Estados Unidos tiene 63 parques nacionales.",
+      "Alaska tiene más de 3 millones de lagos.",
+      "El Gran Cañón tiene 446 km de largo y hasta 29 km de ancho."
+    ],
+    "México": [
+      "México es el mayor productor de plata del mundo.",
+      "La Ciudad de México se construyó sobre un lago.",
+      "La cocina mexicana es Patrimonio Inmaterial de la Humanidad."
+    ],
+    "Méjico": [
+      "México es el mayor productor de plata del mundo.",
+      "La Ciudad de México se construyó sobre un lago.",
+      "La cocina mexicana es Patrimonio Inmaterial de la Humanidad."
+    ],
+    "Argentina": [
+      "El tango fue declarado Patrimonio Cultural Inmaterial de la Humanidad.",
+      "Argentina tiene 8 sitios declarados Patrimonio de la Humanidad.",
+      "Las Cataratas del Iguazú tienen 275 saltos de agua."
+    ]
+  };
+  
+  return facts[country] || [
+    `Datos interesantes sobre ${country}.`,
+    `${country} es un lugar fascinante para visitar.`
+  ];
 };
 
 // World destinations data for country flags

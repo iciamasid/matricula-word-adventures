@@ -5,7 +5,7 @@ import { getCountryFacts, getCountryImage, WORLD_DESTINATIONS } from '@/utils/ma
 import { useLanguage } from "@/context/LanguageContext";
 import { ArrowLeftCircle } from 'lucide-react';
 import { useGame } from '@/context/GameContext';
-import { CountryPageIcons } from '@/components/CountryPageIcons';
+import CountryPageIcons from '@/components/CountryPageIcons'; // Change to default import
 import { motion } from 'framer-motion';
 
 const CountryPage = () => {

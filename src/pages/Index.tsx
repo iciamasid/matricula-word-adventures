@@ -20,6 +20,7 @@ import CarCustomization from "@/components/CarCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 import SilverBonusPopup from "@/components/SilverBonusPopup";
+import { useLanguage } from "@/context/LanguageContext"; // Add this import
 
 const Index = () => {
   return (
@@ -34,6 +35,7 @@ const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
   const worldTourRef = useRef<HTMLDivElement>(null);
+  const { isEnglish } = useLanguage(); // Add this to get isEnglish
   const {
     totalPoints,
     destinationInfo,
