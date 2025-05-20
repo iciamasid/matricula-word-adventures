@@ -9,10 +9,9 @@ interface CountryMarkerProps {
   country: string;
   index: number;
   isHighlighted?: boolean;
-  needsVisit?: boolean;
 }
 
-const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlighted, needsVisit }) => {
+const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlighted }) => {
   // Get country information
   const position = getCountryPosition(country);
   
@@ -20,34 +19,19 @@ const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlig
   const countryData = WORLD_DESTINATIONS.find(dest => dest.country === country);
   const countryFlag = countryData?.flag || "🚩";
   
-  // Encode country name for URL to prevent issues with special characters
-  const encodedCountryName = encodeURIComponent(country);
-  
   return (
-    <Link to={`/country/${encodedCountryName}`}>
+    <Link to={`/country/${country}`}>
       <motion.div 
-        className={`absolute z-10 ${isHighlighted ? 'z-30' : ''} ${needsVisit ? 'z-40' : ''}`} 
+        className={`absolute z-10 ${isHighlighted ? 'z-30' : ''}`} 
         style={{ 
           left: position.left,
           top: position.top,
           transform: "translate(-50%, -50%)"
         }}
         initial={{ scale: 0 }}
-        animate={{ 
-          scale: needsVisit ? [1, 1.2, 1] : 1
-        }}
-        transition={{ 
-          duration: 0.5, 
-          delay: index * 0.1,
-          ...(needsVisit && {
-            scale: {
-              repeat: Infinity,
-              repeatType: "reverse",
-              duration: 1.5
-            }
-          })
-        }}
-        whileHover={{ scale: needsVisit ? 1.8 : 1.5, zIndex: 40 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 0.5, delay: index * 0.1 }}
+        whileHover={{ scale: 1.5, zIndex: 40 }}
       >
         {isHighlighted ? (
           // Enhanced highlighted country marker
@@ -93,92 +77,6 @@ const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlig
             {/* Country name label */}
             <motion.div 
               className="absolute top-6 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded shadow text-xs whitespace-nowrap font-bold text-purple-800"
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              {country}
-            </motion.div>
-          </motion.div>
-        ) : needsVisit ? (
-          // País que necesita ser visitado - efecto especial
-          <motion.div 
-            className="relative"
-            whileHover={{ scale: 1.3 }}
-          >
-            {/* Anillos pulsantes */}
-            <motion.div
-              className="absolute rounded-full bg-yellow-400/40"
-              style={{ width: '42px', height: '42px', left: '-21px', top: '-21px' }}
-              animate={{ 
-                scale: [1, 1.8, 1],
-                opacity: [0.9, 0.3, 0.9]
-              }}
-              transition={{ 
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
-            
-            <motion.div
-              className="absolute rounded-full bg-red-500/50"
-              style={{ width: '32px', height: '32px', left: '-16px', top: '-16px' }}
-              animate={{ 
-                scale: [1, 1.6, 1],
-                opacity: [0.8, 0.4, 0.8]
-              }}
-              transition={{ 
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-                delay: 0.5
-              }}
-            />
-            
-            {/* Marcador de país con bandera ampliada */}
-            <div className="bg-white rounded-full p-1.5 shadow-xl relative z-20">
-              <div className="bg-red-600 rounded-full w-8 h-8 flex items-center justify-center">
-                <motion.span 
-                  className="text-xl"
-                  animate={{ 
-                    rotate: [0, 10, -10, 0]
-                  }}
-                  transition={{ 
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  {countryFlag}
-                </motion.span>
-              </div>
-            </div>
-            
-            {/* Etiqueta "¡Visítame!" */}
-            <motion.div 
-              className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-2 py-1 rounded-lg shadow-lg text-xs whitespace-nowrap font-bold"
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ 
-                opacity: 1, 
-                y: 0,
-                scale: [1, 1.1, 1]
-              }}
-              transition={{ 
-                y: { delay: 0.3 },
-                scale: {
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  duration: 1.5
-                }
-              }}
-            >
-              ¡Visítame!
-            </motion.div>
-            
-            {/* Nombre del país */}
-            <motion.div 
-              className="absolute top-10 left-1/2 transform -translate-x-1/2 bg-white px-2 py-1 rounded shadow text-xs whitespace-nowrap font-bold text-red-800"
               initial={{ opacity: 0, y: -5 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}

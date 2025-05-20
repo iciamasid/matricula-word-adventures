@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect, useRef } from "react";
-import { useGame } from "@/context/GameContext";
+import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
 import WordInput from "@/components/WordInput";
 import ErrorAlert from "@/components/ErrorAlert";
@@ -20,18 +19,17 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import CarCustomization from "@/components/CarCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
-import SilverBonusPopup from "@/components/SilverBonusPopup";
-import { useLanguage } from "@/context/LanguageContext";
 
-const IndexPage = () => {
+const Index = () => {
   return (
-    <GameContent />
+    <GameProvider>
+      <GameContent />
+    </GameProvider>
   );
 };
 
 // Component to handle the game content
 const GameContent = () => {
-  const { isEnglish } = useLanguage();
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
   const worldTourRef = useRef<HTMLDivElement>(null);
@@ -50,13 +48,7 @@ const GameContent = () => {
     showBirthdayBonusPopup,
     setShowBirthdayBonusPopup,
     birthYearBonus,
-    showAgeBonusPopup,
-    // Silver bonus props
-    showSilverBonusPopup,
-    setShowSilverBonusPopup,
-    silverBonusPoints,
-    // Country visit props
-    pendingCountryVisit
+    showAgeBonusPopup
   } = useGame();
 
   // Ref to the license plate section
@@ -152,7 +144,10 @@ const GameContent = () => {
   };
 
   return (
-    <div className={`min-h-screen ${isEnglish ? 'bg-orange-50' : 'bg-purple-50'} relative`}>
+    <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
+      backgroundSize: "cover",
+      backgroundAttachment: "fixed"
+    }}>
       {/* Special background effect when the world tour is completed */}
       {level >= 10 && (
         <div className="absolute inset-0 pointer-events-none">
@@ -226,37 +221,6 @@ const GameContent = () => {
           <LicensePlate />
           <WordInput />
           
-          {/* Show pending country visit warning if needed - new pulsing warning banner */}
-          {pendingCountryVisit && (
-            <motion.div 
-              className="w-full p-3 bg-red-100 border-2 border-red-400 rounded-lg text-center"
-              animate={{ 
-                scale: [1, 1.02, 1],
-                boxShadow: [
-                  "0 0 0 rgba(252, 165, 165, 0.4)",
-                  "0 0 20px rgba(252, 165, 165, 0.6)",
-                  "0 0 0 rgba(252, 165, 165, 0.4)"
-                ] 
-              }}
-              transition={{ 
-                duration: 2,
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
-            >
-              <p className="font-bold text-red-600 kids-text text-lg">
-                {isEnglish 
-                  ? `Visit ${pendingCountryVisit} to continue playing!` 
-                  : `¡Visita ${pendingCountryVisit} para seguir jugando!`}
-              </p>
-              <p className="text-red-500 text-sm">
-                {isEnglish
-                  ? "Click on the flag on the map below"
-                  : "Haz clic en la bandera en el mapa de abajo"}
-              </p>
-            </motion.div>
-          )}
-          
           {/* Score components in a single row */}
           <ScorePanel />
           
@@ -314,13 +278,6 @@ const GameContent = () => {
           />
         )}
 
-        {/* Silver Bonus Popup */}
-        <SilverBonusPopup
-          open={showSilverBonusPopup}
-          onClose={() => setShowSilverBonusPopup(false)}
-          points={silverBonusPoints}
-        />
-        
         {/* Age Bonus Alert */}
         <AgeBonusPopup 
           open={showAgeBonusPopup} 
@@ -336,4 +293,4 @@ const GameContent = () => {
   );
 };
 
-export default IndexPage;
+export default Index;

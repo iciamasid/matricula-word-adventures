@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,7 +13,7 @@ import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionConfetti from "./components/CompletionConfetti";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 
 const queryClient = new QueryClient({
@@ -25,7 +26,7 @@ const queryClient = new QueryClient({
 });
 
 // Create a wrapper component to use game context hooks
-const GameRoutes = () => {
+const GameApp = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { 
     showBonusPopup, 
@@ -88,7 +89,7 @@ const App = () => {
           <GameProvider>
             <Toaster />
             <Sonner />
-            <GameRoutes />
+            <GameApp />
           </GameProvider>
         </LanguageProvider>
       </TooltipProvider>

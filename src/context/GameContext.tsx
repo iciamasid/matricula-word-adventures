@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -72,16 +73,6 @@ interface GameContextType {
   showBirthdayBonusPopup: boolean;
   setShowBirthdayBonusPopup: (show: boolean) => void;
   birthYearBonus: number;
-  
-  // Silver 6666 bonus properties
-  showSilverBonusPopup: boolean;
-  setShowSilverBonusPopup: (show: boolean) => void;
-  silverBonusPoints: number;
-  
-  // Country visit requirement
-  pendingCountryVisit: string | null;
-  setPendingCountryVisit: (country: string | null) => void;
-  isWordInputDisabled: boolean;
   
   // Add updateDestinations function to the interface
   updateDestinations: (level: number) => void;
@@ -167,25 +158,13 @@ export const GameProvider: React.FC<{
   const [birthYearBonus, setBirthYearBonus] = useState<number>(50);
   const [lastBirthYearShow, setLastBirthYearShow] = useState<number>(0);
   
-  // Special 6666 bonus states
+  // Special 6666 bonus states - REMOVED DUPLICATES
   const [has6666Triggered, setHas6666Triggered] = useState<boolean>(false);
   
-  // New silver 6666 bonus states
-  const [showSilverBonusPopup, setShowSilverBonusPopup] = useState<boolean>(false);
-  const [silverBonusPoints, setSilverBonusPoints] = useState<number>(800);
-  const [lastSilverBonusShow, setLastSilverBonusShow] = useState<number>(0);
-  
-  // Country visit requirement states
-  const [pendingCountryVisit, setPendingCountryVisit] = useState<string | null>(null);
-  const [visitedCountries, setVisitedCountries] = useState<string[]>(['España']); // España siempre visitada
-
   // Clear feedback functions
   const clearSubmitSuccess = () => setSubmitSuccess(null);
   const clearError = () => setErrorMessage(null);
   const clearLevelUpMessage = () => setShowLevelUp(false);
-  
-  // Computed property for word input disabled state
-  const isWordInputDisabled = Boolean(pendingCountryVisit);
   
   // Load game state from localStorage on initial mount
   useEffect(() => {
@@ -203,7 +182,6 @@ export const GameProvider: React.FC<{
         if (parsedState.playerAge) setPlayerAge(parsedState.playerAge);
         if (parsedState.playerGender) setPlayerGender(parsedState.playerGender);
         if (parsedState.selectedCarColor) setSelectedCarColor(parsedState.selectedCarColor);
-        if (parsedState.visitedCountries) setVisitedCountries(parsedState.visitedCountries);
         
         console.log('Game state loaded from localStorage:', parsedState);
         
@@ -229,7 +207,6 @@ export const GameProvider: React.FC<{
         playerAge,
         playerGender,
         selectedCarColor,
-        visitedCountries
       };
       
       localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
@@ -237,7 +214,7 @@ export const GameProvider: React.FC<{
     } catch (error) {
       console.error('Error saving game state:', error);
     }
-  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor, visitedCountries]);
+  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor]);
   
   // Game control functions
   const resetGame = () => {
@@ -370,14 +347,6 @@ export const GameProvider: React.FC<{
         
         // Update destinations for level 10
         updateDestinations(10);
-        
-        // Set pending country visit
-        if (newLevel < 11) { // No visita obligatoria después de completar el juego
-          const countryToVisit = getDestinationCountryName(newLevel);
-          if (countryToVisit && !visitedCountries.includes(countryToVisit)) {
-            setPendingCountryVisit(countryToVisit);
-          }
-        }
       } else {
         setLevel(newLevel);
         setShowLevelUp(true);
@@ -391,56 +360,17 @@ export const GameProvider: React.FC<{
           console.error("Could not play level up sound", e);
         }
         
-        // NO eliminamos el levelup popup automáticamente para que el usuario vea la instrucción
-        // de visitar el país
+        // Auto-hide level up message after 5 seconds
+        setTimeout(() => {
+          clearLevelUpMessage();
+        }, 5000);
         
         console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
         // Update destinations for the new level
         updateDestinations(newLevel);
-        
-        // Set pending country visit - importante: usamos el nuevo nivel
-        const countryToVisit = getOriginCountryName(newLevel);
-        if (countryToVisit && !visitedCountries.includes(countryToVisit)) {
-          setPendingCountryVisit(countryToVisit);
-          console.log(`Pending country visit set to: ${countryToVisit}`);
-        }
       }
     }
   }, [totalPoints]);
-  
-  // Función auxiliar para obtener el nombre de país destino según nivel
-  const getDestinationCountryName = (currentLevel: number) => {
-    switch(currentLevel) {
-      case 1: return 'Francia';
-      case 2: return 'Italia';
-      case 3: return 'Rusia';
-      case 4: return 'Japón';
-      case 5: return 'Australia';
-      case 6: return 'Estados Unidos';
-      case 7: return 'México';
-      case 8: return 'Argentina';
-      case 9: return 'España';
-      case 10: return 'España';
-      default: return null;
-    }
-  }
-  
-  // New helper function to get the origin country name for the current level
-  const getOriginCountryName = (currentLevel: number) => {
-    switch(currentLevel) {
-      case 1: return 'España';
-      case 2: return 'Francia';
-      case 3: return 'Italia';
-      case 4: return 'Rusia';
-      case 5: return 'Japón';
-      case 6: return 'Australia';
-      case 7: return 'Estados Unidos';
-      case 8: return 'México';
-      case 9: return 'Argentina';
-      case 10: return 'España';
-      default: return null;
-    }
-  }
   
   // Check for special license plate patterns and player age bonus
   useEffect(() => {
@@ -501,30 +431,7 @@ export const GameProvider: React.FC<{
     }
   }, [licensePlate, playerAge, gamesPlayed]);
 
-  // Nueva función para comprobar aparición del popup plateado para 6666
-  useEffect(() => {
-    if (licensePlate && gamesPlayed > 0) {
-      // Aproximadamente cada 20 partidas (o si encuentra 6666)
-      const showSilverThisTime = (gamesPlayed - lastSilverBonusShow >= 20) || 
-                             (licensePlate.includes('6666') && Math.random() > 0.7);
-      
-      if (showSilverThisTime && !showSilverBonusPopup) {
-        console.log(`Showing silver bonus popup at game ${gamesPlayed}`);
-        
-        // Add bonus points and show popup
-        setTotalPoints(prev => prev + silverBonusPoints);
-        setShowSilverBonusPopup(true);
-        setLastSilverBonusShow(gamesPlayed);
-        
-        // Auto-hide after 6 seconds
-        setTimeout(() => {
-          setShowSilverBonusPopup(false);
-        }, 6000);
-      }
-    }
-  }, [licensePlate, gamesPlayed]);
-
-  // Check for 6666 in license plate (for regular bonus)
+  // Check for 6666 in license plate
   useEffect(() => {
     if (licensePlate && licensePlate.includes('6666') && !has6666Triggered) {
       console.log('Found 6666 in license plate!');
@@ -669,27 +576,11 @@ export const GameProvider: React.FC<{
   
   // License plate functions
   const generateNewPlate = () => {
-    // No generar nueva matrícula si hay un país pendiente de visitar
-    if (pendingCountryVisit) {
-      console.log(`Cannot generate new plate - pending country visit: ${pendingCountryVisit}`);
-      return;
-    }
-    
     generateNewPlateImpl();
   };
   
   // Submit word function - Updated to handle language-specific validation
   const submitWord = async () => {
-    // No permitir envío de palabras si hay un país pendiente de visitar
-    if (pendingCountryVisit) {
-      // Error message based on language
-      const errorMsg = language === 'en' 
-        ? `You need to visit ${pendingCountryVisit} first! Click on the flag to visit.`
-        : `¡Necesitas visitar ${pendingCountryVisit} primero! Haz clic en la bandera para visitar.`;
-      setErrorMessage(errorMsg);
-      return;
-    }
-    
     if (!currentWord || currentWord.length < 4) {
       // Error message based on language
       const errorMsg = language === 'en' 
@@ -784,31 +675,6 @@ export const GameProvider: React.FC<{
     }
   };
 
-  // Efecto para actualizar países visitados al cambiar la ruta
-  useEffect(() => {
-    // Verificar si llegamos aquí desde una página de país
-    const navigatingBack = sessionStorage.getItem('navigatingBack');
-    const visitedCountry = sessionStorage.getItem('visitedCountry');
-    
-    if (navigatingBack === 'true' && visitedCountry) {
-      // Agregar a países visitados si no está ya
-      if (!visitedCountries.includes(visitedCountry)) {
-        console.log(`Marking country as visited: ${visitedCountry}`);
-        setVisitedCountries(prev => [...prev, visitedCountry]);
-      }
-      
-      // Si este era el país pendiente de visitar, limpiarlo
-      if (pendingCountryVisit === visitedCountry) {
-        console.log(`Clearing pending country visit: ${visitedCountry}`);
-        setPendingCountryVisit(null);
-      }
-      
-      // Limpiar las variables de sesión
-      sessionStorage.removeItem('navigatingBack');
-      sessionStorage.removeItem('visitedCountry');
-    }
-  }, []);
-
   // Generate a plate on initial load if there isn't one already
   useEffect(() => {
     if (!licensePlate) {
@@ -884,16 +750,6 @@ export const GameProvider: React.FC<{
     setShowBirthdayBonusPopup,
     birthYearBonus,
     
-    // Silver 6666 bonus properties
-    showSilverBonusPopup,
-    setShowSilverBonusPopup,
-    silverBonusPoints,
-    
-    // Country visit requirement
-    pendingCountryVisit,
-    setPendingCountryVisit,
-    isWordInputDisabled,
-    
     // Add updateDestinations function to the context value
     updateDestinations,
   };
@@ -921,3 +777,4 @@ export const useGame = () => {
   }
   return context;
 };
+
