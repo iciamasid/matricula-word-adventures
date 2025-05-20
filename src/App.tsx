@@ -13,7 +13,6 @@ import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionConfetti from "./components/CompletionConfetti";
-import SilverBonusPopup from "./components/SilverBonusPopup";
 import { useState, useEffect } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import { useGame } from "./context/GameContext";
@@ -26,6 +25,53 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Inner component that uses the game context
+const GameRoutes = () => {
+  const { 
+    showBonusPopup, 
+    setShowBonusPopup, 
+    bonusPoints,
+    showAgeBonusPopup,
+    playerAge,
+    showCompletionBanner
+  } = useGame();
+
+  return (
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/country/:country" element={<CountryPage />} />
+          <Route path="/draw-game" element={<DrawGamePage />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+      
+      {/* Bonus popup for 6666 license plate */}
+      <BonusPopup
+        open={showBonusPopup}
+        onClose={() => setShowBonusPopup(false)}
+        points={bonusPoints || 500}
+      />
+      
+      {/* Age bonus popup when license plate matches player age */}
+      {playerAge && (
+        <AgeBonusPopup
+          open={showAgeBonusPopup}
+          onClose={() => {}}
+          points={20}
+          age={playerAge}
+        />
+      )}
+      
+      {/* Completion confetti when reaching level 10 */}
+      {showCompletionBanner && (
+        <CompletionConfetti onClose={() => {}} />
+      )}
+    </>
+  );
+};
 
 // Main app component with loading screen
 const App = () => {
@@ -52,53 +98,6 @@ const App = () => {
         </LanguageProvider>
       </TooltipProvider>
     </QueryClientProvider>
-  );
-};
-
-// Inner component that uses the game context
-const GameRoutes = () => {
-  const { 
-    showBonusPopup, 
-    setShowBonusPopup, 
-    bonusPoints,
-    showAgeBonusPopup,
-    playerAge,
-    showCompletionBanner
-  } = useGame();
-
-  return (
-    <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/country/:country" element={<CountryPage />} />
-          <Route path="/draw-game" element={<DrawGamePage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-      
-      {/* Silver bonus popup for 6666 license plate */}
-      <SilverBonusPopup
-        open={showBonusPopup}
-        onClose={() => setShowBonusPopup(false)}
-        points={bonusPoints || 500}
-      />
-      
-      {/* Age bonus popup when license plate matches player age */}
-      {playerAge && (
-        <AgeBonusPopup
-          open={showAgeBonusPopup}
-          onClose={() => {}}
-          points={20}
-          age={playerAge}
-        />
-      )}
-      
-      {/* Completion confetti when reaching level 10 */}
-      {showCompletionBanner && (
-        <CompletionConfetti onClose={() => {}} />
-      )}
-    </>
   );
 };
 

@@ -1,442 +1,770 @@
-import React, { createContext, useState, useContext, useEffect } from "react";
-import { fetchDestinationInfo, fetchOriginInfo } from "@/lib/api";
-import { getPlateConsonants } from "@/lib/licensePlateGenerator";
-import { toast } from "@/hooks/use-toast";
 
-type GameContextType = {
+import React, { createContext, useState, useContext, useEffect } from 'react';
+import { CarColor } from '@/components/games/utils/carUtils';
+import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
+import { WORLD_DESTINATIONS } from '@/utils/mapData';
+import { useLanguage } from '@/context/LanguageContext';
+
+interface CountryInfo {
+  city: string;
+  country: string;
+  flag: string;
+  fact?: string;
+}
+
+interface GameContextType {
+  // Original properties
+  originInfo: CountryInfo;
+  destinationInfo: CountryInfo;
+  originWord: string;
+  destinationWord: string;
+  selectedCarColor: CarColor | null;
+  setOriginInfo: (info: CountryInfo) => void;
+  setDestinationInfo: (info: CountryInfo) => void;
+  setOriginWord: (word: string) => void;
+  setDestinationWord: (word: string) => void;
+  setSelectedCarColor: (color: CarColor | null) => void;
+  
+  // Player information
   playerName: string;
-  setPlayerName: (name: string) => void;
-  playerGender: string;
-  setPlayerGender: (gender: string) => void;
   playerAge: number | null;
+  playerGender: string;
+  setPlayerName: (name: string) => void;
   setPlayerAge: (age: number | null) => void;
-  totalPoints: number;
-  addPoints: (points: number) => void;
-  destinationInfo: any;
-  originInfo: any;
+  setPlayerGender: (gender: string) => void;
+  
+  // Game state and progress
   level: number;
-  setLevel: (level: number) => void;
+  score: number;
+  previousScore: number;
+  totalPoints: number;
+  highScore: number;
+  gamesPlayed: number;
+  
+  // License plate related
+  licensePlate: string;
+  plateConsonants: string;
   currentWord: string;
   setCurrentWord: (word: string) => void;
-  error: string;
-  setError: (error: string) => void;
-  success: string;
-  setSuccess: (success: string) => void;
-  showError: boolean;
-  setShowError: (show: boolean) => void;
-  showSuccess: boolean;
-  setShowSuccess: (show: boolean) => void;
+  submitWord: () => Promise<void>;
+  generateNewPlate: () => void;
+  isGeneratingLicensePlate: boolean;
+  setIsGeneratingLicensePlate: (isGenerating: boolean) => void;
+  
+  // Game feedback and messages
+  submitSuccess: string | null;
+  clearSubmitSuccess: () => void;
+  errorMessage: string | null;
+  clearError: () => void;
   showLevelUp: boolean;
-  setShowLevelUp: (show: boolean) => void;
   clearLevelUpMessage: () => void;
-  resetGame: () => void;
-  plateConsonants: string;
-  setPlateConsonants: (consonants: string) => void;
-  selectedCarColor: any;
-  setSelectedCarColor: (color: any) => void;
-  destinations: string[];
-  setDestinations: (destinations: string[]) => void;
-  updateDestinations: (level: number) => void;
+  
+  // Popups and banners
   showBonusPopup: boolean;
   setShowBonusPopup: (show: boolean) => void;
-  bonusPoints: number | null;
-  setBonusPoints: (points: number | null) => void;
-  licensePlate: string;
-  setLicensePlate: (plate: string) => void;
+  bonusPoints: number;
+  showAgeBonusPopup: boolean;
+  showCompletionBanner: boolean;
+  
+  // Game control
+  resetGame: () => void;
+  
+  // Birthday bonus properties
   showBirthdayBonusPopup: boolean;
   setShowBirthdayBonusPopup: (show: boolean) => void;
-  birthYearBonus: number | null;
-  setBirthYearBonus: (points: number | null) => void;
-  showAgeBonusPopup: boolean;
-  setShowAgeBonusPopup: (show: boolean) => void;
-  gameCount: number;
+  birthYearBonus: number;
   
-  // Properties needed by other components
-  showCompletionBanner?: boolean;
-  errorMessage?: string;
-  clearError?: () => void;
-  isGeneratingLicensePlate?: boolean;
-  setIsGeneratingLicensePlate?: (isGenerating: boolean) => void;
-  submitSuccess?: string;
-  clearSubmitSuccess?: () => void;
-  generateNewPlate?: () => void;
-  gamesPlayed?: number;
-  score?: number;
-  highScore?: number;
-  submitWord?: (word: string) => void;
-};
+  // Add updateDestinations function to the interface
+  updateDestinations: (level: number) => void;
+}
 
-const defaultContext: GameContextType = {
-  playerName: "",
-  setPlayerName: () => {},
-  playerGender: "",
-  setPlayerGender: () => {},
-  playerAge: null,
-  setPlayerAge: () => {},
-  totalPoints: 0,
-  addPoints: () => {},
-  destinationInfo: null,
-  originInfo: null,
-  level: 1,
-  setLevel: () => {},
-  currentWord: "",
-  setCurrentWord: () => {},
-  error: "",
-  setError: () => {},
-  success: "",
-  setSuccess: () => {},
-  showError: false,
-  setShowError: () => {},
-  showSuccess: false,
-  setShowSuccess: () => {},
-  showLevelUp: false,
-  setShowLevelUp: () => {},
-  clearLevelUpMessage: () => {},
-  resetGame: () => {},
-  plateConsonants: "",
-  setPlateConsonants: () => {},
-  selectedCarColor: null,
-  setSelectedCarColor: () => {},
-  destinations: [],
-  setDestinations: () => {},
-  updateDestinations: () => {},
-  showBonusPopup: false,
-  setShowBonusPopup: () => {},
-  bonusPoints: null,
-  setBonusPoints: () => {},
-  licensePlate: "",
-  setLicensePlate: () => {},
-  showBirthdayBonusPopup: false,
-  setShowBirthdayBonusPopup: () => {},
-  birthYearBonus: null,
-  setBirthYearBonus: () => {},
-  showAgeBonusPopup: false,
-  setShowAgeBonusPopup: () => {},
-  gameCount: 0,
+const GameContext = createContext<GameContextType | null>(null);
+
+// Create a key for localStorage to store game state
+const GAME_STATE_KEY = 'matriculabra_game_state';
+
+export const GameProvider: React.FC<{
+  children: React.ReactNode | ((props: { 
+    showBonusPopup: boolean;
+    setShowBonusPopup: (show: boolean) => void;
+    bonusPoints: number;
+  }) => React.ReactNode);
+}> = ({ children }) => {
+  // Get current language from LanguageContext
+  const { language } = useLanguage?.() || { language: 'es' };
+
+  // Initialize with default country information
+  const [originInfo, setOriginInfo] = useState<CountryInfo>({ 
+    city: 'Madrid', 
+    country: 'España', 
+    flag: '🇪🇸',
+    fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
+  });
   
-  // Default values for additional properties
-  showCompletionBanner: false,
-  errorMessage: "",
-  clearError: () => {},
-  isGeneratingLicensePlate: false,
-  setIsGeneratingLicensePlate: () => {},
-  submitSuccess: "",
-  clearSubmitSuccess: () => {},
-  generateNewPlate: () => {},
-  gamesPlayed: 0,
-  score: 0,
-  highScore: 0,
-  submitWord: () => {},
-};
-
-const GameContext = createContext<GameContextType>(defaultContext);
-
-export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [playerName, setPlayerName] = useState<string>("");
-  const [playerGender, setPlayerGender] = useState<string>("");
+  const [destinationInfo, setDestinationInfo] = useState<CountryInfo>({ 
+    city: 'París', 
+    country: 'Francia', 
+    flag: '🇫🇷',
+    fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
+  });
+  
+  const [originWord, setOriginWord] = useState<string>('');
+  const [destinationWord, setDestinationWord] = useState<string>('');
+  
+  // Set the default selected car to the blue one (id: "2") which is always unlocked
+  const [selectedCarColor, setSelectedCarColor] = useState<CarColor | null>({ 
+    id: "2", 
+    name: "Coche Azul", 
+    image: "cocheazul.png", 
+    color: "bg-blue-500",
+    unlockedAtLevel: 0 // Always unlocked
+  });
+  
+  // Player information states
+  const [playerName, setPlayerName] = useState<string>('');
   const [playerAge, setPlayerAge] = useState<number | null>(null);
-  const [totalPoints, setTotalPoints] = useState<number>(0);
-  const [destinationInfo, setDestinationInfo] = useState<any>(null);
-  const [originInfo, setOriginInfo] = useState<any>(null);
+  const [playerGender, setPlayerGender] = useState<string>('');
+  
+  // Game state and progress states
   const [level, setLevel] = useState<number>(1);
-  const [currentWord, setCurrentWord] = useState<string>("");
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
-  const [showError, setShowError] = useState<boolean>(false);
-  const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [score, setScore] = useState<number>(0);
+  const [previousScore, setPreviousScore] = useState<number>(0);
+  const [totalPoints, setTotalPoints] = useState<number>(0);
+  const [highScore, setHighScore] = useState<number>(0);
+  const [gamesPlayed, setGamesPlayed] = useState<number>(0);
+  
+  // License plate related states
+  const [licensePlate, setLicensePlate] = useState<string>('');
+  const [plateConsonants, setPlateConsonants] = useState<string>('');
+  const [currentWord, setCurrentWord] = useState<string>('');
+  const [isGeneratingLicensePlate, setIsGeneratingLicensePlate] = useState<boolean>(false);
+  
+  // Game feedback and messages states
+  const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showLevelUp, setShowLevelUp] = useState<boolean>(false);
-  const [plateConsonants, setPlateConsonants] = useState<string>("");
-  const [selectedCarColor, setSelectedCarColor] = useState<any>(null);
-  const [destinations, setDestinations] = useState<string[]>([]);
+  
+  // Popups and banners states
   const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
-  const [bonusPoints, setBonusPoints] = useState<number | null>(null);
-  const [licensePlate, setLicensePlate] = useState<string>("");
-  const [showBirthdayBonusPopup, setShowBirthdayBonusPopup] = useState<boolean>(false);
-  const [birthYearBonus, setBirthYearBonus] = useState<number | null>(null);
+  const [bonusPoints, setBonusPoints] = useState<number>(500);
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState<boolean>(false);
-
-  // Added state counters for bonus frequency
-  const [gameCount, setGameCount] = useState<number>(0);
-  const [birthdayBonusFrequency, setBirthdayBonusFrequency] = useState<number>(20);  // Show every ~20 games
-  const [plateBonusFrequency, setPlateBonusFrequency] = useState<number>(20);        // Show every ~20 games
-
-  // Additional states to handle missing properties
-  const [isGeneratingLicensePlate, setIsGeneratingLicensePlate] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState("");
-  const [gamesPlayed, setGamesPlayed] = useState(0);
-  const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
-  const [showCompletionBanner, setShowCompletionBanner] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  // Load player data from localStorage on component mount
+  const [showCompletionBanner, setShowCompletionBanner] = useState<boolean>(false);
+  
+  // Track previous destination to set as origin when leveling up
+  const [previousDestination, setPreviousDestination] = useState<CountryInfo | null>(null);
+  
+  // Birthday bonus states - MOVED HERE before they're used
+  const [showBirthdayBonusPopup, setShowBirthdayBonusPopup] = useState<boolean>(false);
+  const [birthYearBonus, setBirthYearBonus] = useState<number>(50);
+  const [lastBirthYearShow, setLastBirthYearShow] = useState<number>(0);
+  
+  // Special 6666 bonus states - REMOVED DUPLICATES
+  const [has6666Triggered, setHas6666Triggered] = useState<boolean>(false);
+  
+  // Clear feedback functions
+  const clearSubmitSuccess = () => setSubmitSuccess(null);
+  const clearError = () => setErrorMessage(null);
+  const clearLevelUpMessage = () => setShowLevelUp(false);
+  
+  // Load game state from localStorage on initial mount
   useEffect(() => {
-    const storedPlayerName = localStorage.getItem("playerName");
-    const storedPlayerGender = localStorage.getItem("playerGender");
-    const storedPlayerAge = localStorage.getItem("playerAge");
-     const storedTotalPoints = localStorage.getItem("totalPoints");
-    const storedLevel = localStorage.getItem("level");
-    const storedSelectedCarColor = localStorage.getItem("selectedCarColor");
-    const storedDestinations = localStorage.getItem("destinations");
-    
-    if (storedPlayerName) setPlayerName(storedPlayerName);
-    if (storedPlayerGender) setPlayerGender(storedPlayerGender);
-    if (storedPlayerAge) setPlayerAge(parseInt(storedPlayerAge, 10));
-    if (storedTotalPoints) setTotalPoints(parseInt(storedTotalPoints, 10));
-    if (storedLevel) setLevel(parseInt(storedLevel, 10));
-    if (storedSelectedCarColor) setSelectedCarColor(JSON.parse(storedSelectedCarColor));
-    if (storedDestinations) setDestinations(JSON.parse(storedDestinations));
-  }, []);
-
-  // Save player data to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem("playerName", playerName);
-    localStorage.setItem("playerGender", playerGender);
-    if (playerAge !== null) {
-        localStorage.setItem("playerAge", playerAge.toString());
-    }
-     localStorage.setItem("totalPoints", totalPoints.toString());
-    localStorage.setItem("level", level.toString());
-    localStorage.setItem("totalPoints", totalPoints.toString());
-    localStorage.setItem("level", level.toString());
-    localStorage.setItem("selectedCarColor", JSON.stringify(selectedCarColor));
-    localStorage.setItem("destinations", JSON.stringify(destinations));
-  }, [playerName, playerGender, playerAge, totalPoints, level, selectedCarColor, destinations]);
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const origin = await fetchOriginInfo();
-        setOriginInfo(origin);
+    try {
+      const savedState = localStorage.getItem(GAME_STATE_KEY);
+      if (savedState) {
+        const parsedState = JSON.parse(savedState);
         
-        // Generate initial license plate
-        const initialConsonants = getPlateConsonants();
-        setPlateConsonants(initialConsonants);
-        setLicensePlate(initialConsonants);
-      } catch (error) {
-        console.error("Error fetching origin info:", error);
+        // Restore game state
+        if (parsedState.level) setLevel(parsedState.level);
+        if (parsedState.totalPoints) setTotalPoints(parsedState.totalPoints);
+        if (parsedState.gamesPlayed) setGamesPlayed(parsedState.gamesPlayed);
+        if (parsedState.highScore) setHighScore(parsedState.highScore);
+        if (parsedState.playerName) setPlayerName(parsedState.playerName);
+        if (parsedState.playerAge) setPlayerAge(parsedState.playerAge);
+        if (parsedState.playerGender) setPlayerGender(parsedState.playerGender);
+        if (parsedState.selectedCarColor) setSelectedCarColor(parsedState.selectedCarColor);
+        
+        console.log('Game state loaded from localStorage:', parsedState);
+        
+        // Generate level appropriate destinations
+        if (parsedState.level) {
+          updateDestinations(parsedState.level);
+        }
       }
-    };
-
-    fetchInitialData();
+    } catch (error) {
+      console.error('Error loading game state:', error);
+    }
   }, []);
-
+  
+  // Save game state to localStorage whenever important state changes
   useEffect(() => {
-    const fetchDestination = async () => {
-      try {
-        const destination = await fetchDestinationInfo(destinations[level - 1]);
-        setDestinationInfo(destination);
-      } catch (error) {
-        console.error("Error fetching destination info:", error);
-      }
-    };
-
-    if (level > 0 && destinations.length > 0 && destinations[level - 1]) {
-      fetchDestination();
+    try {
+      const gameState = {
+        level,
+        totalPoints,
+        gamesPlayed,
+        highScore,
+        playerName,
+        playerAge,
+        playerGender,
+        selectedCarColor,
+      };
+      
+      localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
+      console.log('Game state saved to localStorage');
+    } catch (error) {
+      console.error('Error saving game state:', error);
     }
-  }, [level, destinations]);
-
-  const addPoints = (points: number) => {
-    setTotalPoints((prevPoints) => prevPoints + points);
-  };
-
-  const clearLevelUpMessage = () => {
-    setShowLevelUp(false);
-  };
-
+  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor]);
+  
+  // Game control functions
   const resetGame = () => {
-    setLevel(1);
-    setTotalPoints(0);
-    setDestinations([]);
-    updateDestinations(1);
-    localStorage.setItem("level", "1");
-    localStorage.setItem("totalPoints", "0");
-    toast({
-      title: "¡Juego reiniciado!",
-      description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
+    // Initialize with default country information
+    setOriginInfo({ 
+      city: 'Madrid', 
+      country: 'España', 
+      flag: '🇪🇸',
+      fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
     });
-  };
-
-  const updateDestinations = async (level: number) => {
-    const newDestinations: string[] = [];
-    if (originInfo?.country) {
-      newDestinations.push(originInfo.country);
-    } else {
-      newDestinations.push("España"); // Default origin
-    }
     
-    if (level >= 2) newDestinations.push("Francia");
-    if (level >= 3) newDestinations.push("Italia");
-    if (level >= 4) newDestinations.push("Rusia");
-    if (level >= 5) newDestinations.push("Japón");
-    if (level >= 6) newDestinations.push("Australia");
-    if (level >= 7) newDestinations.push("Estados Unidos");
-    if (level >= 8) newDestinations.push("Méjico");
-    if (level >= 9) newDestinations.push("Argentina");
-    if (level >= 10) newDestinations.push("España (vuelta completa)");
+    setDestinationInfo({ 
+      city: 'París', 
+      country: 'Francia', 
+      flag: '🇫🇷',
+      fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
+    });
     
-    setDestinations(newDestinations);
-  };
-
-  // Modified success handler to manage bonus frequency
-  const handleSuccess = (word: string) => {
-    setSuccess(`¡Correcto! Has encontrado la palabra ${word}.`);
-    setShowSuccess(true);
-    setError("");
-    setShowError(false);
-    addPoints(10);
-
-    // Level up check
-    if (totalPoints >= level * 100) {
-      setLevel(level + 1);
-      setShowLevelUp(true);
-      updateDestinations(level + 1);
-    }
-
-    // Increment game count for tracking bonus frequency
-    setGameCount(prevCount => prevCount + 1);
+    setOriginWord('');
+    setDestinationWord('');
+    setSelectedCarColor({ 
+      id: "2", 
+      name: "Coche Azul", 
+      image: "cocheazul.png", 
+      color: "bg-blue-500",
+      unlockedAtLevel: 0
+    });
     
-    // Handle license plate bonuses less frequently
-    // Check for special plate numbers (only show bonuses occasionally)
-    const checkForSpecialPlate = () => {
-      // Plate 6666 - Special silver bonus (1 in ~20 chance)
-      if (
-        licensePlate === "6666" && 
-        Math.floor(gameCount % plateBonusFrequency) === 0
-      ) {
-        // Show the bonus popup for 6666 license plate
-        setBonusPoints(500); // 500 points for 6666
-        setShowBonusPopup(true);
-        addPoints(500);
-      }
-      
-      // Birthday bonus - check if license plate matches birth year (1 in ~20 chance)
-      if (
-        playerAge && 
-        playerAge > 0 && 
-        parseInt(licensePlate) === (new Date().getFullYear() - playerAge) &&
-        Math.floor(gameCount % birthdayBonusFrequency) === 0
-      ) {
-        // Show the birthday bonus popup
-        setBirthYearBonus(50); // 50 points for birthday
-        setShowBirthdayBonusPopup(true);
-        addPoints(50);
-      }
-    };
+    setPlayerName('');
+    setPlayerAge(null);
+    setPlayerGender('');
     
-    // Check for bonuses
-    checkForSpecialPlate();
-
-    // Generate new license plate
-    const newConsonants = getPlateConsonants();
-    setPlateConsonants(newConsonants);
-    setLicensePlate(newConsonants);
-  };
-
-  const clearError = () => {
-    setError("");
-    setShowError(false);
-    setErrorMessage("");
-  };
-
-  const clearSubmitSuccess = () => {
-    setSubmitSuccess("");
-    setShowSuccess(false);
-  };
-
-  const generateNewPlate = () => {
-    // Generate new license plate
-    const newConsonants = getPlateConsonants();
-    setPlateConsonants(newConsonants);
-    setLicensePlate(newConsonants);
-    setGamesPlayed(prevGames => prevGames + 1);
+    setLevel(1);
+    setScore(0);
+    setPreviousScore(0);
+    setTotalPoints(0);
+    setHighScore(0);
+    setGamesPlayed(0);
+    
+    setLicensePlate('');
+    setPlateConsonants('');
+    setCurrentWord('');
     setIsGeneratingLicensePlate(false);
-  };
-
-  const submitWord = (word: string) => {
-    setCurrentWord(word);
-    // Implement word submission logic
-    setSubmitSuccess(`¡Correcto! Has encontrado la palabra ${word}.`);
-    setShowSuccess(true);
-    addPoints(10);
     
-    // Check for level up
-    if (totalPoints >= level * 100) {
-      setLevel(prevLevel => prevLevel + 1);
-      setShowLevelUp(true);
-      updateDestinations(level + 1);
+    setSubmitSuccess(null);
+    setErrorMessage(null);
+    setShowLevelUp(false);
+    
+    setShowBonusPopup(false);
+    setBonusPoints(500);
+    setShowAgeBonusPopup(false);
+    setShowCompletionBanner(false);
+    
+    setPreviousDestination(null);
+    
+    // Clear any active messages
+    clearSubmitSuccess();
+    clearError();
+    clearLevelUpMessage();
+    
+    // Reset popup states
+    setShowBonusPopup(false);
+    setShowAgeBonusPopup(false);
+    setShowCompletionBanner(false);
+    
+    // Reset previous destination
+    setPreviousDestination(null);
+    
+    // Reset origin and destination to defaults (Spain -> France for level 1)
+    setOriginInfo({ 
+      city: 'Madrid', 
+      country: 'España', 
+      flag: '🇪🇸',
+      fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
+    });
+    setDestinationInfo({ 
+      city: 'París', 
+      country: 'Francia', 
+      flag: '🇫🇷',
+      fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
+    });
+    
+    // Generate new plate after reset
+    generateNewPlateImpl();
+  };
+  
+  // Function to check level based on points
+  useEffect(() => {
+    // Calculate new level based on total points
+    const newLevel = getLevel(totalPoints);
+    
+    // If level has increased, show level up message
+    if (newLevel > level) {
+      // Save current destination as previous before updating
+      setPreviousDestination({...destinationInfo});
       
-      // Check for game completion
-      if (level >= 9) {
-        setShowCompletionBanner(true);
+      // Check if reaching level 10 or above
+      if (newLevel >= 10) {
+        // Show completion banner/confetti if we're just now reaching level 10
+        if (level < 10) {
+          setShowCompletionBanner(true);
+          
+          // Auto-hide completion banner after 8 seconds
+          setTimeout(() => {
+            setShowCompletionBanner(false);
+          }, 8000);
+          
+          console.log("¡Reached level 10! Showing special completion message.");
+        }
+        
+        // Update to level 10 (or whatever the new level is)
+        setLevel(newLevel);
+        setShowLevelUp(true);
+        
+        // Play special completion sound
+        try {
+          const audio = new Audio('/lovable-uploads/level-up.mp3');
+          audio.volume = 0.8;
+          audio.play();
+        } catch (e) {
+          console.error("Could not play completion sound", e);
+        }
+        
+        // Auto-hide level up message after 5 seconds
+        setTimeout(() => {
+          clearLevelUpMessage();
+        }, 5000);
+        
+        console.log(`Advanced to level ${newLevel}! Showing completion congratulations!`);
+        
+        // Update destinations for level 10
+        updateDestinations(10);
+      } else {
+        setLevel(newLevel);
+        setShowLevelUp(true);
+        
+        // Play level up sound
+        try {
+          const audio = new Audio('/lovable-uploads/level-up.mp3');
+          audio.volume = 0.5;
+          audio.play();
+        } catch (e) {
+          console.error("Could not play level up sound", e);
+        }
+        
+        // Auto-hide level up message after 5 seconds
+        setTimeout(() => {
+          clearLevelUpMessage();
+        }, 5000);
+        
+        console.log(`Level up from ${level} to ${newLevel}! Updating destinations...`);
+        // Update destinations for the new level
+        updateDestinations(newLevel);
       }
     }
+  }, [totalPoints]);
+  
+  // Check for special license plate patterns and player age bonus
+  useEffect(() => {
+    if (licensePlate) {
+      const numbers = licensePlate.substring(0, 4);
+      
+      // Check for 6666 pattern (bonus points)
+      if (numbers === "6666" && !showBonusPopup) {
+        setShowBonusPopup(true);
+        
+        // Add bonus points - 500 points
+        const bonusAmount = 500;
+        setBonusPoints(bonusAmount);
+        setTotalPoints(prev => prev + bonusAmount);
+        console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
+        
+        // Auto-hide bonus popup after 5 seconds
+        setTimeout(() => {
+          setShowBonusPopup(false);
+        }, 5000);
+      }
+      
+      // Check if license plate matches player age for bonus
+      if (playerAge !== null && parseInt(numbers) === playerAge && !showAgeBonusPopup) {
+        setShowAgeBonusPopup(true);
+        
+        // Add age bonus points (20 points)
+        const ageBonusPoints = 20;
+        setTotalPoints(prev => prev + ageBonusPoints);
+        console.log(`🎂 Age match bonus! License plate matches your age (${playerAge})! +${ageBonusPoints} points!`);
+        
+        // Auto-hide age bonus popup after 4 seconds
+        setTimeout(() => {
+          setShowAgeBonusPopup(false);
+        }, 4000);
+      }
+    }
+  }, [licensePlate, playerAge]);
+  
+  // Check for birth year in license plate
+  useEffect(() => {
+    if (playerAge && licensePlate && gamesPlayed > 0) {
+      const currentYear = new Date().getFullYear();
+      const birthYear = currentYear - playerAge;
+      
+      // Check if the license plate contains the player's birth year
+      if (licensePlate.includes(birthYear.toString()) && !showBirthdayBonusPopup) {
+        // Check if we haven't shown this recently (approximately every 10 games)
+        if (gamesPlayed - lastBirthYearShow >= 10) {
+          console.log(`Found birth year ${birthYear} in license plate`);
+          
+          // Add bonus points and show popup
+          setTotalPoints(prev => prev + birthYearBonus);
+          setShowBirthdayBonusPopup(true);
+          setLastBirthYearShow(gamesPlayed);
+        }
+      }
+    }
+  }, [licensePlate, playerAge, gamesPlayed]);
+
+  // Check for 6666 in license plate
+  useEffect(() => {
+    if (licensePlate && licensePlate.includes('6666') && !has6666Triggered) {
+      console.log('Found 6666 in license plate!');
+      
+      // Add bonus points and show popup
+      setTotalPoints(prev => prev + bonusPoints);
+      setShowBonusPopup(true);
+      setHas6666Triggered(true); // Only trigger once per session
+      
+      // Reset the trigger after the popup is closed (30 seconds)
+      setTimeout(() => {
+        setHas6666Triggered(false);
+      }, 30000);
+    }
+  }, [licensePlate, has6666Triggered, bonusPoints]);
+
+  // Modified World Tour progression (removing Peru)
+  // Level 1: Spain -> France
+  // Level 2: France -> Italy
+  // Level 3: Italy -> Russia
+  // Level 4: Russia -> Japan
+  // Level 5: Japan -> Australia
+  // Level 6: Australia -> USA
+  // Level 7: USA -> Mexico
+  // Level 8: Mexico -> Argentina
+  // Level 9: Argentina -> Spain (complete the world tour)
+  
+  // Function to get destinations based on level, using previous destination as new origin
+  const updateDestinations = (currentLevel: number) => {
+    console.log(`Updating destinations for level ${currentLevel}`);
+    
+    // Handle origin and destination based on current level
+    let originCountry, destinationCountry;
+    
+    switch(currentLevel) {
+      case 1:
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                        { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
+                        { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros!' };
+        break;
+      case 2:
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
+                        { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Italia') || 
+                        { city: 'Roma', country: 'Italia', flag: '🇮🇹', fact: '¡El Coliseo romano tenía capacidad para 50.000 espectadores!' };
+        break;
+      case 3:
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Italia') || 
+                        { city: 'Roma', country: 'Italia', flag: '🇮🇹', fact: '¡El Coliseo romano tenía capacidad para 50.000 espectadores!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Rusia') || 
+                        { city: 'Moscú', country: 'Rusia', flag: '🇷🇺', fact: '¡La Plaza Roja de Moscú es tan grande como 9 campos de fútbol!' };
+        break;
+      case 4:
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Rusia') || 
+                        { city: 'Moscú', country: 'Rusia', flag: '🇷🇺', fact: '¡La Plaza Roja de Moscú es tan grande como 9 campos de fútbol!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Japón') || 
+                        { city: 'Tokio', country: 'Japón', flag: '🇯🇵', fact: '¡En Japón hay más de 200 volcanes!' };
+        break;
+      case 5:
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Japón') || 
+                        { city: 'Tokio', country: 'Japón', flag: '🇯🇵', fact: '¡En Japón hay más de 200 volcanes!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Australia') || 
+                        { city: 'Sídney', country: 'Australia', flag: '🇦🇺', fact: '¡Australia tiene más de 10.000 playas! Tardarías 27 años en visitar una cada día.' };
+        break;
+      case 6:
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Australia') || 
+                        { city: 'Sídney', country: 'Australia', flag: '🇦🇺', fact: '¡Australia tiene más de 10.000 playas! Tardarías 27 años en visitar una cada día.' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Estados Unidos') || 
+                        { city: 'Nueva York', country: 'Estados Unidos', flag: '🇺🇸', fact: '¡El Gran Cañón en Estados Unidos tiene más de 1.6 km de profundidad!' };
+        break;
+      case 7:
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Estados Unidos') || 
+                        { city: 'Nueva York', country: 'Estados Unidos', flag: '🇺🇸', fact: '¡El Gran Cañón en Estados Unidos tiene más de 1.6 km de profundidad!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México') || 
+                        { city: 'Ciudad de México', country: 'México', flag: '🇲🇽', fact: '¡México tiene 34 sitios declarados Patrimonio de la Humanidad por la UNESCO!' };
+        break;
+      case 8:
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México') || 
+                        { city: 'Ciudad de México', country: 'México', flag: '🇲🇽', fact: '¡México tiene 34 sitios declarados Patrimonio de la Humanidad por la UNESCO!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina') || 
+                        { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
+        break;
+      case 9:
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina') || 
+                        { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                        { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡Has completado la vuelta al mundo y has regresado a España!' };
+        break;
+      case 10:
+        // Special case for level 10 - you completed the world tour!
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡ENHORABUENA! ¡Has completado la vuelta al mundo!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡Has completado la vuelta al mundo y eres una estrella de la geografía!' };
+        break;
+      default:
+        // Default to level 1 case
+        originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
+                        { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+        destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
+                        { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!' };
+    }
+    
+    // Update origin and destination states
+    setOriginInfo(originCountry);
+    setDestinationInfo(destinationCountry);
+    
+    console.log(`Updated destinations for level ${currentLevel}: Origin=${originCountry.country}, Destination=${destinationCountry.country}`);
   };
+  
+  // Generate a new license plate using the utility functions
+  const generateNewPlateImpl = () => {
+    let newPlate;
+    setIsGeneratingLicensePlate(true);
+    
+    // Special condition: if close to 10th game after last birth year shown, increase chance of birth year
+    if (playerAge && gamesPlayed - lastBirthYearShow >= 9) {
+      const birthYear = new Date().getFullYear() - playerAge;
+      
+      // 50% chance to show birth year
+      if (Math.random() > 0.5) {
+        newPlate = String(birthYear) + generateLicensePlate().substring(4);
+        console.log(`Generated special birth year plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+      } else {
+        newPlate = generateLicensePlate();
+        console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+      }
+    } else {
+      newPlate = generateLicensePlate();
+      console.log(`Generated regular plate: ${newPlate} (Game ${gamesPlayed + 1})`);
+    }
+    
+    setLicensePlate(newPlate);
+    const extractedConsonants = getConsonantsFromPlate(newPlate);
+    setPlateConsonants(extractedConsonants);
+    console.log(`Extracted consonants: ${extractedConsonants}`);
+    
+    setIsGeneratingLicensePlate(false);
+    setGamesPlayed(prevGamesPlayed => prevGamesPlayed + 1);
+  };
+  
+  // License plate functions
+  const generateNewPlate = () => {
+    generateNewPlateImpl();
+  };
+  
+  // Submit word function - Updated to handle language-specific validation
+  const submitWord = async () => {
+    if (!currentWord || currentWord.length < 4) {
+      // Error message based on language
+      const errorMsg = language === 'en' 
+        ? 'Word is too short (minimum 4 letters)'
+        : 'La palabra es demasiado corta (mínimo 4 letras)';
+      setErrorMessage(errorMsg);
+      return;
+    }
+    
+    console.log(`Submitting word: ${currentWord} in language: ${language}`);
+    
+    // Check if word is valid
+    try {
+      const { wordExists, isValidWord, calculateScore } = await import('@/utils/gameUtils');
+      
+      // First check if the word contains at least one consonant from the license plate
+      if (!isValidWord(currentWord, plateConsonants)) {
+        // Error message based on language
+        const errorMsg = language === 'en' 
+          ? 'Word must include at least one consonant from the license plate'
+          : 'La palabra debe incluir al menos una consonante de la matrícula';
+        setErrorMessage(errorMsg);
+        console.log(`Word rejected: ${currentWord} (doesn't contain any consonant from ${plateConsonants})`);
+        
+        // IMPORTANT: Deduct points for invalid words
+        setTotalPoints(prev => Math.max(0, prev - 20));
+        return;
+      }
+      
+      // Then check if the word exists in our dictionary for the current language
+      const isValid = await wordExists(currentWord, language as 'es' | 'en');
+      if (!isValid) {
+        // Error message based on language
+        const errorMsg = language === 'en' 
+          ? 'Invalid word: this word does not exist'
+          : 'Palabra no válida: no existe esta palabra';
+        setErrorMessage(errorMsg);
+        console.log(`Word rejected: ${currentWord} (not in ${language} dictionary)`);
+        
+        // IMPORTANT: Deduct points for invalid words
+        setTotalPoints(prev => Math.max(0, prev - 20));
+        return;
+      }
+      
+      // Calculate score based on word and current license plate, considering current language
+      const calculatedScore = await calculateScore(currentWord, plateConsonants, language as 'es' | 'en');
+      console.log(`Score calculated for ${currentWord}: ${calculatedScore}`);
+      
+      if (calculatedScore < 0) {
+        // Word is invalid
+        const errorMsg = language === 'en' 
+          ? 'Invalid word or does not contain required consonants'
+          : 'Palabra no válida o no contiene las consonantes requeridas';
+        setErrorMessage(errorMsg);
+        console.log(`Word rejected: ${currentWord} (negative score ${calculatedScore})`);
+        
+        // IMPORTANT: Deduct points for invalid words (the negative score amount)
+        setTotalPoints(prev => Math.max(0, prev + calculatedScore)); // Add negative score
+        return;
+      }
+      
+      // Word is valid, update score
+      setPreviousScore(score);
+      setScore(calculatedScore);
+      setTotalPoints(prev => prev + calculatedScore);
+      console.log(`Word accepted: ${currentWord} (+${calculatedScore} points, total: ${totalPoints + calculatedScore})`);
+      
+      // Success message based on language
+      if (calculatedScore > 75) {
+        const successMsg = language === 'en' 
+          ? `${currentWord} is correct! +${calculatedScore} points`
+          : `¡${currentWord} es correcta! +${calculatedScore} puntos`;
+        setSubmitSuccess(successMsg);
+      } else {
+        const successMsg = language === 'en' 
+          ? `Correct word! +${calculatedScore} points`
+          : `¡Palabra correcta! +${calculatedScore} puntos`;
+        setSubmitSuccess(successMsg);
+      }
+      
+      // Track high score
+      if (calculatedScore > highScore) {
+        setHighScore(calculatedScore);
+        console.log(`New high score: ${calculatedScore}`);
+      }
+      
+      // Reset current word
+      setCurrentWord('');
+    } catch (error) {
+      console.error('Error submitting word:', error);
+      setErrorMessage('Error processing word');
+    }
+  };
+
+  // Generate a plate on initial load if there isn't one already
+  useEffect(() => {
+    if (!licensePlate) {
+      generateNewPlateImpl();
+    }
+  }, [licensePlate]);
+  
+  // Initial setup - ensure Spain is always unlocked
+  useEffect(() => {
+    console.log(`Initial setup for level ${level}`);
+    updateDestinations(level);
+  }, []);
+  
+  // Create the context value
+  const contextValue: GameContextType = {
+    originInfo,
+    destinationInfo,
+    originWord,
+    destinationWord,
+    selectedCarColor,
+    setOriginInfo,
+    setDestinationInfo,
+    setOriginWord,
+    setDestinationWord,
+    setSelectedCarColor,
+    
+    // Player information
+    playerName,
+    playerAge,
+    playerGender,
+    setPlayerName,
+    setPlayerAge,
+    setPlayerGender,
+    
+    // Game state and progress
+    level,
+    score,
+    previousScore,
+    totalPoints,
+    highScore,
+    gamesPlayed,
+    
+    // License plate related
+    licensePlate,
+    plateConsonants,
+    currentWord,
+    setCurrentWord,
+    submitWord,
+    generateNewPlate,
+    isGeneratingLicensePlate,
+    setIsGeneratingLicensePlate,
+    
+    // Game feedback and messages
+    submitSuccess,
+    clearSubmitSuccess,
+    errorMessage,
+    clearError,
+    showLevelUp,
+    clearLevelUpMessage,
+    
+    // Popups and banners
+    showBonusPopup,
+    setShowBonusPopup,
+    bonusPoints,
+    showAgeBonusPopup,
+    showCompletionBanner,
+    
+    // Game control
+    resetGame,
+    
+    // Birthday bonus properties
+    showBirthdayBonusPopup,
+    setShowBirthdayBonusPopup,
+    birthYearBonus,
+    
+    // Add updateDestinations function to the context value
+    updateDestinations,
+  };
+
+  // Check if children is a function to pass bonus popup state
+  if (typeof children === 'function') {
+    return (
+      <GameContext.Provider value={contextValue}>
+        {children({ showBonusPopup, setShowBonusPopup, bonusPoints })}
+      </GameContext.Provider>
+    );
+  }
 
   return (
-    <GameContext.Provider
-      value={{
-        playerName,
-        setPlayerName,
-        playerGender,
-        setPlayerGender,
-        playerAge,
-        setPlayerAge,
-        totalPoints,
-        addPoints,
-        destinationInfo,
-        originInfo,
-        level,
-        setLevel,
-        currentWord,
-        setCurrentWord,
-        error,
-        setError,
-        success,
-        setSuccess,
-        showError,
-        setShowError,
-        showSuccess,
-        setShowSuccess,
-        showLevelUp,
-        setShowLevelUp,
-        clearLevelUpMessage,
-        resetGame,
-        plateConsonants,
-        setPlateConsonants,
-        selectedCarColor,
-        setSelectedCarColor,
-        destinations,
-        setDestinations,
-        updateDestinations,
-        showBonusPopup,
-        setShowBonusPopup,
-        bonusPoints,
-        setBonusPoints,
-        licensePlate,
-        setLicensePlate,
-        showBirthdayBonusPopup,
-        setShowBirthdayBonusPopup,
-        birthYearBonus,
-        setBirthYearBonus,
-        showAgeBonusPopup,
-        setShowAgeBonusPopup,
-        gameCount,
-        // Additional properties
-        showCompletionBanner,
-        errorMessage,
-        clearError,
-        isGeneratingLicensePlate,
-        setIsGeneratingLicensePlate,
-        submitSuccess,
-        clearSubmitSuccess,
-        generateNewPlate,
-        gamesPlayed,
-        score,
-        highScore,
-        submitWord
-      }}
-    >
+    <GameContext.Provider value={contextValue}>
       {children}
     </GameContext.Provider>
   );
@@ -445,7 +773,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
 export const useGame = () => {
   const context = useContext(GameContext);
   if (!context) {
-    throw new Error("useGame must be used within a GameProvider");
+    throw new Error('useGame must be used within a GameProvider');
   }
   return context;
 };
+

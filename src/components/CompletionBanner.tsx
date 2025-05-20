@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
-import { Trophy, Star, Rocket, Globe, PartyPopper, RefreshCw } from "lucide-react";
+import { Trophy, Star, Rocket, Globe, PartyPopper } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
 import confetti from "canvas-confetti";
@@ -17,7 +17,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
   open, 
   onClose
 }) => {
-  const { playerName, playerGender, totalPoints, resetGame } = useGame();
+  const { playerName, playerGender, totalPoints } = useGame();
   const { t, isEnglish } = useLanguage();
   const [confettiLaunched, setConfettiLaunched] = useState(false);
   
@@ -60,7 +60,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
     }
   }, [open, confettiLaunched]);
   
-  // Auto-close after 12 seconds ONLY if the user doesn't click the reset button
+  // Auto-close after 12 seconds
   useEffect(() => {
     if (open) {
       const timer = setTimeout(() => {
@@ -70,12 +70,6 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
       return () => clearTimeout(timer);
     }
   }, [open, onClose]);
-
-  // Handle reset game action
-  const handleResetGame = () => {
-    resetGame();
-    onClose();
-  };
   
   const name = playerName || (
     playerGender === "niño" ? (isEnglish ? "champion" : "campeón") : 
@@ -197,34 +191,17 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                       </motion.div>
                     </div>
                     
-                    <div className="flex justify-center gap-4 mt-6">
-                      {/* Continue Playing Button */}
-                      <motion.div 
-                        whileHover={{ scale: 1.05 }}
-                        className="mx-2"
+                    <motion.div 
+                      className="mt-6"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <Button 
+                        onClick={onClose}
+                        className="bg-blue-600 hover:bg-blue-700 text-white text-xl px-8 py-3 rounded-full kids-text"
                       >
-                        <Button 
-                          onClick={onClose}
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xl px-6 py-3 rounded-full kids-text"
-                        >
-                          {isEnglish ? "Keep playing!" : "¡Seguir jugando!"}
-                        </Button>
-                      </motion.div>
-                      
-                      {/* New Game Button */}
-                      <motion.div 
-                        whileHover={{ scale: 1.05 }}
-                        className="mx-2"
-                      >
-                        <Button 
-                          onClick={handleResetGame}
-                          className="bg-purple-600 hover:bg-purple-700 text-white text-xl px-6 py-3 rounded-full kids-text flex items-center gap-2"
-                        >
-                          <RefreshCw className="w-5 h-5" />
-                          {isEnglish ? "Start New Game" : "Iniciar nueva partida"}
-                        </Button>
-                      </motion.div>
-                    </div>
+                        {isEnglish ? "Keep playing!" : "¡Seguir jugando!"}
+                      </Button>
+                    </motion.div>
                   </div>
                 </div>
               </div>
