@@ -50,6 +50,20 @@ type GameContextType = {
   showAgeBonusPopup: boolean;
   setShowAgeBonusPopup: (show: boolean) => void;
   gameCount: number;
+  
+  // Properties needed by other components
+  showCompletionBanner?: boolean;
+  errorMessage?: string;
+  clearError?: () => void;
+  isGeneratingLicensePlate?: boolean;
+  setIsGeneratingLicensePlate?: (isGenerating: boolean) => void;
+  submitSuccess?: string;
+  clearSubmitSuccess?: () => void;
+  generateNewPlate?: () => void;
+  gamesPlayed?: number;
+  score?: number;
+  highScore?: number;
+  submitWord?: (word: string) => void;
 };
 
 const defaultContext: GameContextType = {
@@ -99,6 +113,20 @@ const defaultContext: GameContextType = {
   showAgeBonusPopup: false,
   setShowAgeBonusPopup: () => {},
   gameCount: 0,
+  
+  // Default values for additional properties
+  showCompletionBanner: false,
+  errorMessage: "",
+  clearError: () => {},
+  isGeneratingLicensePlate: false,
+  setIsGeneratingLicensePlate: () => {},
+  submitSuccess: "",
+  clearSubmitSuccess: () => {},
+  generateNewPlate: () => {},
+  gamesPlayed: 0,
+  score: 0,
+  highScore: 0,
+  submitWord: () => {},
 };
 
 const GameContext = createContext<GameContextType>(defaultContext);
@@ -131,6 +159,15 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [gameCount, setGameCount] = useState<number>(0);
   const [birthdayBonusFrequency, setBirthdayBonusFrequency] = useState<number>(20);  // Show every ~20 games
   const [plateBonusFrequency, setPlateBonusFrequency] = useState<number>(20);        // Show every ~20 games
+
+  // Additional states to handle missing properties
+  const [isGeneratingLicensePlate, setIsGeneratingLicensePlate] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState("");
+  const [gamesPlayed, setGamesPlayed] = useState(0);
+  const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+  const [showCompletionBanner, setShowCompletionBanner] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // Load player data from localStorage on component mount
   useEffect(() => {
@@ -296,6 +333,46 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLicensePlate(newConsonants);
   };
 
+  const clearError = () => {
+    setError("");
+    setShowError(false);
+    setErrorMessage("");
+  };
+
+  const clearSubmitSuccess = () => {
+    setSubmitSuccess("");
+    setShowSuccess(false);
+  };
+
+  const generateNewPlate = () => {
+    // Generate new license plate
+    const newConsonants = getPlateConsonants();
+    setPlateConsonants(newConsonants);
+    setLicensePlate(newConsonants);
+    setGamesPlayed(prevGames => prevGames + 1);
+    setIsGeneratingLicensePlate(false);
+  };
+
+  const submitWord = (word: string) => {
+    setCurrentWord(word);
+    // Implement word submission logic
+    setSubmitSuccess(`¡Correcto! Has encontrado la palabra ${word}.`);
+    setShowSuccess(true);
+    addPoints(10);
+    
+    // Check for level up
+    if (totalPoints >= level * 100) {
+      setLevel(prevLevel => prevLevel + 1);
+      setShowLevelUp(true);
+      updateDestinations(level + 1);
+      
+      // Check for game completion
+      if (level >= 9) {
+        setShowCompletionBanner(true);
+      }
+    }
+  };
+
   return (
     <GameContext.Provider
       value={{
@@ -345,7 +422,19 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
         showAgeBonusPopup,
         setShowAgeBonusPopup,
         gameCount,
-        // Include the new properties in the context
+        // Additional properties
+        showCompletionBanner,
+        errorMessage,
+        clearError,
+        isGeneratingLicensePlate,
+        setIsGeneratingLicensePlate,
+        submitSuccess,
+        clearSubmitSuccess,
+        generateNewPlate,
+        gamesPlayed,
+        score,
+        highScore,
+        submitWord
       }}
     >
       {children}

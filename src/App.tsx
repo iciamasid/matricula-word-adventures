@@ -27,6 +27,34 @@ const queryClient = new QueryClient({
   },
 });
 
+// Main app component with loading screen
+const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const handleLoadComplete = () => {
+    setIsLoading(false);
+  };
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <LanguageProvider>
+          <GameProvider>
+            <Toaster />
+            <Sonner />
+            
+            {isLoading && (
+              <LoadingScreen onLoadComplete={handleLoadComplete} />
+            )}
+            
+            {!isLoading && <GameRoutes />}
+          </GameProvider>
+        </LanguageProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
+
 // Inner component that uses the game context
 const GameRoutes = () => {
   const { 
@@ -71,34 +99,6 @@ const GameRoutes = () => {
         <CompletionConfetti onClose={() => {}} />
       )}
     </>
-  );
-};
-
-// Main app component with loading screen
-const App = () => {
-  const [isLoading, setIsLoading] = useState(true);
-  
-  const handleLoadComplete = () => {
-    setIsLoading(false);
-  };
-  
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <LanguageProvider>
-          <GameProvider>
-            <Toaster />
-            <Sonner />
-            
-            {isLoading && (
-              <LoadingScreen onLoadComplete={handleLoadComplete} />
-            )}
-            
-            {!isLoading && <GameRoutes />}
-          </GameProvider>
-        </LanguageProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
   );
 };
 
