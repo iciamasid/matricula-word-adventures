@@ -209,10 +209,7 @@ const CountryPageContent = () => {
         {/* Back button and title at top */}
         <div className="sticky top-0 z-10 bg-gradient-to-b from-purple-100 to-purple-100/95 pt-2 pb-2">
           <Link to="/">
-            <Button size="sm" variant="ghost" className="flex items-center mb-1">
-              <ArrowLeft className="mr-1" size={16} />
-              {isEnglish ? "Back to Game" : "Volver al Juego"}
-            </Button>
+            
           </Link>
           
           {/* Country title moved to top */}
