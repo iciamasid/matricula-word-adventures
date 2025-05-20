@@ -5,7 +5,7 @@ import { getCountryFacts, getCountryImage, WORLD_DESTINATIONS } from '@/utils/ma
 import { useLanguage } from "@/context/LanguageContext";
 import { ArrowLeftCircle } from 'lucide-react';
 import { useGame } from '@/context/GameContext';
-import CountryPageIcons from '@/components/CountryPageIcons'; // Change to default import
+import CountryPageIcons from '@/components/CountryPageIcons'; // Fixed import
 import { motion } from 'framer-motion';
 
 const CountryPage = () => {
@@ -18,7 +18,7 @@ const CountryPage = () => {
     if (countryId) {
       console.log(`Visiting country: ${countryId}`);
       // Guardar país visitado en session storage para procesarlo al volver
-      sessionStorage.setItem('visitedCountry', countryId);
+      sessionStorage.setItem('visitedCountry', decodeURIComponent(countryId));
     }
   }, [countryId]);
   
@@ -26,9 +26,12 @@ const CountryPage = () => {
   const getCountryData = () => {
     if (!countryId) return null;
     
-    // Find matching country
+    // Decode URI component to handle encoded characters
+    const decodedCountryId = decodeURIComponent(countryId);
+    
+    // Find matching country with case-insensitive comparison
     return WORLD_DESTINATIONS.find(destination => 
-      destination.country.toLowerCase() === countryId.toLowerCase()
+      destination.country.toLowerCase() === decodedCountryId.toLowerCase()
     );
   };
   

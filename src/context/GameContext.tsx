@@ -399,7 +399,7 @@ export const GameProvider: React.FC<{
         updateDestinations(newLevel);
         
         // Set pending country visit - importante: usamos el nuevo nivel
-        const countryToVisit = getDestinationCountryName(newLevel);
+        const countryToVisit = getOriginCountryName(newLevel);
         if (countryToVisit && !visitedCountries.includes(countryToVisit)) {
           setPendingCountryVisit(countryToVisit);
           console.log(`Pending country visit set to: ${countryToVisit}`);
@@ -420,6 +420,23 @@ export const GameProvider: React.FC<{
       case 7: return 'México';
       case 8: return 'Argentina';
       case 9: return 'España';
+      case 10: return 'España';
+      default: return null;
+    }
+  }
+  
+  // New helper function to get the origin country name for the current level
+  const getOriginCountryName = (currentLevel: number) => {
+    switch(currentLevel) {
+      case 1: return 'España';
+      case 2: return 'Francia';
+      case 3: return 'Italia';
+      case 4: return 'Rusia';
+      case 5: return 'Japón';
+      case 6: return 'Australia';
+      case 7: return 'Estados Unidos';
+      case 8: return 'México';
+      case 9: return 'Argentina';
       case 10: return 'España';
       default: return null;
     }

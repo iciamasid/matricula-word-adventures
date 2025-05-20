@@ -1,75 +1,59 @@
 
-import React, { useEffect } from "react";
-import { useGame } from "@/context/GameContext";
-import GamePopup from "@/components/GamePopup";
-import { useLanguage } from "@/context/LanguageContext";
-import { Flag } from "lucide-react";
+// Import the necessary dependencies
+import React from 'react';
+import { Award } from 'lucide-react';
+import { useLanguage } from '@/context/LanguageContext';
+import GamePopup from './GamePopup';
+import { useGame } from '@/context/GameContext';
 
-const LevelUpAlert: React.FC = () => {
-  const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame, pendingCountryVisit } = useGame();
+const LevelUpAlert = () => {
+  const { showLevelUp, level, clearLevelUpMessage, pendingCountryVisit } = useGame();
   const { isEnglish } = useLanguage();
   
-  // Verificar si estamos navegando entre páginas
-  useEffect(() => {
-    const navigatingBack = sessionStorage.getItem('navigatingBack');
-    if (navigatingBack === 'true') {
-      // Si estamos navegando entre páginas, limpiar el mensaje de nivel
-      clearLevelUpMessage();
-      // Eliminar el flag de navegación
-      sessionStorage.removeItem('navigatingBack');
-    }
-  }, [clearLevelUpMessage]);
-  
-  // Special handling for level 10 completion - reset the game
-  useEffect(() => {
-    if (showLevelUp && level >= 10) {
-      // Reset game after the popup is shown and closed (8 seconds)
-      const timer = setTimeout(() => {
-        resetGame();
-        clearLevelUpMessage();
-      }, 8000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
-
-  // Get the current country based on origin info
-  const getCurrentCountry = () => {
-    return originInfo?.country || "";
+  const handleClose = () => {
+    clearLevelUpMessage();
   };
   
-  // Simplified explanation
-  const baseExplanation = isEnglish 
-    ? `Level ${level}` 
-    : `Nivel ${level}`;
+  // Create message based on level
+  const getLevelMessage = () => {
+    if (level >= 10) {
+      return isEnglish
+        ? `Congratulations! You've completed the world tour!`
+        : `¡Felicidades! ¡Has completado la vuelta al mundo!`;
+    }
+    return isEnglish
+      ? `You've reached level ${level}!`
+      : `¡Has alcanzado el nivel ${level}!`;
+  };
   
-  // Message now uses the origin country (where you actually are)
-  const currentCountry = getCurrentCountry();
-  const countryMessage = currentCountry 
-    ? (isEnglish 
-        ? `Now you are in ${currentCountry}!` 
-        : `¡Ahora estás en ${currentCountry}!`) 
-    : "";
+  // Generate explanation based on whether there's a pending country to visit
+  const getExplanation = () => {
+    if (pendingCountryVisit) {
+      return isEnglish
+        ? `You need to visit ${pendingCountryVisit} before you can continue playing. Click on the flag on the map to visit.`
+        : `Necesitas visitar ${pendingCountryVisit} antes de continuar jugando. Haz clic en la bandera en el mapa para visitar.`;
+    } else if (level >= 10) {
+      return isEnglish
+        ? `You've mastered the game! Keep playing to improve your score.`
+        : `¡Has dominado el juego! Sigue jugando para mejorar tu puntuación.`;
+    }
+    return isEnglish
+      ? `You've unlocked new destinations on your world tour!`
+      : `¡Has desbloqueado nuevos destinos en tu vuelta al mundo!`;
+  };
   
-  // Add visit country requirement message
-  const visitRequirementMsg = pendingCountryVisit
-    ? (isEnglish
-        ? `\nYou must visit ${pendingCountryVisit} to continue playing!`
-        : `\n¡Debes visitar ${pendingCountryVisit} para seguir jugando!`)
-    : "";
-  
-  // Combined explanation with visit requirement
-  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}${visitRequirementMsg}`;
-  
+  // Create award icon element
+  const awardIcon = <Award className="h-12 w-12 text-yellow-500" />;
+
   return (
     <GamePopup
       open={showLevelUp}
-      onClose={clearLevelUpMessage}
+      onClose={handleClose}
       type="levelUp"
-      message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
+      message={getLevelMessage()}
       level={level}
-      explanation={explanation}
-      icon={pendingCountryVisit ? <Flag className="w-8 h-8 text-red-500" /> : undefined}
+      explanation={getExplanation()}
+      icon={awardIcon}
     />
   );
 };

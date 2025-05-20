@@ -20,9 +20,11 @@ import CarCustomization from "@/components/CarCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 import SilverBonusPopup from "@/components/SilverBonusPopup";
-import { useLanguage } from "@/context/LanguageContext"; // Add this import
+import { useLanguage } from "@/context/LanguageContext";
 
-const Index = () => {
+const IndexPage = () => {
+  const { isEnglish } = useLanguage();
+  
   return (
     <GameProvider>
       <GameContent />
@@ -35,7 +37,6 @@ const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
   const worldTourRef = useRef<HTMLDivElement>(null);
-  const { isEnglish } = useLanguage(); // Add this to get isEnglish
   const {
     totalPoints,
     destinationInfo,
@@ -153,10 +154,7 @@ const GameContent = () => {
   };
 
   return (
-    <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
-      backgroundSize: "cover",
-      backgroundAttachment: "fixed"
-    }}>
+    <div className={`min-h-screen ${isEnglish ? 'bg-orange-50' : 'bg-purple-50'} relative`}>
       {/* Special background effect when the world tour is completed */}
       {level >= 10 && (
         <div className="absolute inset-0 pointer-events-none">
@@ -340,4 +338,4 @@ const GameContent = () => {
   );
 };
 
-export default Index;
+export default IndexPage;

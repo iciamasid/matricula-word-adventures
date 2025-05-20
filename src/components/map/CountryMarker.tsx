@@ -20,8 +20,11 @@ const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlig
   const countryData = WORLD_DESTINATIONS.find(dest => dest.country === country);
   const countryFlag = countryData?.flag || "🚩";
   
+  // Encode country name for URL to prevent issues with special characters
+  const encodedCountryName = encodeURIComponent(country);
+  
   return (
-    <Link to={`/country/${country}`}>
+    <Link to={`/country/${encodedCountryName}`}>
       <motion.div 
         className={`absolute z-10 ${isHighlighted ? 'z-30' : ''} ${needsVisit ? 'z-40' : ''}`} 
         style={{ 
