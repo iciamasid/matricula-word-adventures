@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -11,7 +12,8 @@ export interface GamePopupProps {
   message: string;
   level?: number;
   explanation?: string;
-  icon?: React.ReactNode; // Add the missing icon prop
+  icon?: React.ReactNode;
+  points?: number; // Added missing points prop
 }
 
 const GamePopup: React.FC<GamePopupProps> = ({
@@ -21,7 +23,8 @@ const GamePopup: React.FC<GamePopupProps> = ({
   message,
   level,
   explanation,
-  icon
+  icon,
+  points
 }) => {
   const { isEnglish } = useLanguage();
   
@@ -98,6 +101,13 @@ const GamePopup: React.FC<GamePopupProps> = ({
         {level && (
           <p className="text-gray-700 mb-2 text-center">
             {isEnglish ? "Level" : "Nivel"}: {level}
+          </p>
+        )}
+
+        {/* Points if provided */}
+        {points !== undefined && (
+          <p className="text-gray-700 mb-2 text-center">
+            {isEnglish ? "Points" : "Puntos"}: {points}
           </p>
         )}
 

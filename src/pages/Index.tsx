@@ -1,5 +1,6 @@
+
 import React, { useState, useEffect, useRef } from "react";
-import { GameProvider, useGame } from "@/context/GameContext";
+import { useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
 import WordInput from "@/components/WordInput";
 import ErrorAlert from "@/components/ErrorAlert";
@@ -23,17 +24,14 @@ import SilverBonusPopup from "@/components/SilverBonusPopup";
 import { useLanguage } from "@/context/LanguageContext";
 
 const IndexPage = () => {
-  const { isEnglish } = useLanguage();
-  
   return (
-    <GameProvider>
-      <GameContent />
-    </GameProvider>
+    <GameContent />
   );
 };
 
 // Component to handle the game content
 const GameContent = () => {
+  const { isEnglish } = useLanguage();
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
   const worldTourRef = useRef<HTMLDivElement>(null);
