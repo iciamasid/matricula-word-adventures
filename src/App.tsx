@@ -5,7 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./context/LanguageContext";
-import { GameProvider, useGame } from "./context/GameContext";
+import { GameProvider } from "./context/GameContext";
 import Index from "./pages/Index";
 import CountryPage from "./pages/CountryPage";
 import NotFound from "./pages/NotFound";
@@ -15,6 +15,7 @@ import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionConfetti from "./components/CompletionConfetti";
 import { useState, useEffect } from "react";
 import LoadingScreen from "./components/LoadingScreen";
+import { useGame } from "./context/GameContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,9 +26,8 @@ const queryClient = new QueryClient({
   },
 });
 
-// Create a wrapper component to use game context hooks
-const GameApp = () => {
-  const [isLoading, setIsLoading] = useState(true);
+// Inner component that uses the game context
+const GameRoutes = () => {
   const { 
     showBonusPopup, 
     setShowBonusPopup, 
@@ -36,17 +36,9 @@ const GameApp = () => {
     playerAge,
     showCompletionBanner
   } = useGame();
-  
-  const handleLoadComplete = () => {
-    setIsLoading(false);
-  };
-  
+
   return (
     <>
-      {isLoading && (
-        <LoadingScreen onLoadComplete={handleLoadComplete} />
-      )}
-      
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
@@ -81,7 +73,14 @@ const GameApp = () => {
   );
 };
 
+// Main app component with loading screen
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  
+  const handleLoadComplete = () => {
+    setIsLoading(false);
+  };
+  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -89,7 +88,12 @@ const App = () => {
           <GameProvider>
             <Toaster />
             <Sonner />
-            <GameApp />
+            
+            {isLoading && (
+              <LoadingScreen onLoadComplete={handleLoadComplete} />
+            )}
+            
+            {!isLoading && <GameRoutes />}
           </GameProvider>
         </LanguageProvider>
       </TooltipProvider>

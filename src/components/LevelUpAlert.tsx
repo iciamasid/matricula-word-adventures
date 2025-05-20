@@ -60,6 +60,7 @@ const LevelUpAlert: React.FC = () => {
       message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
       level={level}
       explanation={explanation}
+      points={0} // Adding the missing points prop
     />
   );
 };
