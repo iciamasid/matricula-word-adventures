@@ -209,7 +209,7 @@ const GameContent = () => {
         }} whileHover={{
           scale: 1.05
         }}>
-            <p className="text-purple-800 kids-text text-xl mb-1">Da la vuelta al mundo sumando kms.!</p>
+            
             
           </motion.div>
           
