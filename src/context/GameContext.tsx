@@ -73,12 +73,13 @@ interface GameContextType {
   setShowBirthdayBonusPopup: (show: boolean) => void;
   birthYearBonus: number;
   
+  // Special 6666 bonus properties
+  showBonusPopup: boolean;
+  setShowBonusPopup: (show: boolean) => void;
+  bonusPoints: number;
+  
   // Add updateDestinations function to the interface
   updateDestinations: (level: number) => void;
-  
-  // Visit country requirement
-  countryVisitRequired: boolean;
-  setCountryVisitRequired: (required: boolean) => void;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -147,7 +148,7 @@ export const GameProvider: React.FC<{
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showLevelUp, setShowLevelUp] = useState<boolean>(false);
   
-  // Popups and banners states - CONSOLIDATED
+  // Popups and banners states
   const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
   const [bonusPoints, setBonusPoints] = useState<number>(500);
   const [showAgeBonusPopup, setShowAgeBonusPopup] = useState<boolean>(false);
@@ -156,12 +157,14 @@ export const GameProvider: React.FC<{
   // Track previous destination to set as origin when leveling up
   const [previousDestination, setPreviousDestination] = useState<CountryInfo | null>(null);
   
-  // Birthday bonus states
+  // Birthday bonus states - MOVED HERE before they're used
   const [showBirthdayBonusPopup, setShowBirthdayBonusPopup] = useState<boolean>(false);
   const [birthYearBonus, setBirthYearBonus] = useState<number>(50);
   const [lastBirthYearShow, setLastBirthYearShow] = useState<number>(0);
   
-  // Special 6666 bonus tracking
+  // Special 6666 bonus states
+  const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
+  const [bonusPoints, setBonusPoints] = useState<number>(500);
   const [has6666Triggered, setHas6666Triggered] = useState<boolean>(false);
   
   // Clear feedback functions
@@ -218,9 +221,6 @@ export const GameProvider: React.FC<{
       console.error('Error saving game state:', error);
     }
   }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor]);
-  
-  // Add state for country visit requirement
-  const [countryVisitRequired, setCountryVisitRequired] = useState<boolean>(false);
   
   // Game control functions
   const resetGame = () => {
@@ -285,7 +285,6 @@ export const GameProvider: React.FC<{
     setShowBonusPopup(false);
     setShowAgeBonusPopup(false);
     setShowCompletionBanner(false);
-    setShowBirthdayBonusPopup(false);
     
     // Reset previous destination
     setPreviousDestination(null);
@@ -385,9 +384,8 @@ export const GameProvider: React.FC<{
       const numbers = licensePlate.substring(0, 4);
       
       // Check for 6666 pattern (bonus points)
-      if (numbers === "6666" && !showBonusPopup && !has6666Triggered) {
+      if (numbers === "6666" && !showBonusPopup) {
         setShowBonusPopup(true);
-        setHas6666Triggered(true);
         
         // Add bonus points - 500 points
         const bonusAmount = 500;
@@ -395,15 +393,10 @@ export const GameProvider: React.FC<{
         setTotalPoints(prev => prev + bonusAmount);
         console.log(`🎉 Special 6666 license plate bonus! +${bonusAmount} points!`);
         
-        // Auto-hide bonus popup after 6 seconds
+        // Auto-hide bonus popup after 5 seconds
         setTimeout(() => {
           setShowBonusPopup(false);
-          
-          // Reset the trigger after 30 seconds
-          setTimeout(() => {
-            setHas6666Triggered(false);
-          }, 24000); // 30 - 6 = 24 seconds remaining after popup closes
-        }, 6000);
+        }, 5000);
       }
       
       // Check if license plate matches player age for bonus
@@ -436,18 +429,30 @@ export const GameProvider: React.FC<{
           console.log(`Found birth year ${birthYear} in license plate`);
           
           // Add bonus points and show popup
-          setTotalPoints(prev => prev + birthYearBonus);
+          setTotalPointsUpdated(prev => prev + birthYearBonus);
           setShowBirthdayBonusPopup(true);
           setLastBirthYearShow(gamesPlayed);
-          
-          // Auto-hide birthday bonus popup after 6 seconds
-          setTimeout(() => {
-            setShowBirthdayBonusPopup(false);
-          }, 6000);
         }
       }
     }
   }, [licensePlate, playerAge, gamesPlayed]);
+
+  // Check for 6666 in license plate
+  useEffect(() => {
+    if (licensePlate && licensePlate.includes('6666') && !has6666Triggered) {
+      console.log('Found 6666 in license plate!');
+      
+      // Add bonus points and show popup
+      setTotalPointsUpdated(prev => prev + bonusPoints);
+      setShowBonusPopup(true);
+      setHas6666Triggered(true); // Only trigger once per session
+      
+      // Reset the trigger after the popup is closed (30 seconds)
+      setTimeout(() => {
+        setHas6666Triggered(false);
+      }, 30000);
+    }
+  }, [licensePlate, has6666Triggered, bonusPoints]);
 
   // Modified World Tour progression (removing Peru)
   // Level 1: Spain -> France
@@ -689,40 +694,7 @@ export const GameProvider: React.FC<{
     updateDestinations(level);
   }, []);
   
-  // Load saved game state from localStorage
-  useEffect(() => {
-    try {
-      const savedState = localStorage.getItem(GAME_STATE_KEY);
-      if (savedState) {
-        const parsedState = JSON.parse(savedState);
-        
-        // Restore game state
-        if (parsedState.level) setLevel(parsedState.level);
-        if (parsedState.totalPoints) setTotalPoints(parsedState.totalPoints);
-        if (parsedState.gamesPlayed) setGamesPlayed(parsedState.gamesPlayed);
-        if (parsedState.highScore) setHighScore(parsedState.highScore);
-        if (parsedState.playerName) setPlayerName(parsedState.playerName);
-        if (parsedState.playerAge) setPlayerAge(parsedState.playerAge);
-        if (parsedState.playerGender) setPlayerGender(parsedState.playerGender);
-        if (parsedState.selectedCarColor) setSelectedCarColor(parsedState.selectedCarColor);
-        
-        console.log('Game state loaded from localStorage:', parsedState);
-        
-        // Generate level appropriate destinations
-        if (parsedState.level) {
-          updateDestinations(parsedState.level);
-        }
-      }
-      
-      // Always clear the country visit requirement when loading
-      // so players aren't stuck if they refresh the page
-      setCountryVisitRequired(false);
-    } catch (error) {
-      console.error("Error loading game state:", error);
-    }
-  }, []);
-  
-  // Extract contextValue to include new values
+  // Create the context value
   const contextValue: GameContextType = {
     originInfo,
     destinationInfo,
@@ -784,12 +756,13 @@ export const GameProvider: React.FC<{
     setShowBirthdayBonusPopup,
     birthYearBonus,
     
+    // Special 6666 bonus properties
+    showBonusPopup,
+    setShowBonusPopup,
+    bonusPoints,
+    
     // Add updateDestinations function to the context value
     updateDestinations,
-    
-    // Visit country requirement
-    countryVisitRequired,
-    setCountryVisitRequired,
   };
 
   // Check if children is a function to pass bonus popup state
