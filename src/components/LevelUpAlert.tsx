@@ -60,7 +60,9 @@ const LevelUpAlert: React.FC = () => {
       message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
       level={level}
       explanation={explanation}
-      points={0} // Adding the missing points prop
+      points={0}
+      countryToVisit={currentCountry} // Pass the country to visit
+      requireCountryVisit={!!currentCountry} // Require visit only if there's a country
     />
   );
 };

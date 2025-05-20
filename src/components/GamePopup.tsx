@@ -2,8 +2,10 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
-import { Award, Gift, Star, Check, X, Trophy } from "lucide-react";
+import { Award, Gift, Star, Check, X, Trophy, MapPin } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 interface GamePopupProps {
   open: boolean;
@@ -12,7 +14,9 @@ interface GamePopupProps {
   message: string;
   points?: number;
   level?: number;
-  explanation?: string; // Added explanation prop
+  explanation?: string;
+  countryToVisit?: string; // New prop for country to visit
+  requireCountryVisit?: boolean; // Flag to indicate if country visit is required
 }
 
 const GamePopup: React.FC<GamePopupProps> = ({ 
@@ -22,7 +26,9 @@ const GamePopup: React.FC<GamePopupProps> = ({
   message, 
   points = 0, 
   level,
-  explanation // Added explanation prop
+  explanation,
+  countryToVisit,
+  requireCountryVisit = false
 }) => {
   const { isEnglish } = useLanguage();
   const [stars, setStars] = useState<{x: number, y: number, size: number, delay: number}[]>([]);
@@ -40,17 +46,24 @@ const GamePopup: React.FC<GamePopupProps> = ({
       }));
       setStars(newStars);
       
-      // Auto-close after 2 seconds (shortened from 3)
-      const timer = setTimeout(() => {
-        handleClose();
-      }, 2000);
-      
-      return () => clearTimeout(timer);
+      // Auto-close after 2 seconds (shortened from 3) ONLY if not requiring country visit
+      if (!requireCountryVisit) {
+        const timer = setTimeout(() => {
+          handleClose();
+        }, 2000);
+        
+        return () => clearTimeout(timer);
+      }
     }
-  }, [open]);
+  }, [open, requireCountryVisit]);
   
   // Handle proper closing with animation
   const handleClose = () => {
+    // If country visit is required, don't allow closing without clicking the link
+    if (requireCountryVisit && countryToVisit) {
+      return;
+    }
+    
     setIsVisible(false);
     // Wait for exit animation to finish before calling onClose
     setTimeout(() => {
@@ -137,6 +150,11 @@ const GamePopup: React.FC<GamePopupProps> = ({
   };
 
   const colors = getColors();
+
+  // Button style classes based on language
+  const buttonClasses = isEnglish 
+    ? "bg-orange-600 hover:bg-orange-700 text-white kids-text"
+    : "bg-game-purple hover:bg-game-purple/90 kids-text";
 
   return (
     <AnimatePresence>
@@ -256,6 +274,30 @@ const GamePopup: React.FC<GamePopupProps> = ({
                         ))}
                       </div>
                     </div>
+                  )}
+                  
+                  {/* Visit Country Button - Only show for level up (except completion) if countryToVisit is provided */}
+                  {type === "levelUp" && !isCompletion && countryToVisit && (
+                    <motion.div
+                      className="mt-4"
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <Link to={`/country/${countryToVisit}`}>
+                        <Button 
+                          className={`${buttonClasses} flex items-center gap-2 w-full py-3`}
+                          onClick={() => {
+                            // Set navigatingBack to true so when returning, the level up message is cleared
+                            sessionStorage.setItem('navigatingBack', 'true');
+                            // Still call onClose to ensure state is updated correctly
+                            onClose();
+                          }}
+                        >
+                          <MapPin size={18} />
+                          {isEnglish ? `Visit ${countryToVisit}` : `Visitar ${countryToVisit}`}
+                        </Button>
+                      </Link>
+                    </motion.div>
                   )}
                   
                   {/* For level 10 completion - extra stars */}
