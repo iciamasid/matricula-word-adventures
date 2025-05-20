@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -72,11 +73,6 @@ interface GameContextType {
   showBirthdayBonusPopup: boolean;
   setShowBirthdayBonusPopup: (show: boolean) => void;
   birthYearBonus: number;
-  
-  // Special 6666 bonus properties
-  showBonusPopup: boolean;
-  setShowBonusPopup: (show: boolean) => void;
-  bonusPoints: number;
   
   // Add updateDestinations function to the interface
   updateDestinations: (level: number) => void;
@@ -162,9 +158,7 @@ export const GameProvider: React.FC<{
   const [birthYearBonus, setBirthYearBonus] = useState<number>(50);
   const [lastBirthYearShow, setLastBirthYearShow] = useState<number>(0);
   
-  // Special 6666 bonus states
-  const [showBonusPopup, setShowBonusPopup] = useState<boolean>(false);
-  const [bonusPoints, setBonusPoints] = useState<number>(500);
+  // Special 6666 bonus states - REMOVED DUPLICATES
   const [has6666Triggered, setHas6666Triggered] = useState<boolean>(false);
   
   // Clear feedback functions
@@ -429,7 +423,7 @@ export const GameProvider: React.FC<{
           console.log(`Found birth year ${birthYear} in license plate`);
           
           // Add bonus points and show popup
-          setTotalPointsUpdated(prev => prev + birthYearBonus);
+          setTotalPoints(prev => prev + birthYearBonus);
           setShowBirthdayBonusPopup(true);
           setLastBirthYearShow(gamesPlayed);
         }
@@ -443,7 +437,7 @@ export const GameProvider: React.FC<{
       console.log('Found 6666 in license plate!');
       
       // Add bonus points and show popup
-      setTotalPointsUpdated(prev => prev + bonusPoints);
+      setTotalPoints(prev => prev + bonusPoints);
       setShowBonusPopup(true);
       setHas6666Triggered(true); // Only trigger once per session
       
@@ -756,11 +750,6 @@ export const GameProvider: React.FC<{
     setShowBirthdayBonusPopup,
     birthYearBonus,
     
-    // Special 6666 bonus properties
-    showBonusPopup,
-    setShowBonusPopup,
-    bonusPoints,
-    
     // Add updateDestinations function to the context value
     updateDestinations,
   };
@@ -788,3 +777,4 @@ export const useGame = () => {
   }
   return context;
 };
+
