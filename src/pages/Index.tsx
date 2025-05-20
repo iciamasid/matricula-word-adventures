@@ -192,15 +192,15 @@ const GameContent = () => {
         {/* This div will be the reference for scrolling */}
         <div ref={licensePlateRef} className="w-full"></div>
         
-        <div className="w-full max-w-md flex flex-col items-center space-y-4">
+        <div className="w-full max-w-md flex flex-col items-center">
           <LicensePlate />
           <WordInput />
           
-          {/* Score components in a single row */}
+          {/* Score components in a single row - removed space-y-4 class */}
           <ScorePanel />
           
-          {/* Scroll down indicator pointing to world tour - UPDATED TEXT */}
-          <motion.div className="w-full flex flex-col items-center mt-6 mb-2 cursor-pointer" onClick={scrollToWorldTour} animate={{
+          {/* Reduced space between score panel and world tour - removed mt-6 mb-2 */}
+          <motion.div className="w-full flex flex-col items-center cursor-pointer" onClick={scrollToWorldTour} animate={{
           y: [0, 5, 0]
         }} transition={{
           duration: 1.5,
@@ -209,12 +209,10 @@ const GameContent = () => {
         }} whileHover={{
           scale: 1.05
         }}>
-            
-            
           </motion.div>
           
-          {/* Add ref for world tour section */}
-          <div ref={worldTourRef}></div>
+          {/* Add ref for world tour section - reduced spacing */}
+          <div ref={worldTourRef} className="mt-2"></div>
           
           {/* Add World Tour Progress component */}
           <WorldTourProgress />

@@ -37,6 +37,11 @@ const LevelUpAlert: React.FC = () => {
     return originInfo?.country || "";
   };
   
+  // Add text about choosing another car
+  const carText = isEnglish 
+    ? "You can now choose a new car!" 
+    : "¡Ahora puedes elegir un nuevo coche!";
+  
   // Simplified explanation
   const baseExplanation = isEnglish 
     ? `Level ${level}` 
@@ -50,7 +55,8 @@ const LevelUpAlert: React.FC = () => {
         : `¡Ahora estás en ${currentCountry}!`) 
     : "";
   
-  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}`;
+  // Add the car text to the explanation
+  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${carText}`;
   
   return (
     <GamePopup

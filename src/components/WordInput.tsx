@@ -183,16 +183,16 @@ const WordInput: React.FC = () => {
         </motion.div>
       </div>
       
-      {/* Warning for short words */}
+      {/* Warning for short words - INCREASED TEXT SIZE */}
       {currentWord.trim().length > 0 && currentWord.trim().length < minWordLength && (
-        <p className={`text-sm mt-1 ${isEnglish ? "text-orange-600" : "text-purple-600"} font-medium kids-text text-center`}>
+        <p className={`text-lg mt-2 ${isEnglish ? "text-orange-600" : "text-purple-600"} font-medium kids-text text-center`}>
           {isEnglish ? `Words must be at least ${minWordLength} letters long` : `Las palabras deben tener al menos ${minWordLength} letras`}
         </p>
       )}
       
-      {/* Hint about accents in Spanish mode */}
+      {/* Hint about accents in Spanish mode - INCREASED TEXT SIZE */}
       {showAccentHint && (
-        <p className="text-xs mt-1 text-purple-500 italic kids-text text-center">
+        <p className="text-lg mt-2 text-purple-500 italic kids-text text-center">
           Consejo: Las palabras con o sin tildes son válidas
         </p>
       )}
