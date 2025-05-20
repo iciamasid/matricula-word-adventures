@@ -1,14 +1,12 @@
-
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useGame } from "@/context/GameContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Globe, Flag, Check } from "lucide-react";
+import { Globe } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { WORLD_DESTINATIONS } from "@/utils/mapData";
-import { toast } from "@/hooks/use-toast";
 
 const CountryPage = () => {
   const { country } = useParams();
@@ -23,7 +21,6 @@ const CountryPage = () => {
   } = useGame();
   const [loaded, setLoaded] = useState(false);
   const [countryInfo, setCountryInfo] = useState<any>(null);
-  const [missionCompleted, setMissionCompleted] = useState(false);
 
   useEffect(() => {
     // Simulate loading
@@ -53,22 +50,12 @@ const CountryPage = () => {
         // Mark as visited
         setCountryVisitRequired(false);
         console.log(`Country ${foundCountry.country} visited - requirement cleared`);
-        setMissionCompleted(true);
-        
-        // Show success toast
-        toast({
-          title: isEnglish ? "Mission accomplished!" : "¡Misión cumplida!",
-          description: isEnglish 
-            ? `You've successfully visited ${foundCountry.country}!` 
-            : `¡Has visitado ${foundCountry.country} con éxito!`,
-          variant: "default"
-        });
         
         // Make sure destinations are updated to the current level
         updateDestinations(level);
       }
     }
-  }, [country, countryVisitRequired, level, setCountryVisitRequired, updateDestinations, isEnglish]);
+  }, [country, countryVisitRequired, level, setCountryVisitRequired, updateDestinations]);
   
   // Helper function to get country for current level
   const getCountryForLevel = (level: number): string => {
@@ -104,21 +91,6 @@ const CountryPage = () => {
       <div className="relative py-3 sm:max-w-xl sm:mx-auto">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-300 to-purple-200 shadow-lg transform -skew-y-6 sm:skew-y-0 sm:-rotate-6 sm:rounded-3xl"></div>
         <div className="relative bg-white shadow-lg sm:rounded-3xl p-6">
-          {missionCompleted && (
-            <motion.div 
-              className="absolute -top-12 left-0 right-0 bg-green-100 border-2 border-green-400 rounded-lg p-3 flex items-center justify-center gap-2"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <Check className="w-5 h-5 text-green-600" />
-              <p className="text-green-800 kids-text font-bold">
-                {isEnglish ? "Mission completed!" : "¡Misión completada!"}
-              </p>
-              <Flag className="w-5 h-5 text-green-600" />
-            </motion.div>
-          )}
-          
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-800 kids-text mb-4">
               {countryInfo.country}

@@ -4,7 +4,6 @@ import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
 import { useLanguage } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
-import { Flag, MapPin } from "lucide-react";
 
 const LevelUpAlert: React.FC = () => {
   const { 
@@ -16,7 +15,7 @@ const LevelUpAlert: React.FC = () => {
     setCountryVisitRequired,
     countryVisitRequired
   } = useGame();
-  const { isEnglish } = useLanguage?.() || { isEnglish: false };
+  const { isEnglish } = useLanguage();
   
   // Verificar si estamos navegando entre páginas
   useEffect(() => {
@@ -135,7 +134,7 @@ const LevelUpAlert: React.FC = () => {
     
     return (
       <motion.div 
-        className="mt-3 p-4 bg-yellow-100 rounded-lg border-2 border-yellow-400"
+        className="mt-3 p-3 bg-yellow-100 rounded-lg border-2 border-yellow-400"
         animate={{ 
           scale: [1, 1.03, 1],
           borderColor: ['#FBBF24', '#F59E0B', '#FBBF24']
@@ -145,30 +144,11 @@ const LevelUpAlert: React.FC = () => {
           duration: 2 
         }}
       >
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <Flag className="h-5 w-5 text-yellow-600" />
-          <p className="text-yellow-800 font-bold kids-text text-center text-lg">
-            {isEnglish 
-              ? `IMPORTANT MISSION` 
-              : `MISIÓN IMPORTANTE`}
-          </p>
-          <Flag className="h-5 w-5 text-yellow-600" />
-        </div>
-        
         <p className="text-yellow-800 font-bold kids-text text-center">
           {isEnglish 
             ? `Click on the ${getNextCountry()} ${getNextCountryFlag()} flag on the map!` 
             : `¡Haz clic en la bandera de ${getNextCountry()} ${getNextCountryFlag()} en el mapa!`}
         </p>
-        
-        <div className="flex justify-center mt-2">
-          <motion.div
-            animate={{ y: [0, -5, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            <MapPin className="h-6 w-6 text-yellow-600" />
-          </motion.div>
-        </div>
       </motion.div>
     );
   };
@@ -182,7 +162,6 @@ const LevelUpAlert: React.FC = () => {
       level={level}
       explanation={explanation}
       extraContent={<VisitInstruction />}
-      preventAutoClose={countryVisitRequired} // Prevent auto-close when country visit is required
     />
   );
 };

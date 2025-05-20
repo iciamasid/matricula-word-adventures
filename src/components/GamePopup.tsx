@@ -1,8 +1,6 @@
-
 import React, { useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
-import { useGame } from "@/context/GameContext";
 
 interface GamePopupProps {
   open: boolean;
@@ -13,7 +11,6 @@ interface GamePopupProps {
   points?: number;
   level?: number;
   extraContent?: React.ReactNode; // Add support for extra content
-  preventAutoClose?: boolean; // Add option to prevent auto-closing
 }
 
 const GamePopup: React.FC<GamePopupProps> = ({
@@ -24,29 +21,17 @@ const GamePopup: React.FC<GamePopupProps> = ({
   explanation,
   points,
   level,
-  extraContent, // Add extra content prop
-  preventAutoClose = false // Default to false for backward compatibility
+  extraContent // Add extra content prop
 }) => {
-  const { countryVisitRequired } = useGame?.() || { countryVisitRequired: false };
-  
-  // Auto-close after 5 seconds for success messages, but not if preventAutoClose is true
-  // or if it's a levelUp popup and countryVisitRequired is true
+  // Auto-close after 5 seconds for success messages
   useEffect(() => {
-    if (open && type === "success" && !preventAutoClose) {
+    if (open && type === "success") {
       const timer = setTimeout(() => {
         onClose();
       }, 5000);
       return () => clearTimeout(timer);
     }
-    
-    // For levelUp popups, only auto-close if there's no country visit required
-    if (open && type === "levelUp" && !countryVisitRequired && !preventAutoClose) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 8000);
-      return () => clearTimeout(timer);
-    }
-  }, [open, onClose, type, preventAutoClose, countryVisitRequired]);
+  }, [open, onClose, type]);
 
   // Determine background color and border based on type
   let bgColor = "bg-green-100";
