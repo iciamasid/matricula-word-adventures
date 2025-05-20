@@ -19,6 +19,7 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import CarCustomization from "@/components/CarCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
+import SilverBonusPopup from "@/components/SilverBonusPopup";
 
 const Index = () => {
   return (
@@ -48,7 +49,13 @@ const GameContent = () => {
     showBirthdayBonusPopup,
     setShowBirthdayBonusPopup,
     birthYearBonus,
-    showAgeBonusPopup
+    showAgeBonusPopup,
+    // Silver bonus props
+    showSilverBonusPopup,
+    setShowSilverBonusPopup,
+    silverBonusPoints,
+    // Country visit props
+    pendingCountryVisit
   } = useGame();
 
   // Ref to the license plate section
@@ -221,6 +228,37 @@ const GameContent = () => {
           <LicensePlate />
           <WordInput />
           
+          {/* Show pending country visit warning if needed - new pulsing warning banner */}
+          {pendingCountryVisit && (
+            <motion.div 
+              className="w-full p-3 bg-red-100 border-2 border-red-400 rounded-lg text-center"
+              animate={{ 
+                scale: [1, 1.02, 1],
+                boxShadow: [
+                  "0 0 0 rgba(252, 165, 165, 0.4)",
+                  "0 0 20px rgba(252, 165, 165, 0.6)",
+                  "0 0 0 rgba(252, 165, 165, 0.4)"
+                ] 
+              }}
+              transition={{ 
+                duration: 2,
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
+            >
+              <p className="font-bold text-red-600 kids-text text-lg">
+                {isEnglish 
+                  ? `Visit ${pendingCountryVisit} to continue playing!` 
+                  : `¡Visita ${pendingCountryVisit} para seguir jugando!`}
+              </p>
+              <p className="text-red-500 text-sm">
+                {isEnglish
+                  ? "Click on the flag on the map below"
+                  : "Haz clic en la bandera en el mapa de abajo"}
+              </p>
+            </motion.div>
+          )}
+          
           {/* Score components in a single row */}
           <ScorePanel />
           
@@ -278,6 +316,13 @@ const GameContent = () => {
           />
         )}
 
+        {/* Silver Bonus Popup */}
+        <SilverBonusPopup
+          open={showSilverBonusPopup}
+          onClose={() => setShowSilverBonusPopup(false)}
+          points={silverBonusPoints}
+        />
+        
         {/* Age Bonus Alert */}
         <AgeBonusPopup 
           open={showAgeBonusPopup} 

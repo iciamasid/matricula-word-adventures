@@ -3,9 +3,10 @@ import React, { useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
 import { useLanguage } from "@/context/LanguageContext";
+import { Flag } from "lucide-react";
 
 const LevelUpAlert: React.FC = () => {
-  const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame } = useGame();
+  const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame, pendingCountryVisit } = useGame();
   const { isEnglish } = useLanguage();
   
   // Verificar si estamos navegando entre páginas
@@ -50,7 +51,15 @@ const LevelUpAlert: React.FC = () => {
         : `¡Ahora estás en ${currentCountry}!`) 
     : "";
   
-  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}`;
+  // Add visit country requirement message
+  const visitRequirementMsg = pendingCountryVisit
+    ? (isEnglish
+        ? `\nYou must visit ${pendingCountryVisit} to continue playing!`
+        : `\n¡Debes visitar ${pendingCountryVisit} para seguir jugando!`)
+    : "";
+  
+  // Combined explanation with visit requirement
+  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}${visitRequirementMsg}`;
   
   return (
     <GamePopup
@@ -60,6 +69,7 @@ const LevelUpAlert: React.FC = () => {
       message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
       level={level}
       explanation={explanation}
+      icon={pendingCountryVisit ? <Flag className="w-8 h-8 text-red-500" /> : undefined}
     />
   );
 };
