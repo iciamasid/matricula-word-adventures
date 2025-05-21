@@ -121,12 +121,12 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
             </p>
           </motion.div>
 
-          <motion.div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" whileHover={{
+          <motion.div whileHover={{
           scale: 1.02
         }} transition={{
           type: "spring",
           stiffness: 300
-        }}>
+        }} className="backdrop-blur-sm p-4 rounded-lg bg-gray-400">
             <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
               <Car className={iconColor + " w-6 h-6"} />
               {"Personalización"}
