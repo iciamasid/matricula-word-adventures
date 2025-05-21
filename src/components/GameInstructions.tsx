@@ -96,10 +96,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
                   {"Bonus por longitud: +5 puntos por letra para palabras de más de 5 letras (máximo 50 puntos)"}
                 </span>
               </li>
-              <li className="instruction-text kids-text text-white text-lg flex items-start gap-2">
-                <span className="text-green-400 mt-1 flex-shrink-0">✓</span> 
-                
-              </li>
+              
               <li className="instruction-text kids-text text-red-300 text-lg flex items-start gap-2">
                 <X className="w-5 h-5 text-red-400 mt-1 flex-shrink-0" /> 
                 <span>
