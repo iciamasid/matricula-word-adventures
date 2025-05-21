@@ -62,7 +62,8 @@ const GameInterface: React.FC = () => {
     level,
     originInfo,
     destinationInfo,
-    isMotorcycleMode
+    isMotorcycleMode,
+    setPlayerName
   } = useGame();
   
   // Determine welcome text based on mode
@@ -131,7 +132,10 @@ const GameInterface: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
           >
-            <WorldMap />
+            <WorldMap 
+              highlightCountry={destinationInfo.country}
+              unlockedCountries={[]}
+            />
           </motion.div>
         </div>
       </div>
@@ -144,7 +148,7 @@ const GameInterface: React.FC = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <GameInstructions />
+            <GameInstructions onClose={() => {}} />
           </motion.div>
         </div>
         
@@ -156,7 +160,10 @@ const GameInterface: React.FC = () => {
           >
             <TotalPointsPanel />
             <div className="flex flex-wrap gap-2 mt-4">
-              <PlayerNameInput />
+              <PlayerNameInput 
+                onSave={setPlayerName} 
+                initialName={playerName} 
+              />
             </div>
           </motion.div>
         </div>
