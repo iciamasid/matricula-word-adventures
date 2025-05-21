@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LanguageProvider } from "./context/LanguageContext";
 import { GameProvider } from "./context/GameContext";
-import { useGame } from "./context/GameContext";
 import Index from "./pages/Index";
 import CountryPage from "./pages/CountryPage";
 import NotFound from "./pages/NotFound";
@@ -17,7 +16,7 @@ import CompletionConfetti from "./components/CompletionConfetti";
 import CompletionBanner from "./components/CompletionBanner";
 import { useState, useEffect } from "react";
 import LoadingScreen from "./components/LoadingScreen";
-import GameOverScreen from "./components/GameOverScreen";
+import { useGame } from "./context/GameContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,8 +36,7 @@ const GameRoutes = () => {
     showAgeBonusPopup,
     playerAge,
     showCompletionBanner,
-    resetGame,
-    isGameOver
+    resetGame
   } = useGame();
   
   // State for completion banner
@@ -94,11 +92,6 @@ const GameRoutes = () => {
         open={showCompletionPopup}
         onClose={handleCloseCompletionBanner}
       />
-      
-      {/* Game Over Screen - this will block everything else when shown */}
-      {isGameOver && (
-        <GameOverScreen />
-      )}
     </>
   );
 };

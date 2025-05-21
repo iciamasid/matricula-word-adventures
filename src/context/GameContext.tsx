@@ -77,10 +77,6 @@ interface GameContextType {
   
   // Add updateDestinations function to the interface
   updateDestinations: (level: number) => void;
-  
-  // Game Over state
-  isGameOver: boolean;
-  setIsGameOver: (isOver: boolean) => void;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -88,12 +84,13 @@ const GameContext = createContext<GameContextType | null>(null);
 // Create a key for localStorage to store game state
 const GAME_STATE_KEY = 'matriculabra_game_state';
 
-// Define proper children type for the GameProvider
-interface GameProviderProps {
-  children: React.ReactNode;
-}
-
-export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
+export const GameProvider: React.FC<{
+  children: React.ReactNode | ((props: { 
+    showBonusPopup: boolean;
+    setShowBonusPopup: (show: boolean) => void;
+    bonusPoints: number;
+  }) => React.ReactNode);
+}> = ({ children }) => {
   // Get current language from LanguageContext
   const { language } = useLanguage?.() || { language: 'es' };
 
@@ -136,9 +133,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   const [totalPoints, setTotalPoints] = useState<number>(0);
   const [highScore, setHighScore] = useState<number>(0);
   const [gamesPlayed, setGamesPlayed] = useState<number>(0);
-  
-  // Game Over state - NEW!
-  const [isGameOver, setIsGameOver] = useState<boolean>(false);
   
   // License plate related states
   const [licensePlate, setLicensePlate] = useState<string>('');
@@ -225,8 +219,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   
   // Game control functions
   const resetGame = () => {
-    console.log("Game reset initiated");
-    
     // Initialize with default country information
     setOriginInfo({ 
       city: 'Madrid', 
@@ -284,13 +276,10 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     clearError();
     clearLevelUpMessage();
     
-    // Reset popup states - Make sure to close completion banner
+    // Reset popup states
     setShowBonusPopup(false);
     setShowAgeBonusPopup(false);
     setShowCompletionBanner(false);
-    
-    // Reset Game Over state - NEW!
-    setIsGameOver(false);
     
     // Reset previous destination
     setPreviousDestination(null);
@@ -325,13 +314,21 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
       
       // Check if reaching level 10 or above
       if (newLevel >= 10) {
-        // Show GameOver screen when we reach level 10
-        setIsGameOver(true);
-        
-        console.log("¡Reached level 10! Showing GAME OVER screen.");
+        // Show completion banner/confetti if we're just now reaching level 10
+        if (level < 10) {
+          setShowCompletionBanner(true);
+          
+          // Auto-hide completion banner after 8 seconds
+          setTimeout(() => {
+            setShowCompletionBanner(false);
+          }, 8000);
+          
+          console.log("¡Reached level 10! Showing special completion message.");
+        }
         
         // Update to level 10 (or whatever the new level is)
         setLevel(newLevel);
+        setShowLevelUp(true);
         
         // Play special completion sound
         try {
@@ -342,7 +339,12 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
           console.error("Could not play completion sound", e);
         }
         
-        console.log(`Advanced to level ${newLevel}! Game completed!`);
+        // Auto-hide level up message after 5 seconds
+        setTimeout(() => {
+          clearLevelUpMessage();
+        }, 5000);
+        
+        console.log(`Advanced to level ${newLevel}! Showing completion congratulations!`);
         
         // Update destinations for level 10
         updateDestinations(10);
@@ -753,10 +755,6 @@ export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
     
     // Add updateDestinations function to the context value
     updateDestinations,
-    
-    // Game Over state - NEW!
-    isGameOver,
-    setIsGameOver,
   };
 
   // Check if children is a function to pass bonus popup state

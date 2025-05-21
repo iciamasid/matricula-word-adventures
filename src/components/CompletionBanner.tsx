@@ -73,7 +73,6 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
   
   // Handle new game start
   const handleNewGame = () => {
-    console.log("Starting new game from CompletionBanner");
     resetGame();
     onClose();
   };
@@ -96,15 +95,14 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
               className="relative w-full max-w-4xl mx-auto"
             >
-              {/* Fondo plateado */}
-              <div className="bg-gradient-to-br from-gray-300 via-[#9F9EA1] to-gray-400 p-8 rounded-2xl border-8 border-gray-200 shadow-[0_0_50px_rgba(159,158,161,0.7)] relative z-10 overflow-hidden">
+              <div className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-2xl border-8 border-yellow-300 shadow-[0_0_50px_rgba(234,179,8,0.7)] relative z-10 overflow-hidden">
                 {/* Background animation */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
                   <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle,_white_10%,_transparent_70%)]"></div>
                   {[...Array(20)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="absolute bg-gray-200 rounded-full"
+                      className="absolute bg-yellow-300 rounded-full"
                       style={{
                         width: Math.random() * 20 + 10,
                         height: Math.random() * 20 + 10,
@@ -175,15 +173,6 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                       </div>
                     </motion.div>
                     
-                    {/* Mensaje adicional invitando a empezar una nueva partida */}
-                    <motion.p 
-                      className="text-2xl text-white kids-text mt-4 mb-6"
-                      animate={{ opacity: [0.8, 1, 0.8] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      {isEnglish ? "You can start a new adventure!" : "¡Puedes empezar otra partida!"}
-                    </motion.p>
-                    
                     <div className="flex justify-center gap-4 mt-6">
                       <motion.div 
                         className="flex items-center gap-2"
@@ -220,11 +209,8 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                         </Button>
                       </motion.div>
                       
-                      {/* Botón de iniciar nueva partida - ahora más prominente */}
                       <motion.div 
                         whileHover={{ scale: 1.05 }}
-                        animate={{ y: [0, -5, 0] }}
-                        transition={{ duration: 2, repeat: Infinity }}
                       >
                         <Button 
                           onClick={handleNewGame}
