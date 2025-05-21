@@ -112,11 +112,13 @@ const App = () => {
             <Toaster />
             <Sonner />
             
+            {/* Render GameRoutes first so it's visible underneath the loading screen */}
+            <GameRoutes />
+            
+            {/* Loading screen on top with transparent background */}
             {isLoading && (
               <LoadingScreen onLoadComplete={handleLoadComplete} />
             )}
-            
-            {!isLoading && <GameRoutes />}
           </GameProvider>
         </LanguageProvider>
       </TooltipProvider>
