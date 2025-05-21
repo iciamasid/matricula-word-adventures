@@ -88,9 +88,12 @@ const GameContext = createContext<GameContextType | null>(null);
 // Create a key for localStorage to store game state
 const GAME_STATE_KEY = 'matriculabra_game_state';
 
-export const GameProvider: React.FC<{
+// Define proper children type for the GameProvider
+interface GameProviderProps {
   children: React.ReactNode;
-}> = ({ children }) => {
+}
+
+export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   // Get current language from LanguageContext
   const { language } = useLanguage?.() || { language: 'es' };
 
