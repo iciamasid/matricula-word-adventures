@@ -5,9 +5,10 @@ import { Progress } from "@/components/ui/progress";
 
 interface LoadingScreenProps {
   onLoadComplete: () => void;
+  isRestarting?: boolean;
 }
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete, isRestarting = false }) => {
   const [progress, setProgress] = useState(0);
   
   useEffect(() => {
@@ -55,7 +56,9 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
         <div className="w-full space-y-3">
           <Progress value={progress} className="h-3 bg-purple-200" />
           <p className="text-center text-white kids-text text-xl drop-shadow-md">
-            {progress < 100 ? "Cargando el juego..." : "¡Listo!"}
+            {progress < 100 ? 
+              (isRestarting ? "Iniciando nueva partida..." : "Cargando el juego...") 
+              : "¡Listo!"}
           </p>
         </div>
       </motion.div>
