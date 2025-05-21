@@ -44,12 +44,12 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
         </h2>
 
         <div className="space-y-5">
-          <motion.div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" whileHover={{
+          <motion.div whileHover={{
           scale: 1.02
         }} transition={{
           type: "spring",
           stiffness: 300
-        }}>
+        }} className="backdrop-blur-sm p-4 rounded-lg bg-stone-400">
             <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
               <Target className={iconColor + " w-6 h-6"} />
               {"Objetivo del juego"}
