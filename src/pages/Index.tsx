@@ -231,6 +231,10 @@ const GameContent = () => {
         
         <div className="w-full max-w-md flex flex-col items-center">
           <LicensePlate />
+          
+          {/* Add more space between license plate and word input - mb-6 added */}
+          <div className="mb-6"></div>
+          
           <WordInput />
           
           {/* Score components with reduced spacing (removed space-y-4 class) */}

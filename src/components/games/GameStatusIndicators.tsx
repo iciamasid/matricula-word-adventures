@@ -53,9 +53,7 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
         </div>
       )}
       
-      {/* Removed the "Draw a path" notification */}
-      
-      {/* Animation completion message - Using GamePopup style instead */}
+      {/* Animation completion message - Using floating notification instead of banner */}
       {animationCompleted && (
         <motion.div 
           className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300 shadow-md mb-4"

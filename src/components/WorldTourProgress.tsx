@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -145,8 +144,11 @@ const WorldTourProgress = () => {
   useEffect(() => {
     // Calculate target value based on current level
     // For level 1, we show zero progress (no purple line)
-    // For other levels, the path should reach exactly the previous country (level - 1)
-    const targetValue = level <= 1 ? 0 : (level - 1) / 9 * 100;
+    // For level 2 to 9, the path should reach exactly the previous country (level - 1)
+    // For level 10, the path should reach Argentina (level 9) but not go to Spain yet
+    const targetLevel = Math.min(level, 10);
+    const targetPosition = targetLevel <= 1 ? 0 : (Math.min(targetLevel - 1, 9)) / 9;
+    const targetValue = targetPosition * 100;
     
     let animationActive = true;
     const runAnimation = async () => {
