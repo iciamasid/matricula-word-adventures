@@ -1,36 +1,39 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { X, Target, Award, Star, Book, Globe, Car, Gift } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
-
 interface GameInstructionsProps {
   onClose: () => void;
 }
+const GameInstructions: React.FC<GameInstructionsProps> = ({
+  onClose
+}) => {
+  const {
+    t
+  } = useLanguage();
 
-const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
-  const { t } = useLanguage();
-  
   // Always use purple theme since we removed English
   const primaryColor = "purple";
   const bgGradient = "from-purple-600 to-purple-800";
   const iconColor = "text-yellow-300";
-  
-  return (
-    <motion.div 
-      initial={{ opacity: 0 }} 
-      animate={{ opacity: 1 }} 
-      exit={{ opacity: 0 }} 
-      className="fixed inset-0 flex items-center justify-center z-50 bg-black/70 p-4" 
-      onClick={onClose}
-    >
-      <motion.div 
-        initial={{ scale: 0.9, opacity: 0, y: 50 }} 
-        animate={{ scale: 1, opacity: 1, y: 0 }} 
-        transition={{ duration: 0.3 }} 
-        className={`bg-gradient-to-br ${bgGradient} rounded-xl p-6 max-w-md w-full mb-4 mr-4 shadow-lg relative overflow-y-auto max-h-[80vh] border-4 border-yellow-400`} 
-        onClick={e => e.stopPropagation()}
-      >
+  return <motion.div initial={{
+    opacity: 0
+  }} animate={{
+    opacity: 1
+  }} exit={{
+    opacity: 0
+  }} className="fixed inset-0 flex items-center justify-center z-50 bg-black/70 p-4" onClick={onClose}>
+      <motion.div initial={{
+      scale: 0.9,
+      opacity: 0,
+      y: 50
+    }} animate={{
+      scale: 1,
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.3
+    }} className={`bg-gradient-to-br ${bgGradient} rounded-xl p-6 max-w-md w-full mb-4 mr-4 shadow-lg relative overflow-y-auto max-h-[80vh] border-4 border-yellow-400`} onClick={e => e.stopPropagation()}>
         <button onClick={onClose} className="absolute top-3 right-3 text-white hover:text-yellow-300">
           <X className="w-6 h-6" />
         </button>
@@ -41,11 +44,12 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
         </h2>
 
         <div className="space-y-5">
-          <motion.div 
-            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" 
-            whileHover={{ scale: 1.02 }} 
-            transition={{ type: "spring", stiffness: 300 }}
-          >
+          <motion.div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" whileHover={{
+          scale: 1.02
+        }} transition={{
+          type: "spring",
+          stiffness: 300
+        }}>
             <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
               <Target className={iconColor + " w-6 h-6"} />
               {"Objetivo del juego"}
@@ -55,11 +59,12 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             </p>
           </motion.div>
 
-          <motion.div 
-            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" 
-            whileHover={{ scale: 1.02 }} 
-            transition={{ type: "spring", stiffness: 300 }}
-          >
+          <motion.div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" whileHover={{
+          scale: 1.02
+        }} transition={{
+          type: "spring",
+          stiffness: 300
+        }}>
             <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
               <Award className={iconColor + " w-6 h-6"} />
               {"Puntuación"}
@@ -93,9 +98,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
               </li>
               <li className="instruction-text kids-text text-white text-lg flex items-start gap-2">
                 <span className="text-green-400 mt-1 flex-shrink-0">✓</span> 
-                <span>
-                  {"+200 puntos extra por palabras válidas en inglés!"}
-                </span>
+                
               </li>
               <li className="instruction-text kids-text text-red-300 text-lg flex items-start gap-2">
                 <X className="w-5 h-5 text-red-400 mt-1 flex-shrink-0" /> 
@@ -106,11 +109,12 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             </ul>
           </motion.div>
 
-          <motion.div 
-            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" 
-            whileHover={{ scale: 1.02 }} 
-            transition={{ type: "spring", stiffness: 300 }}
-          >
+          <motion.div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" whileHover={{
+          scale: 1.02
+        }} transition={{
+          type: "spring",
+          stiffness: 300
+        }}>
             <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
               <Globe className={iconColor + " w-6 h-6"} />
               {"Niveles y viajes"}
@@ -120,11 +124,12 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             </p>
           </motion.div>
 
-          <motion.div 
-            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" 
-            whileHover={{ scale: 1.02 }} 
-            transition={{ type: "spring", stiffness: 300 }}
-          >
+          <motion.div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" whileHover={{
+          scale: 1.02
+        }} transition={{
+          type: "spring",
+          stiffness: 300
+        }}>
             <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
               <Car className={iconColor + " w-6 h-6"} />
               {"Personalización"}
@@ -134,11 +139,12 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             </p>
           </motion.div>
 
-          <motion.div 
-            className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" 
-            whileHover={{ scale: 1.02 }} 
-            transition={{ type: "spring", stiffness: 300 }}
-          >
+          <motion.div className="bg-white/20 backdrop-blur-sm p-4 rounded-lg" whileHover={{
+          scale: 1.02
+        }} transition={{
+          type: "spring",
+          stiffness: 300
+        }}>
             <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
               <Gift className={iconColor + " w-6 h-6"} />
               {"Bonificaciones especiales"}
@@ -148,22 +154,17 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({ onClose }) => {
             </p>
           </motion.div>
 
-          <motion.div 
-            whileHover={{ scale: 1.05 }} 
-            whileTap={{ scale: 0.95 }} 
-            className="pt-2"
-          >
-            <button 
-              onClick={onClose} 
-              className={`w-full bg-yellow-400 hover:bg-yellow-500 text-purple-900 py-3 px-4 rounded-lg kids-text text-xl font-bold`}
-            >
+          <motion.div whileHover={{
+          scale: 1.05
+        }} whileTap={{
+          scale: 0.95
+        }} className="pt-2">
+            <button onClick={onClose} className={`w-full bg-yellow-400 hover:bg-yellow-500 text-purple-900 py-3 px-4 rounded-lg kids-text text-xl font-bold`}>
               {"¡Entendido!"}
             </button>
           </motion.div>
         </div>
       </motion.div>
-    </motion.div>
-  );
+    </motion.div>;
 };
-
 export default GameInstructions;
