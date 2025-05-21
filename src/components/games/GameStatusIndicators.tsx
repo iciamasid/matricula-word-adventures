@@ -28,7 +28,7 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
       {/* Loading indicator */}
       {isInitializing && (
         <motion.div 
-          className="text-center p-3 bg-purple-100 rounded-lg shadow-md animate-pulse mb-4"
+          className="text-center p-3 bg-purple-100/80 rounded-lg shadow-md animate-pulse mb-4"
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
         >
@@ -43,7 +43,7 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
       
       {/* Canvas state indicator */}
       {!canvasReady && !isInitializing && (
-        <div className="text-center p-3 bg-red-100 rounded-lg border-2 border-red-300 shadow-md mb-4">
+        <div className="text-center p-3 bg-red-100/80 rounded-lg border-2 border-red-300 shadow-md mb-4">
           <div className="flex items-center justify-center gap-2">
             <AlertCircle className="w-7 h-7 text-red-600" />
             <p className="font-bold text-red-600 kids-text text-lg">
@@ -53,21 +53,21 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
         </div>
       )}
       
-      {/* Animation completion message - Using floating notification instead of banner */}
+      {/* Animation completion message */}
       {animationCompleted && (
         <motion.div 
-          className="text-center p-4 bg-yellow-100 rounded-lg border-2 border-yellow-300 shadow-md mb-4"
+          className="text-center p-4 bg-purple-500/80 backdrop-blur-sm rounded-lg border-2 border-purple-400 shadow-md mb-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0, scale: [1, 1.05, 1] }}
           transition={{ type: "spring", stiffness: 400, damping: 10, scale: { repeat: Infinity, duration: 2 } }}
         >
           <div className="flex flex-col items-center justify-center gap-2">
             <div className="flex items-center gap-3">
-              <Trophy className="w-7 h-7 text-yellow-600" />
-              <p className="font-bold text-yellow-700 kids-text text-2xl">
+              <Trophy className="w-7 h-7 text-yellow-300" />
+              <p className="font-bold text-white kids-text text-2xl">
                 {"¡Has llegado a la meta! 🎉"}
               </p>
-              <Trophy className="w-7 h-7 text-yellow-600" />
+              <Trophy className="w-7 h-7 text-yellow-300" />
             </div>
             <button 
               className="mt-2 bg-purple-600 text-white kids-text py-2 px-4 rounded-md hover:bg-purple-700"

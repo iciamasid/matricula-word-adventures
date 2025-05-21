@@ -49,7 +49,11 @@ const GameContent = () => {
     showBirthdayBonusPopup,
     setShowBirthdayBonusPopup,
     birthYearBonus,
-    showAgeBonusPopup
+    showAgeBonusPopup,
+    // Add the necessary game state update functions
+    setLevel,
+    setTotalPoints,
+    updateGameState
   } = useGame();
 
   // Ref to the license plate section
@@ -142,6 +146,21 @@ const GameContent = () => {
     }
   };
 
+  // Handler for jump to level 9 button
+  const handleJumpToLevel9 = () => {
+    // Set level to 9
+    setLevel(9);
+    // Set points to a reasonable amount for level 9 (approximately 9000 points)
+    setTotalPoints(9000);
+    // Update destinations based on new level
+    updateDestinations(9);
+    // Show success toast
+    toast({
+      title: "¡Nivel actualizado!",
+      description: "Has saltado al nivel 9. ¡Preparado para llegar al nivel 10!"
+    });
+  };
+
   return (
     <div 
       className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
@@ -192,6 +211,16 @@ const GameContent = () => {
         >
           <HelpCircle className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
+        
+        {/* Debug button positioned at top left of the screen */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleJumpToLevel9}
+          className="absolute top-2 left-4 bg-purple-700/90 hover:bg-purple-800 text-white border-purple-600 kids-text text-base font-normal"
+        >
+          Saltar a Nivel 9
+        </Button>
       </div>
 
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
@@ -233,7 +262,7 @@ const GameContent = () => {
           <LicensePlate />
           
           {/* Add more space between license plate and word input - mb-6 added */}
-          <div className="mb-6"></div>
+          <div className="mb-8"></div>
           
           <WordInput />
           
