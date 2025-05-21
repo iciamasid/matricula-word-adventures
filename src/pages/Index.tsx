@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -52,8 +51,7 @@ const GameContent = () => {
     showAgeBonusPopup,
     // Add the necessary game state update functions
     setLevel,
-    setTotalPoints,
-    updateGameState
+    setTotalPoints
   } = useGame();
 
   // Ref to the license plate section

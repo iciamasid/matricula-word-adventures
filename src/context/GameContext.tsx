@@ -40,6 +40,8 @@ interface GameContextType {
   totalPoints: number;
   highScore: number;
   gamesPlayed: number;
+  setLevel: (level: number) => void;
+  setTotalPoints: (points: number) => void;
   
   // License plate related
   licensePlate: string;
