@@ -142,7 +142,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
           type: "spring",
           stiffness: 300
         }} className="backdrop-blur-sm p-4 rounded-lg bg-teal-400">
-            <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
+            <h3 className="text-lg font-semibold text-fuchsia-700">
               <Gift className={iconColor + " w-6 h-6"} />
               {"Bonificaciones especiales"}
             </h3>
