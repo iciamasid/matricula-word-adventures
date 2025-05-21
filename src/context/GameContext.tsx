@@ -85,11 +85,7 @@ const GameContext = createContext<GameContextType | null>(null);
 const GAME_STATE_KEY = 'matriculabra_game_state';
 
 export const GameProvider: React.FC<{
-  children: React.ReactNode | ((props: { 
-    showBonusPopup: boolean;
-    setShowBonusPopup: (show: boolean) => void;
-    bonusPoints: number;
-  }) => React.ReactNode);
+  children: React.ReactNode;
 }> = ({ children }) => {
   // Get current language from LanguageContext
   const { language } = useLanguage?.() || { language: 'es' };
@@ -756,15 +752,6 @@ export const GameProvider: React.FC<{
     // Add updateDestinations function to the context value
     updateDestinations,
   };
-
-  // Check if children is a function to pass bonus popup state
-  if (typeof children === 'function') {
-    return (
-      <GameContext.Provider value={contextValue}>
-        {children({ showBonusPopup, setShowBonusPopup, bonusPoints })}
-      </GameContext.Provider>
-    );
-  }
 
   return (
     <GameContext.Provider value={contextValue}>

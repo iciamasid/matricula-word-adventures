@@ -37,6 +37,9 @@ const PlayerAgeInput: React.FC<PlayerAgeInputProps> = ({ onSave, initialAge }) =
       setAge(savedAge);
       setIsEditing(false);
       onSave(parseInt(savedAge));
+    } else {
+      // No saved age, make sure editing mode is active
+      setIsEditing(true);
     }
   }, [onSave]);
 

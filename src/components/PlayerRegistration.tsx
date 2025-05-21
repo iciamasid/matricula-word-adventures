@@ -24,7 +24,9 @@ const PlayerRegistration: React.FC = () => {
     t,
     isEnglish
   } = useLanguage();
-  const [showForm, setShowForm] = useState(!playerName || !playerAge);
+  
+  // Always show the form when first loading if either name or age is not set
+  const [showForm, setShowForm] = useState(true);
 
   // Set color theme based on language
   const bgColor = isEnglish ? "bg-orange-100/70 backdrop-blur-sm" : "bg-purple-100/70 backdrop-blur-sm";
@@ -45,10 +47,12 @@ const PlayerRegistration: React.FC = () => {
     }
   }, [playerName, playerGender, setPlayerGender]);
   
+  // Check if both name and age are set on initial load
   useEffect(() => {
-    // If we have both name and age, hide the form
     if (playerName && playerAge) {
       setShowForm(false);
+    } else {
+      setShowForm(true);
     }
   }, [playerName, playerAge]);
   

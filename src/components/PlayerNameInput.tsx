@@ -37,6 +37,9 @@ const PlayerNameInput: React.FC<PlayerNameInputProps> = ({ onSave, initialName =
       setName(savedName);
       setIsEditing(false);
       onSave(savedName);
+    } else {
+      // No saved name, make sure editing mode is active
+      setIsEditing(true);
     }
   }, [onSave]);
 
