@@ -13,6 +13,7 @@ import DrawGamePage from "./pages/DrawGamePage";
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionConfetti from "./components/CompletionConfetti";
+import CompletionBanner from "./components/CompletionBanner";
 import { useState, useEffect } from "react";
 import LoadingScreen from "./components/LoadingScreen";
 import { useGame } from "./context/GameContext";
@@ -34,8 +35,24 @@ const GameRoutes = () => {
     bonusPoints,
     showAgeBonusPopup,
     playerAge,
-    showCompletionBanner
+    showCompletionBanner,
+    resetGame
   } = useGame();
+  
+  // State for completion banner
+  const [showCompletionPopup, setShowCompletionPopup] = useState(false);
+
+  // Watch for level 10 completion banner
+  useEffect(() => {
+    if (showCompletionBanner) {
+      setShowCompletionPopup(true);
+    }
+  }, [showCompletionBanner]);
+
+  // Handle closing the completion banner
+  const handleCloseCompletionBanner = () => {
+    setShowCompletionPopup(false);
+  };
 
   return (
     <>
@@ -69,6 +86,12 @@ const GameRoutes = () => {
       {showCompletionBanner && (
         <CompletionConfetti onClose={() => {}} />
       )}
+      
+      {/* Add the CompletionBanner component for level 10 completion */}
+      <CompletionBanner
+        open={showCompletionPopup}
+        onClose={handleCloseCompletionBanner}
+      />
     </>
   );
 };

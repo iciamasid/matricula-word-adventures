@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -144,12 +145,12 @@ const GameContent = () => {
     }
   };
 
-  // Handler for jump to level 9 button
+  // Handler for jump to level 9 button - MODIFIED TO SET 4000 POINTS INSTEAD OF 9000
   const handleJumpToLevel9 = () => {
     // Set level to 9
     setLevel(9);
-    // Set points to a reasonable amount for level 9 (approximately 9000 points)
-    setTotalPoints(9000);
+    // Set points to a reasonable amount for level 9 (approximately 4000 points)
+    setTotalPoints(4000);
     // Update destinations based on new level
     updateDestinations(9);
     // Show success toast
