@@ -60,16 +60,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
     }
   }, [open, confettiLaunched]);
   
-  // Auto-close after 12 seconds
-  useEffect(() => {
-    if (open) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 12000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [open, onClose]);
+  // Remove auto-close since we want player to make an explicit choice
   
   // Handle new game start
   const handleNewGame = () => {
@@ -197,30 +188,24 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                       </motion.div>
                     </div>
                     
-                    <div className="mt-8 flex flex-col md:flex-row justify-center gap-4">
-                      <motion.div 
-                        whileHover={{ scale: 1.05 }}
+                    {/* New Game button prominently displayed */}
+                    <motion.div 
+                      className="mt-8"
+                      whileHover={{ scale: 1.05 }}
+                      animate={{ 
+                        y: [0, -5, 0],
+                        boxShadow: ["0px 0px 0px rgba(0,0,0,0)", "0px 10px 20px rgba(0,0,0,0.2)", "0px 0px 0px rgba(0,0,0,0)"]
+                      }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <Button 
+                        onClick={handleNewGame}
+                        className="bg-green-600 hover:bg-green-700 text-white text-2xl px-10 py-5 rounded-full kids-text shadow-lg flex items-center justify-center gap-2"
                       >
-                        <Button 
-                          onClick={onClose}
-                          className="bg-blue-600 hover:bg-blue-700 text-white text-xl px-8 py-3 rounded-full kids-text"
-                        >
-                          {isEnglish ? "Keep playing!" : "¡Seguir jugando!"}
-                        </Button>
-                      </motion.div>
-                      
-                      <motion.div 
-                        whileHover={{ scale: 1.05 }}
-                      >
-                        <Button 
-                          onClick={handleNewGame}
-                          className="bg-green-600 hover:bg-green-700 text-white text-xl px-8 py-3 rounded-full kids-text flex items-center gap-2"
-                        >
-                          <RefreshCw className="w-5 h-5" />
-                          {isEnglish ? "Start New Game" : "Iniciar nueva partida"}
-                        </Button>
-                      </motion.div>
-                    </div>
+                        <RefreshCw className="w-6 h-6" />
+                        {isEnglish ? "Start New Game" : "Iniciar nueva partida"}
+                      </Button>
+                    </motion.div>
                   </div>
                 </div>
               </div>

@@ -5,7 +5,7 @@ import GamePopup from "@/components/GamePopup";
 import { useLanguage } from "@/context/LanguageContext";
 
 const LevelUpAlert: React.FC = () => {
-  const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame } = useGame();
+  const { level, showLevelUp, clearLevelUpMessage, originInfo } = useGame();
   const { isEnglish } = useLanguage();
   
   // Verificar si estamos navegando entre páginas
@@ -19,19 +19,8 @@ const LevelUpAlert: React.FC = () => {
     }
   }, [clearLevelUpMessage]);
   
-  // Special handling for level 10 completion - reset the game
-  useEffect(() => {
-    if (showLevelUp && level >= 10) {
-      // Reset game after the popup is shown and closed (8 seconds)
-      const timer = setTimeout(() => {
-        resetGame();
-        clearLevelUpMessage();
-      }, 8000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
-
+  // No more handling for level 10 completion here, as it's now done in CompletionBanner
+  
   // Get the current country based on origin info
   const getCurrentCountry = () => {
     return originInfo?.country || "";
@@ -60,7 +49,7 @@ const LevelUpAlert: React.FC = () => {
   
   return (
     <GamePopup
-      open={showLevelUp}
+      open={showLevelUp && level < 10} // Only show for levels below 10
       onClose={clearLevelUpMessage}
       type="levelUp"
       message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
