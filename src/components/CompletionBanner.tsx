@@ -1,81 +1,234 @@
 
-import React from "react";
-import { motion } from "framer-motion";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
+import { Trophy, Star, Rocket, Globe, PartyPopper, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Trophy, Bike } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
 import { useGame } from "@/context/GameContext";
+import confetti from "canvas-confetti";
+import { useLanguage } from "@/context/LanguageContext";
 
 interface CompletionBannerProps {
   open: boolean;
   onClose: () => void;
 }
 
-const CompletionBanner: React.FC<CompletionBannerProps> = ({ open, onClose }) => {
-  const { isEnglish } = useLanguage();
-  const { resetGame, startMotorcycleTour, level } = useGame();
-
-  // Handler to start a new game
+const CompletionBanner: React.FC<CompletionBannerProps> = ({ 
+  open, 
+  onClose
+}) => {
+  const { playerName, playerGender, totalPoints, resetGame } = useGame();
+  const { t, isEnglish } = useLanguage();
+  const [confettiLaunched, setConfettiLaunched] = useState(false);
+  
+  // Create confetti effect
+  useEffect(() => {
+    if (open && !confettiLaunched) {
+      const duration = 5 * 1000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+      
+      const randomInRange = (min: number, max: number) => {
+        return Math.random() * (max - min) + min;
+      };
+      
+      const interval: any = setInterval(() => {
+        const timeLeft = animationEnd - Date.now();
+        
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+        
+        const particleCount = 50 * (timeLeft / duration);
+        
+        // Launch particles from both sides
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 }
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 }
+        });
+      }, 250);
+      
+      setConfettiLaunched(true);
+      
+      return () => clearInterval(interval);
+    }
+  }, [open, confettiLaunched]);
+  
+  // Auto-close after 12 seconds
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(() => {
+        onClose();
+      }, 12000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [open, onClose]);
+  
+  // Handle new game start
   const handleNewGame = () => {
     resetGame();
     onClose();
   };
-
-  // Handler to start motorcycle tour
-  const handleStartMotorcycleTour = () => {
-    startMotorcycleTour();
-    onClose();
-  };
-
+  
+  const name = playerName || (
+    playerGender === "niño" ? (isEnglish ? "champion" : "campeón") : 
+    playerGender === "niña" ? (isEnglish ? "champion" : "campeona") : 
+    (isEnglish ? "champion" : "campeón/a")
+  );
+  
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-br from-purple-100 to-indigo-50 border-2 border-purple-300 p-0">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="p-6"
-        >
-          <div className="flex flex-col items-center text-center space-y-4">
-            <div className="h-16 w-16 bg-purple-500 rounded-full flex items-center justify-center mb-2">
-              <Trophy className="h-8 w-8 text-white" />
-            </div>
-
-            <h2 className="text-2xl font-bold mb-1 text-purple-800 kids-text">
-              {isEnglish ? "CONGRATULATIONS!" : "¡ENHORABUENA!"}
-            </h2>
-
-            <p className="text-center mb-2 text-gray-600 kids-text">
-              {isEnglish
-                ? `You've completed all ${level} levels of the World Tour!`
-                : `¡Has completado los ${level} niveles de la Vuelta al Mundo!`}
-            </p>
-
-            <div className="flex flex-col gap-3 w-full max-w-xs">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={handleNewGame}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white kids-text"
-                >
-                  {isEnglish ? "Start New Game" : "Iniciar Nuevo Juego"}
-                </Button>
-              </motion.div>
-
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                <Button
-                  onClick={handleStartMotorcycleTour}
-                  className="w-full bg-cyan-600 hover:bg-cyan-700 text-white kids-text flex items-center justify-center gap-2"
-                >
-                  <Bike className="w-5 h-5" />
-                  {isEnglish ? "Start Motorcycle Tour!" : "¡Iniciar Tour en Moto!"}
-                </Button>
-              </motion.div>
-            </div>
-          </div>
-        </motion.div>
-      </DialogContent>
-    </Dialog>
+    <AnimatePresence>
+      {open && (
+        <AlertDialog open={open}>
+          <AlertDialogContent className="max-w-4xl border-0 p-0 bg-transparent">
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, y: -100 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.5, opacity: 0, y: -100 }}
+              transition={{ type: "spring", stiffness: 300, damping: 15 }}
+              className="relative w-full max-w-4xl mx-auto"
+            >
+              <div className="bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 p-8 rounded-2xl border-8 border-yellow-300 shadow-[0_0_50px_rgba(234,179,8,0.7)] relative z-10 overflow-hidden">
+                {/* Background animation */}
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                  <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle,_white_10%,_transparent_70%)]"></div>
+                  {[...Array(20)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute bg-yellow-300 rounded-full"
+                      style={{
+                        width: Math.random() * 20 + 10,
+                        height: Math.random() * 20 + 10,
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
+                      }}
+                      animate={{
+                        scale: [1, 2, 1],
+                        opacity: [0.7, 1, 0.7],
+                      }}
+                      transition={{
+                        duration: Math.random() * 3 + 2,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                      }}
+                    />
+                  ))}
+                </div>
+                
+                <div className="relative z-10">
+                  <div className="text-center">
+                    <motion.div
+                      className="flex justify-center mb-4"
+                      animate={{ rotate: [0, 5, 0, -5, 0], scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <img 
+                        src="/lovable-uploads/fiesta.gif" 
+                        alt={isEnglish ? "Celebration" : "Celebración"}
+                        className="w-32 h-32 object-contain"
+                      />
+                    </motion.div>
+                    
+                    <motion.h2
+                      className="text-5xl font-bold mb-4 text-white kids-text tracking-wider"
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      {isEnglish ? `CONGRATULATIONS ${name.toUpperCase()}!` : `¡FELICIDADES ${name.toUpperCase()}!`}
+                    </motion.h2>
+                    
+                    <motion.div
+                      className="flex justify-center items-center mb-4 space-x-4"
+                      animate={{ y: [0, -10, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      <Trophy className="h-8 w-8 text-yellow-300" />
+                      <h3 className="text-3xl font-bold text-yellow-300 kids-text">
+                        {isEnglish ? "YOU'VE COMPLETED THE WORLD TOUR!" : "¡HAS COMPLETADO LA VUELTA AL MUNDO!"}
+                      </h3>
+                      <Trophy className="h-8 w-8 text-yellow-300" />
+                    </motion.div>
+                    
+                    <motion.div
+                      className="text-center mb-6"
+                      animate={{ y: [0, 5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <p className="text-2xl text-white kids-text mb-2">
+                        {isEnglish ? "You've earned a total of" : "Has conseguido un total de"}
+                      </p>
+                      <div className="flex items-center justify-center gap-2">
+                        <Star className="h-6 w-6 text-yellow-300" />
+                        <span className="text-4xl font-bold text-yellow-300 kids-text">
+                          {totalPoints} {isEnglish ? "POINTS" : "PUNTOS"}
+                        </span>
+                        <Star className="h-6 w-6 text-yellow-300" />
+                      </div>
+                    </motion.div>
+                    
+                    <div className="flex justify-center gap-4 mt-6">
+                      <motion.div 
+                        className="flex items-center gap-2"
+                        animate={{ rotate: [0, 5, 0, -5, 0] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      >
+                        <PartyPopper className="h-8 w-8 text-white" />
+                      </motion.div>
+                      <motion.div 
+                        className="flex items-center gap-2"
+                        animate={{ rotate: [0, -5, 0, 5, 0] }}
+                        transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+                      >
+                        <Globe className="h-8 w-8 text-white" />
+                      </motion.div>
+                      <motion.div 
+                        className="flex items-center gap-2"
+                        animate={{ rotate: [0, 5, 0, -5, 0] }}
+                        transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                      >
+                        <Rocket className="h-8 w-8 text-white" />
+                      </motion.div>
+                    </div>
+                    
+                    <div className="mt-8 flex flex-col md:flex-row justify-center gap-4">
+                      <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <Button 
+                          onClick={onClose}
+                          className="bg-blue-600 hover:bg-blue-700 text-white text-xl px-8 py-3 rounded-full kids-text"
+                        >
+                          {isEnglish ? "Keep playing!" : "¡Seguir jugando!"}
+                        </Button>
+                      </motion.div>
+                      
+                      <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <Button 
+                          onClick={handleNewGame}
+                          className="bg-green-600 hover:bg-green-700 text-white text-xl px-8 py-3 rounded-full kids-text flex items-center gap-2"
+                        >
+                          <RefreshCw className="w-5 h-5" />
+                          {isEnglish ? "Start New Game" : "Iniciar nueva partida"}
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
+    </AnimatePresence>
   );
 };
 

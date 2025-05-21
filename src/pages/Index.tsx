@@ -1,178 +1,333 @@
 
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import LanguageSelector from "@/components/LanguageSelector";
-import { useLanguage } from "@/context/LanguageContext";
-import { useGame } from "@/context/GameContext";
-import PlayerNameInput from "@/components/PlayerNameInput";
-import PlayerRegistration from "@/components/PlayerRegistration";
-import TotalPointsPanel from "@/components/TotalPointsPanel";
+import React, { useState, useEffect, useRef } from "react";
+import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
-import WorldMap from "@/components/WorldMap";
-import WorldTourProgress from "@/components/WorldTourProgress";
-import SuccessAlert from "@/components/SuccessAlert";
+import WordInput from "@/components/WordInput";
 import ErrorAlert from "@/components/ErrorAlert";
+import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { Globe, RefreshCw, ChevronDown, HelpCircle } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
-import CarCustomization from "@/components/CarCustomization";
-import MotorcycleCustomization from "@/components/MotorcycleCustomization";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Toaster } from "@/components/ui/toaster";
+import { Link } from "react-router-dom";
+import { toast } from "@/hooks/use-toast";
 import ScorePanel from "@/components/ScorePanel";
+import PlayerRegistration from "@/components/PlayerRegistration";
+import WorldTourProgress from "@/components/WorldTourProgress";
+import CarCustomization from "@/components/CarCustomization";
+import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
+import AgeBonusPopup from "@/components/AgeBonusPopup";
 
-// Main Index component
-const Index: React.FC = () => {
-  const { playerName } = useGame();
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Wait for animation to complete before showing content
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  // Conditional rendering based on player registration
+const Index = () => {
   return (
-    <div className="min-h-screen flex flex-col p-4 bg-gradient-to-br from-indigo-200/30 to-purple-100/30 relative">
-      {/* Language selector */}
-      <div className="absolute top-4 right-4 z-50">
-        <LanguageSelector />
-      </div>
-      
-      {/* Main content */}
-      <motion.div
-        className="flex-1 flex flex-col gap-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        {/* Show registration or game interface based on player name */}
-        {!playerName ? (
-          <PlayerRegistration />
-        ) : (
-          <GameInterface />
-        )}
-      </motion.div>
-    </div>
+    <GameProvider>
+      <GameContent />
+    </GameProvider>
   );
 };
 
-// Game interface component shown after registration
-const GameInterface: React.FC = () => {
-  const { isEnglish } = useLanguage();
-  const { 
-    playerName,
-    level,
-    originInfo,
+// Component to handle the game content
+const GameContent = () => {
+  const [showInstructions, setShowInstructions] = useState(false);
+  const isMobile = useIsMobile();
+  const worldTourRef = useRef<HTMLDivElement>(null);
+  const {
+    totalPoints,
     destinationInfo,
-    isMotorcycleMode,
-    setPlayerName
+    originInfo,
+    level,
+    resetGame,
+    plateConsonants,
+    selectedCarColor,
+    updateDestinations,
+    playerName,
+    playerAge,
+    licensePlate,
+    showBirthdayBonusPopup,
+    setShowBirthdayBonusPopup,
+    birthYearBonus,
+    showAgeBonusPopup,
+    // Add the necessary game state update functions
+    setLevel,
+    setTotalPoints
   } = useGame();
-  
-  // Determine welcome text based on mode
-  const welcomeTitle = isEnglish 
-    ? `Welcome, ${playerName}!` 
-    : `¡Bienvenido/a, ${playerName}!`;
-  
-  const tourType = isMotorcycleMode
-    ? (isEnglish ? "Motorcycle Tour" : "Tour en Moto")
-    : (isEnglish ? "World Tour" : "Vuelta al Mundo");
+
+  // Ref to the license plate section
+  const licensePlateRef = useRef<HTMLDivElement>(null);
+
+  // Asegura que la página comience desde la parte superior al cargar
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  // IMPORTANT: Always make sure Spain is unlocked regardless of level
+  useEffect(() => {
+    // This ensures Spain is always unlocked when the game starts
+    if (level === 0) {
+      updateDestinations(level);
+    }
+  }, []);
+
+  // Check if we're navigating back from another page and restore proper destinations
+  useEffect(() => {
+    const isNavigatingBack = sessionStorage.getItem('navigatingBack');
+    if (isNavigatingBack) {
+      // Clear the navigation flag
+      sessionStorage.removeItem('navigatingBack');
+      // Restore proper destinations based on current level
+      updateDestinations(level);
+
+      // If car is already selected, scroll to license plate section
+      if (selectedCarColor && licensePlateRef.current) {
+        // Slight delay to ensure DOM is ready
+        setTimeout(() => {
+          licensePlateRef.current?.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }, 100);
+      }
+    }
+  }, []);
+
+  // Function to scroll to world tour section
+  const scrollToWorldTour = () => {
+    if (worldTourRef.current) {
+      worldTourRef.current.scrollIntoView({
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Determine the color theme (always using Spanish/Purple since we removed English)
+  const bgColor = "bg-bba7ca";
+  const panelBgColor = "bg-purple-200";
+  const panelGradientBg = "bg-gradient-to-r from-purple-300 to-purple-200";
+  const buttonBgColor = "bg-purple-600 hover:bg-purple-700";
+  const textColor = "text-purple-800";
+  const textColorLight = "text-purple-700";
+  const borderColor = "border-purple-300";
+  const hoverBgColor = "hover:bg-purple-100";
+
+  // Using sessionStorage to mark when we're navigating between pages
+  const handleNavigation = () => {
+    sessionStorage.setItem('navigatingBack', 'true');
+  };
+
+  // Helper function to get localized country names (now only Spanish)
+  const getLocalizedCountry = (country: string) => country;
+
+  // Simular países desbloqueados basados en nivel actual
+  const unlockedCountries = React.useMemo(() => {
+    // IMPORTANT: Always include Spain regardless of level
+    const countries = ["España"];
+    if (level >= 2) countries.push("Francia");
+    if (level >= 3) countries.push("Italia");
+    if (level >= 4) countries.push("Rusia");
+    if (level >= 5) countries.push("Japón");
+    if (level >= 6) countries.push("Australia");
+    if (level >= 7) countries.push("Estados Unidos");
+    if (level >= 8) countries.push("Méjico");
+    if (level >= 9) countries.push("Argentina");
+    if (level >= 10) countries.push("España (vuelta completa)");
+    return countries;
+  }, [level]);
+
+  const handleResetGame = () => {
+    if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
+      resetGame();
+      toast({
+        title: "¡Juego reiniciado!",
+        description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
+      });
+    }
+  };
+
+  // Handler for jump to level 9 button - MODIFIED TO SET 4000 POINTS INSTEAD OF 9000
+  const handleJumpToLevel9 = () => {
+    // Set level to 9
+    setLevel(9);
+    // Set points to a reasonable amount for level 9 (approximately 4000 points)
+    setTotalPoints(4000);
+    // Update destinations based on new level
+    updateDestinations(9);
+    // Show success toast
+    toast({
+      title: "¡Nivel actualizado!",
+      description: "Has saltado al nivel 9. ¡Preparado para llegar al nivel 10!"
+    });
+  };
 
   return (
-    <div className="flex flex-col w-full max-w-6xl mx-auto gap-6">
-      {/* Top section */}
-      <div className="flex flex-col md:flex-row gap-4">
-        {/* Left panel */}
-        <div className="flex-1 bg-white rounded-lg shadow-md p-6">
-          <motion.div
-            className="flex flex-col gap-4"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            {/* Welcome message */}
-            <div className="mb-2">
-              <h1 className="text-2xl md:text-3xl font-bold kids-text text-center">
-                {welcomeTitle}
-              </h1>
-              <h2 className={`text-xl md:text-2xl font-semibold kids-text text-center ${isMotorcycleMode ? 'text-cyan-600' : 'text-purple-600'}`}>
-                {tourType} - {isEnglish ? `Level ${level}` : `Nivel ${level}`}
-              </h2>
-            </div>
-            
-            {/* Origin and destination info */}
-            <div className="bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg p-4 my-2">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-2xl">{originInfo.flag}</span>
-                <h3 className="text-lg font-medium">{originInfo.city}, {originInfo.country}</h3>
-              </div>
-              <div className="w-full border-t border-gray-300 my-2"></div>
-              <div className="flex items-center gap-2">
-                <span className="text-2xl">{destinationInfo.flag}</span>
-                <h3 className="text-lg font-medium">{destinationInfo.city}, {destinationInfo.country}</h3>
-              </div>
-            </div>
-            
-            {/* Vehicle customization */}
-            <CarCustomization />
-            <MotorcycleCustomization />
-            
-            {/* License plate generator */}
-            <LicensePlate />
-            
-            {/* Score panel */}
-            <ScorePanel />
-            
-            {/* World tour progress */}
-            <WorldTourProgress />
-          </motion.div>
+    <div 
+      className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
+      style={{
+        backgroundSize: "cover",
+        backgroundAttachment: "fixed"
+      }}
+    >
+      {/* Special background effect when the world tour is completed */}
+      {level >= 10 && (
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute rounded-full bg-yellow-300 opacity-30"
+              style={{
+                width: Math.random() * 10 + 5,
+                height: Math.random() * 10 + 5,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`
+              }}
+              animate={{
+                y: [0, -100],
+                opacity: [0.3, 0]
+              }}
+              transition={{
+                duration: Math.random() * 5 + 5,
+                repeat: Infinity,
+                repeatType: "loop",
+                delay: Math.random() * 5
+              }}
+            />
+          ))}
+        </div>
+      )}
+      
+      {/* Added more space at the top with pt-12 (increased from pt-8) */}
+      <div className="relative w-full pt-12">
+        {/* Instructions button positioned at top right of the screen */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowInstructions(true)}
+          className={`absolute top-2 right-4 ${
+            'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'
+          } kids-text text-base font-normal`}
+        >
+          <HelpCircle className="w-4 h-4 mr-1" /> {"Ayuda"}
+        </Button>
+        
+        {/* Debug button positioned at top left of the screen */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleJumpToLevel9}
+          className="absolute top-2 left-4 bg-purple-700/90 hover:bg-purple-800 text-white border-purple-600 kids-text text-base font-normal"
+        >
+          Saltar a Nivel 9
+        </Button>
+      </div>
+
+      <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
+        {/* Player Registration Form with additional top margin */}
+        <div className="mt-4">
+          <PlayerRegistration />
         </div>
         
-        {/* Right panel with world map */}
-        <div className="flex-1">
+        {/* Car selection and CONDUCE button in a unified design */}
+        <div className="w-full flex justify-center mb-4">
+          <CarCustomization />
+        </div>
+        
+        {/* Show moving car BELOW the buttons */}
+        {playerName && selectedCarColor && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 }}
+            className="w-32 h-24 my-2"
+            animate={{
+              x: ["-100%", "100%"]
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "linear"
+            }}
           >
-            <WorldMap 
-              highlightCountry={destinationInfo.country}
-              unlockedCountries={[]}
+            <img 
+              src={`/lovable-uploads/${selectedCarColor.image}`}
+              alt={selectedCarColor.name} 
+              className="w-full h-full object-contain" 
             />
           </motion.div>
-        </div>
-      </div>
-      
-      {/* Bottom section - Instructions and Points */}
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="flex-1">
+        )}
+        
+        {/* This div will be the reference for scrolling */}
+        <div ref={licensePlateRef} className="w-full"></div>
+        
+        <div className="w-full max-w-md flex flex-col items-center">
+          <LicensePlate />
+          
+          {/* Add more space between license plate and word input - mb-6 added */}
+          <div className="mb-8"></div>
+          
+          <WordInput />
+          
+          {/* Score components with reduced spacing (removed space-y-4 class) */}
+          <div className="w-full mt-2">
+            <ScorePanel />
+          </div>
+          
+          {/* World Tour Progress - moved closer (reduced mt-6 to mt-1) */}
+          <div ref={worldTourRef} className="mt-1 w-full">
+            <WorldTourProgress />
+          </div>
+          
+          {/* Reset Game Button - Added more bottom margin (mb-16) */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            className="w-full max-w-xs mt-8 mb-16"
+            whileHover={{
+              scale: 1.03
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 400
+            }}
           >
-            <GameInstructions onClose={() => {}} />
+            <Button
+              onClick={handleResetGame}
+              size="lg"
+              className={`w-full text-white kids-text text-xl font-normal ${
+                "bg-purple-700 hover:bg-purple-600"
+              } px-[10px] mx-0 my-0 py-[20px]`}
+            >
+              <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
+            </Button>
           </motion.div>
         </div>
         
-        <div className="flex-1 md:max-w-xs">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7 }}
-          >
-            <TotalPointsPanel />
-            <div className="flex flex-wrap gap-2 mt-4">
-              <PlayerNameInput 
-                onSave={setPlayerName} 
-                initialName={playerName} 
-              />
-            </div>
-          </motion.div>
-        </div>
+        {/* Error Alert using GamePopup */}
+        <ErrorAlert />
+        
+        {/* Success Alert using GamePopup */}
+        <SuccessAlert />
+        
+        {/* Level Up Alert using GamePopup */}
+        <LevelUpAlert />
+        
+        {/* Birthday Bonus Popup */}
+        {playerAge && (
+          <BirthdayBonusPopup 
+            open={showBirthdayBonusPopup} 
+            onClose={() => setShowBirthdayBonusPopup(false)} 
+            birthYear={new Date().getFullYear() - (playerAge || 0)} 
+            points={50} 
+          />
+        )}
+
+        {/* Age Bonus Alert */}
+        <AgeBonusPopup 
+          open={showAgeBonusPopup} 
+          onClose={() => {}} 
+          points={20} 
+          age={playerAge || 0} 
+        />
+        
+        {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
-      
-      {/* Alert components */}
-      <SuccessAlert />
-      <ErrorAlert />
-      <LevelUpAlert />
+      <Toaster />
     </div>
   );
 };

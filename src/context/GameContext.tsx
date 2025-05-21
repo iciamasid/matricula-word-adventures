@@ -3,7 +3,6 @@ import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
 import { WORLD_DESTINATIONS } from '@/utils/mapData';
 import { useLanguage } from '@/context/LanguageContext';
-import { motorcycles, MOTORCYCLE_DESTINATIONS, MotorcycleType } from '@/utils/motorcycleData';
 
 interface CountryInfo {
   city: string;
@@ -78,12 +77,6 @@ interface GameContextType {
   
   // Add updateDestinations function to the interface
   updateDestinations: (level: number) => void;
-  
-  // Motorcycle tour mode
-  isMotorcycleMode: boolean;
-  startMotorcycleTour: () => void;
-  selectedMotorcycle: MotorcycleType | null;
-  setSelectedMotorcycle: (motorcycle: MotorcycleType | null) => void;
 }
 
 const GameContext = createContext<GameContextType | null>(null);
@@ -127,10 +120,6 @@ export const GameProvider: React.FC<{
     color: "bg-blue-500",
     unlockedAtLevel: 0 // Always unlocked
   });
-  
-  // Motorcycle mode
-  const [isMotorcycleMode, setIsMotorcycleMode] = useState<boolean>(false);
-  const [selectedMotorcycle, setSelectedMotorcycle] = useState<MotorcycleType | null>(motorcycles[0]);
   
   // Player information states
   const [playerName, setPlayerName] = useState<string>('');
@@ -194,8 +183,6 @@ export const GameProvider: React.FC<{
         if (parsedState.playerAge) setPlayerAge(parsedState.playerAge);
         if (parsedState.playerGender) setPlayerGender(parsedState.playerGender);
         if (parsedState.selectedCarColor) setSelectedCarColor(parsedState.selectedCarColor);
-        if (parsedState.isMotorcycleMode) setIsMotorcycleMode(parsedState.isMotorcycleMode);
-        if (parsedState.selectedMotorcycle) setSelectedMotorcycle(parsedState.selectedMotorcycle);
         
         console.log('Game state loaded from localStorage:', parsedState);
         
@@ -221,8 +208,6 @@ export const GameProvider: React.FC<{
         playerAge,
         playerGender,
         selectedCarColor,
-        isMotorcycleMode,
-        selectedMotorcycle,
       };
       
       localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
@@ -230,47 +215,7 @@ export const GameProvider: React.FC<{
     } catch (error) {
       console.error('Error saving game state:', error);
     }
-  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor, isMotorcycleMode, selectedMotorcycle]);
-  
-  // Start motorcycle tour function
-  const startMotorcycleTour = () => {
-    // Enable motorcycle mode
-    setIsMotorcycleMode(true);
-    
-    // Reset game variables for a fresh start
-    setLevel(1);
-    setScore(0);
-    setPreviousScore(0);
-    setTotalPoints(0);
-    
-    // Set first motorcycle as selected
-    setSelectedMotorcycle(motorcycles[0]);
-    
-    // Initialize with first motorcycle tour destination
-    setOriginInfo(MOTORCYCLE_DESTINATIONS[0]);
-    setDestinationInfo(MOTORCYCLE_DESTINATIONS[1]);
-    
-    // Reset language-specific variables
-    setOriginWord('');
-    setDestinationWord('');
-    
-    // Generate new plate
-    generateNewPlateImpl();
-    
-    // Close completion banner
-    setShowCompletionBanner(false);
-    
-    // Play special sound for starting motorcycle tour
-    try {
-      const audio = new Audio('/lovable-uploads/level-up.mp3');
-      audio.volume = 0.8;
-      audio.play();
-    } catch (e) {
-      console.error("Could not play motorcycle tour sound", e);
-    }
-    
-    console.log("🏍️ Started Motorcycle Tour mode!");
-  };
+  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor]);
   
   // Game control functions
   const resetGame = () => {
@@ -298,10 +243,6 @@ export const GameProvider: React.FC<{
       color: "bg-blue-500",
       unlockedAtLevel: 0
     });
-    
-    // Reset motorcycle mode
-    setIsMotorcycleMode(false);
-    setSelectedMotorcycle(motorcycles[0]);
     
     setPlayerName('');
     setPlayerAge(null);
@@ -431,7 +372,7 @@ export const GameProvider: React.FC<{
       }
     }
   }, [totalPoints]);
-
+  
   // Check for special license plate patterns and player age bonus
   useEffect(() => {
     if (licensePlate) {
@@ -523,82 +464,63 @@ export const GameProvider: React.FC<{
   const updateDestinations = (currentLevel: number) => {
     console.log(`Updating destinations for level ${currentLevel}`);
     
-    // If in motorcycle mode, use motorcycle destinations
-    if (isMotorcycleMode) {
-      // Convert level to index for motorcycle destinations (0-based)
-      let originIndex = Math.max(0, currentLevel - 1) % MOTORCYCLE_DESTINATIONS.length;
-      let destIndex = currentLevel % MOTORCYCLE_DESTINATIONS.length;
-      
-      // If they're the same, adjust to avoid the same origin/destination
-      if (originIndex === destIndex) {
-        destIndex = (destIndex + 1) % MOTORCYCLE_DESTINATIONS.length;
-      }
-      
-      setOriginInfo(MOTORCYCLE_DESTINATIONS[originIndex]);
-      setDestinationInfo(MOTORCYCLE_DESTINATIONS[destIndex]);
-      
-      console.log(`Updated motorcycle destinations for level ${currentLevel}: Origin=${MOTORCYCLE_DESTINATIONS[originIndex].country}, Destination=${MOTORCYCLE_DESTINATIONS[destIndex].country}`);
-      
-      return;
-    }
-    
-    // Handle origin and destination based on current level for car mode
+    // Handle origin and destination based on current level
     let originCountry, destinationCountry;
     
     switch(currentLevel) {
       case 1:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
-                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+                        { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
-                      { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros!' };
+                        { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros!' };
         break;
       case 2:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
-                      { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros!' };
+                        { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Italia') || 
-                      { city: 'Roma', country: 'Italia', flag: '🇮🇹', fact: '¡El Coliseo romano tenía capacidad para 50.000 espectadores!' };
+                        { city: 'Roma', country: 'Italia', flag: '🇮🇹', fact: '¡El Coliseo romano tenía capacidad para 50.000 espectadores!' };
         break;
       case 3:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Italia') || 
-                      { city: 'Roma', country: 'Italia', flag: '🇮🇹', fact: '¡El Coliseo romano tenía capacidad para 50.000 espectadores!' };
+                        { city: 'Roma', country: 'Italia', flag: '🇮🇹', fact: '¡El Coliseo romano tenía capacidad para 50.000 espectadores!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Rusia') || 
-                      { city: 'Moscú', country: 'Rusia', flag: '🇷🇺', fact: '¡La Plaza Roja de Moscú es tan grande como 9 campos de fútbol!' };
+                        { city: 'Moscú', country: 'Rusia', flag: '🇷🇺', fact: '¡La Plaza Roja de Moscú es tan grande como 9 campos de fútbol!' };
         break;
       case 4:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Rusia') || 
-                      { city: 'Moscú', country: 'Rusia', flag: '🇷🇺', fact: '¡La Plaza Roja de Moscú es tan grande como 9 campos de fútbol!' };
+                        { city: 'Moscú', country: 'Rusia', flag: '🇷🇺', fact: '¡La Plaza Roja de Moscú es tan grande como 9 campos de fútbol!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Japón') || 
-                      { city: 'Tokio', country: 'Japón', flag: '🇯🇵', fact: '¡En Japón hay más de 200 volcanes!' };
+                        { city: 'Tokio', country: 'Japón', flag: '🇯🇵', fact: '¡En Japón hay más de 200 volcanes!' };
         break;
       case 5:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Japón') || 
-                      { city: 'Tokio', country: 'Japón', flag: '🇯🇵', fact: '¡En Japón hay más de 200 volcanes!' };
+                        { city: 'Tokio', country: 'Japón', flag: '🇯🇵', fact: '¡En Japón hay más de 200 volcanes!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Australia') || 
-                      { city: 'Sídney', country: 'Australia', flag: '🇦🇺', fact: '¡Australia tiene más de 10.000 playas! Tardarías 27 años en visitar una cada día.' };
+                        { city: 'Sídney', country: 'Australia', flag: '🇦🇺', fact: '¡Australia tiene más de 10.000 playas! Tardarías 27 años en visitar una cada día.' };
         break;
       case 6:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Australia') || 
-                      { city: 'Sídney', country: 'Australia', flag: '🇦🇺', fact: '¡Australia tiene más de 10.000 playas! Tardarías 27 años en visitar una cada día.' };
+                        { city: 'Sídney', country: 'Australia', flag: '🇦🇺', fact: '¡Australia tiene más de 10.000 playas! Tardarías 27 años en visitar una cada día.' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Estados Unidos') || 
-                      { city: 'Nueva York', country: 'Estados Unidos', flag: '🇺🇸', fact: '¡El Gran Cañón en Estados Unidos tiene más de 1.6 km de profundidad!' };
+                        { city: 'Nueva York', country: 'Estados Unidos', flag: '🇺🇸', fact: '¡El Gran Cañón en Estados Unidos tiene más de 1.6 km de profundidad!' };
         break;
       case 7:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Estados Unidos') || 
-                      { city: 'Nueva York', country: 'Estados Unidos', flag: '🇺🇸', fact: '¡El Gran Cañón en Estados Unidos tiene más de 1.6 km de profundidad!' };
+                        { city: 'Nueva York', country: 'Estados Unidos', flag: '🇺🇸', fact: '¡El Gran Cañón en Estados Unidos tiene más de 1.6 km de profundidad!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México') || 
-                      { city: 'Ciudad de México', country: 'México', flag: '🇲🇽', fact: '¡México tiene 34 sitios declarados Patrimonio de la Humanidad por la UNESCO!' };
+                        { city: 'Ciudad de México', country: 'México', flag: '🇲🇽', fact: '¡México tiene 34 sitios declarados Patrimonio de la Humanidad por la UNESCO!' };
         break;
       case 8:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'México') || 
-                      { city: 'Ciudad de México', country: 'México', flag: '🇲🇽', fact: '¡México tiene 34 sitios declarados Patrimonio de la Humanidad por la UNESCO!' };
+                        { city: 'Ciudad de México', country: 'México', flag: '🇲🇽', fact: '¡México tiene 34 sitios declarados Patrimonio de la Humanidad por la UNESCO!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina') || 
-                      { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
+                        { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
         break;
       case 9:
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Argentina') || 
-                      { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
+                        { city: 'Buenos Aires', country: 'Argentina', flag: '🇦🇷', fact: '¡Las Cataratas del Iguazú tienen 275 saltos de agua diferentes!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
-                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡Has completado la vuelta al mundo y has regresado a España!' };
+                        { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡Has completado la vuelta al mundo y has regresado a España!' };
         break;
       case 10:
         // Special case for level 10 - you completed the world tour!
@@ -610,9 +532,9 @@ export const GameProvider: React.FC<{
       default:
         // Default to level 1 case
         originCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'España') || 
-                      { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
+                        { city: 'Madrid', country: 'España', flag: '🇪🇸', fact: '¡En Madrid está el museo del Prado con obras de arte increíbles!' };
         destinationCountry = WORLD_DESTINATIONS.find(dest => dest.country === 'Francia') || 
-                      { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!' };
+                        { city: 'París', country: 'Francia', flag: '🇫🇷', fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!' };
     }
     
     // Update origin and destination states
@@ -833,12 +755,6 @@ export const GameProvider: React.FC<{
     
     // Add updateDestinations function to the context value
     updateDestinations,
-    
-    // Motorcycle mode
-    isMotorcycleMode,
-    startMotorcycleTour,
-    selectedMotorcycle,
-    setSelectedMotorcycle
   };
 
   // Check if children is a function to pass bonus popup state

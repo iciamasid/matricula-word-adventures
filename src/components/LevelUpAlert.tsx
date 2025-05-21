@@ -5,16 +5,16 @@ import GamePopup from "@/components/GamePopup";
 import { useLanguage } from "@/context/LanguageContext";
 
 const LevelUpAlert: React.FC = () => {
-  const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame, isMotorcycleMode } = useGame();
+  const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame } = useGame();
   const { isEnglish } = useLanguage();
   
-  // Check if we're navigating between pages
+  // Verificar si estamos navegando entre páginas
   useEffect(() => {
     const navigatingBack = sessionStorage.getItem('navigatingBack');
     if (navigatingBack === 'true') {
-      // If navigating between pages, clear the level message
+      // Si estamos navegando entre páginas, limpiar el mensaje de nivel
       clearLevelUpMessage();
-      // Remove the navigation flag
+      // Eliminar el flag de navegación
       sessionStorage.removeItem('navigatingBack');
     }
   }, [clearLevelUpMessage]);
@@ -37,10 +37,10 @@ const LevelUpAlert: React.FC = () => {
     return originInfo?.country || "";
   };
   
-  // Add text about choosing another vehicle based on game mode
-  const vehicleText = isEnglish 
-    ? `You can now choose a new ${isMotorcycleMode ? 'motorcycle' : 'car'}!` 
-    : `¡Ahora puedes elegir ${isMotorcycleMode ? 'una nueva moto' : 'un nuevo coche'}!`;
+  // Add text about choosing another car
+  const carText = isEnglish 
+    ? "You can now choose a new car!" 
+    : "¡Ahora puedes elegir un nuevo coche!";
   
   // Simplified explanation
   const baseExplanation = isEnglish 
@@ -55,8 +55,8 @@ const LevelUpAlert: React.FC = () => {
         : `¡Ahora estás en ${currentCountry}!`) 
     : "";
   
-  // Add the vehicle text to the explanation
-  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${vehicleText}`;
+  // Add the car text to the explanation
+  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${carText}`;
   
   return (
     <GamePopup

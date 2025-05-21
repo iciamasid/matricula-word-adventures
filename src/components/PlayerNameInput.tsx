@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
 
 interface PlayerNameInputProps {
-  onSave?: (name: string) => void;
+  onSave: (name: string) => void;
   initialName?: string;
 }
 
@@ -36,10 +36,7 @@ const PlayerNameInput: React.FC<PlayerNameInputProps> = ({ onSave, initialName =
     if (savedName) {
       setName(savedName);
       setIsEditing(false);
-      // Only call onSave if it's a function
-      if (typeof onSave === 'function') {
-        onSave(savedName);
-      }
+      onSave(savedName);
     }
   }, [onSave]);
 
@@ -54,11 +51,7 @@ const PlayerNameInput: React.FC<PlayerNameInputProps> = ({ onSave, initialName =
     
     localStorage.setItem("matriculabraCadabra_playerName", name);
     setIsEditing(false);
-    
-    // Only call onSave if it's a function
-    if (typeof onSave === 'function') {
-      onSave(name);
-    }
+    onSave(name);
     
     toast({
       title: t("name_saved"),

@@ -69,8 +69,7 @@ const CarCustomization: React.FC = () => {
   const {
     selectedCarColor,
     setSelectedCarColor,
-    level,
-    isMotorcycleMode
+    level
   } = useGame();
 
   // State to control panel visibility
@@ -79,11 +78,6 @@ const CarCustomization: React.FC = () => {
   const [showLockedCarPopup, setShowLockedCarPopup] = useState(false);
   // State to store the selected locked car for popup
   const [selectedLockedCar, setSelectedLockedCar] = useState<CarColor | null>(null);
-
-  // If in motorcycle mode, don't render anything
-  if (isMotorcycleMode) {
-    return null;
-  }
 
   // Helper function to mark when we're navigating between pages
   const handleNavigation = () => {
