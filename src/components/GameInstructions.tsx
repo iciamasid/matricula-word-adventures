@@ -54,7 +54,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
               <Target className={iconColor + " w-6 h-6"} />
               {"Objetivo del juego"}
             </h3>
-            <p className="instruction-text kids-text text-white text-lg font-normal">
+            <p className="instruction-text kids-text text-white text-lg font-light">
               {"¡Forma palabras usando las consonantes de la matrícula del coche! Las palabras deben tener al menos 5 letras (las palabras de 4 letras o menos no son válidas)."}
             </p>
           </motion.div>
