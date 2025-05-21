@@ -219,6 +219,8 @@ export const GameProvider: React.FC<{
   
   // Game control functions
   const resetGame = () => {
+    console.log("Game reset initiated");
+    
     // Initialize with default country information
     setOriginInfo({ 
       city: 'Madrid', 
@@ -276,7 +278,7 @@ export const GameProvider: React.FC<{
     clearError();
     clearLevelUpMessage();
     
-    // Reset popup states
+    // Reset popup states - Make sure to close completion banner
     setShowBonusPopup(false);
     setShowAgeBonusPopup(false);
     setShowCompletionBanner(false);
@@ -318,10 +320,10 @@ export const GameProvider: React.FC<{
         if (level < 10) {
           setShowCompletionBanner(true);
           
-          // Auto-hide completion banner after 8 seconds
+          // Ensure banner shows for 12 seconds, matching CompletionBanner component timer
           setTimeout(() => {
             setShowCompletionBanner(false);
-          }, 8000);
+          }, 12000);
           
           console.log("¡Reached level 10! Showing special completion message.");
         }
@@ -768,7 +770,9 @@ export const GameProvider: React.FC<{
 
   return (
     <GameContext.Provider value={contextValue}>
-      {children}
+      {typeof children === 'function' 
+        ? children({ showBonusPopup, setShowBonusPopup, bonusPoints })
+        : children}
     </GameContext.Provider>
   );
 };

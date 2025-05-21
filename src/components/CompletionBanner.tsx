@@ -73,6 +73,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
   
   // Handle new game start
   const handleNewGame = () => {
+    console.log("Starting new game from CompletionBanner");
     resetGame();
     onClose();
   };
@@ -95,7 +96,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
               className="relative w-full max-w-4xl mx-auto"
             >
-              {/* Cambiado el fondo a plateado (#9F9EA1 con gradiente) */}
+              {/* Fondo plateado */}
               <div className="bg-gradient-to-br from-gray-300 via-[#9F9EA1] to-gray-400 p-8 rounded-2xl border-8 border-gray-200 shadow-[0_0_50px_rgba(159,158,161,0.7)] relative z-10 overflow-hidden">
                 {/* Background animation */}
                 <div className="absolute inset-0 z-0 overflow-hidden">
