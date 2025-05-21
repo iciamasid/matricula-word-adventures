@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -718,6 +717,8 @@ export const GameProvider: React.FC<{
     totalPoints,
     highScore,
     gamesPlayed,
+    setLevel,
+    setTotalPoints,
     
     // License plate related
     licensePlate,
@@ -779,4 +780,3 @@ export const useGame = () => {
   }
   return context;
 };
-
