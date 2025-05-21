@@ -14,7 +14,7 @@ interface CompletionBannerProps {
 
 const CompletionBanner: React.FC<CompletionBannerProps> = ({ open, onClose }) => {
   const { isEnglish } = useLanguage();
-  const { resetGame, setIsMotorcycleMode, level } = useGame();
+  const { resetGame, startMotorcycleTour, level } = useGame();
 
   // Handler to start a new game
   const handleNewGame = () => {
@@ -24,8 +24,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({ open, onClose }) =>
 
   // Handler to start motorcycle tour
   const handleStartMotorcycleTour = () => {
-    resetGame();
-    setIsMotorcycleMode(true);
+    startMotorcycleTour();
     onClose();
   };
 
