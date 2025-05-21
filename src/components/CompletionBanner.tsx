@@ -209,8 +209,11 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                         </Button>
                       </motion.div>
                       
+                      {/* Botón de iniciar nueva partida - ahora más prominente */}
                       <motion.div 
                         whileHover={{ scale: 1.05 }}
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
                       >
                         <Button 
                           onClick={handleNewGame}

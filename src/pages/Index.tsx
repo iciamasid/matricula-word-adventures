@@ -160,6 +160,10 @@ const GameContent = () => {
     });
   };
 
+  // Verificar si mostrar o no el botón de reinicio del juego
+  // Si el nivel es 9 o mayor, no mostrar el botón en la pantalla principal
+  const showResetButton = level < 9;
+
   return (
     <div 
       className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
@@ -275,27 +279,29 @@ const GameContent = () => {
             <WorldTourProgress />
           </div>
           
-          {/* Reset Game Button - Added more bottom margin (mb-16) */}
-          <motion.div
-            className="w-full max-w-xs mt-8 mb-16"
-            whileHover={{
-              scale: 1.03
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 400
-            }}
-          >
-            <Button
-              onClick={handleResetGame}
-              size="lg"
-              className={`w-full text-white kids-text text-xl font-normal ${
-                "bg-purple-700 hover:bg-purple-600"
-              } px-[10px] mx-0 my-0 py-[20px]`}
+          {/* Reset Game Button - Solo se muestra si el nivel es menor que 9 */}
+          {showResetButton && (
+            <motion.div
+              className="w-full max-w-xs mt-8 mb-16"
+              whileHover={{
+                scale: 1.03
+              }}
+              transition={{
+                type: "spring",
+                stiffness: 400
+              }}
             >
-              <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
-            </Button>
-          </motion.div>
+              <Button
+                onClick={handleResetGame}
+                size="lg"
+                className={`w-full text-white kids-text text-xl font-normal ${
+                  "bg-purple-700 hover:bg-purple-600"
+                } px-[10px] mx-0 my-0 py-[20px]`}
+              >
+                <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
+              </Button>
+            </motion.div>
+          )}
         </div>
         
         {/* Error Alert using GamePopup */}
