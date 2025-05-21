@@ -36,8 +36,7 @@ const GameRoutes = () => {
     showAgeBonusPopup,
     playerAge,
     showCompletionBanner,
-    resetGame,
-    level
+    resetGame
   } = useGame();
   
   // State for completion banner
@@ -47,16 +46,12 @@ const GameRoutes = () => {
   useEffect(() => {
     if (showCompletionBanner) {
       setShowCompletionPopup(true);
-      
-      // No longer automatically reset the game
-      // This will now happen when the user clicks the "Start New Game" button in the popup
     }
   }, [showCompletionBanner]);
 
   // Handle closing the completion banner
   const handleCloseCompletionBanner = () => {
     setShowCompletionPopup(false);
-    // We don't automatically reset here anymore, giving player the option to stay on the completion screen
   };
 
   return (

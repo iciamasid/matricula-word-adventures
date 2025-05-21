@@ -52,8 +52,7 @@ const GameContent = () => {
     showAgeBonusPopup,
     // Add the necessary game state update functions
     setLevel,
-    setTotalPoints,
-    showCompletionBanner
+    setTotalPoints
   } = useGame();
 
   // Ref to the license plate section
@@ -136,6 +135,16 @@ const GameContent = () => {
     return countries;
   }, [level]);
 
+  const handleResetGame = () => {
+    if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
+      resetGame();
+      toast({
+        title: "¡Juego reiniciado!",
+        description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
+      });
+    }
+  };
+
   // Handler for jump to level 9 button - MODIFIED TO SET 4000 POINTS INSTEAD OF 9000
   const handleJumpToLevel9 = () => {
     // Set level to 9
@@ -150,9 +159,6 @@ const GameContent = () => {
       description: "Has saltado al nivel 9. ¡Preparado para llegar al nivel 10!"
     });
   };
-
-  // Is game completion mode (level 10 and showing completion banner)
-  const isCompletionMode = level >= 10 && showCompletionBanner;
 
   return (
     <div 
@@ -269,9 +275,27 @@ const GameContent = () => {
             <WorldTourProgress />
           </div>
           
-          {/* Remove Reset Game Button from main screen - it's now only in the completion popup */}
-          {/* Adding bottom margin for spacing */}
-          <div className="mb-16"></div>
+          {/* Reset Game Button - Added more bottom margin (mb-16) */}
+          <motion.div
+            className="w-full max-w-xs mt-8 mb-16"
+            whileHover={{
+              scale: 1.03
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 400
+            }}
+          >
+            <Button
+              onClick={handleResetGame}
+              size="lg"
+              className={`w-full text-white kids-text text-xl font-normal ${
+                "bg-purple-700 hover:bg-purple-600"
+              } px-[10px] mx-0 my-0 py-[20px]`}
+            >
+              <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
+            </Button>
+          </motion.div>
         </div>
         
         {/* Error Alert using GamePopup */}
