@@ -770,9 +770,7 @@ export const GameProvider: React.FC<{
 
   return (
     <GameContext.Provider value={contextValue}>
-      {typeof children === 'function' 
-        ? children({ showBonusPopup, setShowBonusPopup, bonusPoints })
-        : children}
+      {children}
     </GameContext.Provider>
   );
 };
