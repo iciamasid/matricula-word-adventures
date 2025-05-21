@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent } from "@/components/ui/alert-dialog";
-import { Trophy, Star, Rocket, Globe, PartyPopper, RefreshCw } from "lucide-react";
+import { Trophy, Star, Rocket, Globe, PartyPopper, RefreshCw, MotorcycleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useGame } from "@/context/GameContext";
 import confetti from "canvas-confetti";
@@ -17,7 +17,7 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
   open, 
   onClose
 }) => {
-  const { playerName, playerGender, totalPoints, resetGame } = useGame();
+  const { playerName, playerGender, totalPoints, resetGame, startMotorcycleTour } = useGame();
   const { t, isEnglish } = useLanguage();
   const [confettiLaunched, setConfettiLaunched] = useState(false);
   
@@ -74,6 +74,12 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
   // Handle new game start
   const handleNewGame = () => {
     resetGame();
+    onClose();
+  };
+  
+  // Handle motorcycle tour start
+  const handleStartMotorcycleTour = () => {
+    startMotorcycleTour();
     onClose();
   };
   
@@ -206,6 +212,23 @@ const CompletionBanner: React.FC<CompletionBannerProps> = ({
                           className="bg-blue-600 hover:bg-blue-700 text-white text-xl px-8 py-3 rounded-full kids-text"
                         >
                           {isEnglish ? "Keep playing!" : "¡Seguir jugando!"}
+                        </Button>
+                      </motion.div>
+                      
+                      <motion.div 
+                        whileHover={{ scale: 1.05 }}
+                      >
+                        <Button 
+                          onClick={handleStartMotorcycleTour}
+                          className="bg-cyan-500 hover:bg-cyan-600 text-white text-xl px-8 py-3 rounded-full kids-text flex items-center gap-2"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                            <circle cx="5.5" cy="17.5" r="3.5"/>
+                            <circle cx="18.5" cy="17.5" r="3.5"/>
+                            <path d="M15 5.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 1 0-3 0"/>
+                            <path d="M12 17.5V14l-3-3 4-6.5 3 3 3 6.5"/>
+                          </svg>
+                          {isEnglish ? "Start Motorcycle Tour" : "Iniciar Tour en Moto"}
                         </Button>
                       </motion.div>
                       
