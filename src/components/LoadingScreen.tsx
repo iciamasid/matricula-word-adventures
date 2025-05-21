@@ -38,7 +38,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 flex flex-col items-center justify-center bg-purple-900/50 backdrop-blur-sm z-50"
+      className="fixed inset-0 flex flex-col items-center justify-center bg-black/20 backdrop-blur-sm z-50"
     >
       <motion.div 
         className="max-w-md w-full px-4 flex flex-col items-center"
@@ -54,7 +54,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete }) => {
         
         <div className="w-full space-y-3">
           <Progress value={progress} className="h-3 bg-purple-200" />
-          <p className="text-center text-white kids-text text-xl">
+          <p className="text-center text-white kids-text text-xl drop-shadow-md">
             {progress < 100 ? "Cargando el juego..." : "¡Listo!"}
           </p>
         </div>
