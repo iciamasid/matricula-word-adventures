@@ -1,22 +1,22 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { getCountryPosition } from '@/utils/mapData';
-import { WORLD_DESTINATIONS } from '@/utils/mapData';
+import { getMotorcycleCountryPosition } from '@/utils/motorcycleMapData';
+import { MOTORCYCLE_DESTINATIONS } from '@/utils/motorcycleMapData';
 
-interface HighlightedCountryProps {
+interface MotorcycleHighlightedCountryProps {
   country: string;
 }
 
-const HighlightedCountry: React.FC<HighlightedCountryProps> = ({
+const MotorcycleHighlightedCountry: React.FC<MotorcycleHighlightedCountryProps> = ({
   country
 }) => {
-  // Find the country's flag from the CAR destinations data
-  const countryData = WORLD_DESTINATIONS.find(dest => dest.country === country);
+  // Find the country's flag from the motorcycle destinations data
+  const countryData = MOTORCYCLE_DESTINATIONS.find(dest => dest.country === country);
   const countryFlag = countryData?.flag || "🚩";
 
   // Get the country position on the map
-  const position = getCountryPosition(country);
+  const position = getMotorcycleCountryPosition(country);
 
   return (
     <motion.div 
@@ -71,7 +71,7 @@ const HighlightedCountry: React.FC<HighlightedCountryProps> = ({
           }}
           className="text-2xl"
         >
-          {countryFlag}
+          🏍️
         </motion.div>
       </div>
       
@@ -88,4 +88,4 @@ const HighlightedCountry: React.FC<HighlightedCountryProps> = ({
   );
 };
 
-export default HighlightedCountry;
+export default MotorcycleHighlightedCountry;

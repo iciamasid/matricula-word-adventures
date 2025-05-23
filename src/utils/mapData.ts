@@ -1,23 +1,8 @@
 
-// Country positions on the map
+// Country positions on the map for CAR GAME
 const countryPositions: Record<string, { left: string, top: string }> = {
   "España": { left: "47.5%", top: "38.5%" },
   "Spain": { left: "47.5%", top: "38.5%" },
-  "Reino Unido": { left: "46%", top: "33%" },
-  "United Kingdom": { left: "46%", top: "33%" },
-  "Grecia": { left: "52%", top: "40%" },
-  "Greece": { left: "52%", top: "40%" },
-  "Noruega": { left: "49%", top: "28%" },
-  "Norway": { left: "49%", top: "28%" },
-  "China": { left: "70%", top: "40%" },
-  "Canadá": { left: "20%", top: "30%" },
-  "Canada": { left: "20%", top: "30%" },
-  "Costa Rica": { left: "23%", top: "51%" },
-  "Brasil": { left: "32%", top: "60%" },
-  "Brazil": { left: "32%", top: "60%" },
-  "Perú": { left: "25%", top: "57%" },
-  "Peru": { left: "25%", top: "57%" },
-  // Mantener los anteriores para compatibilidad
   "Francia": { left: "48.2%", top: "36%" },
   "France": { left: "48.2%", top: "36%" },
   "Italia": { left: "50.5%", top: "38%" },
@@ -35,25 +20,10 @@ const countryPositions: Record<string, { left: string, top: string }> = {
   "Argentina": { left: "31%", top: "70%" }
 };
 
-// Country flag images
+// Country flag images for CAR GAME
 const countryImages: Record<string, string> = {
   "España": "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
   "Spain": "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
-  "Reino Unido": "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png", // Reutilizando imagen por ahora
-  "United Kingdom": "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
-  "Grecia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png", // Reutilizando imagen por ahora
-  "Greece": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
-  "Noruega": "/lovable-uploads/13c721ae-3f14-415a-86bb-0228c47d8425.png", // Reutilizando imagen por ahora
-  "Norway": "/lovable-uploads/13c721ae-3f14-415a-86bb-0228c47d8425.png",
-  "China": "/lovable-uploads/54b230f6-8a76-4e9a-ae4c-5fa2f7087600.png", // Reutilizando imagen por ahora
-  "Canadá": "/lovable-uploads/e27d86a7-9c73-425d-806e-1e86fd6c6e99.png", // Reutilizando imagen por ahora
-  "Canada": "/lovable-uploads/e27d86a7-9c73-425d-806e-1e86fd6c6e99.png",
-  "Costa Rica": "/lovable-uploads/21e71de1-c8e4-4bbb-95d6-67ce7ae41316.png", // Reutilizando imagen por ahora
-  "Brasil": "/lovable-uploads/2957a4f7-6a54-4e2f-bda1-2177609abc5f.png", // Reutilizando imagen por ahora
-  "Brazil": "/lovable-uploads/2957a4f7-6a54-4e2f-bda1-2177609abc5f.png",
-  "Perú": "/lovable-uploads/24de870a-769c-4544-8001-8554fe29e7f0.png",
-  "Peru": "/lovable-uploads/24de870a-769c-4544-8001-8554fe29e7f0.png",
-  // Mantener los anteriores para compatibilidad
   "Francia": "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
   "France": "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
   "Italia": "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
@@ -81,7 +51,7 @@ export const getCountryImage = (country: string) => {
   return countryImages[country] || "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png";
 };
 
-// World destinations data for country flags
+// World destinations data for country flags - CAR GAME
 export const WORLD_DESTINATIONS = [
   {
     city: "Madrid",
@@ -90,51 +60,51 @@ export const WORLD_DESTINATIONS = [
     fact: "¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo."
   },
   {
-    city: "Londres",
-    country: "Reino Unido",
-    flag: "🇬🇧",
-    fact: "¡El Big Ben de Londres no es la torre sino la campana que hay dentro! La torre se llama Elizabeth Tower."
+    city: "París",
+    country: "Francia",
+    flag: "🇫🇷",
+    fact: "¡La Torre Eiffel de París tiene 324 metros de altura! Fue construida para la Exposición Universal de 1889."
   },
   {
-    city: "Atenas",
-    country: "Grecia",
-    flag: "🇬🇷",
-    fact: "¡El Partenón de Atenas tiene más de 2.500 años de antigüedad! Fue construido en honor a la diosa Atenea."
+    city: "Roma",
+    country: "Italia",
+    flag: "🇮🇹",
+    fact: "¡El Coliseo de Roma podía albergar hasta 80,000 espectadores! Es uno de los anfiteatros más grandes jamás construidos."
   },
   {
-    city: "Oslo",
-    country: "Noruega",
-    flag: "🇳🇴",
-    fact: "¡En Noruega puedes ver el Sol de Medianoche, cuando el sol no se pone durante el verano! También puedes ver auroras boreales."
+    city: "Moscú",
+    country: "Rusia",
+    flag: "🇷🇺",
+    fact: "¡La Plaza Roja de Moscú no se llama así por el color rojo, sino porque 'roja' significa 'hermosa' en ruso antiguo!"
   },
   {
-    city: "Pekín",
-    country: "China",
-    flag: "🇨🇳",
-    fact: "¡La Gran Muralla China es tan larga que podría dar la vuelta a la Tierra! Tiene más de 21.000 kilómetros de largo."
+    city: "Tokio",
+    country: "Japón",
+    flag: "🇯🇵",
+    fact: "¡En Tokio hay más de 13 millones de habitantes! Es una de las ciudades más pobladas del mundo."
   },
   {
-    city: "Ottawa",
-    country: "Canadá",
-    flag: "🇨🇦",
-    fact: "¡Canadá tiene más lagos que el resto del mundo junto! Hay más de 3 millones de lagos en todo el país."
+    city: "Nueva York",
+    country: "Estados Unidos",
+    flag: "🇺🇸",
+    fact: "¡La Estatua de la Libertad fue un regalo de Francia a Estados Unidos! Mide más de 93 metros de altura."
   },
   {
-    city: "San José",
-    country: "Costa Rica",
-    flag: "🇨🇷",
-    fact: "¡Costa Rica tiene el 5% de toda la biodiversidad del planeta a pesar de ocupar solo el 0.03% de la superficie terrestre!"
+    city: "Ciudad de México",
+    country: "México",
+    flag: "🇲🇽",
+    fact: "¡Ciudad de México está construida sobre un antiguo lago! Los aztecas fundaron aquí su capital, Tenochtitlan."
   },
   {
-    city: "Brasilia",
-    country: "Brasil",
-    flag: "🇧🇷",
-    fact: "¡El Amazonas, en Brasil, es el río más caudaloso del mundo! Contiene el 20% del agua dulce del planeta."
+    city: "Sídney",
+    country: "Australia",
+    flag: "🇦🇺",
+    fact: "¡La Ópera de Sídney tardó 14 años en construirse! Su diseño único la convierte en Patrimonio de la Humanidad."
   },
   {
-    city: "Lima",
-    country: "Perú",
-    flag: "🇵🇪",
-    fact: "¡En Perú hay más de 3,000 variedades diferentes de patatas (papas)! Es el lugar donde se originaron."
+    city: "Buenos Aires",
+    country: "Argentina",
+    flag: "🇦🇷",
+    fact: "¡En Buenos Aires nació el tango! Este baile apasionado es Patrimonio Cultural Inmaterial de la Humanidad."
   }
 ];

@@ -3,11 +3,11 @@ import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { Car, LockKeyhole } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import LockedCountryPopup from './LockedCountryPopup';
 
-// Function to get the flag emoji based on level
-const getLevelFlag = (level: number) => {
+// Function to get the flag emoji based on level - FOR MOTORCYCLE GAME
+const getMotorcycleLevelFlag = (level: number) => {
   switch (level) {
     case 1:
       return "🇪🇸"; // España
@@ -34,8 +34,36 @@ const getLevelFlag = (level: number) => {
   }
 };
 
-// Function to get country name based on level and language
-const getCountryName = (level: number, isEnglish: boolean) => {
+// Function to get the flag emoji based on level - FOR CAR GAME
+const getCarLevelFlag = (level: number) => {
+  switch (level) {
+    case 1:
+      return "🇪🇸"; // España
+    case 2:
+      return "🇫🇷"; // Francia
+    case 3:
+      return "🇮🇹"; // Italia
+    case 4:
+      return "🇷🇺"; // Rusia
+    case 5:
+      return "🇯🇵"; // Japón
+    case 6:
+      return "🇺🇸"; // Estados Unidos
+    case 7:
+      return "🇲🇽"; // México
+    case 8:
+      return "🇦🇺"; // Australia
+    case 9:
+      return "🇦🇷"; // Argentina
+    case 10:
+      return "🇪🇸"; // Vuelta a España
+    default:
+      return "🇪🇸"; // Default España
+  }
+};
+
+// Function to get country name based on level and language - FOR MOTORCYCLE GAME
+const getMotorcycleCountryName = (level: number, isEnglish: boolean) => {
   switch (level) {
     case 1:
       return isEnglish ? "Spain" : "España";
@@ -62,8 +90,36 @@ const getCountryName = (level: number, isEnglish: boolean) => {
   }
 };
 
-// Function to get country code for routing
-const getCountryCode = (level: number) => {
+// Function to get country name based on level and language - FOR CAR GAME
+const getCarCountryName = (level: number, isEnglish: boolean) => {
+  switch (level) {
+    case 1:
+      return isEnglish ? "Spain" : "España";
+    case 2:
+      return isEnglish ? "France" : "Francia";
+    case 3:
+      return isEnglish ? "Italy" : "Italia";
+    case 4:
+      return isEnglish ? "Russia" : "Rusia";
+    case 5:
+      return isEnglish ? "Japan" : "Japón";
+    case 6:
+      return isEnglish ? "United States" : "Estados Unidos";
+    case 7:
+      return isEnglish ? "Mexico" : "México";
+    case 8:
+      return isEnglish ? "Australia" : "Australia";
+    case 9:
+      return isEnglish ? "Argentina" : "Argentina";
+    case 10:
+      return isEnglish ? "Spain (complete)" : "España (completo)";
+    default:
+      return isEnglish ? "Spain" : "España";
+  }
+};
+
+// Function to get country code for routing - FOR MOTORCYCLE GAME
+const getMotorcycleCountryCode = (level: number) => {
   switch (level) {
     case 1:
       return "España";
@@ -83,6 +139,34 @@ const getCountryCode = (level: number) => {
       return "Brasil";
     case 9:
       return "Peru";
+    case 10:
+      return "España";
+    default:
+      return "España";
+  }
+};
+
+// Function to get country code for routing - FOR CAR GAME
+const getCarCountryCode = (level: number) => {
+  switch (level) {
+    case 1:
+      return "España";
+    case 2:
+      return "Francia";
+    case 3:
+      return "Italia";
+    case 4:
+      return "Rusia";
+    case 5:
+      return "Japón";
+    case 6:
+      return "Estados_Unidos";
+    case 7:
+      return "México";
+    case 8:
+      return "Australia";
+    case 9:
+      return "Argentina";
     case 10:
       return "España";
     default:
@@ -117,11 +201,20 @@ const isCountryUnlocked = (locationIndex: number, currentLevel: number, countryN
 const WorldTourProgress = () => {
   const { level } = useGame();
   const { t, isEnglish } = useLanguage?.() || { language: 'es' };
+  const location = useLocation();
   const [animatingLevel, setAnimatingLevel] = useState(0);
   const [progressValue, setProgressValue] = useState(0);
   const [hoveredCountry, setHoveredCountry] = useState<number | null>(null);
   const [showLockedPopup, setShowLockedPopup] = useState(false);
   const [lockedCountry, setLockedCountry] = useState("");
+
+  // Determine if we're in motorcycle game
+  const isMotorcycleGame = location.pathname === '/motorcycle-game';
+
+  // Use appropriate functions based on game type
+  const getLevelFlag = isMotorcycleGame ? getMotorcycleLevelFlag : getCarLevelFlag;
+  const getCountryName = isMotorcycleGame ? getMotorcycleCountryName : getCarCountryName;
+  const getCountryCode = isMotorcycleGame ? getMotorcycleCountryCode : getCarCountryCode;
 
   // Set background color based on language
   const bgColor = isEnglish ? "bg-orange-100" : "bg-purple-100";
@@ -186,27 +279,52 @@ const WorldTourProgress = () => {
 
   // Get destination flag for current level
   const getDestinationFlag = (level: number) => {
-    switch (level) {
-      case 1:
-        return "🇬🇧"; // Destino Reino Unido
-      case 2:
-        return "🇬🇷"; // Destino Grecia 
-      case 3:
-        return "🇳🇴"; // Destino Noruega
-      case 4:
-        return "🇨🇳"; // Destino China
-      case 5:
-        return "🇨🇦"; // Destino Canadá
-      case 6:
-        return "🇨🇷"; // Destino Costa Rica
-      case 7:
-        return "🇧🇷"; // Destino Brasil
-      case 8:
-        return "🇵🇪"; // Destino Perú
-      case 9:
-        return "🇪🇸"; // Destino España (vuelta completa)
-      default:
-        return "🇬🇧"; // Default Reino Unido
+    if (isMotorcycleGame) {
+      switch (level) {
+        case 1:
+          return "🇬🇧"; // Destino Reino Unido
+        case 2:
+          return "🇬🇷"; // Destino Grecia 
+        case 3:
+          return "🇳🇴"; // Destino Noruega
+        case 4:
+          return "🇨🇳"; // Destino China
+        case 5:
+          return "🇨🇦"; // Destino Canadá
+        case 6:
+          return "🇨🇷"; // Destino Costa Rica
+        case 7:
+          return "🇧🇷"; // Destino Brasil
+        case 8:
+          return "🇵🇪"; // Destino Perú
+        case 9:
+          return "🇪🇸"; // Destino España (vuelta completa)
+        default:
+          return "🇬🇧"; // Default Reino Unido
+      }
+    } else {
+      switch (level) {
+        case 1:
+          return "🇫🇷"; // Destino Francia
+        case 2:
+          return "🇮🇹"; // Destino Italia
+        case 3:
+          return "🇷🇺"; // Destino Rusia
+        case 4:
+          return "🇯🇵"; // Destino Japón
+        case 5:
+          return "🇺🇸"; // Destino Estados Unidos
+        case 6:
+          return "🇲🇽"; // Destino México
+        case 7:
+          return "🇦🇺"; // Destino Australia
+        case 8:
+          return "🇦🇷"; // Destino Argentina
+        case 9:
+          return "🇪🇸"; // Destino España (vuelta completa)
+        default:
+          return "🇫🇷"; // Default Francia
+      }
     }
   };
 
@@ -536,7 +654,11 @@ const WorldTourProgress = () => {
               }}
               initial={false}
             >
-              <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
+              {isMotorcycleGame ? (
+                <span className="text-xl">🏍️</span>
+              ) : (
+                <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />
+              )}
             </motion.div>
           )}
         </div>
