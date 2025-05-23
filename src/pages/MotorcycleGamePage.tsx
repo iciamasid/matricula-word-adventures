@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -95,25 +96,25 @@ const MotorcycleGameContent = () => {
   const updateMotorcycleDestinations = (currentLevel: number) => {
     // Different countries for motorcycle game
     if (currentLevel <= 1) {
-      updateDestinations("Portugal"); // Start with Portugal instead of Spain
+      updateDestinations(0); // Start with Portugal instead of Spain
     } else if (currentLevel === 2) {
-      updateDestinations("Grecia");
+      updateDestinations(1); // Grecia
     } else if (currentLevel === 3) {
-      updateDestinations("Alemania");
+      updateDestinations(2); // Alemania
     } else if (currentLevel === 4) {
-      updateDestinations("Reino Unido");
+      updateDestinations(3); // Reino Unido
     } else if (currentLevel === 5) {
-      updateDestinations("China");
+      updateDestinations(4); // China
     } else if (currentLevel === 6) {
-      updateDestinations("India");
+      updateDestinations(5); // India
     } else if (currentLevel === 7) {
-      updateDestinations("Brasil");
+      updateDestinations(6); // Brasil
     } else if (currentLevel === 8) {
-      updateDestinations("Canadá");
+      updateDestinations(7); // Canadá
     } else if (currentLevel === 9) {
-      updateDestinations("Sudáfrica");
+      updateDestinations(8); // Sudáfrica
     } else if (currentLevel >= 10) {
-      updateDestinations("Portugal");
+      updateDestinations(0); // Back to Portugal
     }
   };
 
