@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";

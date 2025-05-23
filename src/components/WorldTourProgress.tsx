@@ -10,23 +10,23 @@ import LockedCountryPopup from './LockedCountryPopup';
 const getLevelFlag = (level: number) => {
   switch (level) {
     case 1:
-      return "🇪🇸"; // Origen España
+      return "🇪🇸"; // España
     case 2:
-      return "🇫🇷"; // Origen Francia
+      return "🇬🇧"; // Reino Unido
     case 3:
-      return "🇮🇹"; // Origen Italia
+      return "🇬🇷"; // Grecia
     case 4:
-      return "🇷🇺"; // Origen Rusia
+      return "🇳🇴"; // Noruega
     case 5:
-      return "🇯🇵"; // Origen Japón
+      return "🇨🇳"; // China
     case 6:
-      return "🇦🇺"; // Origen Australia
+      return "🇨🇦"; // Canadá
     case 7:
-      return "🇺🇸"; // Origen EEUU
+      return "🇨🇷"; // Costa Rica
     case 8:
-      return "🇲🇽"; // Origen México
+      return "🇧🇷"; // Brasil
     case 9:
-      return "🇦🇷"; // Origen Argentina
+      return "🇵🇪"; // Perú
     case 10:
       return "🇪🇸"; // Vuelta a España
     default:
@@ -40,21 +40,21 @@ const getCountryName = (level: number, isEnglish: boolean) => {
     case 1:
       return isEnglish ? "Spain" : "España";
     case 2:
-      return isEnglish ? "France" : "Francia";
+      return isEnglish ? "United Kingdom" : "Reino Unido";
     case 3:
-      return isEnglish ? "Italy" : "Italia";
+      return isEnglish ? "Greece" : "Grecia";
     case 4:
-      return isEnglish ? "Russia" : "Rusia";
+      return isEnglish ? "Norway" : "Noruega";
     case 5:
-      return isEnglish ? "Japan" : "Japón";
+      return isEnglish ? "China" : "China";
     case 6:
-      return isEnglish ? "Australia" : "Australia";
+      return isEnglish ? "Canada" : "Canadá";
     case 7:
-      return isEnglish ? "United States" : "EEUU";
+      return isEnglish ? "Costa Rica" : "Costa Rica";
     case 8:
-      return isEnglish ? "Mexico" : "México";
+      return isEnglish ? "Brazil" : "Brasil";
     case 9:
-      return isEnglish ? "Argentina" : "Argentina";
+      return isEnglish ? "Peru" : "Perú";
     case 10:
       return isEnglish ? "Spain (complete)" : "España (completo)";
     default:
@@ -68,21 +68,21 @@ const getCountryCode = (level: number) => {
     case 1:
       return "España";
     case 2:
-      return "Francia";
+      return "Reino_Unido";
     case 3:
-      return "Italia";
+      return "Grecia";
     case 4:
-      return "Rusia";
+      return "Noruega";
     case 5:
-      return "Japón";
+      return "China";
     case 6:
-      return "Australia";
+      return "Canada";
     case 7:
-      return "Estados Unidos";
+      return "Costa_Rica";
     case 8:
-      return "México";
+      return "Brasil";
     case 9:
-      return "Argentina";
+      return "Peru";
     case 10:
       return "España";
     default:
@@ -188,25 +188,25 @@ const WorldTourProgress = () => {
   const getDestinationFlag = (level: number) => {
     switch (level) {
       case 1:
-        return "🇫🇷"; // Destino Francia
+        return "🇬🇧"; // Destino Reino Unido
       case 2:
-        return "🇮🇹"; // Destino Italia 
+        return "🇬🇷"; // Destino Grecia 
       case 3:
-        return "🇷🇺"; // Destino Rusia
+        return "🇳🇴"; // Destino Noruega
       case 4:
-        return "🇯🇵"; // Destino Japón
+        return "🇨🇳"; // Destino China
       case 5:
-        return "🇦🇺"; // Destino Australia
+        return "🇨🇦"; // Destino Canadá
       case 6:
-        return "🇺🇸"; // Destino EEUU
+        return "🇨🇷"; // Destino Costa Rica
       case 7:
-        return "🇲🇽"; // Destino México
+        return "🇧🇷"; // Destino Brasil
       case 8:
-        return "🇦🇷"; // Destino Argentina
+        return "🇵🇪"; // Destino Perú
       case 9:
         return "🇪🇸"; // Destino España (vuelta completa)
       default:
-        return "🇫🇷"; // Default Francia
+        return "🇬🇧"; // Default Reino Unido
     }
   };
 
