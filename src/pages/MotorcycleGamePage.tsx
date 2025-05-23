@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -19,6 +20,7 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import MotorcycleCustomization from "@/components/MotorcycleCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
+import MotorcycleGameOverPopup from "@/components/MotorcycleGameOverPopup";
 
 const MotorcycleGamePage = () => {
   return (
@@ -31,6 +33,7 @@ const MotorcycleGamePage = () => {
 // Component to handle the game content
 const MotorcycleGameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showGameOverPopup, setShowGameOverPopup] = useState(false);
   const isMobile = useIsMobile();
   const worldTourRef = useRef<HTMLDivElement>(null);
   const {
@@ -56,6 +59,9 @@ const MotorcycleGameContent = () => {
   // Ref to the license plate section
   const licensePlateRef = useRef<HTMLDivElement>(null);
 
+  // Store the previous level to determine when level 10 is reached
+  const prevLevelRef = useRef<number>(level);
+
   // Asegura que la página comience desde la parte superior al cargar
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -68,6 +74,21 @@ const MotorcycleGameContent = () => {
       updateDestinations(level);
     }
   }, []);
+
+  // Check for level 10 achievement and show game over popup for motorcycles
+  useEffect(() => {
+    console.log("Motorcycle level effect running, current level:", level, "prevLevel:", prevLevelRef.current);
+
+    // Check if player just reached level 10
+    if (level === 10 && prevLevelRef.current < 10) {
+      console.log("Motorcycle max level 10 reached! Showing game over popup");
+      
+      setShowGameOverPopup(true);
+    }
+    
+    // Update previous level reference
+    prevLevelRef.current = level;
+  }, [level]);
 
   // Check if we're navigating back from another page and restore proper destinations
   useEffect(() => {
@@ -156,6 +177,22 @@ const MotorcycleGameContent = () => {
       title: "¡Nivel actualizado!",
       description: "Has saltado al nivel 9. ¡Preparado para llegar al nivel 10!"
     });
+  };
+
+  // Handler for starting new game after game over
+  const handleStartNewGame = () => {
+    // Reset to level 1 and start car game
+    setLevel(1);
+    setTotalPoints(500);
+    setShowGameOverPopup(false);
+    
+    // Navigate to car game
+    window.location.href = '/';
+  };
+
+  // Function to close the game over popup
+  const handleCloseGameOverPopup = () => {
+    setShowGameOverPopup(false);
   };
 
   return (
@@ -298,6 +335,13 @@ const MotorcycleGameContent = () => {
           onClose={() => {}} 
           points={20} 
           age={playerAge || 0} 
+        />
+
+        {/* Game Over Popup for Motorcycles */}
+        <MotorcycleGameOverPopup
+          open={showGameOverPopup}
+          onClose={handleCloseGameOverPopup}
+          onStartNewGame={handleStartNewGame}
         />
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}

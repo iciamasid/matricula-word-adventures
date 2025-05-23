@@ -142,7 +142,7 @@ const MotorcycleCustomization: React.FC = () => {
           </button>
         </motion.div>
         
-        {/* CONDUCE button */}
+        {/* CONDUCE button - Updated to navigate to motorcycle drive game */}
         <motion.div
           className="flex-1 bg-gradient-to-r from-teal-500 to-cyan-600 rounded-lg shadow-lg overflow-hidden border-2 border-teal-400"
           initial={{ opacity: 0, y: 20 }}
@@ -152,7 +152,7 @@ const MotorcycleCustomization: React.FC = () => {
           whileTap={{ scale: 0.98 }}
         >
           <Link 
-            to="/draw-game" 
+            to="/motorcycle-drive-game" 
             onClick={handleNavigation} 
             className="block w-full py-2 px-3 text-white relative"
           >
