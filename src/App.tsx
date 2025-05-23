@@ -57,15 +57,13 @@ const GameRoutes = () => {
 
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/country/:country" element={<CountryPage />} />
-          <Route path="/draw-game" element={<DrawGamePage />} />
-          <Route path="/motorcycle-game" element={<MotorcycleGamePage />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/country/:country" element={<CountryPage />} />
+        <Route path="/draw-game" element={<DrawGamePage />} />
+        <Route path="/motorcycle-game" element={<MotorcycleGamePage />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
       
       {/* Bonus popup for 6666 license plate */}
       <BonusPopup
@@ -125,8 +123,10 @@ const App = () => {
             <Toaster />
             <Sonner />
             
-            {/* Render GameRoutes first so it's visible underneath the loading screen */}
-            <GameRoutes />
+            {/* Wrap GameRoutes with BrowserRouter to ensure context is available */}
+            <BrowserRouter>
+              <GameRoutes />
+            </BrowserRouter>
             
             {/* Loading screen on top with transparent background */}
             {(isLoading || isRestarting) && (
