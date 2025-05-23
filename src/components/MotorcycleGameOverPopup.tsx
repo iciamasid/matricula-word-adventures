@@ -2,18 +2,18 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Trophy, Bike } from 'lucide-react';
+import { Trophy, RotateCcw } from 'lucide-react';
 
-interface MaxLevelPopupProps {
+interface MotorcycleGameOverPopupProps {
   open: boolean;
   onClose: () => void;
-  onGoToMotorcycle: () => void;
+  onStartNewGame: () => void;
 }
 
-const MaxLevelPopup: React.FC<MaxLevelPopupProps> = ({ 
+const MotorcycleGameOverPopup: React.FC<MotorcycleGameOverPopupProps> = ({ 
   open, 
   onClose, 
-  onGoToMotorcycle 
+  onStartNewGame 
 }) => {
   return (
     <AnimatePresence>
@@ -53,28 +53,28 @@ const MaxLevelPopup: React.FC<MaxLevelPopupProps> = ({
                 repeat: Infinity
               }}
             >
-              <Trophy className="w-16 h-16 text-yellow-500" />
+              <Trophy className="w-16 h-16 text-teal-500" />
             </motion.div>
 
             <div className="mt-8 mb-6">
-              <h2 className="text-3xl font-bold text-purple-800 kids-text mb-3">
-                ¡Felicidades!
+              <h2 className="text-3xl font-bold text-teal-800 kids-text mb-3">
+                ¡Game Over!
               </h2>
-              <p className="text-lg text-purple-700 kids-text mb-4">
-                ¡Has completado el tour mundial con coches!
+              <p className="text-lg text-teal-700 kids-text mb-4">
+                ¡Has completado el tour mundial con motos!
               </p>
-              <p className="text-md text-purple-600 kids-text">
-                Ahora puedes jugar con motos y descubrir nuevos países.
+              <p className="text-md text-teal-600 kids-text">
+                Has llegado al final del juego. ¡Felicidades por tu aventura!
               </p>
             </div>
 
             <div className="space-y-3">
               <Button
-                onClick={onGoToMotorcycle}
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 text-lg kids-text"
+                onClick={onStartNewGame}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 text-lg kids-text"
               >
-                <Bike className="w-5 h-5 mr-2" />
-                ¡Jugar con motos!
+                <RotateCcw className="w-5 h-5 mr-2" />
+                Iniciar nueva partida
               </Button>
             </div>
           </motion.div>
@@ -84,4 +84,4 @@ const MaxLevelPopup: React.FC<MaxLevelPopupProps> = ({
   );
 };
 
-export default MaxLevelPopup;
+export default MotorcycleGameOverPopup;
