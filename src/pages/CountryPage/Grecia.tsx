@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
@@ -42,6 +42,26 @@ const Grecia = () => {
             animate={{ scale: 1 }}
             transition={{ duration: 1 }}
           />
+        </div>
+
+        {/* Country map location */}
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+          <div className="p-4 bg-blue-50">
+            <h2 className="text-2xl font-bold text-blue-800 kids-text mb-2 flex items-center">
+              <MapPin className="w-6 h-6 mr-2 text-blue-700" /> Ubicación
+            </h2>
+          </div>
+          <div className="relative pb-[56.25%] h-0">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6503220.510262237!2d19.37269339614713!3d38.01173338721383!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x135b4ac711716c63%3A0x363a1775dc9a2d1d!2sGreece!5e0!3m2!1sen!2ses!4v1653129720880!5m2!1sen!2ses"
+              width="100%"
+              height="100%"
+              style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
 
         {/* Basic info section */}
