@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -203,9 +202,9 @@ const GameContent = () => {
   // Handler to go to motorcycle game with level 1
   const handleGoToMotorcycle = () => {
     console.log("Going to motorcycle game!");
-    // Reset to level 1 for motorcycle game
+    // Reset to level 1 for motorcycle game with 0 points
     setLevel(1);
-    setTotalPoints(500); // Start with some points for motorcycle game
+    setTotalPoints(0); // Start with 0 points for motorcycle game
     setShowMaxLevelPopup(false);
     
     // Mark popup as shown
@@ -398,6 +397,8 @@ const GameContent = () => {
           points={20} 
           age={playerAge || 0} 
         />
+        
+        {/* Removed CompletionBanner (orange popup) - replaced with MaxLevelPopup */}
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
         
