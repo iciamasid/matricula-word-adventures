@@ -1,31 +1,29 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const BrasilPage = () => {
-  const navigate = useNavigate();
-
-  const handleGoBack = () => {
+  const handleNavigation = () => {
     sessionStorage.setItem('navigatingBack', 'true');
-    navigate(-1);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-yellow-50 to-green-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Back button */}
-        <div className="w-full flex justify-start mb-4">
+        <Link to="/motorcycle-game">
           <Button 
             variant="outline" 
-            onClick={handleGoBack}
-            className="bg-white/80 border-yellow-400 hover:bg-white/90 text-yellow-800 kids-text"
+            size="sm" 
+            onClick={handleNavigation}
+            className="mb-4 bg-yellow-700/90 hover:bg-yellow-800 text-white border-yellow-600"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Volver
+            <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
           </Button>
-        </div>
+        </Link>
 
         {/* Header with flag and country name */}
         <div className="text-center mb-8">
@@ -38,12 +36,32 @@ const BrasilPage = () => {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
             src="/lovable-uploads/6060d896-a127-404e-987c-3cd8814f558a.png" 
-            alt="Obelisco de Buenos Aires"
+            alt="Cristo Redentor en Río de Janeiro"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 1 }}
           />
+        </div>
+
+        {/* Country map location */}
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+          <div className="p-4 bg-yellow-50">
+            <h2 className="text-2xl font-bold text-green-800 kids-text mb-2 flex items-center">
+              <MapPin className="w-6 h-6 mr-2 text-green-700" /> Ubicación
+            </h2>
+          </div>
+          <div className="relative pb-[56.25%] h-0">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31868887.306779444!2d-81.09828173765624!3d-15.798267039500006!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9c59c7ebcc28cf%3A0x295a1506f2293e63!2sBrazil!5e0!3m2!1sen!2ses!4v1653131234567!5m2!1sen!2ses"
+              width="100%"
+              height="100%"
+              style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
 
         {/* Basic info section */}

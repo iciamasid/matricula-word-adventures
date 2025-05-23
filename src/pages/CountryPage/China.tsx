@@ -1,31 +1,29 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 const ChinaPage = () => {
-  const navigate = useNavigate();
-
-  const handleGoBack = () => {
+  const handleNavigation = () => {
     sessionStorage.setItem('navigatingBack', 'true');
-    navigate(-1);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-50 to-red-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Back button */}
-        <div className="w-full flex justify-start mb-4">
+        <Link to="/motorcycle-game">
           <Button 
             variant="outline" 
-            onClick={handleGoBack}
-            className="bg-white/80 border-red-400 hover:bg-white/90 text-red-800 kids-text"
+            size="sm" 
+            onClick={handleNavigation}
+            className="mb-4 bg-red-700/90 hover:bg-red-800 text-white border-red-600"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Volver
+            <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
           </Button>
-        </div>
+        </Link>
 
         {/* Header with flag and country name */}
         <div className="text-center mb-8">
@@ -38,12 +36,32 @@ const ChinaPage = () => {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
             src="/lovable-uploads/54b230f6-8a76-4e9a-ae4c-5fa2f7087600.png" 
-            alt="Cruce de Shibuya, Tokio"
+            alt="Gran Muralla China"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 1 }}
           />
+        </div>
+
+        {/* Country map location */}
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+          <div className="p-4 bg-red-50">
+            <h2 className="text-2xl font-bold text-red-800 kids-text mb-2 flex items-center">
+              <MapPin className="w-6 h-6 mr-2 text-red-700" /> Ubicación
+            </h2>
+          </div>
+          <div className="relative pb-[56.25%] h-0">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d24185315.40829373!2d81.17132033164064!3d35.86166130145476!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31508e64e5c642c1%3A0x951daa7c349f366f!2sChina!5e0!3m2!1sen!2ses!4v1653131456789!5m2!1sen!2ses"
+              width="100%"
+              height="100%"
+              style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
 
         {/* Basic info section */}
