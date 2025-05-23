@@ -19,6 +19,7 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import CarCustomization from "@/components/CarCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
+import MaxLevelPopup from "@/components/MaxLevelPopup";
 
 const Index = () => {
   return (
@@ -31,6 +32,7 @@ const Index = () => {
 // Component to handle the game content
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showMaxLevelPopup, setShowMaxLevelPopup] = useState(false);
   const isMobile = useIsMobile();
   const worldTourRef = useRef<HTMLDivElement>(null);
   const {
@@ -90,6 +92,18 @@ const GameContent = () => {
       }
     }
   }, []);
+
+  // Check if level 10 is reached and show max level popup
+  useEffect(() => {
+    if (level >= 10 && !showMaxLevelPopup) {
+      // Small delay to let level up animation finish first
+      const timer = setTimeout(() => {
+        setShowMaxLevelPopup(true);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [level, showMaxLevelPopup]);
 
   // Function to scroll to world tour section
   const scrollToWorldTour = () => {
@@ -157,6 +171,17 @@ const GameContent = () => {
       title: "¡Nivel actualizado!",
       description: "Has saltado al nivel 9. ¡Preparado para llegar al nivel 10!"
     });
+  };
+
+  // Handler to go to motorcycle game with level 1
+  const handleGoToMotorcycle = () => {
+    // Reset to level 1 for motorcycle game
+    setLevel(1);
+    setTotalPoints(500); // Start with some points for motorcycle game
+    setShowMaxLevelPopup(false);
+    
+    // Navigate to motorcycle game
+    window.location.href = '/motorcycle-game';
   };
 
   return (
@@ -336,6 +361,13 @@ const GameContent = () => {
         />
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
+        
+        {/* Max Level Popup */}
+        <MaxLevelPopup
+          open={showMaxLevelPopup}
+          onClose={() => setShowMaxLevelPopup(false)}
+          onGoToMotorcycle={handleGoToMotorcycle}
+        />
       </div>
       <Toaster />
     </div>
