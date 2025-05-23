@@ -21,6 +21,17 @@ import Costa_Rica from "./pages/CountryPage/CostaRica";
 import Brasil from "./pages/CountryPage/Brasil";
 import Peru from "./pages/CountryPage/Peru";
 
+// Import car game country pages
+import Espana from "./pages/CountryPage/Espana";
+import Francia from "./pages/CountryPage/Francia";
+import Italia from "./pages/CountryPage/Italia";
+import Rusia from "./pages/CountryPage/Rusia";
+import Japon from "./pages/CountryPage/Japon";
+import EstadosUnidos from "./pages/CountryPage/EstadosUnidos";
+import Mexico from "./pages/CountryPage/Mexico";
+import Australia from "./pages/CountryPage/Australia";
+import Argentina from "./pages/CountryPage/Argentina";
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -44,6 +55,17 @@ const App = () => (
             <Route path="/country/Costa_Rica" element={<Costa_Rica />} />
             <Route path="/country/Brasil" element={<Brasil />} />
             <Route path="/country/Peru" element={<Peru />} />
+            
+            {/* Car game countries */}
+            <Route path="/country/España" element={<Espana />} />
+            <Route path="/country/Francia" element={<Francia />} />
+            <Route path="/country/Italia" element={<Italia />} />
+            <Route path="/country/Rusia" element={<Rusia />} />
+            <Route path="/country/Japón" element={<Japon />} />
+            <Route path="/country/Estados Unidos" element={<EstadosUnidos />} />
+            <Route path="/country/México" element={<Mexico />} />
+            <Route path="/country/Australia" element={<Australia />} />
+            <Route path="/country/Argentina" element={<Argentina />} />
             
             {/* Generic country page for countries without specific pages */}
             <Route path="/country/:country" element={<CountryPage />} />
