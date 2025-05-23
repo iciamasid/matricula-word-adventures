@@ -1,20 +1,45 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 const PeruPage = () => {
+  const [returnGame, setReturnGame] = useState('/motorcycle-game');
+
+  useEffect(() => {
+    // Check if coming from car game based on the referrer or localStorage
+    const referrer = document.referrer;
+    if (referrer.includes('draw-game')) {
+      setReturnGame('/draw-game');
+    } else {
+      setReturnGame('/motorcycle-game');
+    }
+
+    // Check if localStorage has info about which game we came from
+    const navigatingBack = sessionStorage.getItem('navigatingBack');
+    if (navigatingBack === 'car-game') {
+      setReturnGame('/draw-game');
+    } else if (navigatingBack === 'motorcycle-game') {
+      setReturnGame('/motorcycle-game');
+    }
+  }, []);
+
   const handleNavigation = () => {
-    sessionStorage.setItem('navigatingBack', 'true');
+    // Store which game we're returning to
+    if (returnGame === '/draw-game') {
+      sessionStorage.setItem('navigatingBack', 'car-game');
+    } else {
+      sessionStorage.setItem('navigatingBack', 'motorcycle-game');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-50 to-red-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Back button */}
-        <Link to="/motorcycle-game">
+        <Link to={returnGame}>
           <Button 
             variant="outline" 
             size="sm" 
@@ -52,6 +77,31 @@ const PeruPage = () => {
             </h2>
           </div>
           <div className="relative pb-[56.25%] h-0">
+            {/* Animated capital city emoji */}
+            <motion.div 
+              className="absolute z-10"
+              style={{ 
+                top: '60%', 
+                left: '30%',
+                transform: 'translate(-50%, -50%)'
+              }}
+              animate={{ 
+                y: [0, -10, 0],
+              }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 1.5,
+                ease: "easeInOut"
+              }}
+            >
+              <div className="bg-white rounded-full p-1 shadow-lg">
+                <span className="text-2xl">🏙️</span>
+              </div>
+              <div className="text-xs font-bold bg-white px-1 rounded mt-1 text-center shadow-sm">
+                Lima
+              </div>
+            </motion.div>
+            
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15603736.956513474!2d-84.09825396220297!3d-9.189967097799816!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9105c850c05914f7%3A0x364d984c86b05670!2sPeru!5e0!3m2!1sen!2ses!4v1653130789012!5m2!1sen!2ses"
               width="100%"
