@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -59,6 +60,9 @@ const GameContent = () => {
   // Ref to the license plate section
   const licensePlateRef = useRef<HTMLDivElement>(null);
 
+  // Store the previous level to determine when level 10 is reached
+  const prevLevelRef = useRef<number>(level);
+
   // Asegura que la página comience desde la parte superior al cargar
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -93,17 +97,38 @@ const GameContent = () => {
     }
   }, []);
 
-  // Check if level 10 is reached and show max level popup
+  // Check for level 10 achievement and show popup
   useEffect(() => {
-    if (level >= 10 && !showMaxLevelPopup) {
-      // Small delay to let level up animation finish first
-      const timer = setTimeout(() => {
-        setShowMaxLevelPopup(true);
-      }, 3000);
+    console.log("Level effect running, current level:", level, "prevLevel:", prevLevelRef.current);
+
+    // Check if player just reached level 10
+    if (level === 10 && prevLevelRef.current < 10) {
+      console.log("Max level 10 reached! Showing popup");
       
-      return () => clearTimeout(timer);
+      // Check if the popup has already been shown before
+      const maxLevelPopupShown = localStorage.getItem('maxLevelPopupShown');
+      
+      // Only show if not already shown or if we want to always show it
+      if (!maxLevelPopupShown) {
+        setShowMaxLevelPopup(true);
+        console.log("Setting showMaxLevelPopup to true");
+      }
     }
-  }, [level, showMaxLevelPopup]);
+    
+    // Update previous level reference
+    prevLevelRef.current = level;
+  }, [level]);
+
+  // Save popup state between renders
+  useEffect(() => {
+    // We log the current state to debug
+    console.log("showMaxLevelPopup state:", showMaxLevelPopup);
+    
+    // If popup is closed by the user, mark it as shown
+    if (!showMaxLevelPopup && prevLevelRef.current === 10) {
+      localStorage.setItem('maxLevelPopupShown', 'true');
+    }
+  }, [showMaxLevelPopup]);
 
   // Function to scroll to world tour section
   const scrollToWorldTour = () => {
@@ -151,6 +176,8 @@ const GameContent = () => {
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
+      // When game is reset, also clear the popup shown flag
+      localStorage.removeItem('maxLevelPopupShown');
       toast({
         title: "¡Juego reiniciado!",
         description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
@@ -175,13 +202,25 @@ const GameContent = () => {
 
   // Handler to go to motorcycle game with level 1
   const handleGoToMotorcycle = () => {
+    console.log("Going to motorcycle game!");
     // Reset to level 1 for motorcycle game
     setLevel(1);
     setTotalPoints(500); // Start with some points for motorcycle game
     setShowMaxLevelPopup(false);
     
+    // Mark popup as shown
+    localStorage.setItem('maxLevelPopupShown', 'true');
+    
     // Navigate to motorcycle game
     window.location.href = '/motorcycle-game';
+  };
+
+  // Function to close the popup
+  const handleCloseMaxLevelPopup = () => {
+    console.log("Closing max level popup");
+    setShowMaxLevelPopup(false);
+    // Mark as shown so it doesn't appear again
+    localStorage.setItem('maxLevelPopupShown', 'true');
   };
 
   return (
@@ -362,10 +401,10 @@ const GameContent = () => {
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
         
-        {/* Max Level Popup */}
+        {/* Max Level Popup - updated to use handleCloseMaxLevelPopup */}
         <MaxLevelPopup
           open={showMaxLevelPopup}
-          onClose={() => setShowMaxLevelPopup(false)}
+          onClose={handleCloseMaxLevelPopup}
           onGoToMotorcycle={handleGoToMotorcycle}
         />
       </div>
