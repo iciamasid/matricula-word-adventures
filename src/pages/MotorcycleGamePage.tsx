@@ -122,14 +122,14 @@ const MotorcycleGameContent = () => {
   const unlockedCountries = React.useMemo(() => {
     // IMPORTANT: Always include Spain regardless of level
     const countries = ["España"];
-    if (level >= 2) countries.push("Francia");
-    if (level >= 3) countries.push("Italia");
-    if (level >= 4) countries.push("Rusia");
-    if (level >= 5) countries.push("Japón");
-    if (level >= 6) countries.push("Australia");
-    if (level >= 7) countries.push("Estados Unidos");
-    if (level >= 8) countries.push("Méjico");
-    if (level >= 9) countries.push("Argentina");
+    if (level >= 2) countries.push("Reino Unido");
+    if (level >= 3) countries.push("Grecia");
+    if (level >= 4) countries.push("Noruega");
+    if (level >= 5) countries.push("China");
+    if (level >= 6) countries.push("Canadá");
+    if (level >= 7) countries.push("Costa Rica");
+    if (level >= 8) countries.push("Brasil");
+    if (level >= 9) countries.push("Perú");
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);

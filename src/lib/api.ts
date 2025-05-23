@@ -31,85 +31,85 @@ const countryData: Record<string, CountryInfo> = {
     description: "España es un país con una rica historia y cultura, famoso por su gastronomía, arte y arquitectura.",
     landmarks: ["La Sagrada Familia", "El Prado", "La Alhambra", "Parque Güell"]
   },
-  "Francia": {
-    country: "Francia",
-    capital: "París",
-    language: "Francés",
-    population: 67390000,
-    currency: "Euro (€)",
-    flagEmoji: "🇫🇷",
-    description: "Francia es conocida por su arte, cultura y gastronomía. Es uno de los destinos turísticos más populares del mundo.",
-    landmarks: ["Torre Eiffel", "Museo del Louvre", "Catedral de Notre Dame", "Palacio de Versalles"]
-  },
-  "Italia": {
-    country: "Italia",
-    capital: "Roma",
-    language: "Italiano",
-    population: 60360000,
-    currency: "Euro (€)",
-    flagEmoji: "🇮🇹",
-    description: "Italia tiene una rica historia cultural y es famosa por su arte, arquitectura, moda y gastronomía.",
-    landmarks: ["Coliseo Romano", "Torre de Pisa", "Catedral de Florencia", "Canales de Venecia"]
-  },
-  "Rusia": {
-    country: "Rusia",
-    capital: "Moscú",
-    language: "Ruso",
-    population: 144400000,
-    currency: "Rublo ruso (₽)",
-    flagEmoji: "🇷🇺",
-    description: "Rusia es el país más grande del mundo y tiene una rica historia cultural y literaria.",
-    landmarks: ["Plaza Roja", "Kremlin", "Catedral de San Basilio", "Museo Hermitage"]
-  },
-  "Japón": {
-    country: "Japón",
-    capital: "Tokio",
-    language: "Japonés",
-    population: 126300000,
-    currency: "Yen japonés (¥)",
-    flagEmoji: "🇯🇵",
-    description: "Japón es conocido por su tradición y tecnología avanzada, así como por su arte y gastronomía única.",
-    landmarks: ["Monte Fuji", "Templo Senso-ji", "Castillo de Osaka", "Santuario Fushimi Inari"]
-  },
-  "Australia": {
-    country: "Australia",
-    capital: "Canberra",
+  "Reino Unido": {
+    country: "Reino Unido",
+    capital: "Londres",
     language: "Inglés",
-    population: 25690000,
-    currency: "Dólar australiano ($)",
-    flagEmoji: "🇦🇺",
-    description: "Australia es conocida por sus paisajes únicos, su fauna exótica y sus hermosas playas.",
-    landmarks: ["Ópera de Sídney", "Gran Barrera de Coral", "Uluru", "Bahía de Sídney"]
+    population: 67220000,
+    currency: "Libra esterlina (£)",
+    flagEmoji: "🇬🇧",
+    description: "El Reino Unido es conocido por su historia monárquica, su cultura diversa y sus monumentos históricos.",
+    landmarks: ["Big Ben", "Torre de Londres", "Palacio de Buckingham", "Stonehenge"]
   },
-  "Estados Unidos": {
-    country: "Estados Unidos",
-    capital: "Washington D.C.",
-    language: "Inglés",
-    population: 331900000,
-    currency: "Dólar estadounidense ($)",
-    flagEmoji: "🇺🇸",
-    description: "Estados Unidos es una potencia mundial con gran diversidad cultural y paisajes variados.",
-    landmarks: ["Estatua de la Libertad", "Gran Cañón", "Golden Gate Bridge", "Times Square"]
+  "Grecia": {
+    country: "Grecia",
+    capital: "Atenas",
+    language: "Griego",
+    population: 10720000,
+    currency: "Euro (€)",
+    flagEmoji: "🇬🇷",
+    description: "Grecia es la cuna de la civilización occidental, famosa por su mitología, filosofía y ruinas antiguas.",
+    landmarks: ["Acrópolis", "Partenón", "Santorini", "Monte Olimpo"]
   },
-  "Méjico": {
-    country: "Méjico",
-    capital: "Ciudad de México",
+  "Noruega": {
+    country: "Noruega",
+    capital: "Oslo",
+    language: "Noruego",
+    population: 5380000,
+    currency: "Corona noruega (kr)",
+    flagEmoji: "🇳🇴",
+    description: "Noruega es conocida por sus impresionantes fiordos, auroras boreales y alta calidad de vida.",
+    landmarks: ["Fiordo de Geiranger", "Preikestolen", "Tromso", "Bergen"]
+  },
+  "China": {
+    country: "China",
+    capital: "Pekín",
+    language: "Mandarín",
+    population: 1402000000,
+    currency: "Yuan (¥)",
+    flagEmoji: "🇨🇳",
+    description: "China es uno de los países más antiguos del mundo, con una rica historia y cultura milenaria.",
+    landmarks: ["Gran Muralla China", "Ciudad Prohibida", "Ejército de Terracota", "Torres Karst de Guilin"]
+  },
+  "Canadá": {
+    country: "Canadá",
+    capital: "Ottawa",
+    language: "Inglés y Francés",
+    population: 38010000,
+    currency: "Dólar canadiense ($)",
+    flagEmoji: "🇨🇦",
+    description: "Canadá es conocido por sus vastos paisajes naturales, diversidad cultural y amabilidad.",
+    landmarks: ["Cataratas del Niágara", "CN Tower", "Parque Nacional Banff", "Viejo Quebec"]
+  },
+  "Costa Rica": {
+    country: "Costa Rica",
+    capital: "San José",
     language: "Español",
-    population: 128900000,
-    currency: "Peso mexicano ($)",
-    flagEmoji: "🇲🇽",
-    description: "México tiene una rica historia y cultura, con influencias tanto indígenas como europeas.",
-    landmarks: ["Chichén Itzá", "Teotihuacán", "Cancún", "Catedral Metropolitana"]
+    population: 5094000,
+    currency: "Colón costarricense (₡)",
+    flagEmoji: "🇨🇷",
+    description: "Costa Rica es famosa por su biodiversidad, ecoturismo y sus hermosas playas y volcanes.",
+    landmarks: ["Volcán Arenal", "Parque Nacional Manuel Antonio", "Monteverde", "Tortuguero"]
   },
-  "Argentina": {
-    country: "Argentina",
-    capital: "Buenos Aires",
+  "Brasil": {
+    country: "Brasil",
+    capital: "Brasilia",
+    language: "Portugués",
+    population: 212600000,
+    currency: "Real brasileño (R$)",
+    flagEmoji: "🇧🇷",
+    description: "Brasil es el país más grande de Sudamérica, conocido por sus playas, la selva amazónica y el carnaval.",
+    landmarks: ["Cristo Redentor", "Pan de Azúcar", "Cataratas del Iguazú", "Amazonia"]
+  },
+  "Perú": {
+    country: "Perú",
+    capital: "Lima",
     language: "Español",
-    population: 45380000,
-    currency: "Peso argentino ($)",
-    flagEmoji: "🇦🇷",
-    description: "Argentina es conocida por sus paisajes diversos, desde los Andes hasta las pampas, así como por su cultura y gastronomía.",
-    landmarks: ["Cataratas del Iguazú", "Glaciar Perito Moreno", "Obelisco de Buenos Aires", "Casa Rosada"]
+    population: 32970000,
+    currency: "Sol peruano (S/)",
+    flagEmoji: "🇵🇪",
+    description: "Perú es conocido por su historia inca, su gastronomía y sus impresionantes ruinas arqueológicas.",
+    landmarks: ["Machu Picchu", "Líneas de Nazca", "Valle Sagrado", "Lago Titicaca"]
   }
 };
 
