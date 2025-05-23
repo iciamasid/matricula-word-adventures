@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import CountryPage from "./pages/CountryPage";
 import NotFound from "./pages/NotFound";
 import DrawGamePage from "./pages/DrawGamePage";
+import MotorcycleGamePage from "./pages/MotorcycleGamePage"; // Add import for new page
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionConfetti from "./components/CompletionConfetti";
@@ -61,6 +62,7 @@ const GameRoutes = () => {
           <Route path="/" element={<Index />} />
           <Route path="/country/:country" element={<CountryPage />} />
           <Route path="/draw-game" element={<DrawGamePage />} />
+          <Route path="/motorcycle-game" element={<MotorcycleGamePage />} /> {/* Add new route */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

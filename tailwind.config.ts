@@ -65,7 +65,8 @@ export default {
 					red: '#E74C3C',
 					purple: '#9B59B6',
 					gray: '#95A5A6',
-					dark: '#34495E'
+					dark: '#34495E',
+					teal: '#20B2AA' // Added teal color for motorcycle theme
 				},
 				bba7ca: '#bba7ca', // Adding the specific purple background color as a named color
 				sidebar: {

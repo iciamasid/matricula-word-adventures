@@ -6,9 +6,14 @@ import { Progress } from "@/components/ui/progress";
 interface LoadingScreenProps {
   onLoadComplete: () => void;
   isRestarting?: boolean;
+  bgColor?: string; // Add background color prop
 }
 
-const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete, isRestarting = false }) => {
+const LoadingScreen: React.FC<LoadingScreenProps> = ({ 
+  onLoadComplete, 
+  isRestarting = false,
+  bgColor = "bg-gray-900/50" // Default background color 
+}) => {
   const [progress, setProgress] = useState(0);
   
   useEffect(() => {
@@ -39,7 +44,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({ onLoadComplete, isRestart
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 flex flex-col items-center justify-center bg-gray-900/50 backdrop-blur-sm z-50"
+      className={`fixed inset-0 flex flex-col items-center justify-center ${bgColor} backdrop-blur-sm z-50`}
     >
       <motion.div 
         className="max-w-md w-full px-4 flex flex-col items-center"

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -7,7 +8,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Globe, RefreshCw, ChevronDown, HelpCircle, Bike } from "lucide-react";
+import { RefreshCw, HelpCircle, ArrowLeft } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,20 +17,20 @@ import { toast } from "@/hooks/use-toast";
 import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
-import CarCustomization from "@/components/CarCustomization";
+import MotorcycleCustomization from "@/components/MotorcycleCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 
-const Index = () => {
+const MotorcycleGamePage = () => {
   return (
     <GameProvider>
-      <GameContent />
+      <MotorcycleGameContent />
     </GameProvider>
   );
 };
 
 // Component to handle the game content
-const GameContent = () => {
+const MotorcycleGameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const isMobile = useIsMobile();
   const worldTourRef = useRef<HTMLDivElement>(null);
@@ -49,7 +50,6 @@ const GameContent = () => {
     setShowBirthdayBonusPopup,
     birthYearBonus,
     showAgeBonusPopup,
-    // Add the necessary game state update functions
     setLevel,
     setTotalPoints
   } = useGame();
@@ -79,7 +79,7 @@ const GameContent = () => {
       // Restore proper destinations based on current level
       updateDestinations(level);
 
-      // If car is already selected, scroll to license plate section
+      // If motorcycle is already selected, scroll to license plate section
       if (selectedCarColor && licensePlateRef.current) {
         // Slight delay to ensure DOM is ready
         setTimeout(() => {
@@ -100,15 +100,15 @@ const GameContent = () => {
     }
   };
 
-  // Determine the color theme (always using Spanish/Purple since we removed English)
-  const bgColor = "bg-bba7ca";
-  const panelBgColor = "bg-purple-200";
-  const panelGradientBg = "bg-gradient-to-r from-purple-300 to-purple-200";
-  const buttonBgColor = "bg-purple-600 hover:bg-purple-700";
-  const textColor = "text-purple-800";
-  const textColorLight = "text-purple-700";
-  const borderColor = "border-purple-300";
-  const hoverBgColor = "hover:bg-purple-100";
+  // Determine the color theme for motorcycle page (turquoise)
+  const bgColor = "bg-teal-100";
+  const panelBgColor = "bg-teal-200";
+  const panelGradientBg = "bg-gradient-to-r from-teal-300 to-teal-200";
+  const buttonBgColor = "bg-teal-600 hover:bg-teal-700";
+  const textColor = "text-teal-800";
+  const textColorLight = "text-teal-700";
+  const borderColor = "border-teal-300";
+  const hoverBgColor = "hover:bg-teal-100";
 
   // Using sessionStorage to mark when we're navigating between pages
   const handleNavigation = () => {
@@ -144,11 +144,11 @@ const GameContent = () => {
     }
   };
 
-  // Handler for jump to level 9 button - MODIFIED TO SET 4000 POINTS INSTEAD OF 9000
+  // Handler for jump to level 9 button
   const handleJumpToLevel9 = () => {
     // Set level to 9
     setLevel(9);
-    // Set points to a reasonable amount for level 9 (approximately 4000 points)
+    // Set points to a reasonable amount for level 9
     setTotalPoints(4000);
     // Update destinations based on new level
     updateDestinations(9);
@@ -167,69 +167,37 @@ const GameContent = () => {
         backgroundAttachment: "fixed"
       }}
     >
-      {/* Special background effect when the world tour is completed */}
-      {level >= 10 && (
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-yellow-300 opacity-30"
-              style={{
-                width: Math.random() * 10 + 5,
-                height: Math.random() * 10 + 5,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`
-              }}
-              animate={{
-                y: [0, -100],
-                opacity: [0.3, 0]
-              }}
-              transition={{
-                duration: Math.random() * 5 + 5,
-                repeat: Infinity,
-                repeatType: "loop",
-                delay: Math.random() * 5
-              }}
-            />
-          ))}
-        </div>
-      )}
-      
-      {/* Added more space at the top with pt-12 (increased from pt-8) */}
-      <div className="relative w-full pt-12">
+      {/* Return button to car game */}
+      <div className="w-full pt-12 px-4">
+        <Link to="/">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" /> Volver a coches
+          </Button>
+        </Link>
+        
         {/* Instructions button positioned at top right of the screen */}
         <Button
           variant="outline"
           size="sm"
           onClick={() => setShowInstructions(true)}
-          className={`absolute top-2 right-4 ${
-            'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'
-          } kids-text text-base font-normal`}
+          className={`absolute top-2 right-4 bg-teal-100/90 hover:bg-teal-200 text-teal-900 border-teal-300 kids-text text-base font-normal`}
         >
           <HelpCircle className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
         
-        {/* Debug button positioned at top left of the screen */}
+        {/* Debug button positioned at center top of the screen */}
         <Button
           variant="outline"
           size="sm"
           onClick={handleJumpToLevel9}
-          className="absolute top-2 left-4 bg-purple-700/90 hover:bg-purple-800 text-white border-purple-600 kids-text text-base font-normal"
+          className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal"
         >
           Saltar a Nivel 9
         </Button>
-        
-        {/* New button for motorcycle game */}
-        <Link to="/motorcycle-game">
-          <Button
-            variant="outline"
-            size="sm"
-            className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-teal-600/90 hover:bg-teal-700 text-white border-teal-500 kids-text text-base font-normal"
-          >
-            <Bike className="w-4 h-4 mr-1" /> Jugar con motos
-          </Button>
-        </Link>
       </div>
 
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
@@ -238,12 +206,12 @@ const GameContent = () => {
           <PlayerRegistration />
         </div>
         
-        {/* Car selection and CONDUCE button in a unified design */}
+        {/* Motorcycle selection and CONDUCE button in a unified design */}
         <div className="w-full flex justify-center mb-4">
-          <CarCustomization />
+          <MotorcycleCustomization />
         </div>
         
-        {/* Show moving car BELOW the buttons */}
+        {/* Show moving motorcycle BELOW the buttons */}
         {playerName && selectedCarColor && (
           <motion.div
             className="w-32 h-24 my-2"
@@ -257,8 +225,8 @@ const GameContent = () => {
             }}
           >
             <img 
-              src={`/lovable-uploads/${selectedCarColor.image}`}
-              alt={selectedCarColor.name} 
+              src="/lovable-uploads/motorcycle.png"
+              alt="Motorcycle" 
               className="w-full h-full object-contain" 
             />
           </motion.div>
@@ -270,22 +238,22 @@ const GameContent = () => {
         <div className="w-full max-w-md flex flex-col items-center">
           <LicensePlate />
           
-          {/* Add more space between license plate and word input - mb-6 added */}
+          {/* Add more space between license plate and word input */}
           <div className="mb-8"></div>
           
           <WordInput />
           
-          {/* Score components with reduced spacing (removed space-y-4 class) */}
+          {/* Score components */}
           <div className="w-full mt-2">
             <ScorePanel />
           </div>
           
-          {/* World Tour Progress - moved closer (reduced mt-6 to mt-1) */}
+          {/* World Tour Progress */}
           <div ref={worldTourRef} className="mt-1 w-full">
             <WorldTourProgress />
           </div>
           
-          {/* Reset Game Button - Added more bottom margin (mb-16) */}
+          {/* Reset Game Button - Added more bottom margin */}
           <motion.div
             className="w-full max-w-xs mt-8 mb-16"
             whileHover={{
@@ -299,9 +267,7 @@ const GameContent = () => {
             <Button
               onClick={handleResetGame}
               size="lg"
-              className={`w-full text-white kids-text text-xl font-normal ${
-                "bg-purple-700 hover:bg-purple-600"
-              } px-[10px] mx-0 my-0 py-[20px]`}
+              className={`w-full text-white kids-text text-xl font-normal bg-teal-700 hover:bg-teal-600 px-[10px] mx-0 my-0 py-[20px]`}
             >
               <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
             </Button>
@@ -342,4 +308,4 @@ const GameContent = () => {
   );
 };
 
-export default Index;
+export default MotorcycleGamePage;
