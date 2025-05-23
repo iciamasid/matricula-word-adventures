@@ -62,11 +62,12 @@ const MotorcycleGameContent = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // IMPORTANT: Always make sure Spain is unlocked regardless of level
+  // Set motorcycle-specific countries
   useEffect(() => {
-    // This ensures Spain is always unlocked when the game starts
+    // This ensures Portugal is always unlocked when the game starts
     if (level === 0) {
-      updateDestinations(level);
+      // Apply motorcycle-specific destinations
+      updateMotorcycleDestinations(level);
     }
   }, []);
 
@@ -77,7 +78,7 @@ const MotorcycleGameContent = () => {
       // Clear the navigation flag
       sessionStorage.removeItem('navigatingBack');
       // Restore proper destinations based on current level
-      updateDestinations(level);
+      updateMotorcycleDestinations(level);
 
       // If motorcycle is already selected, scroll to license plate section
       if (selectedCarColor && licensePlateRef.current) {
@@ -90,6 +91,32 @@ const MotorcycleGameContent = () => {
       }
     }
   }, []);
+
+  // Function to update destinations specifically for motorcycle game
+  const updateMotorcycleDestinations = (currentLevel: number) => {
+    // Different countries for motorcycle game
+    if (currentLevel <= 1) {
+      updateDestinations(currentLevel, "Portugal"); // Start with Portugal instead of Spain
+    } else if (currentLevel === 2) {
+      updateDestinations(currentLevel, "Grecia");
+    } else if (currentLevel === 3) {
+      updateDestinations(currentLevel, "Alemania");
+    } else if (currentLevel === 4) {
+      updateDestinations(currentLevel, "Reino Unido");
+    } else if (currentLevel === 5) {
+      updateDestinations(currentLevel, "China");
+    } else if (currentLevel === 6) {
+      updateDestinations(currentLevel, "India");
+    } else if (currentLevel === 7) {
+      updateDestinations(currentLevel, "Brasil");
+    } else if (currentLevel === 8) {
+      updateDestinations(currentLevel, "Canadá");
+    } else if (currentLevel === 9) {
+      updateDestinations(currentLevel, "Sudáfrica");
+    } else if (currentLevel >= 10) {
+      updateDestinations(currentLevel, "Portugal");
+    }
+  };
 
   // Function to scroll to world tour section
   const scrollToWorldTour = () => {
@@ -118,25 +145,28 @@ const MotorcycleGameContent = () => {
   // Helper function to get localized country names (now only Spanish)
   const getLocalizedCountry = (country: string) => country;
 
-  // Simular países desbloqueados basados en nivel actual
+  // Simular países desbloqueados basados en nivel actual - MOTORCYCLE SPECIFIC
   const unlockedCountries = React.useMemo(() => {
-    // IMPORTANT: Always include Spain regardless of level
-    const countries = ["España"];
-    if (level >= 2) countries.push("Francia");
-    if (level >= 3) countries.push("Italia");
-    if (level >= 4) countries.push("Rusia");
-    if (level >= 5) countries.push("Japón");
-    if (level >= 6) countries.push("Australia");
-    if (level >= 7) countries.push("Estados Unidos");
-    if (level >= 8) countries.push("Méjico");
-    if (level >= 9) countries.push("Argentina");
-    if (level >= 10) countries.push("España (vuelta completa)");
+    // IMPORTANT: Always include Portugal regardless of level for motorcycle game
+    const countries = ["Portugal"];
+    if (level >= 2) countries.push("Grecia");
+    if (level >= 3) countries.push("Alemania");
+    if (level >= 4) countries.push("Reino Unido");
+    if (level >= 5) countries.push("China");
+    if (level >= 6) countries.push("India");
+    if (level >= 7) countries.push("Brasil");
+    if (level >= 8) countries.push("Canadá");
+    if (level >= 9) countries.push("Sudáfrica");
+    if (level >= 10) countries.push("Portugal (vuelta completa)");
     return countries;
   }, [level]);
 
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
+      // After reset, update to motorcycle destinations
+      setTimeout(() => updateMotorcycleDestinations(0), 100);
+      
       toast({
         title: "¡Juego reiniciado!",
         description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
@@ -150,8 +180,8 @@ const MotorcycleGameContent = () => {
     setLevel(9);
     // Set points to a reasonable amount for level 9
     setTotalPoints(4000);
-    // Update destinations based on new level
-    updateDestinations(9);
+    // Update destinations based on new level with motorcycle countries
+    updateMotorcycleDestinations(9);
     // Show success toast
     toast({
       title: "¡Nivel actualizado!",
