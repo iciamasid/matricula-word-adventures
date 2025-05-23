@@ -3,6 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 const ReinoUnido = () => {
   const handleNavigation = () => {
@@ -29,6 +30,41 @@ const ReinoUnido = () => {
           <div className="text-8xl mb-4">🇬🇧</div>
           <h1 className="text-4xl font-bold text-blue-800 kids-text mb-2">Reino Unido</h1>
           <p className="text-xl text-blue-700 kids-text">¡Bienvenido al Reino Unido!</p>
+        </div>
+
+        {/* Country image */}
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+          <motion.img 
+            src="/lovable-uploads/21e71de1-c8e4-4bbb-95d6-67ce7ae41316.png" 
+            alt="Empire State Building, Nueva York"
+            className="w-full h-64 object-cover"
+            initial={{ scale: 1.1 }}
+            animate={{ scale: 1 }}
+            transition={{ duration: 1 }}
+          />
+        </div>
+
+        {/* Basic info section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Información básica</h2>
+          <div className="grid grid-cols-2 gap-4 text-lg">
+            <div>
+              <h3 className="font-semibold text-blue-700 kids-text">Capital</h3>
+              <p className="text-gray-700 kids-text">Londres</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-blue-700 kids-text">Idioma</h3>
+              <p className="text-gray-700 kids-text">Inglés</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-blue-700 kids-text">Población</h3>
+              <p className="text-gray-700 kids-text">67.5 millones</p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-blue-700 kids-text">Moneda</h3>
+              <p className="text-gray-700 kids-text">Libra esterlina (£)</p>
+            </div>
+          </div>
         </div>
 
         {/* Fun facts section */}
