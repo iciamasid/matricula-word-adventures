@@ -1,45 +1,20 @@
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 const RusiaPage = () => {
-  const [returnGame, setReturnGame] = useState('/draw-game');
-
-  useEffect(() => {
-    // Check if coming from car game based on the referrer or localStorage
-    const referrer = document.referrer;
-    if (referrer.includes('motorcycle-game')) {
-      setReturnGame('/motorcycle-game');
-    } else {
-      setReturnGame('/draw-game');
-    }
-
-    // Check if localStorage has info about which game we came from
-    const navigatingBack = sessionStorage.getItem('navigatingBack');
-    if (navigatingBack === 'car-game') {
-      setReturnGame('/');
-    } else if (navigatingBack === 'motorcycle-game') {
-      setReturnGame('/motorcycle-game');
-    }
-  }, []);
-
   const handleNavigation = () => {
-    // Store which game we're returning to
-    if (returnGame === '/') {
-      sessionStorage.setItem('navigatingBack', 'car-game');
-    } else {
-      sessionStorage.setItem('navigatingBack', 'motorcycle-game');
-    }
+    sessionStorage.setItem('navigatingBack', 'true');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-red-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Back button */}
-        <Link to={returnGame}>
+        <Link to="/motorcycle-game">
           <Button 
             variant="outline" 
             size="sm" 
@@ -77,31 +52,6 @@ const RusiaPage = () => {
             </h2>
           </div>
           <div className="relative pb-[56.25%] h-0">
-            {/* Animated capital city emoji */}
-            <motion.div 
-              className="absolute z-10"
-              style={{ 
-                top: '55%', 
-                left: '40%',
-                transform: 'translate(-50%, -50%)'
-              }}
-              animate={{ 
-                y: [0, -10, 0],
-              }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 1.5,
-                ease: "easeInOut"
-              }}
-            >
-              <div className="bg-white rounded-full p-1 shadow-lg">
-                <span className="text-2xl">🏙️</span>
-              </div>
-              <div className="text-xs font-bold bg-white px-1 rounded mt-1 text-center shadow-sm">
-                Moscú
-              </div>
-            </motion.div>
-            
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d71692604.53634263!2d37.6176!3d55.755826!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x453c569a896724fb%3A0x1409fdf86611f613!2sRussia!5e0!3m2!1sen!2ses!4v1653130456789!5m2!1sen!2ses"
               width="100%"

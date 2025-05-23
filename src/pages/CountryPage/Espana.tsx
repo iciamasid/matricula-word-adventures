@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 const EspanaPage = () => {
-  const [returnGame, setReturnGame] = useState('/draw-game');
+  const [returnGame, setReturnGame] = useState('/motorcycle-game');
 
   useEffect(() => {
     // Check if coming from car game based on the referrer or localStorage
@@ -60,7 +60,7 @@ const EspanaPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/b3f2c43b-5b8b-4fb7-8a13-37d8f5f5c4d1.png" 
+            src="/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png" 
             alt="Paisaje de España"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
@@ -81,8 +81,8 @@ const EspanaPage = () => {
             <motion.div 
               className="absolute z-10"
               style={{ 
-                top: '45%', 
-                left: '50%',
+                top: '38%', 
+                left: '44%',
                 transform: 'translate(-50%, -50%)'
               }}
               animate={{ 
@@ -103,7 +103,7 @@ const EspanaPage = () => {
             </motion.div>
             
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6377585.065066203!2d-9.39288367658691!3d39.31428706791531!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc42e3783261bc8b%3A0xa6ec2c940768a3ec!2sSpain!5e0!3m2!1sen!2ses!4v1653130123456!5m2!1sen!2ses"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6509025.776657027!2d-9.036053850000001!3d40.0527567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc42e3783261bc8b%3A0xa6ec2c940768a3ec!2sSpain!5e0!3m2!1sen!2ses!4v1653130123456!5m2!1sen!2ses"
               width="100%"
               height="100%"
               style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
@@ -141,10 +141,10 @@ const EspanaPage = () => {
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <h2 className="text-2xl font-bold text-red-800 kids-text mb-4">¡Datos curiosos!</h2>
           <div className="space-y-4 text-lg text-gray-700">
-            <p>🏰 <strong>¡España tiene más de 40 sitios Patrimonio de la Humanidad!</strong> Desde la Alhambra hasta el Camino de Santiago.</p>
-            <p>🥘 <strong>¡La paella nació en Valencia!</strong> Y originalmente se hacía con pollo, conejo y verduras, no con mariscos.</p>
-            <p>💃 <strong>¡El flamenco es Patrimonio Cultural Inmaterial!</strong> Este arte andaluz combina cante, baile y guitarra.</p>
-            <p>🌞 <strong>¡España tiene más de 300 días de sol al año!</strong> Por eso es uno de los destinos turísticos favoritos del mundo.</p>
+            <p>🏛️ <strong>¡España tiene el tercer mayor número de sitios Patrimonio de la Humanidad!</strong> Con 49 lugares declarados por la UNESCO.</p>
+            <p>🥘 <strong>¡La paella es originaria de Valencia!</strong> Y tradicionalmente se come directamente de la sartén con cuchara de madera.</p>
+            <p>🌅 <strong>¡España tiene más de 8.000 kilómetros de costa!</strong> Entre el Mar Mediterráneo y el Océano Atlántico.</p>
+            <p>🏔️ <strong>¡El Teide en Canarias es el pico más alto de España!</strong> Con 3.715 metros de altura.</p>
           </div>
         </div>
 
@@ -153,20 +153,20 @@ const EspanaPage = () => {
           <h2 className="text-2xl font-bold text-red-800 kids-text mb-4">Lugares famosos</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg text-gray-700">
             <div className="p-4 bg-red-50 rounded-lg">
-              <h3 className="font-bold text-red-800">🏰 La Alhambra</h3>
-              <p>Palacio nazarí en Granada con jardines y arquitectura islámica.</p>
+              <h3 className="font-bold text-red-800">⛪ Sagrada Familia</h3>
+              <p>Basilica diseñada por Antoni Gaudí en Barcelona, aún en construcción.</p>
             </div>
             <div className="p-4 bg-red-50 rounded-lg">
-              <h3 className="font-bold text-red-800">⛪ Sagrada Familia</h3>
-              <p>Basílica de Gaudí en Barcelona, aún en construcción después de más de 100 años.</p>
+              <h3 className="font-bold text-red-800">🏛️ Alhambra</h3>
+              <p>Palacio y fortaleza de Granada, ejemplo de arquitectura musulmana.</p>
             </div>
             <div className="p-4 bg-red-50 rounded-lg">
               <h3 className="font-bold text-red-800">🎨 Museo del Prado</h3>
               <p>Uno de los museos de arte más importantes del mundo en Madrid.</p>
             </div>
             <div className="p-4 bg-red-50 rounded-lg">
-              <h3 className="font-bold text-red-800">🌊 Costa del Sol</h3>
-              <p>Famosas playas mediterráneas en Andalucía con sol todo el año.</p>
+              <h3 className="font-bold text-red-800">🏰 Alcázar de Sevilla</h3>
+              <p>Palacio real en Sevilla con impresionantes jardines y arquitectura.</p>
             </div>
           </div>
         </div>
@@ -175,10 +175,10 @@ const EspanaPage = () => {
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
           <h2 className="text-2xl font-bold text-red-800 kids-text mb-4">Cultura y tradiciones</h2>
           <div className="space-y-4 text-lg text-gray-700">
-            <p>🍽️ <strong>Tapas:</strong> Pequeñas porciones de comida que se comparten entre amigos.</p>
-            <p>🌙 <strong>Siesta:</strong> Descanso tradicional después del almuerzo durante las horas más calurosas.</p>
-            <p>🎉 <strong>Fiestas:</strong> Cada región tiene sus propias celebraciones como San Fermín o La Tomatina.</p>
-            <p>⚽ <strong>Fútbol:</strong> El Real Madrid y FC Barcelona son dos de los equipos más famosos del mundo.</p>
+            <p>💃 <strong>Flamenco:</strong> Arte que combina cante, baile y guitarra, originario de Andalucía.</p>
+            <p>🍅 <strong>La Tomatina:</strong> Festival en Buñol donde la gente se arroja tomates.</p>
+            <p>🐂 <strong>Fiestas de San Fermín:</strong> Famosos encierros de toros en Pamplona.</p>
+            <p>🥖 <strong>Tapas:</strong> Pequeñas porciones de comida que se comparten entre amigos.</p>
           </div>
         </div>
       </div>

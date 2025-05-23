@@ -8,7 +8,6 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import Index from "./pages/Index";
 import MotorcycleGamePage from "./pages/MotorcycleGamePage";
 import DrawGamePage from "./pages/DrawGamePage";
-import MotorcycleDriveGamePage from "./pages/MotorcycleDriveGamePage";
 import NotFound from "./pages/NotFound";
 import CountryPage from "./pages/CountryPage";
 
@@ -58,7 +57,6 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/motorcycle-game" element={<MotorcycleGamePage />} />
               <Route path="/draw-game" element={<DrawGamePage />} />
-              <Route path="/motorcycle-drive-game" element={<MotorcycleDriveGamePage />} />
               
               {/* Set game type when navigating to countries */}
               <Route path="/motorcycle-game/set-game" element={<Navigate to="/motorcycle-game" replace />} action={setMotorcycleGame} />
