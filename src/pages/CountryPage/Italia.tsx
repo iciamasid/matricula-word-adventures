@@ -20,7 +20,7 @@ const ItaliaPage = () => {
     // Check if localStorage has info about which game we came from
     const navigatingBack = sessionStorage.getItem('navigatingBack');
     if (navigatingBack === 'car-game') {
-      setReturnGame('/');
+      setReturnGame('/draw-game');
     } else if (navigatingBack === 'motorcycle-game') {
       setReturnGame('/motorcycle-game');
     }
@@ -28,7 +28,7 @@ const ItaliaPage = () => {
 
   const handleNavigation = () => {
     // Store which game we're returning to
-    if (returnGame === '/') {
+    if (returnGame === '/draw-game') {
       sessionStorage.setItem('navigatingBack', 'car-game');
     } else {
       sessionStorage.setItem('navigatingBack', 'motorcycle-game');
