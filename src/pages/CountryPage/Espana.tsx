@@ -1,20 +1,45 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 const EspanaPage = () => {
+  const [returnGame, setReturnGame] = useState('/motorcycle-game');
+
+  useEffect(() => {
+    // Check if coming from car game based on the referrer or localStorage
+    const referrer = document.referrer;
+    if (referrer.includes('motorcycle-game')) {
+      setReturnGame('/motorcycle-game');
+    } else {
+      setReturnGame('/draw-game');
+    }
+
+    // Check if localStorage has info about which game we came from
+    const navigatingBack = sessionStorage.getItem('navigatingBack');
+    if (navigatingBack === 'car-game') {
+      setReturnGame('/draw-game');
+    } else if (navigatingBack === 'motorcycle-game') {
+      setReturnGame('/motorcycle-game');
+    }
+  }, []);
+
   const handleNavigation = () => {
-    sessionStorage.setItem('navigatingBack', 'true');
+    // Store which game we're returning to
+    if (returnGame === '/draw-game') {
+      sessionStorage.setItem('navigatingBack', 'car-game');
+    } else {
+      sessionStorage.setItem('navigatingBack', 'motorcycle-game');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-50 to-yellow-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Back button */}
-        <Link to="/motorcycle-game">
+        <Link to={returnGame}>
           <Button 
             variant="outline" 
             size="sm" 
@@ -52,6 +77,31 @@ const EspanaPage = () => {
             </h2>
           </div>
           <div className="relative pb-[56.25%] h-0">
+            {/* Animated capital city emoji */}
+            <motion.div 
+              className="absolute z-10"
+              style={{ 
+                top: '38%', 
+                left: '44%',
+                transform: 'translate(-50%, -50%)'
+              }}
+              animate={{ 
+                y: [0, -10, 0],
+              }}
+              transition={{ 
+                repeat: Infinity, 
+                duration: 1.5,
+                ease: "easeInOut"
+              }}
+            >
+              <div className="bg-white rounded-full p-1 shadow-lg">
+                <span className="text-2xl">🏙️</span>
+              </div>
+              <div className="text-xs font-bold bg-white px-1 rounded mt-1 text-center shadow-sm">
+                Madrid
+              </div>
+            </motion.div>
+            
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6509025.776657027!2d-9.036053850000001!3d40.0527567!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc42e3783261bc8b%3A0xa6ec2c940768a3ec!2sSpain!5e0!3m2!1sen!2ses!4v1653130123456!5m2!1sen!2ses"
               width="100%"
