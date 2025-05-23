@@ -11,18 +11,7 @@ import DrawGamePage from "./pages/DrawGamePage";
 import NotFound from "./pages/NotFound";
 import CountryPage from "./pages/CountryPage";
 
-// Import car game country pages
-import España from "./pages/CountryPage/España";
-import Francia from "./pages/CountryPage/Francia";
-import Italia from "./pages/CountryPage/Italia";
-import Rusia from "./pages/CountryPage/Rusia";
-import Japón from "./pages/CountryPage/Japón";
-import Estados_Unidos from "./pages/CountryPage/Estados_Unidos";
-import México from "./pages/CountryPage/México";
-import Australia from "./pages/CountryPage/Australia";
-import Argentina from "./pages/CountryPage/Argentina";
-
-// Import motorcycle game country pages
+// Import motorcycle game country pages (only the ones that exist)
 import Reino_Unido from "./pages/CountryPage/Reino_Unido";
 import Grecia from "./pages/CountryPage/Grecia";
 import Noruega from "./pages/CountryPage/Noruega";
@@ -46,18 +35,7 @@ const App = () => (
             <Route path="/motorcycle-game" element={<MotorcycleGamePage />} />
             <Route path="/draw-game" element={<DrawGamePage />} />
             
-            {/* Car game countries */}
-            <Route path="/country/España" element={<España />} />
-            <Route path="/country/Francia" element={<Francia />} />
-            <Route path="/country/Italia" element={<Italia />} />
-            <Route path="/country/Rusia" element={<Rusia />} />
-            <Route path="/country/Japón" element={<Japón />} />
-            <Route path="/country/Estados_Unidos" element={<Estados_Unidos />} />
-            <Route path="/country/México" element={<México />} />
-            <Route path="/country/Australia" element={<Australia />} />
-            <Route path="/country/Argentina" element={<Argentina />} />
-            
-            {/* Motorcycle game countries */}
+            {/* Motorcycle game countries (existing pages) */}
             <Route path="/country/Reino_Unido" element={<Reino_Unido />} />
             <Route path="/country/Grecia" element={<Grecia />} />
             <Route path="/country/Noruega" element={<Noruega />} />

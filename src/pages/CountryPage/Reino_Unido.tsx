@@ -1,11 +1,29 @@
 
 import React from 'react';
-import CountryPageIcons from '@/components/CountryPageIcons';
+import { Link } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const ReinoUnido = () => {
+  const handleNavigation = () => {
+    sessionStorage.setItem('navigatingBack', 'true');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 p-4">
       <div className="max-w-4xl mx-auto">
+        {/* Back button */}
+        <Link to="/motorcycle-game">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleNavigation}
+            className="mb-4 bg-blue-700/90 hover:bg-blue-800 text-white border-blue-600"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
+          </Button>
+        </Link>
+
         {/* Header with flag and country name */}
         <div className="text-center mb-8">
           <div className="text-8xl mb-4">🇬🇧</div>
@@ -57,9 +75,6 @@ const ReinoUnido = () => {
             <p>🏴󠁧󠁢󠁳󠁣󠁴󠁿 <strong>Escocia, Gales e Irlanda del Norte:</strong> El Reino Unido está formado por cuatro países diferentes.</p>
           </div>
         </div>
-
-        {/* Navigation icons */}
-        <CountryPageIcons />
       </div>
     </div>
   );
