@@ -3,10 +3,15 @@ import React, { useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
 import { useLanguage } from "@/context/LanguageContext";
+import { useLocation } from "react-router-dom";
 
 const LevelUpAlert: React.FC = () => {
   const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame } = useGame();
   const { isEnglish } = useLanguage();
+  const location = useLocation();
+  
+  // Determine if we're in motorcycle game
+  const isMotorcycleGame = location.pathname === '/motorcycle-game';
   
   // Verificar si estamos navegando entre páginas
   useEffect(() => {
@@ -32,31 +37,138 @@ const LevelUpAlert: React.FC = () => {
     }
   }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
 
-  // Get the current country based on origin info
+  // Get the current country based on origin info and game type
   const getCurrentCountry = () => {
-    return originInfo?.country || "";
+    if (isMotorcycleGame) {
+      // Motorcycle game countries
+      switch (level) {
+        case 1:
+          return "España";
+        case 2:
+          return "Reino_Unido";
+        case 3:
+          return "Grecia";
+        case 4:
+          return "Noruega";
+        case 5:
+          return "China";
+        case 6:
+          return "Canada";
+        case 7:
+          return "Costa_Rica";
+        case 8:
+          return "Brasil";
+        case 9:
+          return "Peru";
+        case 10:
+          return "España";
+        default:
+          return "España";
+      }
+    } else {
+      // Car game countries
+      switch (level) {
+        case 1:
+          return "España";
+        case 2:
+          return "Francia";
+        case 3:
+          return "Italia";
+        case 4:
+          return "Rusia";
+        case 5:
+          return "Japón";
+        case 6:
+          return "Estados_Unidos";
+        case 7:
+          return "México";
+        case 8:
+          return "Australia";
+        case 9:
+          return "Argentina";
+        case 10:
+          return "España";
+        default:
+          return "España";
+      }
+    }
+  };
+
+  // Get country display name
+  const getCountryDisplayName = () => {
+    if (isMotorcycleGame) {
+      switch (level) {
+        case 1:
+          return "España";
+        case 2:
+          return "Reino Unido";
+        case 3:
+          return "Grecia";
+        case 4:
+          return "Noruega";
+        case 5:
+          return "China";
+        case 6:
+          return "Canadá";
+        case 7:
+          return "Costa Rica";
+        case 8:
+          return "Brasil";
+        case 9:
+          return "Perú";
+        case 10:
+          return "España";
+        default:
+          return "España";
+      }
+    } else {
+      switch (level) {
+        case 1:
+          return "España";
+        case 2:
+          return "Francia";
+        case 3:
+          return "Italia";
+        case 4:
+          return "Rusia";
+        case 5:
+          return "Japón";
+        case 6:
+          return "Estados Unidos";
+        case 7:
+          return "México";
+        case 8:
+          return "Australia";
+        case 9:
+          return "Argentina";
+        case 10:
+          return "España";
+        default:
+          return "España";
+      }
+    }
   };
   
-  // Add text about choosing another car
-  const carText = isEnglish 
-    ? "You can now choose a new car!" 
-    : "¡Ahora puedes elegir un nuevo coche!";
+  // Add text about choosing another vehicle
+  const vehicleText = isMotorcycleGame
+    ? (isEnglish ? "You can now choose a new motorcycle!" : "¡Ahora puedes elegir una nueva moto!")
+    : (isEnglish ? "You can now choose a new car!" : "¡Ahora puedes elegir un nuevo coche!");
   
   // Simplified explanation
   const baseExplanation = isEnglish 
     ? `Level ${level}` 
     : `Nivel ${level}`;
   
-  // Message now uses the origin country (where you actually are)
-  const currentCountry = getCurrentCountry();
-  const countryMessage = currentCountry 
+  // Message now uses the display country name
+  const currentCountryDisplay = getCountryDisplayName();
+  const countryMessage = currentCountryDisplay 
     ? (isEnglish 
-        ? `Now you are in ${currentCountry}!` 
-        : `¡Ahora estás en ${currentCountry}!`) 
+        ? `Now you are in ${currentCountryDisplay}!` 
+        : `¡Ahora estás en ${currentCountryDisplay}!`) 
     : "";
   
-  // Add the car text to the explanation
-  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${carText}`;
+  // Add the vehicle text to the explanation
+  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${vehicleText}`;
   
   return (
     <GamePopup
@@ -67,8 +179,8 @@ const LevelUpAlert: React.FC = () => {
       level={level}
       explanation={explanation}
       points={0}
-      countryToVisit={currentCountry} // Pass the country to visit
-      requireCountryVisit={!!currentCountry} // Require visit only if there's a country
+      countryToVisit={getCurrentCountry()} // Pass the country code for routing
+      requireCountryVisit={!!getCurrentCountry()} // Require visit only if there's a country
     />
   );
 };

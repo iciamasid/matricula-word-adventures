@@ -649,7 +649,7 @@ const WorldTourProgress = () => {
               style={{
                 left: `${vehiclePosition.x}%`,
                 top: `${vehiclePosition.y}%`,
-                transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(1.2)`,
+                transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 1.8 : 1.2})`,
                 zIndex: 20
               }}
               initial={false}

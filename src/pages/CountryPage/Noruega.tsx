@@ -1,119 +1,68 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { useGame } from '@/context/GameContext';
+import CountryPageIcons from '@/components/CountryPageIcons';
 
-const NoruegaPage = () => {
-  const navigate = useNavigate();
-  const { level } = useGame();
-
-  // Marcar que estamos navegando entre páginas
-  const handleGoBack = () => {
-    sessionStorage.setItem('navigatingBack', 'true');
-    navigate(-1);
-  };
-
+const Noruega = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-indigo-50 to-indigo-100 flex flex-col items-center p-4">
-      {/* Botón para volver */}
-      <div className="w-full flex justify-start mb-4">
-        <Button 
-          variant="outline" 
-          onClick={handleGoBack}
-          className="bg-white/80 border-indigo-400 hover:bg-white/90 text-indigo-800 kids-text"
-        >
-          <ArrowLeft className="w-4 h-4 mr-1" /> Volver
-        </Button>
+    <div className="min-h-screen bg-gradient-to-b from-blue-200 to-white p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header with flag and country name */}
+        <div className="text-center mb-8">
+          <div className="text-8xl mb-4">🇳🇴</div>
+          <h1 className="text-4xl font-bold text-blue-800 kids-text mb-2">Noruega</h1>
+          <p className="text-xl text-blue-700 kids-text">¡Bienvenido a Noruega!</p>
+        </div>
+
+        {/* Fun facts section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">¡Datos curiosos!</h2>
+          <div className="space-y-4 text-lg text-gray-700">
+            <p>🌌 <strong>¡Puedes ver la aurora boreal!</strong> En invierno, las luces del norte bailan en el cielo nocturno.</p>
+            <p>☀️ <strong>¡El sol de medianoche!</strong> En verano, el sol no se pone durante semanas en el norte de Noruega.</p>
+            <p>🛥️ <strong>¡Los vikingos eran noruegos!</strong> Fueron exploradores valientes que navegaron por todo el mundo.</p>
+            <p>🐧 <strong>¡Los trolls vienen de aquí!</strong> Los cuentos de trolls nacieron en los bosques y montañas noruegas.</p>
+          </div>
+        </div>
+
+        {/* Landmarks section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Lugares famosos</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg text-gray-700">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🏔️ Fiordos</h3>
+              <p>Valles profundos llenos de agua azul rodeados de montañas gigantes.</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🏛️ Oslo</h3>
+              <p>La capital, famosa por sus museos de barcos vikingos y arte moderno.</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🎿 Lillehammer</h3>
+              <p>Ciudad de los Juegos Olímpicos de Invierno y perfecta para esquiar.</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🌊 Cabo Norte</h3>
+              <p>Uno de los puntos más al norte de Europa continental.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Cultural section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Cultura y tradiciones</h2>
+          <div className="space-y-4 text-lg text-gray-700">
+            <p>🎿 <strong>Deportes de invierno:</strong> El esquí se inventó aquí y es el deporte nacional.</p>
+            <p>🐟 <strong>Pesca:</strong> El salmón y el bacalao son muy importantes en su cultura.</p>
+            <p>🏠 <strong>Arquitectura:</strong> Las casas de madera tradicionales son muy coloridas.</p>
+            <p>🎵 <strong>Música:</strong> Los coros y la música folk son muy populares.</p>
+          </div>
+        </div>
+
+        {/* Navigation icons */}
+        <CountryPageIcons />
       </div>
-
-      <motion.div 
-        className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mb-8"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex items-center mb-6">
-          <span className="text-4xl mr-3">🇳🇴</span>
-          <h1 className="text-3xl font-bold text-indigo-800 kids-text">Noruega</h1>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold text-indigo-700 kids-text">Capital</h2>
-            <p className="kids-text text-gray-700">Oslo</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold text-indigo-700 kids-text">Idioma</h2>
-            <p className="kids-text text-gray-700">Noruego</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold text-indigo-700 kids-text">Población</h2>
-            <p className="kids-text text-gray-700">5.38 millones de habitantes</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold text-indigo-700 kids-text">Moneda</h2>
-            <p className="kids-text text-gray-700">Corona noruega (kr)</p>
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div 
-        className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mb-8"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        <h2 className="text-2xl font-bold text-indigo-800 kids-text mb-4">¿Sabías que...?</h2>
-        <ul className="space-y-2">
-          <li className="kids-text text-gray-700">
-            • En el norte de Noruega, el sol no se pone durante dos meses en verano.
-          </li>
-          <li className="kids-text text-gray-700">
-            • Noruega tiene más de 1.000 fiordos, que son entradas de mar entre montañas.
-          </li>
-          <li className="kids-text text-gray-700">
-            • El queso marrón (brunost) es un dulce típico noruego hecho de suero de leche.
-          </li>
-          <li className="kids-text text-gray-700">
-            • Los vikingos, famosos navegantes y guerreros, eran originarios de Noruega.
-          </li>
-        </ul>
-      </motion.div>
-
-      <motion.div 
-        className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-      >
-        <h2 className="text-2xl font-bold text-indigo-800 kids-text mb-4">Lugares famosos</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-indigo-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-indigo-700 kids-text">Fiordo de Geiranger</h3>
-            <p className="kids-text text-sm text-gray-600">Uno de los fiordos más bellos</p>
-          </div>
-          <div className="bg-indigo-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-indigo-700 kids-text">Preikestolen</h3>
-            <p className="kids-text text-sm text-gray-600">Acantilado con vista impresionante</p>
-          </div>
-          <div className="bg-indigo-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-indigo-700 kids-text">Tromso</h3>
-            <p className="kids-text text-sm text-gray-600">Ciudad para ver auroras boreales</p>
-          </div>
-          <div className="bg-indigo-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-indigo-700 kids-text">Bergen</h3>
-            <p className="kids-text text-sm text-gray-600">Ciudad con casas de colores</p>
-          </div>
-        </div>
-      </motion.div>
     </div>
   );
 };
 
-export default NoruegaPage;
+export default Noruega;

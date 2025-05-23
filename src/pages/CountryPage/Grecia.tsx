@@ -1,119 +1,68 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { useGame } from '@/context/GameContext';
+import CountryPageIcons from '@/components/CountryPageIcons';
 
-const GreciaPage = () => {
-  const navigate = useNavigate();
-  const { level } = useGame();
-
-  // Marcar que estamos navegando entre páginas
-  const handleGoBack = () => {
-    sessionStorage.setItem('navigatingBack', 'true');
-    navigate(-1);
-  };
-
+const Grecia = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-300 flex flex-col items-center p-4">
-      {/* Botón para volver */}
-      <div className="w-full flex justify-start mb-4">
-        <Button 
-          variant="outline" 
-          onClick={handleGoBack}
-          className="bg-white/80 border-blue-400 hover:bg-white/90 text-blue-800 kids-text"
-        >
-          <ArrowLeft className="w-4 h-4 mr-1" /> Volver
-        </Button>
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-white p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header with flag and country name */}
+        <div className="text-center mb-8">
+          <div className="text-8xl mb-4">🇬🇷</div>
+          <h1 className="text-4xl font-bold text-blue-800 kids-text mb-2">Grecia</h1>
+          <p className="text-xl text-blue-700 kids-text">¡Bienvenido a Grecia!</p>
+        </div>
+
+        {/* Fun facts section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">¡Datos curiosos!</h2>
+          <div className="space-y-4 text-lg text-gray-700">
+            <p>🏛️ <strong>¡Grecia es la cuna de la democracia!</strong> En Atenas se inventó el sistema democrático hace más de 2500 años.</p>
+            <p>🏃‍♂️ <strong>¡Los Juegos Olímpicos nacieron aquí!</strong> Se celebraron por primera vez en Olimpia en el año 776 a.C.</p>
+            <p>🏺 <strong>¡Los antiguos griegos inventaron el teatro!</strong> Las tragedias y comedias nacieron en Grecia.</p>
+            <p>🌊 <strong>¡Tiene más de 6.000 islas!</strong> Aunque solo unas 200 están habitadas.</p>
+          </div>
+        </div>
+
+        {/* Landmarks section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Lugares famosos</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg text-gray-700">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🏛️ Partenón</h3>
+              <p>Un templo antiguo dedicado a la diosa Atenea en la Acrópolis de Atenas.</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🏺 Delfos</h3>
+              <p>Un lugar sagrado donde los antiguos griegos consultaban el oráculo.</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🌅 Santorini</h3>
+              <p>Una isla volcánica famosa por sus casas blancas y atardeceres espectaculares.</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🏔️ Monte Olimpo</h3>
+              <p>La montaña más alta de Grecia, hogar de los dioses en la mitología griega.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Cultural section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Cultura y tradiciones</h2>
+          <div className="space-y-4 text-lg text-gray-700">
+            <p>🍯 <strong>Gastronomía:</strong> Famosa por el aceite de oliva, el queso feta, y la miel.</p>
+            <p>💃 <strong>Danza griega:</strong> El sirtaki es su baile tradicional más conocido.</p>
+            <p>📚 <strong>Mitología:</strong> Historias fascinantes de dioses como Zeus, Poseidón y Atenea.</p>
+            <p>🎭 <strong>Filosofía:</strong> Grandes pensadores como Sócrates, Platón y Aristóteles vivieron aquí.</p>
+          </div>
+        </div>
+
+        {/* Navigation icons */}
+        <CountryPageIcons />
       </div>
-
-      <motion.div 
-        className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mb-8"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex items-center mb-6">
-          <span className="text-4xl mr-3">🇬🇷</span>
-          <h1 className="text-3xl font-bold text-blue-800 kids-text">Grecia</h1>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold text-blue-700 kids-text">Capital</h2>
-            <p className="kids-text text-gray-700">Atenas</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold text-blue-700 kids-text">Idioma</h2>
-            <p className="kids-text text-gray-700">Griego</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold text-blue-700 kids-text">Población</h2>
-            <p className="kids-text text-gray-700">10.72 millones de habitantes</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold text-blue-700 kids-text">Moneda</h2>
-            <p className="kids-text text-gray-700">Euro (€)</p>
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div 
-        className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mb-8"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">¿Sabías que...?</h2>
-        <ul className="space-y-2">
-          <li className="kids-text text-gray-700">
-            • Los Juegos Olímpicos modernos comenzaron en Atenas en 1896.
-          </li>
-          <li className="kids-text text-gray-700">
-            • El alfabeto griego tiene 24 letras y es uno de los más antiguos del mundo.
-          </li>
-          <li className="kids-text text-gray-700">
-            • Grecia tiene más de 6.000 islas, pero solo 227 están habitadas.
-          </li>
-          <li className="kids-text text-gray-700">
-            • Las matemáticas, la filosofía y el teatro tienen su origen en la antigua Grecia.
-          </li>
-        </ul>
-      </motion.div>
-
-      <motion.div 
-        className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-      >
-        <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Lugares famosos</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-700 kids-text">Acrópolis</h3>
-            <p className="kids-text text-sm text-gray-600">Antigua ciudadela de Atenas</p>
-          </div>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-700 kids-text">Santorini</h3>
-            <p className="kids-text text-sm text-gray-600">Isla con casas blancas</p>
-          </div>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-700 kids-text">Monte Olimpo</h3>
-            <p className="kids-text text-sm text-gray-600">Hogar de los dioses griegos</p>
-          </div>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-700 kids-text">Partenón</h3>
-            <p className="kids-text text-sm text-gray-600">Templo dedicado a Atenea</p>
-          </div>
-        </div>
-      </motion.div>
     </div>
   );
 };
 
-export default GreciaPage;
+export default Grecia;

@@ -1,119 +1,68 @@
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { useGame } from '@/context/GameContext';
+import CountryPageIcons from '@/components/CountryPageIcons';
 
-const ReinoUnidoPage = () => {
-  const navigate = useNavigate();
-  const { level } = useGame();
-
-  // Marcar que estamos navegando entre páginas
-  const handleGoBack = () => {
-    sessionStorage.setItem('navigatingBack', 'true');
-    navigate(-1);
-  };
-
+const ReinoUnido = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 flex flex-col items-center p-4">
-      {/* Botón para volver */}
-      <div className="w-full flex justify-start mb-4">
-        <Button 
-          variant="outline" 
-          onClick={handleGoBack}
-          className="bg-white/80 border-blue-400 hover:bg-white/90 text-blue-800 kids-text"
-        >
-          <ArrowLeft className="w-4 h-4 mr-1" /> Volver
-        </Button>
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-blue-200 p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header with flag and country name */}
+        <div className="text-center mb-8">
+          <div className="text-8xl mb-4">🇬🇧</div>
+          <h1 className="text-4xl font-bold text-blue-800 kids-text mb-2">Reino Unido</h1>
+          <p className="text-xl text-blue-700 kids-text">¡Bienvenido al Reino Unido!</p>
+        </div>
+
+        {/* Fun facts section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">¡Datos curiosos!</h2>
+          <div className="space-y-4 text-lg text-gray-700">
+            <p>🏰 <strong>¡El Big Ben no es realmente una campana!</strong> Big Ben es el nombre de la campana más grande dentro de la Torre del Reloj en Londres.</p>
+            <p>👑 <strong>¡La Reina tiene dos cumpleaños!</strong> Celebra su cumpleaños real y uno oficial en diferentes fechas del año.</p>
+            <p>🚌 <strong>¡Los autobuses rojos de dos pisos son famosos en todo el mundo!</strong> Se llaman "double-deckers" y son un símbolo de Londres.</p>
+            <p>🌧️ <strong>¡No llueve tanto como la gente piensa!</strong> Aunque es famoso por la lluvia, Londres recibe menos precipitaciones que París o Roma.</p>
+          </div>
+        </div>
+
+        {/* Landmarks section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Lugares famosos</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg text-gray-700">
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🏰 Torre de Londres</h3>
+              <p>Una fortaleza histórica donde se guardan las Joyas de la Corona.</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🌉 Puente de la Torre</h3>
+              <p>Un puente icónico que se puede abrir para dejar pasar barcos grandes.</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🎡 London Eye</h3>
+              <p>Una noria gigante desde donde puedes ver toda la ciudad de Londres.</p>
+            </div>
+            <div className="p-4 bg-blue-50 rounded-lg">
+              <h3 className="font-bold text-blue-800">🏛️ Palacio de Buckingham</h3>
+              <p>La residencia oficial de la familia real británica en Londres.</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Cultural section */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Cultura y tradiciones</h2>
+          <div className="space-y-4 text-lg text-gray-700">
+            <p>☕ <strong>La hora del té:</strong> Los británicos toman té por la tarde con galletas y pasteles.</p>
+            <p>⚽ <strong>Fútbol:</strong> Inglaterra es la cuna del fútbol moderno y tiene equipos muy famosos.</p>
+            <p>🎭 <strong>Teatro:</strong> Londres tiene teatros increíbles donde se representan musicales famosos.</p>
+            <p>🏴󠁧󠁢󠁳󠁣󠁴󠁿 <strong>Escocia, Gales e Irlanda del Norte:</strong> El Reino Unido está formado por cuatro países diferentes.</p>
+          </div>
+        </div>
+
+        {/* Navigation icons */}
+        <CountryPageIcons />
       </div>
-
-      <motion.div 
-        className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mb-8"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="flex items-center mb-6">
-          <span className="text-4xl mr-3">🇬🇧</span>
-          <h1 className="text-3xl font-bold text-blue-800 kids-text">Reino Unido</h1>
-        </div>
-
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold text-blue-700 kids-text">Capital</h2>
-            <p className="kids-text text-gray-700">Londres</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold text-blue-700 kids-text">Idioma</h2>
-            <p className="kids-text text-gray-700">Inglés</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold text-blue-700 kids-text">Población</h2>
-            <p className="kids-text text-gray-700">67.22 millones de habitantes</p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold text-blue-700 kids-text">Moneda</h2>
-            <p className="kids-text text-gray-700">Libra esterlina (£)</p>
-          </div>
-        </div>
-      </motion.div>
-
-      <motion.div 
-        className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full mb-8"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-      >
-        <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">¿Sabías que...?</h2>
-        <ul className="space-y-2">
-          <li className="kids-text text-gray-700">
-            • El Big Ben no es la torre sino la campana que hay dentro.
-          </li>
-          <li className="kids-text text-gray-700">
-            • El metro de Londres es el más antiguo del mundo, inaugurado en 1863.
-          </li>
-          <li className="kids-text text-gray-700">
-            • La familia real británica existe desde hace más de 1000 años.
-          </li>
-          <li className="kids-text text-gray-700">
-            • El Reino Unido está formado por Inglaterra, Escocia, Gales e Irlanda del Norte.
-          </li>
-        </ul>
-      </motion.div>
-
-      <motion.div 
-        className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full"
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.4, duration: 0.5 }}
-      >
-        <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Lugares famosos</h2>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-700 kids-text">Big Ben</h3>
-            <p className="kids-text text-sm text-gray-600">Famoso reloj en Londres</p>
-          </div>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-700 kids-text">Torre de Londres</h3>
-            <p className="kids-text text-sm text-gray-600">Antigua fortaleza histórica</p>
-          </div>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-700 kids-text">Stonehenge</h3>
-            <p className="kids-text text-sm text-gray-600">Monumento prehistórico</p>
-          </div>
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-blue-700 kids-text">Palacio de Buckingham</h3>
-            <p className="kids-text text-sm text-gray-600">Residencia real</p>
-          </div>
-        </div>
-      </motion.div>
     </div>
   );
 };
 
-export default ReinoUnidoPage;
+export default ReinoUnido;
