@@ -76,7 +76,7 @@ const HighlightedCountry: React.FC<HighlightedCountryProps> = ({
             }}
             className="text-2xl"
           >
-            🚗
+            🏍️
           </motion.div>
         )}
       </div>
