@@ -4,11 +4,9 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
-import { useGame } from '@/context/GameContext';
 
 const PeruPage = () => {
   const navigate = useNavigate();
-  const { level } = useGame();
 
   // Marcar que estamos navegando entre páginas
   const handleGoBack = () => {
