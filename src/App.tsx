@@ -10,7 +10,7 @@ import Index from "./pages/Index";
 import CountryPage from "./pages/CountryPage";
 import NotFound from "./pages/NotFound";
 import DrawGamePage from "./pages/DrawGamePage";
-import MotorcycleGamePage from "./pages/MotorcycleGamePage";
+import MotorcycleGamePage from "./pages/MotorcycleGamePage"; // Add import for new page
 import BonusPopup from "./components/BonusPopup";
 import AgeBonusPopup from "./components/AgeBonusPopup";
 import CompletionConfetti from "./components/CompletionConfetti";
@@ -57,13 +57,15 @@ const GameRoutes = () => {
 
   return (
     <>
-      <Routes>
-        <Route path="/" element={<Index />} />
-        <Route path="/country/:country" element={<CountryPage />} />
-        <Route path="/draw-game" element={<DrawGamePage />} />
-        <Route path="/motorcycle-game" element={<MotorcycleGamePage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Index />} />
+          <Route path="/country/:country" element={<CountryPage />} />
+          <Route path="/draw-game" element={<DrawGamePage />} />
+          <Route path="/motorcycle-game" element={<MotorcycleGamePage />} /> {/* Add new route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
       
       {/* Bonus popup for 6666 license plate */}
       <BonusPopup
@@ -99,20 +101,9 @@ const GameRoutes = () => {
 // Main app component with loading screen
 const App = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [isRestarting, setIsRestarting] = useState(false);
-  const [loadingBgColor, setLoadingBgColor] = useState("bg-gray-900/50"); // Default background
-  
-  // Check if we're on the motorcycle page for theme color
-  useEffect(() => {
-    // Check if we're on the motorcycle route
-    const isMotorcyclePage = window.location.pathname.includes('motorcycle');
-    // Set appropriate background for the loading screen
-    setLoadingBgColor(isMotorcyclePage ? "bg-teal-900/50" : "bg-gray-900/50");
-  }, []);
   
   const handleLoadComplete = () => {
     setIsLoading(false);
-    setIsRestarting(false);
   };
   
   return (
@@ -123,18 +114,12 @@ const App = () => {
             <Toaster />
             <Sonner />
             
-            {/* Wrap GameRoutes with BrowserRouter to ensure context is available */}
-            <BrowserRouter>
-              <GameRoutes />
-            </BrowserRouter>
+            {/* Render GameRoutes first so it's visible underneath the loading screen */}
+            <GameRoutes />
             
             {/* Loading screen on top with transparent background */}
-            {(isLoading || isRestarting) && (
-              <LoadingScreen 
-                onLoadComplete={handleLoadComplete}
-                isRestarting={isRestarting}
-                bgColor={loadingBgColor}
-              />
+            {isLoading && (
+              <LoadingScreen onLoadComplete={handleLoadComplete} />
             )}
           </GameProvider>
         </LanguageProvider>

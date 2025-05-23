@@ -21,7 +21,6 @@ interface CountryInfo {
  * Map of countries to their information
  */
 const countryData: Record<string, CountryInfo> = {
-  // Car game countries
   "España": {
     country: "España",
     capital: "Madrid",
@@ -111,98 +110,6 @@ const countryData: Record<string, CountryInfo> = {
     flagEmoji: "🇦🇷",
     description: "Argentina es conocida por sus paisajes diversos, desde los Andes hasta las pampas, así como por su cultura y gastronomía.",
     landmarks: ["Cataratas del Iguazú", "Glaciar Perito Moreno", "Obelisco de Buenos Aires", "Casa Rosada"]
-  },
-  
-  // Motorcycle game countries
-  "Portugal": {
-    country: "Portugal",
-    capital: "Lisboa",
-    language: "Portugués",
-    population: 10310000,
-    currency: "Euro (€)",
-    flagEmoji: "🇵🇹",
-    description: "Portugal es conocido por sus hermosas playas, pueblos pintorescos y su rica historia de exploración marítima.",
-    landmarks: ["Torre de Belém", "Monasterio de los Jerónimos", "Barrio del Alfama", "Cabo de Roca"]
-  },
-  "Grecia": {
-    country: "Grecia",
-    capital: "Atenas",
-    language: "Griego",
-    population: 10720000,
-    currency: "Euro (€)",
-    flagEmoji: "🇬🇷",
-    description: "Grecia es la cuna de la civilización occidental, famosa por sus ruinas antiguas, islas idílicas y gastronomía mediterránea.",
-    landmarks: ["Acrópolis", "Santorini", "Templo de Zeus", "Meteora"]
-  },
-  "Alemania": {
-    country: "Alemania",
-    capital: "Berlín",
-    language: "Alemán",
-    population: 83020000,
-    currency: "Euro (€)",
-    flagEmoji: "🇩🇪",
-    description: "Alemania es conocida por su precisión ingeniería, su rica historia y sus festivales tradicionales como el Oktoberfest.",
-    landmarks: ["Puerta de Brandeburgo", "Castillo de Neuschwanstein", "Muro de Berlín", "Catedral de Colonia"]
-  },
-  "Reino Unido": {
-    country: "Reino Unido",
-    capital: "Londres",
-    language: "Inglés",
-    population: 66650000,
-    currency: "Libra esterlina (£)",
-    flagEmoji: "🇬🇧",
-    description: "El Reino Unido combina tradición y modernidad, con una monarquía histórica e importantes contribuciones a la literatura y música.",
-    landmarks: ["Big Ben", "Torre de Londres", "Palacio de Buckingham", "Stonehenge"]
-  },
-  "China": {
-    country: "China",
-    capital: "Pekín",
-    language: "Chino mandarín",
-    population: 1393000000,
-    currency: "Yuan (¥)",
-    flagEmoji: "🇨🇳",
-    description: "China es una de las civilizaciones más antiguas del mundo, con una rica cultura, arquitectura impresionante y deliciosa gastronomía.",
-    landmarks: ["Gran Muralla China", "Ciudad Prohibida", "Guerreros de Terracota", "Skyline de Shanghái"]
-  },
-  "India": {
-    country: "India",
-    capital: "Nueva Delhi",
-    language: "Hindi e inglés (oficiales)",
-    population: 1366000000,
-    currency: "Rupia india (₹)",
-    flagEmoji: "🇮🇳",
-    description: "India es conocida por su diversidad cultural, espiritual y gastronómica, así como por monumentos emblemáticos.",
-    landmarks: ["Taj Mahal", "Fuerte Amber", "Río Ganges", "Templos de Khajuraho"]
-  },
-  "Brasil": {
-    country: "Brasil",
-    capital: "Brasilia",
-    language: "Portugués",
-    population: 212000000,
-    currency: "Real brasileño (R$)",
-    flagEmoji: "🇧🇷",
-    description: "Brasil es famoso por sus vibrantes festivales, playas tropicales, selva amazónica y pasión por el fútbol.",
-    landmarks: ["Cristo Redentor", "Pan de Azúcar", "Cataratas de Iguazú", "Playa de Copacabana"]
-  },
-  "Canadá": {
-    country: "Canadá",
-    capital: "Ottawa",
-    language: "Inglés y francés (oficiales)",
-    population: 37590000,
-    currency: "Dólar canadiense ($)",
-    flagEmoji: "🇨🇦",
-    description: "Canadá es conocido por sus vastos paisajes naturales, la amabilidad de su gente y su multiculturalismo.",
-    landmarks: ["Cataratas del Niágara", "Montañas Rocosas", "CN Tower", "Parque Nacional Banff"]
-  },
-  "Sudáfrica": {
-    country: "Sudáfrica",
-    capital: "Pretoria (administrativa), Ciudad del Cabo (legislativa), Bloemfontein (judicial)",
-    language: "11 idiomas oficiales, incluidos inglés, afrikáans y zulú",
-    population: 59310000,
-    currency: "Rand (R)",
-    flagEmoji: "🇿🇦",
-    description: "Sudáfrica es conocida por su diversidad paisajística, fauna salvaje y su rica historia cultural.",
-    landmarks: ["Parque Nacional Kruger", "Montaña de la Mesa", "Robben Island", "Cabo de Buena Esperanza"]
   }
 };
 
