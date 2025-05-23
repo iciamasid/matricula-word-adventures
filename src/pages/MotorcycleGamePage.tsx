@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -96,25 +95,25 @@ const MotorcycleGameContent = () => {
   const updateMotorcycleDestinations = (currentLevel: number) => {
     // Different countries for motorcycle game
     if (currentLevel <= 1) {
-      updateDestinations(currentLevel, "Portugal"); // Start with Portugal instead of Spain
+      updateDestinations("Portugal"); // Start with Portugal instead of Spain
     } else if (currentLevel === 2) {
-      updateDestinations(currentLevel, "Grecia");
+      updateDestinations("Grecia");
     } else if (currentLevel === 3) {
-      updateDestinations(currentLevel, "Alemania");
+      updateDestinations("Alemania");
     } else if (currentLevel === 4) {
-      updateDestinations(currentLevel, "Reino Unido");
+      updateDestinations("Reino Unido");
     } else if (currentLevel === 5) {
-      updateDestinations(currentLevel, "China");
+      updateDestinations("China");
     } else if (currentLevel === 6) {
-      updateDestinations(currentLevel, "India");
+      updateDestinations("India");
     } else if (currentLevel === 7) {
-      updateDestinations(currentLevel, "Brasil");
+      updateDestinations("Brasil");
     } else if (currentLevel === 8) {
-      updateDestinations(currentLevel, "Canadá");
+      updateDestinations("Canadá");
     } else if (currentLevel === 9) {
-      updateDestinations(currentLevel, "Sudáfrica");
+      updateDestinations("Sudáfrica");
     } else if (currentLevel >= 10) {
-      updateDestinations(currentLevel, "Portugal");
+      updateDestinations("Portugal");
     }
   };
 
@@ -191,7 +190,7 @@ const MotorcycleGameContent = () => {
 
   return (
     <div 
-      className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
+      className={`min-h-screen flex flex-col items-center relative overflow-hidden bg-teal-100`}
       style={{
         backgroundSize: "cover",
         backgroundAttachment: "fixed"
