@@ -2,6 +2,7 @@
 export interface CountryInfo {
   name: string;
   flag: string;
+  code: string;
   sections: {
     title: string;
     icon: string;
@@ -16,6 +17,7 @@ export const countryData: Record<string, CountryInfo> = {
   "España": {
     name: "España",
     flag: "🇪🇸",
+    code: "España",
     sections: [
       {
         title: "Acerca de España",
@@ -44,6 +46,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Francia": {
     name: "Francia",
     flag: "🇫🇷",
+    code: "Francia",
     sections: [
       {
         title: "Acerca de Francia",
@@ -71,7 +74,8 @@ export const countryData: Record<string, CountryInfo> = {
   },
   "Italia": {
     name: "Italia",
-    flag: "🇮🇹", 
+    flag: "🇮🇹",
+    code: "Italia",
     sections: [
       {
         title: "Acerca de Italia",
@@ -89,7 +93,7 @@ export const countryData: Record<string, CountryInfo> = {
         content: "Saborea auténtica pizza napolitana, pasta fresca casera, risotto cremoso, gelato artesanal, vinos italianos como Chianti y Barolo, café espresso perfecto, y quesos como parmesano y mozzarella di bufala."
       },
       {
-        title: "Arte y Historia",
+        title: "Arte e Historia",
         icon: "Mountain", 
         content: "Admira obras de Miguel Ángel y Leonardo da Vinci, la arquitectura romana como el Panteón, las iglesias barrocas, los frescos de la Capilla Sixtina, y la rica herencia artística que abarca desde el Imperio Romano hasta el Renacimiento."
       }
@@ -100,6 +104,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Rusia": {
     name: "Rusia",
     flag: "🇷🇺",
+    code: "Rusia",
     sections: [
       {
         title: "Acerca de Rusia",
@@ -128,6 +133,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Japón": {
     name: "Japón",
     flag: "🇯🇵",
+    code: "Japón",
     sections: [
       {
         title: "Acerca de Japón",
@@ -156,6 +162,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Estados_Unidos": {
     name: "Estados Unidos",
     flag: "🇺🇸",
+    code: "Estados_Unidos",
     sections: [
       {
         title: "Acerca de Estados Unidos",
@@ -184,6 +191,7 @@ export const countryData: Record<string, CountryInfo> = {
   "México": {
     name: "México",
     flag: "🇲🇽",
+    code: "México",
     sections: [
       {
         title: "Acerca de México",
@@ -212,6 +220,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Australia": {
     name: "Australia",
     flag: "🇦🇺",
+    code: "Australia",
     sections: [
       {
         title: "Acerca de Australia",
@@ -240,6 +249,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Argentina": {
     name: "Argentina",
     flag: "🇦🇷",
+    code: "Argentina",
     sections: [
       {
         title: "Acerca de Argentina",
@@ -270,6 +280,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Reino_Unido": {
     name: "Reino Unido",
     flag: "🇬🇧",
+    code: "Reino_Unido",
     sections: [
       {
         title: "Acerca del Reino Unido",
@@ -298,6 +309,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Portugal": {
     name: "Portugal",
     flag: "🇵🇹",
+    code: "Portugal",
     sections: [
       {
         title: "Acerca de Portugal",
@@ -326,6 +338,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Grecia": {
     name: "Grecia",
     flag: "🇬🇷",
+    code: "Grecia",
     sections: [
       {
         title: "Acerca de Grecia",
@@ -354,6 +367,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Noruega": {
     name: "Noruega",
     flag: "🇳🇴",
+    code: "Noruega",
     sections: [
       {
         title: "Acerca de Noruega",
@@ -382,6 +396,7 @@ export const countryData: Record<string, CountryInfo> = {
   "China": {
     name: "China",
     flag: "🇨🇳",
+    code: "China",
     sections: [
       {
         title: "Acerca de China",
@@ -410,6 +425,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Canada": {
     name: "Canadá",
     flag: "🇨🇦",
+    code: "Canada",
     sections: [
       {
         title: "Acerca de Canadá",
@@ -438,6 +454,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Costa_Rica": {
     name: "Costa Rica",
     flag: "🇨🇷",
+    code: "Costa_Rica",
     sections: [
       {
         title: "Acerca de Costa Rica",
@@ -466,6 +483,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Brasil": {
     name: "Brasil",
     flag: "🇧🇷",
+    code: "Brasil",
     sections: [
       {
         title: "Acerca de Brasil",
@@ -494,6 +512,7 @@ export const countryData: Record<string, CountryInfo> = {
   "Peru": {
     name: "Perú",
     flag: "🇵🇪",
+    code: "Peru",
     sections: [
       {
         title: "Acerca de Perú",

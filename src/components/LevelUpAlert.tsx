@@ -1,9 +1,10 @@
-
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
+import CountryModal from "@/components/CountryModal";
 import { useLanguage } from "@/context/LanguageContext";
 import { useLocation } from "react-router-dom";
+import { getCountryInfo } from "@/data/countryData";
 
 interface LevelUpAlertProps {
   onOpenCountryModal?: (countryCode: string) => void;
@@ -13,6 +14,8 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
   const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame } = useGame();
   const { isEnglish } = useLanguage();
   const location = useLocation();
+  const [showCountryModal, setShowCountryModal] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<any>(null);
   
   // Determine if we're in motorcycle game
   const isMotorcycleGame = location.pathname === '/motorcycle-game';
@@ -157,11 +160,17 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
 
   // Handle country visit button click
   const handleVisitCountry = () => {
-    if (onOpenCountryModal) {
-      const countryCode = getCurrentCountry();
-      onOpenCountryModal(countryCode);
-      clearLevelUpMessage();
-    }
+    const countryCode = getCurrentCountry();
+    const countryInfo = getCountryInfo(countryCode);
+    setSelectedCountry(countryInfo);
+    setShowCountryModal(true);
+    clearLevelUpMessage();
+  };
+
+  // Handle closing the country modal
+  const handleCloseCountryModal = () => {
+    setShowCountryModal(false);
+    setSelectedCountry(null);
   };
   
   // Add text about choosing another vehicle
@@ -186,18 +195,39 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
   const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${vehicleText}`;
   
   return (
-    <GamePopup
-      open={showLevelUp}
-      onClose={clearLevelUpMessage}
-      type="levelUp"
-      message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
-      level={level}
-      explanation={explanation}
-      points={0}
-      requireCountryVisit={level < 10} // Show button for levels < 10
-      onVisitCountry={handleVisitCountry}
-      preventAutoClose={level >= 10} // Only prevent auto-close for completion (level 10)
-    />
+    <>
+      <GamePopup
+        open={showLevelUp}
+        onClose={clearLevelUpMessage}
+        type="levelUp"
+        message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
+        level={level}
+        explanation={explanation}
+        points={0}
+        requireCountryVisit={level < 10}
+        preventAutoClose={level >= 10}
+      />
+      
+      {/* Custom visit country button overlay */}
+      {showLevelUp && level < 10 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+          <div className="bg-white rounded-lg p-4 shadow-lg pointer-events-auto mt-80">
+            <button
+              onClick={handleVisitCountry}
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition-colors"
+            >
+              {isEnglish ? `Visit ${getCountryDisplayName()}!` : `¡Visitar ${getCountryDisplayName()}!`}
+            </button>
+          </div>
+        </div>
+      )}
+
+      <CountryModal
+        open={showCountryModal}
+        onClose={handleCloseCountryModal}
+        country={selectedCountry}
+      />
+    </>
   );
 };
 
