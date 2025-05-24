@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -144,55 +143,39 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
   const getCountryName = isMotorcycleGame ? getMotorcycleCountryName : getCarCountryName;
   const getCountryCode = isMotorcycleGame ? getMotorcycleCountryCode : getCarCountryCode;
 
-  // Animation effect - much slower and stops at target level
+  // Animation effect
   useEffect(() => {
     const targetLevel = Math.min(level, 10);
+    const targetPosition = targetLevel <= 1 ? 0 : Math.min(targetLevel - 1, 9) / 9;
+    const targetValue = targetPosition * 100;
+    
     let animationActive = true;
-    
     const runAnimation = async () => {
-      if (!animationActive) return;
-      
-      // Reset to starting position
-      setProgressValue(0);
-      setAnimatingLevel(1);
-      
-      // If we're at level 1, stay at the starting position
-      if (targetLevel <= 1) {
+      while (animationActive) {
+        setProgressValue(0);
         setAnimatingLevel(1);
-        return;
+
+        for (let i = 0; i <= 100; i += 4) {
+          if (!animationActive) break;
+          const currentProgress = Math.min(i / 100 * targetValue, targetValue);
+          setProgressValue(currentProgress);
+          const currentLevelBasedOnProgress = Math.ceil(currentProgress / 100 * 9) + 1;
+          setAnimatingLevel(Math.min(currentLevelBasedOnProgress, level));
+          await new Promise(resolve => setTimeout(resolve, 20));
+        }
+        await new Promise(resolve => setTimeout(resolve, 2000));
       }
-      
-      // Calculate target position (stop at the current level's flag)
-      const targetPosition = Math.min(targetLevel - 1, 9) / 9;
-      const targetValue = targetPosition * 100;
-      
-      // Much slower animation - increment by 1% instead of 4%
-      for (let i = 0; i <= targetValue; i += 1) {
-        if (!animationActive) break;
-        
-        setProgressValue(i);
-        const currentLevelBasedOnProgress = Math.ceil(i / 100 * 9) + 1;
-        setAnimatingLevel(Math.min(currentLevelBasedOnProgress, level));
-        
-        // Much slower delay - 50ms instead of 20ms
-        await new Promise(resolve => setTimeout(resolve, 50));
-      }
-      
-      // Ensure we end exactly at the target
-      setProgressValue(targetValue);
-      setAnimatingLevel(targetLevel);
     };
-    
     runAnimation();
     return () => { animationActive = false; };
   }, [level]);
 
-  // Calculate positions for an elliptical layout - same size
+  // Calculate positions for an elliptical layout - MUCH BIGGER VERSION
   const getEllipsePosition = (index: number, totalPoints: number = 10) => {
     const angle = (360 / (totalPoints - 1) * index + 270) % 360;
     const angleRad = angle * Math.PI / 180;
-    const radiusX = 40;
-    const radiusY = 32;
+    const radiusX = 40; // Slightly smaller radius to fit better
+    const radiusY = 32; // Slightly smaller radius to fit better
     const x = 50 + radiusX * Math.cos(angleRad);
     const y = 50 + radiusY * Math.sin(angleRad);
     return { x, y };
@@ -210,7 +193,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
 
   // Calculate stroke dash offset
   const calculateStrokeDashOffset = () => {
-    const totalLength = 200;
+    const totalLength = 200; // Increased for larger path
     if (level <= 1 && progressValue === 0) return totalLength;
     const segmentSize = 100 / 9;
     const currentSegmentIndex = Math.floor(progressValue / segmentSize);
@@ -221,26 +204,19 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
     return totalLength * (1 - combinedRatio);
   };
 
-  // Get vehicle position - stop exactly at the unlocked country flag
+  // Get vehicle position
   const getVehiclePosition = () => {
-    // For level 1, stay at starting position (Spain)
-    if (level <= 1) {
-      const startPos = getEllipsePosition(0);
-      return { x: startPos.x, y: startPos.y, angle: 0 };
-    }
-    
-    // For other levels, move to the exact position of the highest unlocked country
-    const targetIndex = Math.min(level - 1, 9);
-    const targetPos = getEllipsePosition(targetIndex);
-    
-    // Calculate angle based on the direction of movement
-    const prevIndex = Math.max(0, targetIndex - 1);
-    const prevPos = getEllipsePosition(prevIndex);
-    const dx = targetPos.x - prevPos.x;
-    const dy = targetPos.y - prevPos.y;
+    const segmentSize = 100 / 9;
+    const completedSegments = Math.floor(progressValue / segmentSize);
+    const progressInSegment = progressValue % segmentSize / segmentSize;
+    const currentPoint = getEllipsePosition(completedSegments);
+    const nextPoint = getEllipsePosition(completedSegments + 1);
+    const x = currentPoint.x + (nextPoint.x - currentPoint.x) * progressInSegment;
+    const y = currentPoint.y + (nextPoint.y - currentPoint.y) * progressInSegment;
+    const dx = nextPoint.x - currentPoint.x;
+    const dy = nextPoint.y - currentPoint.y;
     const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-    
-    return { x: targetPos.x, y: targetPos.y, angle };
+    return { x, y, angle };
   };
 
   const vehiclePosition = getVehiclePosition();
@@ -273,16 +249,16 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
   return (
     <>
       <div className="w-full h-full">
-        {/* Mini world tour visualization - with more space below */}
-        <div className="relative h-full min-h-[440px] pb-16">
+        {/* Mini world tour visualization - MUCH BIGGER with more space below */}
+        <div className="relative h-full min-h-[420px] pb-12">
           <div className="w-full h-full relative">
             {/* Background elliptical path */}
             <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="0.3" strokeLinecap="round" strokeDasharray="4,4" />
+              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="0.5" strokeLinecap="round" strokeDasharray="4,4" />
               <path 
                 d={createEllipsePath()} 
                 fill="none" 
-                strokeWidth="0.6" 
+                strokeWidth="1" 
                 stroke={isMotorcycleGame ? "#14B8A6" : "#8B5CF6"} 
                 strokeLinecap="round" 
                 strokeDasharray="250" 
@@ -291,7 +267,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
               />
             </svg>
             
-            {/* Earth image in the center */}
+            {/* Earth image in the center - MUCH BIGGER */}
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
               <motion.div 
                 animate={{ rotate: 360 }} 
@@ -301,14 +277,14 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
               </motion.div>
             </div>
             
-            {/* Moving vehicle icon - only show if level > 1 */}
-            {level > 1 && (
+            {/* Moving vehicle icon - MUCH BIGGER */}
+            {progressValue > 0 && level > 1 && (
               <motion.div 
                 className="absolute transform -translate-x-1/2 -translate-y-1/2" 
                 style={{
                   left: `${vehiclePosition.x}%`,
                   top: `${vehiclePosition.y}%`,
-                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 2.0 : 1.6})`,
+                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 2.2 : 1.8})`,
                   zIndex: 5
                 }}
               >
@@ -320,7 +296,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
               </motion.div>
             )}
             
-            {/* Country flags - smaller size */}
+            {/* Country flags - Bigger size for better visibility */}
             {[...Array(10)].map((_, i) => {
               const levelIndex = i + 1;
               const flag = getLevelFlag(levelIndex);
@@ -350,7 +326,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                     } : {}}
                   >
                     <motion.div className="relative" whileHover={{ scale: 1.2 }}>
-                      <span className="text-4xl z-10 drop-shadow-lg">{flag}</span>
+                      <span className="text-5xl z-10 drop-shadow-lg">{flag}</span>
                       
                       {!isUnlocked && (
                         <motion.div
