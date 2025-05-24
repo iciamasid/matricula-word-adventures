@@ -93,7 +93,7 @@ export const usePathAnimation = ({
       const trace = new Path(pathData, {
         fill: '',
         stroke: '#9B59B6', // Purple color matching the car
-        strokeWidth: 6, // Thicker line
+        strokeWidth: 4, // Reduced thickness
         strokeLineCap: 'round',
         strokeLineJoin: 'round',
         selectable: false,
@@ -270,9 +270,9 @@ export const usePathAnimation = ({
     // Use larger step size for smoother movement
     const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 800)); 
     
-    // Adjust the speed to complete in approximately 7-8 seconds at max speed (increased from previous)
+    // Adjust the speed to complete in approximately 10-12 seconds (slower than before)
     const baseSpeed = 20; 
-    const adjustedSpeed = Math.max(2, Math.min(30, currentAnimationSpeed / 15)); // Increased speed by reducing divisor
+    const adjustedSpeed = Math.max(5, Math.min(50, currentAnimationSpeed / 8)); // Increased speed by reducing divisor and higher minimum
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation

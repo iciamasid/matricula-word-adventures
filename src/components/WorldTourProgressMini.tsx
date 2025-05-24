@@ -250,15 +250,15 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
     <>
       <div className="w-full h-full">
         {/* Mini world tour visualization - MUCH BIGGER */}
-        <div className="relative h-full min-h-[400px]">
+        <div className="relative h-full min-h-[450px]">
           <div className="w-full h-full relative">
             {/* Background elliptical path */}
             <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4,4" />
+              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="1" strokeLinecap="round" strokeDasharray="4,4" />
               <path 
                 d={createEllipsePath()} 
                 fill="none" 
-                strokeWidth="4" 
+                strokeWidth="2" 
                 stroke={isMotorcycleGame ? "#14B8A6" : "#8B5CF6"} 
                 strokeLinecap="round" 
                 strokeDasharray="250" 
@@ -296,7 +296,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
               </motion.div>
             )}
             
-            {/* Country flags - Made smaller to fit better in panel */}
+            {/* Country flags - Bigger size for better visibility */}
             {[...Array(10)].map((_, i) => {
               const levelIndex = i + 1;
               const flag = getLevelFlag(levelIndex);
@@ -326,7 +326,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                     } : {}}
                   >
                     <motion.div className="relative" whileHover={{ scale: 1.2 }}>
-                      <span className="text-4xl z-10 drop-shadow-lg">{flag}</span>
+                      <span className="text-5xl z-10 drop-shadow-lg">{flag}</span>
                       
                       {!isUnlocked && (
                         <motion.div

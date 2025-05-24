@@ -10,18 +10,22 @@ const WorldTourProgress = () => {
   const { level, markCountryAsVisited, requiredCountryToVisit, clearLevelUpMessage } = useGame();
   const { isEnglish } = useLanguage?.() || { language: 'es' };
 
-  // Function to get the latest unlocked country name
+  // Function to get the latest unlocked country name with level 1 special case
   const getLatestUnlockedCountry = () => {
-    if (level >= 10) return isEnglish ? "Argentina (complete tour)" : "Argentina (vuelta completa)";
-    if (level >= 9) return isEnglish ? "Argentina" : "Argentina";
-    if (level >= 8) return isEnglish ? "Australia" : "Australia";
-    if (level >= 7) return isEnglish ? "Mexico" : "México";
-    if (level >= 6) return isEnglish ? "United States" : "Estados Unidos";
-    if (level >= 5) return isEnglish ? "Japan" : "Japón";
-    if (level >= 4) return isEnglish ? "Russia" : "Rusia";
-    if (level >= 3) return isEnglish ? "Italy" : "Italia";
-    if (level >= 2) return isEnglish ? "France" : "Francia";
-    return isEnglish ? "Spain" : "España";
+    if (level === 1) {
+      return isEnglish ? "You are in Spain" : "Estás en España";
+    }
+    
+    if (level >= 10) return isEnglish ? "You have reached: Argentina (complete tour)" : "Has llegado hasta: Argentina (vuelta completa)";
+    if (level >= 9) return isEnglish ? "You have reached: Argentina" : "Has llegado hasta: Argentina";
+    if (level >= 8) return isEnglish ? "You have reached: Australia" : "Has llegado hasta: Australia";
+    if (level >= 7) return isEnglish ? "You have reached: Mexico" : "Has llegado hasta: México";
+    if (level >= 6) return isEnglish ? "You have reached: United States" : "Has llegado hasta: Estados Unidos";
+    if (level >= 5) return isEnglish ? "You have reached: Japan" : "Has llegado hasta: Japón";
+    if (level >= 4) return isEnglish ? "You have reached: Russia" : "Has llegado hasta: Rusia";
+    if (level >= 3) return isEnglish ? "You have reached: Italy" : "Has llegado hasta: Italia";
+    if (level >= 2) return isEnglish ? "You have reached: France" : "Has llegado hasta: Francia";
+    return isEnglish ? "You are in Spain" : "Estás en España";
   };
 
   const handleCountryVisit = (countryCode: string) => {
@@ -54,12 +58,12 @@ const WorldTourProgress = () => {
               {isEnglish ? "Click on the flags and explore that country!" : "¡Pincha sobre las banderas y explora ese país!"}
             </p>
             <p className={`text-base font-medium ${textColor} kids-text`}>
-              {isEnglish ? `You have reached: ${getLatestUnlockedCountry()}` : `Has llegado hasta: ${getLatestUnlockedCountry()}`}
+              {getLatestUnlockedCountry()}
             </p>
           </div>
           
           {/* Mini world tour component */}
-          <div className="w-full h-[300px] mb-4">
+          <div className="w-full h-[350px] mb-4">
             <WorldTourProgressMini onCountryVisit={handleCountryVisit} />
           </div>
         </CardContent>
