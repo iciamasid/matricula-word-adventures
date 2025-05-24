@@ -109,10 +109,23 @@ const GameContent = () => {
     }
   };
 
-  // Handle navigation to motorcycle game
+  // Handle navigation to motorcycle game - Reset progress to start fresh
   const handleGoToMotorcycle = () => {
+    // Reset to level 1 and 0 points for motorcycle game
+    setLevel(1);
+    setTotalPoints(0);
+    
+    // Close the popup
     setShowMaxLevelPopup(false);
+    
+    // Navigate to motorcycle game
     navigate('/motorcycle-game');
+    
+    // Show toast confirming the reset
+    toast({
+      title: "¡Nuevo juego de motos!",
+      description: "Empezando desde el nivel 1 con las motos. ¡Buena suerte!"
+    });
   };
 
   // Handle closing the max level popup
