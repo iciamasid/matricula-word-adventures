@@ -39,16 +39,16 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     x: 0,
     y: 0
   });
-  const [animationSpeed, setAnimationSpeed] = useState<number>(180); // Default animation speed
-  const [carRotation, setCarRotation] = useState<number>(0); // Track car rotation angle
-  const [showCarImage, setShowCarImage] = useState<boolean>(true); // Show car image by default
+  const [animationSpeed, setAnimationSpeed] = useState<number>(180);
+  const [carRotation, setCarRotation] = useState<number>(0);
+  const [showCarImage, setShowCarImage] = useState<boolean>(true);
   const [carPosition, setCarPosition] = useState<{
     x: number;
     y: number;
   }>({
     x: 50,
     y: 50
-  }); // Initial car position
+  });
 
   // Determine if we're in motorcycle mode based on current page
   const isMotorcycleMode = window.location.pathname.includes('motorcycle');
