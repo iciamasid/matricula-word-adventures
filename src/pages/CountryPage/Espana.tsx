@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin } from 'lucide-react';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 const EspanaPage = () => {
-  const [returnGame, setReturnGame] = useState('/draw-game');
+  const [returnGame, setReturnGame] = useState('/');
 
   useEffect(() => {
     // Check if coming from car game based on the referrer or localStorage
@@ -14,13 +13,13 @@ const EspanaPage = () => {
     if (referrer.includes('motorcycle-game')) {
       setReturnGame('/motorcycle-game');
     } else {
-      setReturnGame('/draw-game');
+      setReturnGame('/');
     }
 
     // Check if localStorage has info about which game we came from
     const navigatingBack = sessionStorage.getItem('navigatingBack');
     if (navigatingBack === 'car-game') {
-      setReturnGame('/draw-game');
+      setReturnGame('/');
     } else if (navigatingBack === 'motorcycle-game') {
       setReturnGame('/motorcycle-game');
     }
@@ -28,7 +27,7 @@ const EspanaPage = () => {
 
   const handleNavigation = () => {
     // Store which game we're returning to
-    if (returnGame === '/draw-game') {
+    if (returnGame === '/') {
       sessionStorage.setItem('navigatingBack', 'car-game');
     } else {
       sessionStorage.setItem('navigatingBack', 'motorcycle-game');

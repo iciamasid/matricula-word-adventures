@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
@@ -13,7 +12,7 @@ const EstadosUnidosPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-red-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Back button */}
-        <Link to="/draw-game">
+        <Link to="/">
           <Button 
             variant="outline" 
             size="sm" 
