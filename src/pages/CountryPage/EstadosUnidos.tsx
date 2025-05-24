@@ -1,32 +1,56 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const EstadosUnidosPage = () => {
+  const navigate = useNavigate();
+
   // Ensure page starts from top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Determine the correct return path based on navigation context
+  const getReturnPath = () => {
+    const navigatingBack = sessionStorage.getItem('navigatingBack');
+    
+    if (navigatingBack === 'motorcycle-game') {
+      return '/motorcycle-game';
+    } else {
+      return '/'; // Default to car game (Index page)
+    }
+  };
+
   const handleNavigation = () => {
-    sessionStorage.setItem('navigatingBack', 'true');
+    // CRITICAL FIX: Restore game state if it was stored
+    const gameState = sessionStorage.getItem('gameStateBeforeCountry');
+    if (gameState) {
+      const parsedState = JSON.parse(gameState);
+      console.log('Restoring game state from Estados Unidos page:', parsedState);
+      
+      // Store the state for the GameContext to restore
+      sessionStorage.setItem('restoreGameState', JSON.stringify(parsedState));
+      sessionStorage.removeItem('gameStateBeforeCountry');
+    }
+    
+    // Clear the navigation flag when returning
+    sessionStorage.removeItem('navigatingBack');
+    navigate(getReturnPath());
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-red-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Back button */}
-        <Link to="/">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleNavigation}
-            className="mb-4 bg-blue-700/90 hover:bg-blue-800 text-white border-blue-600"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
-          </Button>
-        </Link>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleNavigation}
+          className="mb-4 bg-blue-700/90 hover:bg-blue-800 text-white border-blue-600"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
+        </Button>
 
         {/* Header with flag and country name */}
         <div className="text-center mb-8">
