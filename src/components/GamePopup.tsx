@@ -85,6 +85,10 @@ const GamePopup: React.FC<GamePopupProps> = ({
   }, [open, requireCountryVisit, preventAutoClose]);
 
   const handleClose = () => {
+    // For level ups with world tour, don't allow manual closing
+    if (type === "levelUp" && showWorldTour) {
+      return;
+    }
     if ((requireCountryVisit && countryToVisit) || (preventAutoClose && countryToVisit)) {
       return;
     }
@@ -96,6 +100,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
 
   const isCompletion = type === "levelUp" && level === 10;
 
+  // Get colors based on the type of game popup
   const getColors = () => {
     if (isCompletion) {
       return {
@@ -178,20 +183,21 @@ const GamePopup: React.FC<GamePopupProps> = ({
     }
   };
 
-  // Handle country visit from mini world tour
+  // Handle country visit from mini world tour - do NOT close popup
   const handleCountryVisitFromMap = (countryCode: string) => {
-    onClose(); // Close the popup when country is visited from map
+    // Don't close the popup here - let it be handled by the parent component
   };
 
   return (
     <AnimatePresence>
       {open && (
         <AlertDialog open={isVisible} onOpenChange={() => {
-          if (!requireCountryVisit && !preventAutoClose) {
+          // Prevent closing unless it's not a level up with world tour
+          if (type !== "levelUp" || !showWorldTour) {
             handleClose();
           }
         }}>
-          <AlertDialogContent className={`${showWorldTour && type === "levelUp" && !isCompletion ? 'max-w-lg' : 'max-w-sm'} border-0 p-0 bg-transparent ${isCompletion ? 'scale-110' : ''}`}>
+          <AlertDialogContent className={`${showWorldTour && type === "levelUp" && !isCompletion ? 'max-w-2xl' : 'max-w-sm'} border-0 p-0 bg-transparent ${isCompletion ? 'scale-110' : ''}`}>
             <AlertDialogTitle className="sr-only">{message}</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">{explanation}</AlertDialogDescription>
             
@@ -287,23 +293,23 @@ const GamePopup: React.FC<GamePopupProps> = ({
                   {/* Show world tour and country visit for level up */}
                   {type === "levelUp" && !isCompletion && (
                     <motion.div
-                      className="mt-4 space-y-4"
+                      className="mt-6 space-y-6"
                       animate={{ y: [0, -5, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
                     >
                       {countryToVisit && (
-                        <div className="text-white kids-text text-lg">
+                        <div className="text-white kids-text text-xl">
                           {isEnglish 
                             ? `Visit ${countryToVisit} to continue!`
                             : `¡Visita ${countryToVisit} para continuar!`}
                         </div>
                       )}
                       
-                      {/* Show mini world tour for level ups */}
+                      {/* Show mini world tour for level ups - NOW WITH WHITE BACKGROUND */}
                       {showWorldTour && (
-                        <div className="bg-white/20 rounded-xl p-4 mt-4">
-                          <div className="text-yellow-300 kids-text text-sm mb-3 text-center">
-                            {isEnglish ? "Click on a flag:" : "Pincha en una bandera:"}
+                        <div className="bg-white rounded-xl p-6 mt-6 shadow-lg border-2 border-yellow-400">
+                          <div className="text-blue-600 kids-text text-lg mb-4 text-center font-bold">
+                            {isEnglish ? "🌍 Your World Tour - Click on a flag:" : "🌍 Tu Vuelta al Mundo - Pincha en una bandera:"}
                           </div>
                           <WorldTourProgressMini onCountryVisit={handleCountryVisitFromMap} />
                         </div>
@@ -311,10 +317,10 @@ const GamePopup: React.FC<GamePopupProps> = ({
                       
                       {countryToVisit && (
                         <Button
-                          className={`${buttonClasses} flex items-center gap-2 w-full py-3 mt-4`}
+                          className={`${buttonClasses} flex items-center gap-2 w-full py-4 text-xl mt-6`}
                           onClick={handleVisitCountry}
                         >
-                          <MapPin size={18} />
+                          <MapPin size={20} />
                           {isEnglish ? `Visit ${countryToVisit}` : `Visitar ${countryToVisit}`}
                         </Button>
                       )}

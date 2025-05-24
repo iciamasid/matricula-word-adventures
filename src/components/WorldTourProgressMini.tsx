@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -171,12 +170,12 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
     return () => { animationActive = false; };
   }, [level]);
 
-  // Calculate positions for an elliptical layout - SMALLER VERSION
+  // Calculate positions for an elliptical layout - BIGGER VERSION
   const getEllipsePosition = (index: number, totalPoints: number = 10) => {
     const angle = (360 / (totalPoints - 1) * index + 270) % 360;
     const angleRad = angle * Math.PI / 180;
-    const radiusX = 25; // Smaller radius for mini version
-    const radiusY = 20; // Smaller radius for mini version
+    const radiusX = 35; // Increased radius
+    const radiusY = 28; // Increased radius
     const x = 50 + radiusX * Math.cos(angleRad);
     const y = 50 + radiusY * Math.sin(angleRad);
     return { x, y };
@@ -194,7 +193,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
 
   // Calculate stroke dash offset
   const calculateStrokeDashOffset = () => {
-    const totalLength = 150; // Smaller path length for mini version
+    const totalLength = 200; // Increased for larger path
     if (level <= 1 && progressValue === 0) return totalLength;
     const segmentSize = 100 / 9;
     const currentSegmentIndex = Math.floor(progressValue / segmentSize);
@@ -252,52 +251,52 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
       <div className="w-full">
         {/* Mini world tour visualization */}
         <div className="relative">
-          <div className="w-full h-[120px] relative"> {/* Smaller height */}
+          <div className="w-full h-[200px] relative"> {/* Increased height significantly */}
             {/* Background elliptical path */}
             <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="1" strokeLinecap="round" strokeDasharray="2,2" />
+              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="3,3" />
               <path 
                 d={createEllipsePath()} 
                 fill="none" 
-                strokeWidth="2" 
+                strokeWidth="3" 
                 stroke={isMotorcycleGame ? "#14B8A6" : "#8B5CF6"} 
                 strokeLinecap="round" 
-                strokeDasharray="150" 
+                strokeDasharray="200" 
                 strokeDashoffset={calculateStrokeDashOffset()}
                 style={{ display: level <= 1 && progressValue === 0 ? 'none' : 'block' }}
               />
             </svg>
             
-            {/* Earth image in the center - SMALLER */}
+            {/* Earth image in the center - BIGGER */}
             <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
               <motion.div 
                 animate={{ rotate: 360 }} 
                 transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
               >
-                <img src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" alt="Earth" className="w-[50px] h-[50px] object-contain" />
+                <img src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" alt="Earth" className="w-[80px] h-[80px] object-contain" />
               </motion.div>
             </div>
             
-            {/* Moving vehicle icon - SMALLER */}
+            {/* Moving vehicle icon - BIGGER */}
             {progressValue > 0 && level > 1 && (
               <motion.div 
                 className="absolute transform -translate-x-1/2 -translate-y-1/2" 
                 style={{
                   left: `${vehiclePosition.x}%`,
                   top: `${vehiclePosition.y}%`,
-                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 1.2 : 0.8})`,
+                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 1.8 : 1.4})`,
                   zIndex: 5
                 }}
               >
                 {isMotorcycleGame ? (
-                  <span className="text-sm">🏍️</span>
+                  <span className="text-xl">🏍️</span>
                 ) : (
-                  <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={16} />
+                  <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={24} />
                 )}
               </motion.div>
             )}
             
-            {/* Country flags - SMALLER */}
+            {/* Country flags - MUCH BIGGER */}
             {[...Array(10)].map((_, i) => {
               const levelIndex = i + 1;
               const flag = getLevelFlag(levelIndex);
@@ -310,7 +309,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                 <div
                   key={i}
                   onClick={() => handleCountrySelection(levelIndex, countryName)}
-                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${!isUnlocked ? 'opacity-60' : ''}`}
+                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${!isUnlocked ? 'opacity-60' : 'hover:scale-110'} transition-all duration-200`}
                   style={{
                     left: `${position.x}%`,
                     top: `${position.y}%`,
@@ -322,29 +321,29 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                   <motion.div
                     className="flex flex-col items-center justify-center"
                     animate={isCurrentLocation ? {
-                      scale: [1, 1.2, 1],
+                      scale: [1, 1.3, 1],
                       transition: { repeat: Infinity, duration: 2 }
                     } : {}}
                   >
                     <motion.div className="relative" whileHover={{ scale: 1.2 }}>
-                      <span className="text-lg z-10">{flag}</span> {/* Smaller flags */}
+                      <span className="text-4xl z-10 drop-shadow-lg">{flag}</span> {/* MUCH BIGGER FLAGS */}
                       
                       {!isUnlocked && (
                         <motion.div
-                          className="absolute -top-1 -right-1 bg-pink-500 rounded-full p-0.5"
+                          className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 shadow-lg"
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                         >
-                          <LockKeyhole className="w-2 h-2 text-white" />
+                          <LockKeyhole className="w-4 h-4 text-white" />
                         </motion.div>
                       )}
                     </motion.div>
                     
                     {hoveredCountry === levelIndex && (
-                      <div className="absolute -bottom-8 bg-white/90 px-1 py-0.5 rounded shadow-md text-xs whitespace-nowrap z-20">
+                      <div className="absolute -bottom-10 bg-gray-800 text-white px-2 py-1 rounded shadow-lg text-sm whitespace-nowrap z-20">
                         {countryName}
                         {!isUnlocked && (
-                          <span className="ml-1 text-pink-600">
+                          <span className="ml-1 text-red-300">
                             {isEnglish ? "(Locked)" : "(Bloqueado)"}
                           </span>
                         )}
