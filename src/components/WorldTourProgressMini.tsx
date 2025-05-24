@@ -174,8 +174,8 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
   const getEllipsePosition = (index: number, totalPoints: number = 10) => {
     const angle = (360 / (totalPoints - 1) * index + 270) % 360;
     const angleRad = angle * Math.PI / 180;
-    const radiusX = 42; // Much bigger radius
-    const radiusY = 35; // Much bigger radius
+    const radiusX = 40; // Slightly smaller radius to fit better
+    const radiusY = 32; // Slightly smaller radius to fit better
     const x = 50 + radiusX * Math.cos(angleRad);
     const y = 50 + radiusY * Math.sin(angleRad);
     return { x, y };
@@ -249,18 +249,18 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
   return (
     <>
       <div className="w-full h-full">
-        {/* Mini world tour visualization - MUCH BIGGER */}
-        <div className="relative h-full min-h-[450px]">
+        {/* Mini world tour visualization - MUCH BIGGER with more space below */}
+        <div className="relative h-full min-h-[380px] pb-8">
           <div className="w-full h-full relative">
             {/* Background elliptical path */}
             <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="1" strokeLinecap="round" strokeDasharray="4,4" />
+              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="0.7" strokeLinecap="round" strokeDasharray="4,4" />
               <path 
                 d={createEllipsePath()} 
                 fill="none" 
-                strokeWidth="2" 
+                strokeWidth="1.5" 
                 stroke={isMotorcycleGame ? "#14B8A6" : "#8B5CF6"} 
-                strokeLinecap="round" 
+                strokeLineCap="round" 
                 strokeDasharray="250" 
                 strokeDashoffset={calculateStrokeDashOffset()}
                 style={{ display: level <= 1 && progressValue === 0 ? 'none' : 'block' }}
@@ -273,7 +273,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                 animate={{ rotate: 360 }} 
                 transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
               >
-                <img src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" alt="Earth" className="w-[120px] h-[120px] object-contain" />
+                <img src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" alt="Earth" className="w-[100px] h-[100px] object-contain" />
               </motion.div>
             </div>
             
@@ -284,7 +284,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                 style={{
                   left: `${vehiclePosition.x}%`,
                   top: `${vehiclePosition.y}%`,
-                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 2.5 : 2})`,
+                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 2.2 : 1.8})`,
                   zIndex: 5
                 }}
               >
@@ -326,7 +326,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                     } : {}}
                   >
                     <motion.div className="relative" whileHover={{ scale: 1.2 }}>
-                      <span className="text-5xl z-10 drop-shadow-lg">{flag}</span>
+                      <span className="text-6xl z-10 drop-shadow-lg">{flag}</span>
                       
                       {!isUnlocked && (
                         <motion.div

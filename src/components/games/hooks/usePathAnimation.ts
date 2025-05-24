@@ -267,12 +267,12 @@ export const usePathAnimation = ({
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
     
-    // Use larger step size for smoother movement
-    const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 800)); 
+    // Use much smaller step size for slower movement
+    const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 1500)); // Much slower movement
     
-    // Adjust the speed to complete in approximately 10-12 seconds (slower than before)
-    const baseSpeed = 20; 
-    const adjustedSpeed = Math.max(5, Math.min(50, currentAnimationSpeed / 8)); // Increased speed by reducing divisor and higher minimum
+    // Significantly increased delay for much slower movement
+    const baseSpeed = 50; // Much slower base speed
+    const adjustedSpeed = Math.max(30, Math.min(100, currentAnimationSpeed / 4)); // Much slower speed
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
