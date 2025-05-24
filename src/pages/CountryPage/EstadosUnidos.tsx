@@ -116,9 +116,7 @@ const EstadosUnidosPage = () => {
 
         {/* Basic info section */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4 flex items-center">
-            <Globe className="w-6 h-6 mr-2" /> Información básica
-          </h2>
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Información básica</h2>
           <div className="grid grid-cols-2 gap-4 text-lg">
             <div>
               <h3 className="font-semibold text-blue-700 kids-text">Capital</h3>
@@ -141,23 +139,18 @@ const EstadosUnidosPage = () => {
 
         {/* Fun facts section */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4 flex items-center">
-            <Heart className="w-6 h-6 mr-2" /> ¡Datos curiosos!
-          </h2>
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">¡Datos curiosos!</h2>
           <div className="space-y-4 text-lg text-gray-700">
             <p>🗽 <strong>¡La Estatua de la Libertad fue un regalo de Francia!</strong> Se entregó en 1886 como símbolo de amistad entre los dos países.</p>
             <p>🏞️ <strong>¡Estados Unidos tiene 63 parques nacionales!</strong> Desde el Gran Cañón hasta Yellowstone, protegen paisajes increíbles.</p>
             <p>🌽 <strong>¡Estados Unidos produce más maíz que cualquier otro país!</strong> Gran parte se usa para alimentar animales y hacer combustible.</p>
             <p>🎬 <strong>¡Hollywood es la capital mundial del entretenimiento!</strong> Produce películas que se ven en todo el mundo.</p>
-            <p>🗺️ <strong>¡Estados Unidos es tan grande que tiene 4 zonas horarias!</strong> Cuando es mediodía en Nueva York, son las 9 de la mañana en California.</p>
           </div>
         </div>
 
         {/* Landmarks section */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4 flex items-center">
-            <Building className="w-6 h-6 mr-2" /> Lugares famosos
-          </h2>
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Lugares famosos</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg text-gray-700">
             <div className="p-4 bg-blue-50 rounded-lg">
               <h3 className="font-bold text-blue-800">🗽 Estatua de la Libertad</h3>
@@ -175,29 +168,17 @@ const EstadosUnidosPage = () => {
               <h3 className="font-bold text-blue-800">🌉 Puente Golden Gate</h3>
               <p>Icónico puente rojo que conecta San Francisco con Marin County.</p>
             </div>
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-bold text-blue-800">🎭 Times Square</h3>
-              <p>El cruce de caminos del mundo en el corazón de Nueva York.</p>
-            </div>
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-bold text-blue-800">🌋 Yellowstone</h3>
-              <p>El primer parque nacional del mundo con géiseres únicos.</p>
-            </div>
           </div>
         </div>
 
         {/* Cultural section */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4 flex items-center">
-            <Utensils className="w-6 h-6 mr-2" /> Cultura y tradiciones
-          </h2>
+          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Cultura y tradiciones</h2>
           <div className="space-y-4 text-lg text-gray-700">
             <p>🍔 <strong>Comida rápida:</strong> Estados Unidos es famoso por inventar las hamburguesas, hot dogs y pizza al estilo americano.</p>
             <p>🏈 <strong>Deportes:</strong> El fútbol americano, baloncesto y béisbol son los deportes más populares.</p>
             <p>🎆 <strong>4 de Julio:</strong> Día de la Independencia, se celebra con fuegos artificiales y barbacoas.</p>
-            <p>🗳️ <strong>Democracia:</strong> Sistema político donde los ciudadanos eligen a sus representantes mediante votación.</p>
             <p>🎵 <strong>Música:</strong> Cuna del jazz, blues, rock and roll y hip-hop que influyeron al mundo entero.</p>
-            <p>🎃 <strong>Halloween:</strong> Celebración donde los niños se disfrazan y piden dulces de casa en casa.</p>
           </div>
         </div>
       </div>
