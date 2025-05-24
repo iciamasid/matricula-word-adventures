@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin } from 'lucide-react';
@@ -9,30 +8,27 @@ const EspanaPage = () => {
   const [returnGame, setReturnGame] = useState('/');
 
   useEffect(() => {
-    // Check if coming from motorcycle game based on the referrer or localStorage
-    const referrer = document.referrer;
-    if (referrer.includes('motorcycle-game')) {
-      setReturnGame('/motorcycle-game');
-    } else {
-      setReturnGame('/');
-    }
-
-    // Check if localStorage has info about which game we came from
+    // Check sessionStorage first for the game type
     const navigatingBack = sessionStorage.getItem('navigatingBack');
-    if (navigatingBack === 'car-game') {
-      setReturnGame('/');
-    } else if (navigatingBack === 'motorcycle-game') {
+    
+    if (navigatingBack === 'motorcycle-game') {
       setReturnGame('/motorcycle-game');
+    } else if (navigatingBack === 'car-game') {
+      setReturnGame('/');
+    } else {
+      // Fallback: check referrer
+      const referrer = document.referrer;
+      if (referrer.includes('motorcycle-game')) {
+        setReturnGame('/motorcycle-game');
+      } else {
+        setReturnGame('/');
+      }
     }
   }, []);
 
   const handleNavigation = () => {
-    // Store which game we're returning to
-    if (returnGame === '/') {
-      sessionStorage.setItem('navigatingBack', 'car-game');
-    } else {
-      sessionStorage.setItem('navigatingBack', 'motorcycle-game');
-    }
+    // Clear the navigation flag when leaving
+    sessionStorage.removeItem('navigatingBack');
   };
 
   return (
