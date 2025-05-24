@@ -48,11 +48,8 @@ const MaxLevelPopup: React.FC<MaxLevelPopupProps> = ({
             </motion.div>
           </div>
           
-          {/* Main congratulations text - EXTRA SMALL FOR MOBILE */}
+          {/* Main congratulations text - Removed ENHORABUENA */}
           <div className="space-y-4">
-            <h2 className="text-sm sm:text-lg font-bold text-purple-800 kids-text">
-              ¡ENHORABUENA!
-            </h2>
             <div className="space-y-3">
               <p className="text-xl text-purple-700 kids-text font-semibold">
                 ¡Has completado todos los niveles con coches!

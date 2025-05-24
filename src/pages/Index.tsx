@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -10,6 +9,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, HelpCircle, Bike } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
+import CarGameInstructions from "@/components/CarGameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
 import { Link, useNavigate } from "react-router-dom";
@@ -363,7 +363,7 @@ const GameContent = () => {
           age={playerAge || 0} 
         />
         
-        {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
+        {showInstructions && <CarGameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
     </div>

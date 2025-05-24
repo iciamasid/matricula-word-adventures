@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { GameProvider } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DrawPathGame from '@/components/games/DrawPathGame';
-import GameInstructions from '@/components/GameInstructions';
+import MotorcycleGameInstructions from '@/components/MotorcycleGameInstructions';
 import { Toaster } from '@/components/ui/toaster';
 
 const MotorcycleDriveGamePage = () => {
@@ -113,9 +112,9 @@ const MotorcycleDriveGameContent = () => {
         </motion.div>
       )}
 
-      {/* Instructions modal */}
+      {/* Instructions modal - Updated to use MotorcycleGameInstructions */}
       {showInstructions && (
-        <GameInstructions onClose={() => setShowInstructions(false)} />
+        <MotorcycleGameInstructions onClose={() => setShowInstructions(false)} />
       )}
 
       <Toaster />

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -9,7 +8,7 @@ import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, HelpCircle, ArrowLeft } from "lucide-react";
-import GameInstructions from "@/components/GameInstructions";
+import MotorcycleGameInstructions from "@/components/MotorcycleGameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
 import { Link, useNavigate } from "react-router-dom";
@@ -340,7 +339,8 @@ const MotorcycleGameContent = () => {
           onRestart={handleGameOverRestart}
         />
         
-        {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
+        {/* Instructions modal - Updated to use MotorcycleGameInstructions */}
+        {showInstructions && <MotorcycleGameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
     </div>
