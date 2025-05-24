@@ -48,7 +48,7 @@ const GameInstructions: React.FC<GameInstructionsProps> = ({
               🎯 ¿Cómo se juega?
             </h3>
             <p className="text-lg font-medium text-gray-700 leading-relaxed">
-              ¡Forma palabras usando las letras de las matrículas! 🚗 Las palabras deben tener al menos 5 letras para que valgan puntos. ¡Cuantas más letras uses, más puntos ganarás! ✨
+              ¡Forma palabras usando las letras de las matrículas! 🚗 Cuantas más letras uses y mejor las combines, más puntos ganarás! ✨
             </p>
           </motion.div>
 

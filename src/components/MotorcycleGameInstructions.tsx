@@ -45,7 +45,7 @@ const MotorcycleGameInstructions: React.FC<MotorcycleGameInstructionsProps> = ({
               🎯 ¡Tu segunda aventura!
             </h3>
             <p className="text-lg font-medium text-gray-700 leading-relaxed">
-              ¡Felicidades por completar la aventura con coches! 🎉 Ahora puedes viajar en moto súper veloces. Forma palabras con las letras de las matrículas de las motos. ¡Las palabras deben tener al menos 5 letras! 🏍️✨
+              ¡Felicidades por completar la aventura con coches! 🎉 Ahora puedes viajar en moto súper veloces. Forma palabras con las letras de las matrículas de las motos. ¡Cuantas más letras uses y mejor las combines, más puntos ganarás! 🏍️✨
             </p>
           </motion.div>
 
@@ -85,7 +85,7 @@ const MotorcycleGameInstructions: React.FC<MotorcycleGameInstructionsProps> = ({
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-2xl">❌</span>
-                <span className="text-lg font-medium text-red-500">-20 puntos si la palabra no existe o es muy corta</span>
+                <span className="text-lg font-medium text-red-500">-20 puntos si la palabra no existe</span>
               </div>
             </div>
           </motion.div>

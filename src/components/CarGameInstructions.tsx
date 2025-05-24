@@ -45,7 +45,7 @@ const CarGameInstructions: React.FC<CarGameInstructionsProps> = ({
               🎯 Tu primera aventura
             </h3>
             <p className="text-lg font-medium text-gray-700 leading-relaxed">
-              ¡Bienvenido a la aventura con coches! 🚗 Forma palabras con las letras de las matrículas de los coches. ¡Recuerda que las palabras deben tener al menos 5 letras para ganar puntos! ✨
+              ¡Bienvenido a la aventura con coches! 🚗 Forma palabras con las letras de las matrículas de los coches. ¡Cuantas más letras uses y mejor las combines, más puntos ganarás! ✨
             </p>
           </motion.div>
 
@@ -85,7 +85,7 @@ const CarGameInstructions: React.FC<CarGameInstructionsProps> = ({
               </div>
               <div className="flex items-start gap-3">
                 <span className="text-2xl">❌</span>
-                <span className="text-lg font-medium text-red-500">-20 puntos si la palabra no existe o es muy corta</span>
+                <span className="text-lg font-medium text-red-500">-20 puntos si la palabra no existe</span>
               </div>
             </div>
           </motion.div>
