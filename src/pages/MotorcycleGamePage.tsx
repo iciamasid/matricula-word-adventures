@@ -11,7 +11,7 @@ import { RefreshCw, HelpCircle, ArrowLeft } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
@@ -19,6 +19,7 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import MotorcycleCustomization from "@/components/MotorcycleCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
+import GameOverPopup from "@/components/GameOverPopup";
 
 const MotorcycleGamePage = () => {
   return (
@@ -31,7 +32,9 @@ const MotorcycleGamePage = () => {
 // Component to handle the game content
 const MotorcycleGameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showGameOver, setShowGameOver] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const worldTourRef = useRef<HTMLDivElement>(null);
   const {
     totalPoints,
@@ -55,6 +58,13 @@ const MotorcycleGameContent = () => {
 
   // Ref to the license plate section
   const licensePlateRef = useRef<HTMLDivElement>(null);
+
+  // Check for level 10 and show game over popup
+  useEffect(() => {
+    if (level >= 10 && !showGameOver) {
+      setShowGameOver(true);
+    }
+  }, [level, showGameOver]);
 
   // Asegura que la página comience desde la parte superior al cargar
   useEffect(() => {
@@ -156,6 +166,20 @@ const MotorcycleGameContent = () => {
       title: "¡Nivel actualizado!",
       description: "Has saltado al nivel 9 con 4490 puntos. ¡Preparado para llegar al nivel 10!"
     });
+  };
+
+  // Handle game over restart
+  const handleGameOverRestart = () => {
+    // Set flags to reset the game completely and navigate back to car game
+    sessionStorage.setItem('motorcycleGameReset', 'true');
+    sessionStorage.setItem('motorcycleStartLevel', '1');
+    sessionStorage.setItem('motorcycleStartPoints', '0');
+    
+    // Reset the game completely
+    resetGame();
+    
+    // Navigate back to car game
+    navigate('/');
   };
 
   return (
@@ -298,6 +322,12 @@ const MotorcycleGameContent = () => {
           onClose={() => {}} 
           points={20} 
           age={playerAge || 0} 
+        />
+        
+        {/* Game Over Popup */}
+        <GameOverPopup 
+          open={showGameOver}
+          onRestart={handleGameOverRestart}
         />
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
