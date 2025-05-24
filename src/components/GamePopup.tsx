@@ -4,7 +4,7 @@ import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescripti
 import { Award, Gift, Star, Check, X, Trophy, MapPin } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import WorldTourProgressMini from "./WorldTourProgressMini";
 
 interface GamePopupProps {
   open: boolean;
@@ -18,6 +18,7 @@ interface GamePopupProps {
   requireCountryVisit?: boolean;
   preventAutoClose?: boolean;
   onOpenCountryModal?: (countryCode: string) => void;
+  showWorldTour?: boolean;
 }
 
 // Country mapping to determine which game they belong to
@@ -55,7 +56,8 @@ const GamePopup: React.FC<GamePopupProps> = ({
   countryToVisit,
   requireCountryVisit = false,
   preventAutoClose = false,
-  onOpenCountryModal
+  onOpenCountryModal,
+  showWorldTour = false
 }) => {
   const { isEnglish } = useLanguage();
   const [stars, setStars] = useState<{x: number; y: number; size: number; delay: number;}[]>([]);
@@ -177,6 +179,11 @@ const GamePopup: React.FC<GamePopupProps> = ({
     }
   };
 
+  // Handle country visit from mini world tour
+  const handleCountryVisitFromMap = (countryCode: string) => {
+    onClose(); // Close the popup when country is visited from map
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -185,7 +192,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
             handleClose();
           }
         }}>
-          <AlertDialogContent className={`max-w-sm border-0 p-0 bg-transparent ${isCompletion ? 'scale-110' : ''}`}>
+          <AlertDialogContent className={`${showWorldTour ? 'max-w-md' : 'max-w-sm'} border-0 p-0 bg-transparent ${isCompletion ? 'scale-110' : ''}`}>
             <AlertDialogTitle className="sr-only">{message}</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">{explanation}</AlertDialogDescription>
             
@@ -194,7 +201,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.5, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
-              className="relative w-full max-w-xs mx-auto"
+              className="relative w-full mx-auto"
             >
               {/* Background with stars animation */}
               <div className="absolute inset-0 overflow-hidden rounded-2xl">
@@ -255,16 +262,6 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     </motion.h2>
                   )}
                   
-                  {explanation && !isCompletion && (
-                    <motion.div
-                      className="text-2xl font-bold mb-2 text-yellow-300 kids-text"
-                      animate={{ y: [0, -10, 0] }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      {explanation}
-                    </motion.div>
-                  )}
-                  
                   {level && type === "levelUp" && !isCompletion && (
                     <div className="mb-4">
                       <motion.div
@@ -288,7 +285,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     </div>
                   )}
                   
-                  {/* Updated message for country visit requirement */}
+                  {/* Show simplified explanation and world tour for level up */}
                   {type === "levelUp" && !isCompletion && countryToVisit && (
                     <motion.div
                       className="mt-4 space-y-3"
@@ -297,22 +294,22 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     >
                       <div className="text-white kids-text text-lg">
                         {isEnglish 
-                          ? `Visit ${countryToVisit} to continue playing!`
-                          : `¡Visita ${countryToVisit} para continuar jugando!`}
-                      </div>
-                      <div className="text-yellow-300 kids-text text-base">
-                        {isEnglish 
-                          ? "Click on its flag in Your World Tour or use the button below"
-                          : "Pincha en su bandera en Tu Vuelta al Mundo o usa el botón de abajo"}
-                      </div>
-                      <div className="text-green-300 kids-text text-base font-bold">
-                        {isEnglish 
-                          ? "You've also unlocked a new vehicle!"
-                          : "¡También has desbloqueado un nuevo vehículo!"}
+                          ? `Visit ${countryToVisit} to continue!`
+                          : `¡Visita ${countryToVisit} para continuar!`}
                       </div>
                       
+                      {/* Show mini world tour if enabled */}
+                      {showWorldTour && (
+                        <div className="bg-white/20 rounded-xl p-3 mt-3">
+                          <div className="text-yellow-300 kids-text text-sm mb-2">
+                            {isEnglish ? "Click on a flag:" : "Pincha en una bandera:"}
+                          </div>
+                          <WorldTourProgressMini onCountryVisit={handleCountryVisitFromMap} />
+                        </div>
+                      )}
+                      
                       <Button
-                        className={`${buttonClasses} flex items-center gap-2 w-full py-3`}
+                        className={`${buttonClasses} flex items-center gap-2 w-full py-3 mt-3`}
                         onClick={handleVisitCountry}
                       >
                         <MapPin size={18} />
