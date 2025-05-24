@@ -58,7 +58,7 @@ const MotorcycleDriveGameContent = () => {
             size="sm" 
             className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal"
           >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
+            <ArrowLeft className="w-4 h-4 mr-1" /> Volver a motos
           </Button>
         </Link>
         

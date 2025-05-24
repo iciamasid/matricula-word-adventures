@@ -8,7 +8,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Globe, RefreshCw, ChevronDown, HelpCircle, Bike } from "lucide-react";
+import { RefreshCw, HelpCircle, Bike } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -20,7 +20,6 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import CarCustomization from "@/components/CarCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
-import MaxLevelPopup from "@/components/MaxLevelPopup";
 
 const Index = () => {
   return (
@@ -33,7 +32,6 @@ const Index = () => {
 // Component to handle the game content
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
-  const [showMaxLevelPopup, setShowMaxLevelPopup] = useState(false);
   const isMobile = useIsMobile();
   const worldTourRef = useRef<HTMLDivElement>(null);
   const {
@@ -52,16 +50,12 @@ const GameContent = () => {
     setShowBirthdayBonusPopup,
     birthYearBonus,
     showAgeBonusPopup,
-    // Add the necessary game state update functions
     setLevel,
     setTotalPoints
   } = useGame();
 
   // Ref to the license plate section
   const licensePlateRef = useRef<HTMLDivElement>(null);
-
-  // Store the previous level to determine when level 10 is reached
-  const prevLevelRef = useRef<number>(level);
 
   // Asegura que la página comience desde la parte superior al cargar
   useEffect(() => {
@@ -79,7 +73,7 @@ const GameContent = () => {
   // Check if we're navigating back from another page and restore proper destinations
   useEffect(() => {
     const isNavigatingBack = sessionStorage.getItem('navigatingBack');
-    if (isNavigatingBack) {
+    if (isNavigatingBack === 'true') {
       // Clear the navigation flag
       sessionStorage.removeItem('navigatingBack');
       // Restore proper destinations based on current level
@@ -97,39 +91,6 @@ const GameContent = () => {
     }
   }, []);
 
-  // Check for level 10 achievement and show popup
-  useEffect(() => {
-    console.log("Level effect running, current level:", level, "prevLevel:", prevLevelRef.current);
-
-    // Check if player just reached level 10
-    if (level === 10 && prevLevelRef.current < 10) {
-      console.log("Max level 10 reached! Showing popup");
-      
-      // Check if the popup has already been shown before
-      const maxLevelPopupShown = localStorage.getItem('maxLevelPopupShown');
-      
-      // Only show if not already shown or if we want to always show it
-      if (!maxLevelPopupShown) {
-        setShowMaxLevelPopup(true);
-        console.log("Setting showMaxLevelPopup to true");
-      }
-    }
-    
-    // Update previous level reference
-    prevLevelRef.current = level;
-  }, [level]);
-
-  // Save popup state between renders
-  useEffect(() => {
-    // We log the current state to debug
-    console.log("showMaxLevelPopup state:", showMaxLevelPopup);
-    
-    // If popup is closed by the user, mark it as shown
-    if (!showMaxLevelPopup && prevLevelRef.current === 10) {
-      localStorage.setItem('maxLevelPopupShown', 'true');
-    }
-  }, [showMaxLevelPopup]);
-
   // Function to scroll to world tour section
   const scrollToWorldTour = () => {
     if (worldTourRef.current) {
@@ -139,8 +100,8 @@ const GameContent = () => {
     }
   };
 
-  // Determine the color theme (always using Spanish/Purple since we removed English)
-  const bgColor = "bg-bba7ca";
+  // Determine the color theme for car page (purple)
+  const bgColor = "bg-purple-100";
   const panelBgColor = "bg-purple-200";
   const panelGradientBg = "bg-gradient-to-r from-purple-300 to-purple-200";
   const buttonBgColor = "bg-purple-600 hover:bg-purple-700";
@@ -148,11 +109,6 @@ const GameContent = () => {
   const textColorLight = "text-purple-700";
   const borderColor = "border-purple-300";
   const hoverBgColor = "hover:bg-purple-100";
-
-  // Using sessionStorage to mark when we're navigating between pages
-  const handleNavigation = () => {
-    sessionStorage.setItem('navigatingBack', 'true');
-  };
 
   // Helper function to get localized country names (now only Spanish)
   const getLocalizedCountry = (country: string) => country;
@@ -165,9 +121,9 @@ const GameContent = () => {
     if (level >= 3) countries.push("Italia");
     if (level >= 4) countries.push("Rusia");
     if (level >= 5) countries.push("Japón");
-    if (level >= 6) countries.push("Australia");
-    if (level >= 7) countries.push("Estados Unidos");
-    if (level >= 8) countries.push("Méjico");
+    if (level >= 6) countries.push("Estados Unidos");
+    if (level >= 7) countries.push("México");
+    if (level >= 8) countries.push("Australia");
     if (level >= 9) countries.push("Argentina");
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
@@ -176,8 +132,6 @@ const GameContent = () => {
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
-      // When game is reset, also clear the popup shown flag
-      localStorage.removeItem('maxLevelPopupShown');
       toast({
         title: "¡Juego reiniciado!",
         description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
@@ -185,11 +139,11 @@ const GameContent = () => {
     }
   };
 
-  // Handler for jump to level 9 button - MODIFIED TO SET 4000 POINTS INSTEAD OF 9000
+  // Handler for jump to level 9 button
   const handleJumpToLevel9 = () => {
     // Set level to 9
     setLevel(9);
-    // Set points to a reasonable amount for level 9 (approximately 4000 points)
+    // Set points to a reasonable amount for level 9
     setTotalPoints(4000);
     // Update destinations based on new level
     updateDestinations(9);
@@ -200,29 +154,6 @@ const GameContent = () => {
     });
   };
 
-  // Handler to go to motorcycle game with level 1
-  const handleGoToMotorcycle = () => {
-    console.log("Going to motorcycle game!");
-    // Reset to level 1 for motorcycle game
-    setLevel(1);
-    setTotalPoints(500); // Start with some points for motorcycle game
-    setShowMaxLevelPopup(false);
-    
-    // Mark popup as shown
-    localStorage.setItem('maxLevelPopupShown', 'true');
-    
-    // Navigate to motorcycle game
-    window.location.href = '/motorcycle-game';
-  };
-
-  // Function to close the popup
-  const handleCloseMaxLevelPopup = () => {
-    console.log("Closing max level popup");
-    setShowMaxLevelPopup(false);
-    // Mark as shown so it doesn't appear again
-    localStorage.setItem('maxLevelPopupShown', 'true');
-  };
-
   return (
     <div 
       className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
@@ -231,69 +162,37 @@ const GameContent = () => {
         backgroundAttachment: "fixed"
       }}
     >
-      {/* Special background effect when the world tour is completed */}
-      {level >= 10 && (
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-b from-purple-300/50 to-purple-400/50"></div>
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-yellow-300 opacity-30"
-              style={{
-                width: Math.random() * 10 + 5,
-                height: Math.random() * 10 + 5,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`
-              }}
-              animate={{
-                y: [0, -100],
-                opacity: [0.3, 0]
-              }}
-              transition={{
-                duration: Math.random() * 5 + 5,
-                repeat: Infinity,
-                repeatType: "loop",
-                delay: Math.random() * 5
-              }}
-            />
-          ))}
-        </div>
-      )}
-      
-      {/* Added more space at the top with pt-12 (increased from pt-8) */}
-      <div className="relative w-full pt-12">
+      {/* Motorcycle game button */}
+      <div className="w-full pt-12 px-4">
+        <Link to="/motorcycle-game">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal"
+          >
+            <Bike className="w-4 h-4 mr-1" /> Jugar con motos
+          </Button>
+        </Link>
+        
         {/* Instructions button positioned at top right of the screen */}
         <Button
           variant="outline"
           size="sm"
           onClick={() => setShowInstructions(true)}
-          className={`absolute top-2 right-4 ${
-            'bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300'
-          } kids-text text-base font-normal`}
+          className={`absolute top-2 right-4 bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text text-base font-normal`}
         >
           <HelpCircle className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
         
-        {/* Debug button positioned at top left of the screen */}
+        {/* Debug button positioned at center top of the screen */}
         <Button
           variant="outline"
           size="sm"
           onClick={handleJumpToLevel9}
-          className="absolute top-2 left-4 bg-purple-700/90 hover:bg-purple-800 text-white border-purple-600 kids-text text-base font-normal"
+          className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-purple-700/90 hover:bg-purple-800 text-white border-purple-600 kids-text text-base font-normal"
         >
           Saltar a Nivel 9
         </Button>
-        
-        {/* New button for motorcycle game */}
-        <Link to="/motorcycle-game">
-          <Button
-            variant="outline"
-            size="sm"
-            className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-teal-600/90 hover:bg-teal-700 text-white border-teal-500 kids-text text-base font-normal"
-          >
-            <Bike className="w-4 h-4 mr-1" /> Jugar con motos
-          </Button>
-        </Link>
       </div>
 
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
@@ -307,7 +206,7 @@ const GameContent = () => {
           <CarCustomization />
         </div>
         
-        {/* Show moving car BELOW the buttons */}
+        {/* Show moving car BELOW the buttons - showing the selected car */}
         {playerName && selectedCarColor && (
           <motion.div
             className="w-32 h-24 my-2"
@@ -322,7 +221,7 @@ const GameContent = () => {
           >
             <img 
               src={`/lovable-uploads/${selectedCarColor.image}`}
-              alt={selectedCarColor.name} 
+              alt="Selected Car" 
               className="w-full h-full object-contain" 
             />
           </motion.div>
@@ -334,22 +233,22 @@ const GameContent = () => {
         <div className="w-full max-w-md flex flex-col items-center">
           <LicensePlate />
           
-          {/* Add more space between license plate and word input - mb-6 added */}
+          {/* Add more space between license plate and word input */}
           <div className="mb-8"></div>
           
           <WordInput />
           
-          {/* Score components with reduced spacing (removed space-y-4 class) */}
+          {/* Score components */}
           <div className="w-full mt-2">
             <ScorePanel />
           </div>
           
-          {/* World Tour Progress - moved closer (reduced mt-6 to mt-1) */}
+          {/* World Tour Progress */}
           <div ref={worldTourRef} className="mt-1 w-full">
             <WorldTourProgress />
           </div>
           
-          {/* Reset Game Button - Added more bottom margin (mb-16) */}
+          {/* Reset Game Button - Added more bottom margin */}
           <motion.div
             className="w-full max-w-xs mt-8 mb-16"
             whileHover={{
@@ -363,9 +262,7 @@ const GameContent = () => {
             <Button
               onClick={handleResetGame}
               size="lg"
-              className={`w-full text-white kids-text text-xl font-normal ${
-                "bg-purple-700 hover:bg-purple-600"
-              } px-[10px] mx-0 my-0 py-[20px]`}
+              className={`w-full text-white kids-text text-xl font-normal bg-purple-700 hover:bg-purple-600 px-[10px] mx-0 my-0 py-[20px]`}
             >
               <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
             </Button>
@@ -400,13 +297,6 @@ const GameContent = () => {
         />
         
         {showInstructions && <GameInstructions onClose={() => setShowInstructions(false)} />}
-        
-        {/* Max Level Popup - updated to use handleCloseMaxLevelPopup */}
-        <MaxLevelPopup
-          open={showMaxLevelPopup}
-          onClose={handleCloseMaxLevelPopup}
-          onGoToMotorcycle={handleGoToMotorcycle}
-        />
       </div>
       <Toaster />
     </div>

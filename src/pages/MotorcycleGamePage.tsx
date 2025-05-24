@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -72,7 +73,7 @@ const MotorcycleGameContent = () => {
   // Check if we're navigating back from another page and restore proper destinations
   useEffect(() => {
     const isNavigatingBack = sessionStorage.getItem('navigatingBack');
-    if (isNavigatingBack) {
+    if (isNavigatingBack === 'motorcycle-game') {
       // Clear the navigation flag
       sessionStorage.removeItem('navigatingBack');
       // Restore proper destinations based on current level
@@ -210,7 +211,7 @@ const MotorcycleGameContent = () => {
           <MotorcycleCustomization />
         </div>
         
-        {/* Show moving motorcycle BELOW the buttons */}
+        {/* Show moving motorcycle BELOW the buttons - showing the selected motorcycle */}
         {playerName && selectedCarColor && (
           <motion.div
             className="w-32 h-24 my-2"
@@ -224,8 +225,8 @@ const MotorcycleGameContent = () => {
             }}
           >
             <img 
-              src="/lovable-uploads/motorcycle.png"
-              alt="Motorcycle" 
+              src={`/lovable-uploads/${selectedCarColor.image}`}
+              alt="Selected Motorcycle" 
               className="w-full h-full object-contain" 
             />
           </motion.div>
