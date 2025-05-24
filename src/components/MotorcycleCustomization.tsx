@@ -9,37 +9,61 @@ import LockedCarPopup from "./LockedCarPopup";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
 
-// Available motorcycle colors with unlock levels
+// Available motorcycle colors with unlock levels using real motorcycle images
 const motorcycleColors: CarColor[] = [{
-  id: "m2",
+  id: "m1",
   name: "Azul",
-  image: "motorcycle.png",
+  image: "Motoazul.jpg",
   color: "bg-blue-500",
   unlockedAtLevel: 0 // Always unlocked
 }, {
-  id: "m3",
-  name: "Amarillo",
-  image: "motorcycle.png",
+  id: "m2",
+  name: "Amarilla",
+  image: "Motoamarilla.png",
   color: "bg-yellow-500",
   unlockedAtLevel: 2
 }, {
-  id: "m1",
-  name: "Rojo",
-  image: "motorcycle.png",
+  id: "m3",
+  name: "Roja",
+  image: "Motoroja.jpg",
   color: "bg-red-500",
   unlockedAtLevel: 3
 }, {
-  id: "m5",
+  id: "m4",
   name: "Verde",
-  image: "motorcycle.png",
+  image: "Motoverde.png",
   color: "bg-green-500",
   unlockedAtLevel: 4
 }, {
-  id: "m4",
-  name: "Morado",
-  image: "motorcycle.png",
-  color: "bg-purple-500",
+  id: "m5",
+  name: "Blanca",
+  image: "Motoblanca.jpg",
+  color: "bg-white",
   unlockedAtLevel: 5
+}, {
+  id: "m6",
+  name: "Negra",
+  image: "Motonegra.png",
+  color: "bg-gray-900",
+  unlockedAtLevel: 6
+}, {
+  id: "m7",
+  name: "Harley",
+  image: "Motoharley.png",
+  color: "bg-orange-500",
+  unlockedAtLevel: 7
+}, {
+  id: "m8",
+  name: "Naranja",
+  image: "Motonaranjaguay.png",
+  color: "bg-orange-400",
+  unlockedAtLevel: 8
+}, {
+  id: "m9",
+  name: "Roja Pequeña",
+  image: "Motorojapequeña.png",
+  color: "bg-red-400",
+  unlockedAtLevel: 9
 }];
 
 const MotorcycleCustomization: React.FC = () => {
@@ -58,7 +82,7 @@ const MotorcycleCustomization: React.FC = () => {
 
   // Helper function to mark when we're navigating between pages
   const handleNavigation = () => {
-    sessionStorage.setItem('navigatingBack', 'true');
+    sessionStorage.setItem('navigatingBack', 'motorcycle-game');
   };
 
   // Handle motorcycle selection
@@ -211,9 +235,11 @@ const MotorcycleCustomization: React.FC = () => {
                 >
                   <div className="relative">
                     {/* Motorcycle image */}
-                    <div className={`w-16 h-16 flex items-center justify-center ${motorcycle.color} rounded-full`}>
-                      <Bike size={32} className="text-white" />
-                    </div>
+                    <img 
+                      src={`/lovable-uploads/${motorcycle.image}`} 
+                      alt={motorcycle.name} 
+                      className="w-16 h-16 object-contain" 
+                    />
                     
                     {/* Lock overlay for locked motorcycles */}
                     {isLocked && (
