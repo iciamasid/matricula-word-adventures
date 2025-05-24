@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -222,7 +221,6 @@ const isCountryUnlocked = (locationIndex: number, currentLevel: number, countryN
   // For other countries, check if level is high enough
   return currentLevel >= locationIndex;
 };
-
 const WorldTourProgress = () => {
   const {
     level
@@ -528,7 +526,6 @@ const WorldTourProgress = () => {
       setShowLockedPopup(true);
     }
   };
-
   const handleCloseCountryModal = () => {
     setShowCountryModal(false);
     setSelectedCountry(null);
@@ -538,15 +535,16 @@ const WorldTourProgress = () => {
   const getCurrentCountry = () => {
     return getCountryName(level, isEnglish);
   };
-
-  return (
-    <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className={`${bgColor} rounded-xl`}
-      >
+  return <>
+      <motion.div initial={{
+      opacity: 0,
+      y: 20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      delay: 0.4
+    }} className={`${bgColor} rounded-xl`}>
         <h3 className="py-[10px] text-xl text-center text-purple-800 font-bold">
           {isEnglish ? "Your world tour!" : "¡TU VUELTA AL MUNDO!"}
         </h3>
@@ -566,7 +564,7 @@ const WorldTourProgress = () => {
           </div>}
         
         {/* Elliptical world tour visualization */}
-        <div className="relative pt-2 pb-4">
+        <div className="relative pt-2 pb-4 py-0">
           <div className="w-full h-[220px] relative"> 
             {/* Background elliptical path (dotted line) */}
             <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
@@ -604,70 +602,55 @@ const WorldTourProgress = () => {
             
             {/* Country flags positioned on the ellipse - HIGHER z-index for better click detection */}
             {[...Array(10)].map((_, i) => {
-              // Skip index 0 as it's just a placeholder
-              const levelIndex = i + 1;
-              const flag = getLevelFlag(levelIndex);
-              const position = getEllipsePosition(i);
-              const isCurrentLocation = animatingLevel === levelIndex;
-              const countryName = getCountryName(levelIndex, isEnglish);
-              // IMPORTANT: Use the updated function that checks both index and name
-              const isUnlocked = isCountryUnlocked(levelIndex, level, countryName);
-              const countryCode = getCountryCode(levelIndex);
-              return (
-                <div
-                  key={i}
-                  onClick={() => handleCountrySelection(levelIndex, countryName)}
-                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${!isUnlocked ? 'opacity-60' : ''}`}
-                  style={{
-                    left: `${position.x}%`,
-                    top: `${position.y}%`,
-                    zIndex: hoveredCountry === levelIndex ? 30 : 10
-                  }}
-                  onMouseEnter={() => setHoveredCountry(levelIndex)}
-                  onMouseLeave={() => setHoveredCountry(null)}
-                >
+            // Skip index 0 as it's just a placeholder
+            const levelIndex = i + 1;
+            const flag = getLevelFlag(levelIndex);
+            const position = getEllipsePosition(i);
+            const isCurrentLocation = animatingLevel === levelIndex;
+            const countryName = getCountryName(levelIndex, isEnglish);
+            // IMPORTANT: Use the updated function that checks both index and name
+            const isUnlocked = isCountryUnlocked(levelIndex, level, countryName);
+            const countryCode = getCountryCode(levelIndex);
+            return <div key={i} onClick={() => handleCountrySelection(levelIndex, countryName)} className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${!isUnlocked ? 'opacity-60' : ''}`} style={{
+              left: `${position.x}%`,
+              top: `${position.y}%`,
+              zIndex: hoveredCountry === levelIndex ? 30 : 10
+            }} onMouseEnter={() => setHoveredCountry(levelIndex)} onMouseLeave={() => setHoveredCountry(null)}>
                   {/* Country flag with pulse animation if current */}
-                  <motion.div
-                    className="flex flex-col items-center justify-center"
-                    animate={isCurrentLocation ? {
-                      scale: [1, 1.2, 1],
-                      transition: { repeat: Infinity, duration: 2 }
-                    } : {}}
-                  >
-                    <motion.div 
-                      className="relative" 
-                      whileHover={{ scale: 1.3 }}
-                    >
+                  <motion.div className="flex flex-col items-center justify-center" animate={isCurrentLocation ? {
+                scale: [1, 1.2, 1],
+                transition: {
+                  repeat: Infinity,
+                  duration: 2
+                }
+              } : {}}>
+                    <motion.div className="relative" whileHover={{
+                  scale: 1.3
+                }}>
                       <span className="text-3xl z-10">{flag}</span>
                       
                       {/* Lock icon for locked countries */}
-                      {!isUnlocked && (
-                        <motion.div
-                          className="absolute -top-2 -right-2 bg-pink-500 rounded-full p-1"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring" }}
-                        >
+                      {!isUnlocked && <motion.div className="absolute -top-2 -right-2 bg-pink-500 rounded-full p-1" initial={{
+                    scale: 0
+                  }} animate={{
+                    scale: 1
+                  }} transition={{
+                    type: "spring"
+                  }}>
                           <LockKeyhole className="w-3 h-3 text-white" />
-                        </motion.div>
-                      )}
+                        </motion.div>}
                     </motion.div>
                     
                     {/* Country name tooltip */}
-                    {hoveredCountry === levelIndex && (
-                      <div className="absolute -bottom-12 bg-white/90 px-2 py-1 rounded shadow-md text-xs whitespace-nowrap z-20">
+                    {hoveredCountry === levelIndex && <div className="absolute -bottom-12 bg-white/90 px-2 py-1 rounded shadow-md text-xs whitespace-nowrap z-20">
                         {countryName}
-                        {!isUnlocked && (
-                          <span className="ml-1 text-pink-600">
+                        {!isUnlocked && <span className="ml-1 text-pink-600">
                             {isEnglish ? "(Locked)" : "(Bloqueado)"}
-                          </span>
-                        )}
-                      </div>
-                    )}
+                          </span>}
+                      </div>}
                   </motion.div>
-                </div>
-              );
-            })}
+                </div>;
+          })}
           </div>
         </div>
         
@@ -678,21 +661,10 @@ const WorldTourProgress = () => {
       </motion.div>
 
       {/* Locked country popup */}
-      {showLockedPopup && (
-        <LockedCountryPopup 
-          country={lockedCountry} 
-          onClose={() => setShowLockedPopup(false)} 
-        />
-      )}
+      {showLockedPopup && <LockedCountryPopup country={lockedCountry} onClose={() => setShowLockedPopup(false)} />}
 
       {/* Country Modal */}
-      <CountryModal
-        open={showCountryModal}
-        onClose={handleCloseCountryModal}
-        country={selectedCountry ? getCountryInfo(selectedCountry) : null}
-      />
-    </>
-  );
+      <CountryModal open={showCountryModal} onClose={handleCloseCountryModal} country={selectedCountry ? getCountryInfo(selectedCountry) : null} />
+    </>;
 };
-
 export default WorldTourProgress;
