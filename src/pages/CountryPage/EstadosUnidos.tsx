@@ -40,7 +40,7 @@ const EstadosUnidosPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/EstadosUnidos.jpg" 
+            src="/lovable-uploads/Estados_Unidos.jpg" 
             alt="Estatua de la Libertad, Nueva York"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
