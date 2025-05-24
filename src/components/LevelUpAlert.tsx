@@ -183,6 +183,7 @@ const LevelUpAlert: React.FC = () => {
       points={0}
       countryToVisit={getCurrentCountry()} // Pass the country code for routing
       requireCountryVisit={level < 10} // Require visit for all levels except completion (level 10)
+      preventAutoClose={level < 10} // Don't auto-close for levels requiring country visit
     />
   );
 };

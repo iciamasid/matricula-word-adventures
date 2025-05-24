@@ -1,3 +1,4 @@
+
 import React, { useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, MapPin, Camera, Utensils, Mountain } from "lucide-react";
@@ -25,6 +26,15 @@ const CountryPage = () => {
   };
 
   const handleReturn = () => {
+    // Restore game state if it was stored
+    const gameState = sessionStorage.getItem('gameStateBeforeCountry');
+    if (gameState) {
+      const parsedState = JSON.parse(gameState);
+      // Store the state for the target game to restore
+      sessionStorage.setItem('restoreGameState', JSON.stringify(parsedState));
+      sessionStorage.removeItem('gameStateBeforeCountry');
+    }
+    
     // Clear the navigation flag when returning
     sessionStorage.removeItem('navigatingBack');
     navigate(getReturnPath());

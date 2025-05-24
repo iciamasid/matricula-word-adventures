@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
@@ -16,6 +17,7 @@ interface GamePopupProps {
   explanation?: string;
   countryToVisit?: string; // New prop for country to visit
   requireCountryVisit?: boolean; // Flag to indicate if country visit is required
+  preventAutoClose?: boolean; // New prop to prevent auto-closing
 }
 const GamePopup: React.FC<GamePopupProps> = ({
   open,
@@ -26,7 +28,8 @@ const GamePopup: React.FC<GamePopupProps> = ({
   level,
   explanation,
   countryToVisit,
-  requireCountryVisit = false
+  requireCountryVisit = false,
+  preventAutoClose = false
 }) => {
   const {
     isEnglish
@@ -53,20 +56,20 @@ const GamePopup: React.FC<GamePopupProps> = ({
       }));
       setStars(newStars);
 
-      // Only auto-close if NOT requiring country visit
-      if (!requireCountryVisit) {
+      // Only auto-close if NOT requiring country visit and NOT preventing auto-close
+      if (!requireCountryVisit && !preventAutoClose) {
         const timer = setTimeout(() => {
           handleClose();
         }, 2000);
         return () => clearTimeout(timer);
       }
     }
-  }, [open, requireCountryVisit]);
+  }, [open, requireCountryVisit, preventAutoClose]);
 
   // Handle proper closing with animation - prevent closing if country visit is required
   const handleClose = () => {
-    // If country visit is required, don't allow closing without clicking the link
-    if (requireCountryVisit && countryToVisit) {
+    // If country visit is required or auto-close is prevented, don't allow closing without clicking the link
+    if ((requireCountryVisit || preventAutoClose) && countryToVisit) {
       return;
     }
     setIsVisible(false);
@@ -158,8 +161,8 @@ const GamePopup: React.FC<GamePopupProps> = ({
   const buttonClasses = isEnglish ? "bg-orange-600 hover:bg-orange-700 text-white kids-text" : "bg-game-purple hover:bg-game-purple/90 kids-text";
   return <AnimatePresence>
       {open && <AlertDialog open={isVisible} onOpenChange={() => {
-        // Prevent closing if country visit is required
-        if (!requireCountryVisit || !countryToVisit) {
+        // Prevent closing if country visit is required or auto-close is prevented
+        if (!requireCountryVisit && !preventAutoClose) {
           handleClose();
         }
       }}>
@@ -222,10 +225,10 @@ const GamePopup: React.FC<GamePopupProps> = ({
                 repeat: Infinity
               }} className="space-y-2">
                       <h2 className="font-bold text-white kids-text text-sm">
-                        ¡¡¡ENHORABUENA!!!
+                        ¡¡¡HAS SUPERADO TODOS LOS NIVELES!!!
                       </h2>
                       <p className="text-2xl font-bold text-purple-200 kids-text">
-                        ¡HAS SUPERADO TODOS LOS NIVELES!
+                        ¡HAS COMPLETADO EL JUEGO!
                       </p>
                     </motion.div> : <motion.h2 className="text-3xl font-bold mb-2 text-white kids-text" animate={{
                 scale: [1, 1.1, 1]
@@ -285,6 +288,14 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     if (currentPath === '/motorcycle-game') {
                       gameType = 'motorcycle-game';
                     }
+                    
+                    // Store game state before navigation
+                    const gameState = {
+                      level: level,
+                      totalPoints: sessionStorage.getItem('currentTotalPoints') || '0',
+                      gameType: gameType
+                    };
+                    sessionStorage.setItem('gameStateBeforeCountry', JSON.stringify(gameState));
                     
                     // Set the correct navigation flag
                     sessionStorage.setItem('navigatingBack', gameType);
