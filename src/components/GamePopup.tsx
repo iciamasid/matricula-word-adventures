@@ -1,10 +1,10 @@
+
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
 import { Award, Gift, Star, Check, X, Trophy, MapPin } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
-import WorldTourProgressMini from "./WorldTourProgressMini";
 
 interface GamePopupProps {
   open: boolean;
@@ -75,9 +75,12 @@ const GamePopup: React.FC<GamePopupProps> = ({
       }));
       setStars(newStars);
 
-      // For level ups with world tour, NEVER auto close
-      if (type === "levelUp" && showWorldTour) {
-        return;
+      // For level ups, auto close after 4 seconds
+      if (type === "levelUp") {
+        const timer = setTimeout(() => {
+          handleClose();
+        }, 4000);
+        return () => clearTimeout(timer);
       }
 
       if (!preventAutoClose && !requireCountryVisit) {
@@ -87,13 +90,9 @@ const GamePopup: React.FC<GamePopupProps> = ({
         return () => clearTimeout(timer);
       }
     }
-  }, [open, requireCountryVisit, preventAutoClose, type, showWorldTour]);
+  }, [open, requireCountryVisit, preventAutoClose, type]);
 
   const handleClose = () => {
-    // For level ups with world tour, don't allow manual closing
-    if (type === "levelUp" && showWorldTour) {
-      return;
-    }
     if ((requireCountryVisit && countryToVisit) || (preventAutoClose && countryToVisit)) {
       return;
     }
@@ -179,30 +178,14 @@ const GamePopup: React.FC<GamePopupProps> = ({
   };
 
   const colors = getColors();
-  const buttonClasses = isEnglish ? "bg-orange-600 hover:bg-orange-700 text-white kids-text" : "bg-game-purple hover:bg-game-purple/90 kids-text";
-
-  // Handle country visit button click
-  const handleVisitCountry = () => {
-    if (countryToVisit && onOpenCountryModal) {
-      onOpenCountryModal(countryToVisit);
-    }
-  };
-
-  // Handle country visit from mini world tour - do NOT close popup
-  const handleCountryVisitFromMap = (countryCode: string) => {
-    // Don't close the popup here - let it be handled by the parent component
-  };
 
   return (
     <AnimatePresence>
       {open && (
         <AlertDialog open={isVisible} onOpenChange={() => {
-          // Prevent closing for level ups with world tour
-          if (type !== "levelUp" || !showWorldTour) {
-            handleClose();
-          }
+          handleClose();
         }}>
-          <AlertDialogContent className={`${showWorldTour && type === "levelUp" && !isCompletion ? 'max-w-6xl w-[95vw] h-[90vh]' : 'max-w-sm'} border-0 p-0 bg-transparent ${isCompletion ? 'scale-110' : ''}`}>
+          <AlertDialogContent className="max-w-sm border-0 p-0 bg-transparent">
             <AlertDialogTitle className="sr-only">{message}</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">{explanation}</AlertDialogDescription>
             
@@ -213,133 +196,66 @@ const GamePopup: React.FC<GamePopupProps> = ({
               transition={{ type: "spring", stiffness: 300, damping: 15 }}
               className="relative w-full mx-auto"
             >
-              {/* Background with stars animation for non-world-tour popups */}
-              {!(type === "levelUp" && showWorldTour && !isCompletion) && (
-                <div className="absolute inset-0 overflow-hidden rounded-2xl">
-                  {stars.map((star, index) => (
-                    <motion.div
-                      key={index}
-                      className={`absolute rounded-full ${isCompletion ? 'bg-purple-300' : 'bg-yellow-300'}`}
-                      style={{
-                        left: `${star.x}%`,
-                        top: `${star.y}%`,
-                        width: `${isCompletion ? star.size * 1.5 : star.size}px`,
-                        height: `${isCompletion ? star.size * 1.5 : star.size}px`
-                      }}
-                      animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
-                      transition={{
-                        duration: isCompletion ? 2.5 : 2,
-                        delay: star.delay,
-                        repeat: Infinity,
-                        repeatDelay: 3
-                      }}
-                    />
-                  ))}
-                </div>
-              )}
+              {/* Background with stars animation */}
+              <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                {stars.map((star, index) => (
+                  <motion.div
+                    key={index}
+                    className={`absolute rounded-full ${isCompletion ? 'bg-purple-300' : 'bg-yellow-300'}`}
+                    style={{
+                      left: `${star.x}%`,
+                      top: `${star.y}%`,
+                      width: `${isCompletion ? star.size * 1.5 : star.size}px`,
+                      height: `${isCompletion ? star.size * 1.5 : star.size}px`
+                    }}
+                    animate={{ opacity: [0, 1, 0], scale: [0, 1, 0] }}
+                    transition={{
+                      duration: isCompletion ? 2.5 : 2,
+                      delay: star.delay,
+                      repeat: Infinity,
+                      repeatDelay: 3
+                    }}
+                  />
+                ))}
+              </div>
               
               {/* Main popup content */}
-              <div className={`${type === "levelUp" && showWorldTour && !isCompletion ? 'bg-white' : `bg-gradient-to-br ${colors.from} ${colors.via} ${colors.to}`} ${type === "levelUp" && showWorldTour && !isCompletion ? 'p-8' : 'p-6'} rounded-2xl ${type === "levelUp" && showWorldTour && !isCompletion ? 'border-4 border-blue-400' : `border-4 ${colors.border} ${colors.shadow}`} relative z-10 ${isCompletion ? 'p-8' : ''} ${type === "levelUp" && showWorldTour && !isCompletion ? 'h-full overflow-auto' : ''}`}>
+              <div className={`bg-gradient-to-br ${colors.from} ${colors.via} ${colors.to} p-6 rounded-2xl border-4 ${colors.border} ${colors.shadow} relative z-10 ${isCompletion ? 'p-8' : ''}`}>
                 <div className="text-center">
-                  {/* Level up with world tour gets special treatment */}
-                  {type === "levelUp" && showWorldTour && !isCompletion ? (
-                    <div className="h-full flex flex-col">
-                      {/* Header section */}
-                      <div className="mb-6">
-                        <motion.div
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                          className="flex justify-center items-center mb-4"
-                        >
-                          <div className="bg-blue-200 p-3 rounded-full">
-                            <Trophy className="w-12 h-12 text-blue-900" />
-                          </div>
-                        </motion.div>
-                        
-                        <motion.h2
-                          className="text-4xl font-bold mb-4 text-blue-900 kids-text"
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                        >
-                          {message}
-                        </motion.h2>
-                        
-                        <div className="mb-4">
-                          <motion.div
-                            className="text-5xl font-bold text-blue-700 kids-text"
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                          >
-                            {isEnglish ? `LEVEL ${level}!` : `¡NIVEL ${level}!`}
-                          </motion.div>
-                          <div className="flex justify-center space-x-2 mt-2">
-                            {[1, 2, 3].map((i) => (
-                              <motion.div
-                                key={i}
-                                animate={{ rotate: 360, scale: [1, 1.5, 1] }}
-                                transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
-                              >
-                                <Star className="h-8 w-8 text-yellow-500" />
-                              </motion.div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {countryToVisit && (
-                          <div className="text-blue-900 kids-text text-2xl mb-6 font-bold">
-                            {isEnglish 
-                              ? `Visit ${countryToVisit} to continue!`
-                              : `¡Visita ${countryToVisit} para continuar!`}
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* World tour section - MUCH BIGGER */}
-                      <div className="flex-1 min-h-[500px]">
-                        <div className="text-blue-600 kids-text text-2xl mb-6 text-center font-bold">
-                          {isEnglish ? "🌍 Your World Tour - Click on a flag:" : "🌍 Tu Vuelta al Mundo - Pincha en una bandera:"}
-                        </div>
-                        <div className="h-full">
-                          <WorldTourProgressMini onCountryVisit={handleCountryVisitFromMap} />
-                        </div>
-                      </div>
+                  <motion.div
+                    animate={{ scale: isCompletion ? [1, 1.3, 1] : [1, 1.2, 1] }}
+                    transition={{ duration: isCompletion ? 2 : 1.5, repeat: Infinity }}
+                    className="flex justify-center items-center mb-4"
+                  >
+                    <div className={`${colors.bgIconColor} p-2 rounded-full`}>
+                      {colors.icon}
                     </div>
+                  </motion.div>
+                  
+                  {isCompletion ? (
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      className="space-y-2"
+                    >
+                      <h2 className="font-bold text-white kids-text text-sm">
+                        ¡¡¡HAS SUPERADO TODOS LOS NIVELES!!!
+                      </h2>
+                      <p className="text-2xl font-bold text-purple-200 kids-text">
+                        ¡HAS COMPLETADO EL JUEGO!
+                      </p>
+                    </motion.div>
                   ) : (
                     <>
-                      <motion.div
-                        animate={{ scale: isCompletion ? [1, 1.3, 1] : [1, 1.2, 1] }}
-                        transition={{ duration: isCompletion ? 2 : 1.5, repeat: Infinity }}
-                        className="flex justify-center items-center mb-4"
+                      <motion.h2
+                        className="text-3xl font-bold mb-2 text-white kids-text"
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
                       >
-                        <div className={`${colors.bgIconColor} p-2 rounded-full`}>
-                          {colors.icon}
-                        </div>
-                      </motion.div>
+                        {message}
+                      </motion.h2>
                       
-                      {isCompletion ? (
-                        <motion.div
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                          className="space-y-2"
-                        >
-                          <h2 className="font-bold text-white kids-text text-sm">
-                            ¡¡¡HAS SUPERADO TODOS LOS NIVELES!!!
-                          </h2>
-                          <p className="text-2xl font-bold text-purple-200 kids-text">
-                            ¡HAS COMPLETADO EL JUEGO!
-                          </p>
-                        </motion.div>
-                      ) : (
-                        <motion.h2
-                          className="text-3xl font-bold mb-2 text-white kids-text"
-                          animate={{ scale: [1, 1.1, 1] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                        >
-                          {message}
-                        </motion.h2>
-                      )}
-                      
-                      {level && type === "levelUp" && !isCompletion && !showWorldTour && (
+                      {level && type === "levelUp" && !isCompletion && (
                         <div className="mb-4">
                           <motion.div
                             className="text-4xl font-bold text-yellow-300 kids-text"
@@ -361,31 +277,39 @@ const GamePopup: React.FC<GamePopupProps> = ({
                           </div>
                         </div>
                       )}
-                      
-                      {isCompletion && (
-                        <div className="flex justify-center space-x-3 mt-4">
-                          {[1, 2, 3, 4, 5].map((i) => (
-                            <motion.div
-                              key={i}
-                              animate={{ rotate: 360, scale: [1, 1.8, 1] }}
-                              transition={{ duration: 2, delay: i * 0.2, repeat: Infinity }}
-                            >
-                              <Star className="h-8 w-8 text-purple-200" />
-                            </motion.div>
-                          ))}
+
+                      {countryToVisit && type === "levelUp" && !isCompletion && (
+                        <div className="text-white kids-text text-lg mb-4 font-bold">
+                          {isEnglish 
+                            ? `Visit ${countryToVisit} to continue!`
+                            : `¡Visita ${countryToVisit} para continuar!`}
                         </div>
                       )}
-                      
-                      {type === "bonus" && points && (
-                        <motion.div
-                          className="text-3xl font-bold text-yellow-300 kids-text mt-2"
-                          animate={{ scale: [1, 1.2, 1] }}
-                          transition={{ duration: 1.5, repeat: Infinity }}
-                        >
-                          +{points} {isEnglish ? "POINTS!" : "¡PUNTOS!"}
-                        </motion.div>
-                      )}
                     </>
+                  )}
+                  
+                  {isCompletion && (
+                    <div className="flex justify-center space-x-3 mt-4">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <motion.div
+                          key={i}
+                          animate={{ rotate: 360, scale: [1, 1.8, 1] }}
+                          transition={{ duration: 2, delay: i * 0.2, repeat: Infinity }}
+                        >
+                          <Star className="h-8 w-8 text-purple-200" />
+                        </motion.div>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {type === "bonus" && points && (
+                    <motion.div
+                      className="text-3xl font-bold text-yellow-300 kids-text mt-2"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      +{points} {isEnglish ? "POINTS!" : "¡PUNTOS!"}
+                    </motion.div>
                   )}
                 </div>
               </div>

@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
 import CountryModal from "@/components/CountryModal";
@@ -18,8 +18,6 @@ const LevelUpAlert: React.FC = () => {
   } = useGame();
   const { isEnglish } = useLanguage();
   const location = useLocation();
-  const [showCountryModal, setShowCountryModal] = useState(false);
-  const [selectedCountry, setSelectedCountry] = useState<any>(null);
   
   // Determine if we're in motorcycle game
   const isMotorcycleGame = location.pathname === '/motorcycle-game';
@@ -46,25 +44,6 @@ const LevelUpAlert: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
-
-  // Handle opening country modal from the popup button
-  const handleOpenCountryModal = (countryCode: string) => {
-    const countryInfo = getCountryInfo(countryCode);
-    setSelectedCountry(countryInfo);
-    setShowCountryModal(true);
-  };
-
-  // Handle closing the country modal - MUST mark country as visited and close level up popup
-  const handleCloseCountryModal = () => {
-    if (selectedCountry && requiredCountryToVisit) {
-      markCountryAsVisited(requiredCountryToVisit);
-      console.log(`Country ${requiredCountryToVisit} marked as visited`);
-    }
-    setShowCountryModal(false);
-    setSelectedCountry(null);
-    // IMPORTANT: Clear the level up message to close the popup and enable input
-    clearLevelUpMessage();
-  };
   
   return (
     <>
@@ -80,17 +59,10 @@ const LevelUpAlert: React.FC = () => {
         message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
         level={level}
         points={0}
-        requireCountryVisit={level < 10}
-        preventAutoClose={true}
+        requireCountryVisit={false}
+        preventAutoClose={false}
         countryToVisit={requiredCountryToVisit || undefined}
-        onOpenCountryModal={handleOpenCountryModal}
-        showWorldTour={level < 10} // Always show world tour for level ups (not completion)
-      />
-
-      <CountryModal
-        open={showCountryModal}
-        onClose={handleCloseCountryModal}
-        country={selectedCountry}
+        showWorldTour={false}
       />
     </>
   );
