@@ -539,7 +539,7 @@ const WorldTourProgress = () => {
     y: 0
   }} transition={{
     delay: 0.4
-  }} className="bg-teal-300">
+  }} className="bg-teal-300 rounded-xl">
       <h3 className={`text-xl text-center ${textColor} kids-text mb-2 uppercase font-bold`}>
         {isEnglish ? "Your world tour!" : "¡TU VUELTA AL MUNDO!"}
       </h3>
