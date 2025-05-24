@@ -267,17 +267,18 @@ export const usePathAnimation = ({
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
     
-    // Use much smaller step size for slower movement
-    const stepSize = Math.max(1, Math.floor(interpolatedPath.length / 1500)); // Much slower movement
+    // Use step size for movement - doubled for faster animation
+    const stepSize = Math.max(2, Math.floor(interpolatedPath.length / 750)); // Doubled step size for faster movement
     
-    // Significantly increased delay for much slower movement
-    const baseSpeed = 50; // Much slower base speed
-    const adjustedSpeed = Math.max(30, Math.min(100, currentAnimationSpeed / 4)); // Much slower speed
+    // Doubled speed: convert slider value (0-100) to speed where 0 = fastest, 100 = slowest
+    // The new speed mapping: what used to be slowest (100) is now fastest, and fastest is double the old speed
+    const invertedSpeed = 100 - currentAnimationSpeed; // Invert so higher slider = faster
+    const doubledSpeed = Math.max(5, Math.min(25, 25 - (invertedSpeed / 100) * 20)); // Much faster speed range
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
       animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
-    }, adjustedSpeed);
+    }, doubledSpeed);
     
     // Skip points for smoother animation
     const nextIndex = currentIndex + stepSize;
