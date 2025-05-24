@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -9,6 +10,10 @@ interface CountryInfo {
   country: string;
   flag: string;
   fact?: string;
+}
+
+interface GameProviderProps {
+  children: React.ReactNode;
 }
 
 interface GameContextType {
