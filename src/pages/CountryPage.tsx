@@ -55,7 +55,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "La Sagrada Familia, flamenco y paella" : "The Sagrada Familia, flamenco and paella",
           description: isSpanish ? "España es un país con una rica historia y cultura. Tiene hermosas playas, montañas y ciudades históricas. Es famoso por su gastronomía, fiestas populares y su pasión por el fútbol." : "Spain is a country with a rich history and culture. It has beautiful beaches, mountains, and historic cities. It is famous for its cuisine, popular festivals, and passion for football.",
           fact: isSpanish ? "España tiene 47 lugares declarados Patrimonio de la Humanidad por la UNESCO, ¡el tercer país con más lugares protegidos!" : "Spain has 47 UNESCO World Heritage Sites, making it the country with the third-most protected sites!",
-          image: "/lovable-uploads/45cc822d-687a-44d0-ad45-9078d02c48c9.png",
+          image: "/lovable-uploads/España.jpg",
           imageAlt: isSpanish ? "España" : "Spain"
         };
       case "francia":
@@ -68,7 +68,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "La Torre Eiffel, el queso y los cruasanes" : "The Eiffel Tower, cheese, and croissants",
           description: isSpanish ? "Francia es conocida por su cultura, arte y gastronomía. París, su capital, es famosa por la Torre Eiffel, el Museo del Louvre y la Catedral de Notre Dame. Francia también tiene hermosos pueblos en el campo y playas en la costa mediterránea." : "France is known for its culture, art, and gastronomy. Paris, its capital, is famous for the Eiffel Tower, the Louvre Museum, and Notre Dame Cathedral. France also has beautiful villages in the countryside and beaches on the Mediterranean coast.",
           fact: isSpanish ? "¡En Francia hay más de 1.500 tipos diferentes de queso!" : "France has more than 1,500 different types of cheese!",
-          image: "/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png",
+          image: "/lovable-uploads/FRANCIA.jpg",
           imageAlt: isSpanish ? "Francia" : "France"
         };
       case "italia":
@@ -81,7 +81,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "El Coliseo, la pizza y el gelato" : "The Colosseum, pizza, and gelato",
           description: isSpanish ? "Italia es la cuna del Imperio Romano y el Renacimiento. Es conocida por su increíble arte, arquitectura, y por supuesto, su deliciosa comida como la pizza y la pasta. Ciudades como Roma, Venecia y Florencia atraen a millones de turistas cada año." : "Italy is the cradle of the Roman Empire and the Renaissance. It is known for its incredible art, architecture, and of course, its delicious food like pizza and pasta. Cities like Rome, Venice, and Florence attract millions of tourists each year.",
           fact: isSpanish ? "¡Italia tiene más sitios del Patrimonio Mundial de la UNESCO que cualquier otro país del mundo!" : "Italy has more UNESCO World Heritage Sites than any other country in the world!",
-          image: "/lovable-uploads/1e352155-e337-4c3e-b4a9-503b2d6a03f4.png",
+          image: "/lovable-uploads/Italia.webp",
           imageAlt: isSpanish ? "Italia" : "Italy"
         };
       case "rusia":
@@ -94,7 +94,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "El Kremlin, la Plaza Roja y las matrioshkas" : "The Kremlin, Red Square, and matryoshka dolls",
           description: isSpanish ? "Rusia es el país más grande del mundo, que abarca once zonas horarias y tiene una enorme diversidad geográfica y cultural. Desde las cúpulas doradas de Moscú hasta los vastos paisajes de Siberia, Rusia ofrece contrastes fascinantes y una historia rica." : "Russia is the largest country in the world, spanning eleven time zones and having enormous geographic and cultural diversity. From the golden domes of Moscow to the vast landscapes of Siberia, Russia offers fascinating contrasts and a rich history.",
           fact: isSpanish ? "¡Rusia es tan grande que tiene 11 zonas horarias diferentes!" : "Russia is so large that it has 11 different time zones!",
-          image: "/lovable-uploads/276d9054-061e-45b9-9517-d7f0d8218579.png",
+          image: "/lovable-uploads/Rusia.jpeg",
           imageAlt: isSpanish ? "Rusia" : "Russia"
         };
       case "japón":
@@ -108,10 +108,12 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "El Monte Fuji, el sushi y los cerezos en flor" : "Mount Fuji, sushi, and cherry blossoms",
           description: isSpanish ? "Japón es un país de contrastes, donde la tradición milenaria convive con la tecnología más avanzada. Sus jardines zen, templos antiguos y la cultura del anime atraen a millones de visitantes. La gastronomía japonesa es considerada Patrimonio de la Humanidad." : "Japan is a country of contrasts, where thousand-year-old tradition coexists with the most advanced technology. Its zen gardens, ancient temples, and anime culture attract millions of visitors. Japanese cuisine is considered a World Heritage.",
           fact: isSpanish ? "¡Japón tiene más de 6,800 islas!" : "Japan has more than 6,800 islands!",
-          image: "/lovable-uploads/1e352155-e337-4c3e-b4a9-503b2d6a03f4.png",
+          image: "/lovable-uploads/Japón.jfif",
           imageAlt: isSpanish ? "Japón" : "Japan"
         };
       case "estados unidos":
+      case "Estados Unidos":
+      case "Estados_Unidos":
       case "estados_unidos":
       case "eeuu":
       case "usa":
@@ -124,7 +126,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "Hollywood, los rascacielos y la Estatua de la Libertad" : "Hollywood, skyscrapers, and the Statue of Liberty",
           description: isSpanish ? "Estados Unidos es el tercer país más grande del mundo y uno de los más diversos culturalmente. Desde los rascacielos de Nueva York hasta las playas de California, ofrece paisajes variados y algunas de las ciudades más famosas del mundo." : "The United States is the third-largest country in the world and one of the most culturally diverse. From the skyscrapers of New York to the beaches of California, it offers varied landscapes and some of the world's most famous cities.",
           fact: isSpanish ? "¡Estados Unidos tiene 63 parques nacionales que protegen paisajes increíbles!" : "The United States has 63 national parks protecting incredible landscapes!",
-          image: "/lovable-uploads/24de870a-769c-4544-8001-8554fe29e7f0.png",
+          image: "/lovable-uploads/EstadosUnidos.jpg",
           imageAlt: isSpanish ? "Estados Unidos" : "United States"
         };
       case "méjico":
@@ -138,7 +140,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "Las pirámides mayas, la comida picante y el Día de los Muertos" : "Mayan pyramids, spicy food, and the Day of the Dead",
           description: isSpanish ? "México es un país lleno de color, tradiciones y una historia fascinante. Sus ruinas arqueológicas, como Chichén Itzá, muestran la grandeza de sus antiguas civilizaciones. Su gastronomía y festividades son reconocidas mundialmente." : "Mexico is a country full of color, traditions, and a fascinating history. Its archaeological ruins, like Chichen Itza, show the greatness of its ancient civilizations. Its gastronomy and festivities are recognized worldwide.",
           fact: isSpanish ? "¡México es el país con mayor número de hablantes de español en el mundo!" : "Mexico is the country with the largest number of Spanish speakers in the world!",
-          image: "/lovable-uploads/54b230f6-8a76-4e9a-ae4c-5fa2f7087600.png",
+          image: "/lovable-uploads/MÉJICO.jpg",
           imageAlt: isSpanish ? "México" : "Mexico"
         };
       case "australia":
@@ -164,7 +166,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "Machu Picchu, la gastronomía y las líneas de Nazca" : "Machu Picchu, gastronomy, and the Nazca Lines",
           description: isSpanish ? "Perú es un país con una rica herencia inca y una geografía diversa, desde los Andes hasta la Amazonía. Machu Picchu, la antigua ciudad inca, es una de las maravillas del mundo. Su cocina es considerada una de las mejores del planeta." : "Peru is a country with a rich Inca heritage and diverse geography, from the Andes to the Amazon. Machu Picchu, the ancient Inca city, is one of the wonders of the world. Its cuisine is considered one of the best on the planet.",
           fact: isSpanish ? "¡Perú tiene más de 3,000 variedades diferentes de patatas (papas)!" : "Peru has more than 3,000 different varieties of potatoes!",
-          image: "/lovable-uploads/13c721ae-3f14-415a-86bb-0228c47d8425.png",
+          image: "/lovable-uploads/AUSTRALIA.jpg",
           imageAlt: isSpanish ? "Perú" : "Peru"
         };
       case "argentina":
@@ -189,7 +191,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "El Cristo Redentor, el carnaval de Río y las playas de Copacabana" : "Christ the Redeemer, Rio carnival, and Copacabana beaches",
           description: isSpanish ? "Brasil es el país más grande de Sudamérica y el quinto más grande del mundo. Es famoso por sus playas tropicales, la selva amazónica, el fútbol y el vibrante carnaval de Río de Janeiro. El Cristo Redentor es uno de sus símbolos más reconocidos." : "Brazil is the largest country in South America and the fifth largest in the world. It is famous for its tropical beaches, the Amazon rainforest, football, and the vibrant Rio de Janeiro carnival. Christ the Redeemer is one of its most recognized symbols.",
           fact: isSpanish ? "¡Brasil tiene la mayor biodiversidad del mundo, con más de 8.5 millones de especies!" : "Brazil has the greatest biodiversity in the world, with more than 8.5 million species!",
-          image: "/lovable-uploads/6eb44f09-3864-48b2-8a08-b682e3a1ada3.png",
+          image: "/lovable-uploads/Brasil.jpg",
           imageAlt: isSpanish ? "Brasil" : "Brazil"
         };
       case "canadá":
@@ -202,7 +204,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "Las Cataratas del Niágara, los lagos cristalinos y el jarabe de arce" : "Niagara Falls, crystal clear lakes, and maple syrup",
           description: isSpanish ? "Canadá es el segundo país más grande del mundo por superficie. Es conocido por sus impresionantes paisajes naturales, desde las Montañas Rocosas hasta los lagos cristalinos. Es famoso por su naturaleza virgen, el hockey sobre hielo y la amabilidad de sus habitantes." : "Canada is the second largest country in the world by area. It is known for its stunning natural landscapes, from the Rocky Mountains to crystal clear lakes. It is famous for its pristine nature, ice hockey, and the kindness of its inhabitants.",
           fact: isSpanish ? "¡Canadá tiene más lagos que el resto del mundo combinado!" : "Canada has more lakes than the rest of the world combined!",
-          image: "/lovable-uploads/82ed4a47-c090-4db2-b49e-6041114c97b7.png",
+          image: "/lovable-uploads/Canadá.jpeg.webp",
           imageAlt: isSpanish ? "Canadá" : "Canada"
         };
       case "china":
@@ -214,7 +216,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "La Gran Muralla, los pandas gigantes y la Ciudad Prohibida" : "The Great Wall, giant pandas, and the Forbidden City",
           description: isSpanish ? "China es el país más poblado del mundo y tiene una historia milenaria. La Gran Muralla China es una de las construcciones más impresionantes de la humanidad. Su cultura, gastronomía y avances tecnológicos la convierten en una potencia mundial." : "China is the most populous country in the world and has a millennial history. The Great Wall of China is one of humanity's most impressive constructions. Its culture, gastronomy, and technological advances make it a world power.",
           fact: isSpanish ? "¡La Gran Muralla China es tan larga que podría dar la vuelta al ecuador terrestre!" : "The Great Wall of China is so long it could wrap around the Earth's equator!",
-          image: "/lovable-uploads/3eeeb432-83e7-40d5-839a-f72b03d08da9.png",
+          image: "/lovable-uploads/China.jpg",
           imageAlt: isSpanish ? "China" : "China"
         };
       case "costa rica":
@@ -227,7 +229,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "La biodiversidad, los volcanes y las playas paradisíacas" : "Biodiversity, volcanoes, and paradisiacal beaches",
           description: isSpanish ? "Costa Rica es un pequeño país centroamericano conocido por su increíble biodiversidad y belleza natural. Aunque ocupa solo el 0.03% de la superficie terrestre, alberga el 6% de la biodiversidad mundial. Sus playas, volcanes y selvas tropicales lo convierten en un paraíso ecoturístico." : "Costa Rica is a small Central American country known for its incredible biodiversity and natural beauty. Although it occupies only 0.03% of the Earth's surface, it is home to 6% of the world's biodiversity. Its beaches, volcanoes, and tropical forests make it an ecotourism paradise.",
           fact: isSpanish ? "¡Costa Rica no tiene ejército desde 1948 y destina ese presupuesto a educación y salud!" : "Costa Rica has had no army since 1948 and allocates that budget to education and health!",
-          image: "/lovable-uploads/638a48e4-c52f-4687-a1e1-5db85caa1793.png",
+          image: "/lovable-uploads/CostaRica.jpeg",
           imageAlt: isSpanish ? "Costa Rica" : "Costa Rica"
         };
       case "grecia":
@@ -240,7 +242,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "El Partenón, la filosofía antigua y las islas paradisíacas" : "The Parthenon, ancient philosophy, and paradisiacal islands",
           description: isSpanish ? "Grecia es considerada la cuna de la civilización occidental, la democracia y la filosofía. Sus ruinas antiguas, como el Partenón en Atenas, son testimonio de su rico pasado histórico. Sus hermosas islas en el mar Egeo atraen a millones de visitantes cada año." : "Greece is considered the cradle of Western civilization, democracy, and philosophy. Its ancient ruins, like the Parthenon in Athens, bear witness to its rich historical past. Its beautiful islands in the Aegean Sea attract millions of visitors each year.",
           fact: isSpanish ? "¡Grecia tiene más de 6,000 islas, pero solo 227 están habitadas!" : "Greece has more than 6,000 islands, but only 227 are inhabited!",
-          image: "/lovable-uploads/aa16d3eb-100f-4916-ba38-871f34a715da.png",
+          image: "/lovable-uploads/Grecia.jpg",
           imageAlt: isSpanish ? "Grecia" : "Greece"
         };
       case "reino unido":
@@ -254,7 +256,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "El Big Ben, la familia real y el té de las cinco" : "Big Ben, the royal family, and five o'clock tea",
           description: isSpanish ? "El Reino Unido está formado por Inglaterra, Escocia, Gales e Irlanda del Norte. Londres, su capital, es famosa por sus monumentos históricos como el Big Ben, el Palacio de Buckingham y el London Eye. Su rica historia, cultura y tradiciones lo convierten en uno de los destinos más visitados del mundo." : "The United Kingdom consists of England, Scotland, Wales, and Northern Ireland. London, its capital, is famous for its historical monuments like Big Ben, Buckingham Palace, and the London Eye. Its rich history, culture, and traditions make it one of the most visited destinations in the world.",
           fact: isSpanish ? "¡El Reino Unido tiene más de 1,500 castillos!" : "The United Kingdom has more than 1,500 castles!",
-          image: "/lovable-uploads/2957a4f7-6a54-4e2f-bda1-2177609abc5f.png",
+          image: "/lovable-uploads/ReinoUnido.jpg",
           imageAlt: isSpanish ? "Reino Unido" : "United Kingdom"
         };
       case "noruega":
@@ -267,7 +269,7 @@ const CountryPageContent = () => {
           famousFor: isSpanish ? "Los fiordos, la aurora boreal y los vikingos" : "Fjords, northern lights, and Vikings",
           description: isSpanish ? "Noruega es famosa por sus espectaculares fiordos, la aurora boreal y su rica herencia vikinga. Es un país escandinavo con paisajes naturales impresionantes, desde las montañas nevadas hasta las costas rocosas. También es conocido por su alto nivel de vida y sostenibilidad ambiental." : "Norway is famous for its spectacular fjords, northern lights, and rich Viking heritage. It is a Scandinavian country with stunning natural landscapes, from snowy mountains to rocky coasts. It is also known for its high standard of living and environmental sustainability.",
           fact: isSpanish ? "¡Noruega tiene más de 1,000 fiordos a lo largo de su costa!" : "Norway has more than 1,000 fjords along its coast!",
-          image: "/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png",
+          image: "/lovable-uploads/Noruega.jpg",
           imageAlt: isSpanish ? "Noruega" : "Norway"
         };
       // Add more cases for other countries
