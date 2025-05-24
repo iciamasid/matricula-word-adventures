@@ -107,7 +107,7 @@ const LevelUpAlert: React.FC = () => {
     setShowCountryModal(true);
   };
 
-  // Handle closing the country modal
+  // Handle closing the country modal - THIS IS THE KEY FIX
   const handleCloseCountryModal = () => {
     // Mark the country as visited when the modal is closed
     if (selectedCountry && requiredCountryToVisit) {
@@ -118,25 +118,10 @@ const LevelUpAlert: React.FC = () => {
     setSelectedCountry(null);
   };
   
-  // Add text about choosing another vehicle
-  const vehicleText = isMotorcycleGame
-    ? (isEnglish ? "You can now choose a new motorcycle!" : "¡Ahora puedes elegir una nueva moto!")
-    : (isEnglish ? "You can now choose a new car!" : "¡Ahora puedes elegir un nuevo coche!");
-  
-  // Simplified explanation
-  const baseExplanation = isEnglish 
-    ? `Level ${level}` 
-    : `Nivel ${level}`;
-  
-  // Message for country visit requirement
-  const countryMessage = requiredCountryToVisit 
-    ? (isEnglish 
-        ? `Visit ${requiredCountryToVisit} to continue!` 
-        : `¡Visita ${requiredCountryToVisit} para continuar!`) 
-    : "";
-  
-  // Add the vehicle text to the explanation
-  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${vehicleText}`;
+  // Simplified explanation text - MUCH SHORTER AND CLEARER
+  const explanation = isEnglish 
+    ? `Level ${level} unlocked!\nVisit ${requiredCountryToVisit || 'the new country'} to continue playing.`
+    : `¡Nivel ${level} desbloqueado!\nVisita ${requiredCountryToVisit || 'el nuevo país'} para continuar.`;
   
   return (
     <>

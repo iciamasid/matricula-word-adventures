@@ -1,4 +1,3 @@
-
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -892,7 +891,7 @@ export const GameProvider: React.FC<{
     updateDestinations(level);
   }, []);
   
-  // Function to mark a country as visited
+  // Function to mark a country as visited - UPDATED TO PROPERLY CLEAR REQUIREMENT
   const markCountryAsVisited = (country: string) => {
     console.log(`Marking country as visited: ${country}`);
     setVisitedCountries(prev => {
@@ -902,12 +901,10 @@ export const GameProvider: React.FC<{
       return prev;
     });
     
-    // If this was the required country, clear the requirement
-    if (country === requiredCountryToVisit) {
-      setCountryVisitRequired(false);
-      setRequiredCountryToVisit(null);
-      console.log(`Country visit requirement cleared for: ${country}`);
-    }
+    // CRITICAL FIX: Always clear the country visit requirement when any country is visited
+    console.log(`Clearing country visit requirement after visiting: ${country}`);
+    setCountryVisitRequired(false);
+    setRequiredCountryToVisit(null);
   };
   
   // Function to check if a country has been visited
