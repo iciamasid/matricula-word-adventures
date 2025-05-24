@@ -176,10 +176,41 @@ export const GameProvider: React.FC<{
   const clearError = () => setErrorMessage(null);
   const clearLevelUpMessage = () => setShowLevelUp(false);
   
-  // Load game state from localStorage on initial mount - MODIFIED TO HANDLE RESET FIRST
+  // Load game state from localStorage on initial mount - MODIFIED TO HANDLE BOTH RESETS
   useEffect(() => {
     try {
-      // Check for motorcycle game reset flags FIRST
+      // Check for car game reset flags FIRST
+      const carGameReset = sessionStorage.getItem('carGameReset');
+      const carStartLevel = sessionStorage.getItem('carStartLevel');
+      const carStartPoints = sessionStorage.getItem('carStartPoints');
+      
+      if (carGameReset === 'true') {
+        // Apply reset immediately
+        const startLevel = parseInt(carStartLevel || '1');
+        const startPoints = parseInt(carStartPoints || '0');
+        
+        console.log(`Applying car game reset: Level ${startLevel}, Points ${startPoints}`);
+        
+        // Reset game state to specified values
+        setLevel(startLevel);
+        setTotalPoints(startPoints);
+        setScore(0);
+        setPreviousScore(0);
+        setGamesPlayed(0);
+        
+        // Clear the reset flags immediately
+        sessionStorage.removeItem('carGameReset');
+        sessionStorage.removeItem('carStartLevel');
+        sessionStorage.removeItem('carStartPoints');
+        
+        // Update destinations for the reset level
+        updateDestinations(startLevel);
+        
+        console.log(`Car game reset applied successfully: Level ${startLevel}, Points ${startPoints}`);
+        return; // Exit early, don't load saved state
+      }
+      
+      // Check for motorcycle game reset flags
       const motorcycleGameReset = sessionStorage.getItem('motorcycleGameReset');
       const motorcycleStartLevel = sessionStorage.getItem('motorcycleStartLevel');
       const motorcycleStartPoints = sessionStorage.getItem('motorcycleStartPoints');
@@ -326,6 +357,9 @@ export const GameProvider: React.FC<{
     sessionStorage.removeItem('motorcycleGameReset');
     sessionStorage.removeItem('motorcycleStartLevel');
     sessionStorage.removeItem('motorcycleStartPoints');
+    sessionStorage.removeItem('carGameReset');
+    sessionStorage.removeItem('carStartLevel');
+    sessionStorage.removeItem('carStartPoints');
     
     // Generate new plate after reset
     generateNewPlateImpl();

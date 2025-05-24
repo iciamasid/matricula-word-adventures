@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -170,8 +171,16 @@ const MotorcycleGameContent = () => {
 
   // Handle game over restart - Reset completely to level 1 and 0 points
   const handleGameOverRestart = () => {
+    // Close the popup first
+    setShowGameOver(false);
+    
     // Reset the game completely to initial state
     resetGame();
+    
+    // Set session storage flags to ensure the car game starts fresh
+    sessionStorage.setItem('carGameReset', 'true');
+    sessionStorage.setItem('carStartLevel', '1');
+    sessionStorage.setItem('carStartPoints', '0');
     
     // Navigate back to car game
     navigate('/');
