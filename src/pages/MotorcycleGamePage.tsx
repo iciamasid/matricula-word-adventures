@@ -21,6 +21,7 @@ import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 import GameOverPopup from "@/components/GameOverPopup";
 import CountryModal from "@/components/CountryModal";
+import { getCountryInfo } from "@/data/countryData";
 
 const MotorcycleGamePage = () => {
   return (

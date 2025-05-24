@@ -22,6 +22,7 @@ import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 import MaxLevelPopup from "@/components/MaxLevelPopup";
 import CountryModal from "@/components/CountryModal";
+import { getCountryInfo } from "@/data/countryData";
 
 const Index = () => {
   return (
