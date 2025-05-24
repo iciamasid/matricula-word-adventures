@@ -60,8 +60,8 @@ const EspanaPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/b3f2c43b-5b8b-4fb7-8a13-37d8f5f5c4d1.png" 
-            alt="Paisaje de España"
+            src="/lovable-uploads/bfca2fcf-0f6d-40a5-9a14-c24f46112d54.png" 
+            alt="Plaza de la Puerta del Sol en Madrid con el símbolo del Oso y el Madroño"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
