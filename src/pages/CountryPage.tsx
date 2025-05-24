@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -111,6 +112,7 @@ const CountryPageContent = () => {
           imageAlt: isSpanish ? "Japón" : "Japan"
         };
       case "estados unidos":
+      case "estados_unidos":
       case "eeuu":
       case "usa":
       case "united states":
