@@ -265,8 +265,8 @@ const MotorcycleGameContent = () => {
           <MotorcycleCustomization />
         </div>
         
-        {/* Show moving motorcycle BELOW the buttons - showing the selected motorcycle */}
-        {playerName && selectedMotorcycle && (
+        {/* Show moving motorcycle BELOW the buttons - showing the selected motorcycle or default white motorcycle */}
+        {playerName && (
           <motion.div
             className="w-32 h-24 my-2"
             animate={{
@@ -279,7 +279,7 @@ const MotorcycleGameContent = () => {
             }}
           >
             <img 
-              src={`/lovable-uploads/${selectedMotorcycle.image}`}
+              src={selectedMotorcycle ? `/lovable-uploads/${selectedMotorcycle.image}` : "/lovable-uploads/Motoblanca.png"}
               alt="Selected Motorcycle" 
               className="w-full h-full object-contain" 
             />

@@ -264,25 +264,17 @@ const GamePopup: React.FC<GamePopupProps> = ({
                           >
                             {isEnglish ? `LEVEL ${level}!` : `¡NIVEL ${level}!`}
                           </motion.div>
-                          <div className="flex justify-center space-x-2 mt-2">
-                            {[1, 2, 3].map((i) => (
-                              <motion.div
-                                key={i}
-                                animate={{ rotate: 360, scale: [1, 1.5, 1] }}
-                                transition={{ duration: 2, delay: i * 0.3, repeat: Infinity }}
-                              >
-                                <Star className="h-6 w-6 text-yellow-300" />
-                              </motion.div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {countryToVisit && type === "levelUp" && !isCompletion && (
-                        <div className="text-white kids-text text-lg mb-4 font-bold">
-                          {isEnglish 
-                            ? `Visit ${countryToVisit} to continue!`
-                            : `¡Visita ${countryToVisit} para continuar!`}
+                          
+                          {countryToVisit && (
+                            <div className="text-white kids-text text-lg mb-4 font-bold space-y-2">
+                              <div>
+                                {`¡Visita ${countryToVisit} pinchando en su bandera en TU VUELTA AL MUNDO!`}
+                              </div>
+                              <div className="text-sm">
+                                Recuerda que puedes elegir otro coche más!
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </>
