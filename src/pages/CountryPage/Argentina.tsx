@@ -59,7 +59,7 @@ const ArgentinaPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/6060d896-a127-404e-987c-3cd8814f558a.png" 
+            src="/lovable-uploads/Argentina.jpg" 
             alt="Paisaje de Argentina"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
