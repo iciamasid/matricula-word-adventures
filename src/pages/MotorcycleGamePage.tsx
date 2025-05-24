@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -238,8 +236,8 @@ const MotorcycleGameContent = () => {
     });
   };
 
-  const handleOpenCountryModal = (countryCode: string) => {
-    console.log('MotorcycleGamePage - Opening country modal for:', countryCode);
+  const handleCountryVisit = (countryCode: string) => {
+    console.log('MotorcycleGamePage - Country visited:', countryCode);
     setSelectedCountry(countryCode);
     setCountryModalOpen(true);
   };
@@ -338,10 +336,10 @@ const MotorcycleGameContent = () => {
             <ScorePanel />
           </div>
           
-          {/* World Tour Progress - Fixed to ensure proper configuration */}
+          {/* World Tour Progress - Fixed to use correct prop name */}
           <div ref={worldTourRef} className="mt-1 w-full">
             <WorldTourProgressMini 
-              onOpenCountryModal={handleOpenCountryModal}
+              onCountryVisit={handleCountryVisit}
             />
           </div>
           
