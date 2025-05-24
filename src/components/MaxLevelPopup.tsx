@@ -48,9 +48,9 @@ const MaxLevelPopup: React.FC<MaxLevelPopupProps> = ({
             </motion.div>
           </div>
           
-          {/* Main congratulations text - MADE EVEN SMALLER FOR MOBILE */}
+          {/* Main congratulations text - EXTRA SMALL FOR MOBILE */}
           <div className="space-y-4">
-            <h2 className="text-lg sm:text-xl font-bold text-purple-800 kids-text">
+            <h2 className="text-sm sm:text-lg font-bold text-purple-800 kids-text">
               ¡ENHORABUENA!
             </h2>
             <div className="space-y-3">

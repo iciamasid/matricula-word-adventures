@@ -135,7 +135,7 @@ export const GameProvider: React.FC<{
   const [playerAge, setPlayerAge] = useState<number | null>(null);
   const [playerGender, setPlayerGender] = useState<string>('');
   
-  // Game state and progress states
+  // Game state and progress states - ALWAYS START AT LEVEL 1
   const [level, setLevel] = useState<number>(1);
   const [score, setScore] = useState<number>(0);
   const [previousScore, setPreviousScore] = useState<number>(0);
@@ -176,7 +176,7 @@ export const GameProvider: React.FC<{
   const clearError = () => setErrorMessage(null);
   const clearLevelUpMessage = () => setShowLevelUp(false);
   
-  // Load game state from localStorage on initial mount - MODIFIED TO HANDLE BOTH RESETS
+  // Load game state from localStorage on initial mount - MODIFIED TO ALWAYS START AT LEVEL 1
   useEffect(() => {
     try {
       // Check for car game reset flags FIRST
@@ -241,31 +241,30 @@ export const GameProvider: React.FC<{
         return; // Exit early, don't load saved state
       }
       
-      // Only load saved state if no reset flags were present
+      // ALWAYS START AT LEVEL 1 FOR FRESH GAME - Only load player info, not game progress
       const savedState = localStorage.getItem(GAME_STATE_KEY);
       if (savedState) {
         const parsedState = JSON.parse(savedState);
         
-        // Restore game state
-        if (parsedState.level) setLevel(parsedState.level);
-        if (parsedState.totalPoints) setTotalPoints(parsedState.totalPoints);
-        if (parsedState.gamesPlayed) setGamesPlayed(parsedState.gamesPlayed);
-        if (parsedState.highScore) setHighScore(parsedState.highScore);
+        // Only restore player information, NOT game progress
         if (parsedState.playerName) setPlayerName(parsedState.playerName);
         if (parsedState.playerAge) setPlayerAge(parsedState.playerAge);
         if (parsedState.playerGender) setPlayerGender(parsedState.playerGender);
         if (parsedState.selectedCarColor) setSelectedCarColor(parsedState.selectedCarColor);
         if (parsedState.selectedMotorcycle) setSelectedMotorcycle(parsedState.selectedMotorcycle);
+        if (parsedState.highScore) setHighScore(parsedState.highScore);
         
-        console.log('Game state loaded from localStorage:', parsedState);
-        
-        // Generate level appropriate destinations
-        if (parsedState.level) {
-          updateDestinations(parsedState.level);
-        }
+        console.log('Player data loaded from localStorage, but starting fresh at level 1');
       }
+      
+      // Always start at level 1 for fresh experience
+      updateDestinations(1);
+      console.log('Game initialized at level 1 for fresh start');
+      
     } catch (error) {
       console.error('Error loading game state:', error);
+      // If there's any error, ensure we start fresh
+      updateDestinations(1);
     }
   }, []);
   
