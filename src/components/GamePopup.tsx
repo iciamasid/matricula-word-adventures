@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
@@ -18,6 +17,7 @@ interface GamePopupProps {
   countryToVisit?: string;
   requireCountryVisit?: boolean;
   preventAutoClose?: boolean;
+  onOpenCountryModal?: (countryCode: string) => void;
 }
 
 // Country mapping to determine which game they belong to
@@ -54,7 +54,8 @@ const GamePopup: React.FC<GamePopupProps> = ({
   explanation,
   countryToVisit,
   requireCountryVisit = false,
-  preventAutoClose = false
+  preventAutoClose = false,
+  onOpenCountryModal
 }) => {
   const { isEnglish } = useLanguage();
   const [stars, setStars] = useState<{x: number; y: number; size: number; delay: number;}[]>([]);
@@ -168,6 +169,14 @@ const GamePopup: React.FC<GamePopupProps> = ({
   const colors = getColors();
   const buttonClasses = isEnglish ? "bg-orange-600 hover:bg-orange-700 text-white kids-text" : "bg-game-purple hover:bg-game-purple/90 kids-text";
 
+  // Handle country visit button click
+  const handleVisitCountry = () => {
+    if (countryToVisit && onOpenCountryModal) {
+      onOpenCountryModal(countryToVisit);
+      onClose(); // Close the level up popup
+    }
+  };
+
   return (
     <AnimatePresence>
       {open && (
@@ -279,38 +288,36 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     </div>
                   )}
                   
-                  {/* Visit Country Button */}
+                  {/* Updated message for country visit requirement */}
                   {type === "levelUp" && !isCompletion && countryToVisit && (
                     <motion.div
-                      className="mt-4"
+                      className="mt-4 space-y-3"
                       animate={{ y: [0, -5, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
                     >
-                      <Link to={`/country/${countryToVisit}`}>
-                        <Button
-                          className={`${buttonClasses} flex items-center gap-2 w-full py-3`}
-                          onClick={() => {
-                            // Determine game type based on country
-                            const gameType = COUNTRY_GAME_MAPPING[countryToVisit as keyof typeof COUNTRY_GAME_MAPPING] || 'car-game';
-                            
-                            // Save current game state before navigation
-                            const gameState = {
-                              level: level,
-                              totalPoints: sessionStorage.getItem('currentTotalPoints') || '0',
-                              gameType: gameType
-                            };
-                            
-                            console.log('Saving game state before country visit:', gameState);
-                            sessionStorage.setItem('gameStateBeforeCountry', JSON.stringify(gameState));
-                            sessionStorage.setItem('navigatingBack', gameType);
-                            
-                            onClose();
-                          }}
-                        >
-                          <MapPin size={18} />
-                          {isEnglish ? `Visit ${countryToVisit}` : `Visitar ${countryToVisit}`}
-                        </Button>
-                      </Link>
+                      <div className="text-white kids-text text-lg">
+                        {isEnglish 
+                          ? `Visit ${countryToVisit} to continue playing!`
+                          : `¡Visita ${countryToVisit} para continuar jugando!`}
+                      </div>
+                      <div className="text-yellow-300 kids-text text-base">
+                        {isEnglish 
+                          ? "Click on its flag in Your World Tour or use the button below"
+                          : "Pincha en su bandera en Tu Vuelta al Mundo o usa el botón de abajo"}
+                      </div>
+                      <div className="text-green-300 kids-text text-base font-bold">
+                        {isEnglish 
+                          ? "You've also unlocked a new vehicle!"
+                          : "¡También has desbloqueado un nuevo vehículo!"}
+                      </div>
+                      
+                      <Button
+                        className={`${buttonClasses} flex items-center gap-2 w-full py-3`}
+                        onClick={handleVisitCountry}
+                      >
+                        <MapPin size={18} />
+                        {isEnglish ? `Visit ${countryToVisit}` : `Visitar ${countryToVisit}`}
+                      </Button>
                     </motion.div>
                   )}
                   

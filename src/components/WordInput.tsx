@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import { useGame } from "@/context/GameContext";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/context/LanguageContext";
@@ -15,7 +15,9 @@ const WordInput: React.FC = () => {
     submitWord,
     generateNewPlate,
     plateConsonants,
-    submitSuccess
+    submitSuccess,
+    countryVisitRequired,
+    requiredCountryToVisit
   } = useGame();
   
   const { t, isEnglish } = useLanguage();
@@ -99,17 +101,19 @@ const WordInput: React.FC = () => {
   }, [submitSuccess, generateNewPlate]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentWord(e.target.value.toUpperCase());
+    if (!countryVisitRequired) {
+      setCurrentWord(e.target.value.toUpperCase());
+    }
   };
   
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !isSubmitting) {
+    if (e.key === "Enter" && !isSubmitting && !countryVisitRequired) {
       handleSubmit();
     }
   };
   
   const handleSubmit = async () => {
-    if (isSubmitting) return;
+    if (isSubmitting || countryVisitRequired) return;
     
     setIsSubmitting(true);
     setIsAnimating(true);
@@ -122,10 +126,10 @@ const WordInput: React.FC = () => {
     }
   };
   
-  // Determine border color based on language
-  const borderColor = isEnglish 
-    ? "border-orange-400" 
-    : "border-purple-400";
+  // Determine border color based on language and disabled state
+  const borderColor = countryVisitRequired 
+    ? "border-gray-300" 
+    : (isEnglish ? "border-orange-400" : "border-purple-400");
   
   // Determine gradient colors for button based on language
   const buttonGradient = isEnglish
@@ -141,8 +145,36 @@ const WordInput: React.FC = () => {
   // Localized button text
   const submitButtonLabel = isEnglish ? "Submit" : "Enviar";
   
+  // Get the placeholder text based on whether visit is required
+  const getPlaceholderText = () => {
+    if (countryVisitRequired) {
+      return isEnglish 
+        ? `Visit ${requiredCountryToVisit} to continue` 
+        : `Visita ${requiredCountryToVisit} para continuar`;
+    }
+    return placeholderText || " ";
+  };
+  
   return (
-    <div className="w-full max-w-xs relative">      
+    <div className="w-full max-w-xs relative">
+      {/* Show visit requirement message */}
+      {countryVisitRequired && (
+        <motion.div 
+          className="mb-2 text-center"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="bg-amber-100 border border-amber-300 rounded-lg p-2 text-amber-800 text-sm font-medium flex items-center justify-center gap-2">
+            <MapPin className="w-4 h-4" />
+            {isEnglish 
+              ? `Visit ${requiredCountryToVisit} to continue playing!`
+              : `¡Visita ${requiredCountryToVisit} para continuar jugando!`
+            }
+          </div>
+        </motion.div>
+      )}
+      
       <div className="flex gap-2">
         <Input 
           ref={inputRef} 
@@ -150,22 +182,23 @@ const WordInput: React.FC = () => {
           value={currentWord} 
           onChange={handleInputChange} 
           onKeyDown={handleKeyDown} 
-          placeholder={placeholderText || " "} 
-          className={`flex-1 text-center font-bold py-6 uppercase border-2 ${borderColor} shadow-md kids-text ${fontSize}`} 
+          placeholder={getPlaceholderText()}
+          disabled={countryVisitRequired}
+          className={`flex-1 text-center font-bold py-6 uppercase border-2 ${borderColor} shadow-md kids-text ${fontSize} ${countryVisitRequired ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : ''}`} 
           autoComplete="off"
         />
         <motion.div 
           whileHover={{
-            scale: 1.05
+            scale: countryVisitRequired ? 1 : 1.05
           }} 
           whileTap={{
-            scale: 0.95
+            scale: countryVisitRequired ? 1 : 0.95
           }}
         >
           <Button 
             onClick={handleSubmit} 
-            className={`h-full bg-gradient-to-r ${buttonGradient} ${isMobile ? "text-xl" : "text-2xl"} ${isAnimating ? "animate-bounce" : ""}`} 
-            disabled={currentWord.trim().length < minWordLength || isSubmitting} 
+            className={`h-full bg-gradient-to-r ${buttonGradient} ${isMobile ? "text-xl" : "text-2xl"} ${isAnimating ? "animate-bounce" : ""} ${countryVisitRequired ? 'opacity-50 cursor-not-allowed' : ''}`} 
+            disabled={currentWord.trim().length < minWordLength || isSubmitting || countryVisitRequired} 
             size="lg"
           >
             {isEnglish ? 

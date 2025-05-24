@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
@@ -7,12 +6,15 @@ import { useLanguage } from "@/context/LanguageContext";
 import { useLocation } from "react-router-dom";
 import { getCountryInfo } from "@/data/countryData";
 
-interface LevelUpAlertProps {
-  onOpenCountryModal?: (countryCode: string) => void;
-}
-
-const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
-  const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame } = useGame();
+const LevelUpAlert: React.FC = () => {
+  const { 
+    level, 
+    showLevelUp, 
+    clearLevelUpMessage, 
+    resetGame,
+    requiredCountryToVisit,
+    markCountryAsVisited
+  } = useGame();
   const { isEnglish } = useLanguage();
   const location = useLocation();
   const [showCountryModal, setShowCountryModal] = useState(false);
@@ -47,11 +49,11 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
     }
   }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
 
-  // Auto-open country modal 3 seconds after level up popup appears
+  // Auto-open country modal 3 seconds after level up popup appears (for levels 1-9)
   useEffect(() => {
-    if (showLevelUp && level < 10) {
+    if (showLevelUp && level < 10 && requiredCountryToVisit) {
       const timer = setTimeout(() => {
-        const countryCode = getCurrentCountry();
+        const countryCode = getCurrentCountryCode();
         const countryInfo = getCountryInfo(countryCode);
         setSelectedCountry(countryInfo);
         setShowCountryModal(true);
@@ -60,122 +62,57 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
 
       return () => clearTimeout(timer);
     }
-  }, [showLevelUp, level, clearLevelUpMessage]);
+  }, [showLevelUp, level, clearLevelUpMessage, requiredCountryToVisit]);
 
-  // Get the current country based on origin info and game type
-  const getCurrentCountry = () => {
+  // Get the current country code based on level and game type
+  const getCurrentCountryCode = () => {
     if (isMotorcycleGame) {
       // Motorcycle game countries
       switch (level) {
-        case 1:
-          return "España";
-        case 2:
-          return "Reino_Unido";
-        case 3:
-          return "Grecia";
-        case 4:
-          return "Noruega";
-        case 5:
-          return "China";
-        case 6:
-          return "Canada";
-        case 7:
-          return "Costa_Rica";
-        case 8:
-          return "Brasil";
-        case 9:
-          return "Peru";
-        case 10:
-          return "España";
-        default:
-          return "España";
+        case 1: return "España";
+        case 2: return "Reino_Unido";
+        case 3: return "Grecia";
+        case 4: return "Noruega";
+        case 5: return "China";
+        case 6: return "Canada";
+        case 7: return "Costa_Rica";
+        case 8: return "Brasil";
+        case 9: return "Peru";
+        case 10: return "España";
+        default: return "España";
       }
     } else {
       // Car game countries
       switch (level) {
-        case 1:
-          return "España";
-        case 2:
-          return "Francia";
-        case 3:
-          return "Italia";
-        case 4:
-          return "Rusia";
-        case 5:
-          return "Japón";
-        case 6:
-          return "Estados_Unidos";
-        case 7:
-          return "México";
-        case 8:
-          return "Australia";
-        case 9:
-          return "Argentina";
-        case 10:
-          return "España";
-        default:
-          return "España";
+        case 1: return "España";
+        case 2: return "Francia";
+        case 3: return "Italia";
+        case 4: return "Rusia";
+        case 5: return "Japón";
+        case 6: return "Estados_Unidos";
+        case 7: return "México";
+        case 8: return "Australia";
+        case 9: return "Argentina";
+        case 10: return "España";
+        default: return "España";
       }
     }
   };
 
-  // Get country display name
-  const getCountryDisplayName = () => {
-    if (isMotorcycleGame) {
-      switch (level) {
-        case 1:
-          return "España";
-        case 2:
-          return "Reino Unido";
-        case 3:
-          return "Grecia";
-        case 4:
-          return "Noruega";
-        case 5:
-          return "China";
-        case 6:
-          return "Canadá";
-        case 7:
-          return "Costa Rica";
-        case 8:
-          return "Brasil";
-        case 9:
-          return "Perú";
-        case 10:
-          return "España";
-        default:
-          return "España";
-      }
-    } else {
-      switch (level) {
-        case 1:
-          return "España";
-        case 2:
-          return "Francia";
-        case 3:
-          return "Italia";
-        case 4:
-          return "Rusia";
-        case 5:
-          return "Japón";
-        case 6:
-          return "Estados Unidos";
-        case 7:
-          return "México";
-        case 8:
-          return "Australia";
-        case 9:
-          return "Argentina";
-        case 10:
-          return "España";
-        default:
-          return "España";
-      }
-    }
+  // Handle opening country modal from the popup button
+  const handleOpenCountryModal = (countryCode: string) => {
+    const countryInfo = getCountryInfo(countryCode);
+    setSelectedCountry(countryInfo);
+    setShowCountryModal(true);
   };
 
   // Handle closing the country modal
   const handleCloseCountryModal = () => {
+    // Mark the country as visited when the modal is closed
+    if (selectedCountry && requiredCountryToVisit) {
+      markCountryAsVisited(requiredCountryToVisit);
+      console.log(`Country ${requiredCountryToVisit} marked as visited`);
+    }
     setShowCountryModal(false);
     setSelectedCountry(null);
   };
@@ -190,12 +127,11 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
     ? `Level ${level}` 
     : `Nivel ${level}`;
   
-  // Message now uses the display country name
-  const currentCountryDisplay = getCountryDisplayName();
-  const countryMessage = currentCountryDisplay 
+  // Message for country visit requirement
+  const countryMessage = requiredCountryToVisit 
     ? (isEnglish 
-        ? `Now you are in ${currentCountryDisplay}!` 
-        : `¡Ahora estás en ${currentCountryDisplay}!`) 
+        ? `Visit ${requiredCountryToVisit} to continue!` 
+        : `¡Visita ${requiredCountryToVisit} para continuar!`) 
     : "";
   
   // Add the vehicle text to the explanation
@@ -213,6 +149,8 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
         points={0}
         requireCountryVisit={level < 10}
         preventAutoClose={level >= 10}
+        countryToVisit={requiredCountryToVisit || undefined}
+        onOpenCountryModal={handleOpenCountryModal}
       />
 
       <CountryModal

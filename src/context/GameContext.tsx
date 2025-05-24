@@ -81,12 +81,24 @@ interface GameContextType {
   // Add selectedMotorcycle property
   selectedMotorcycle: CarColor | null;
   setSelectedMotorcycle: (motorcycle: CarColor | null) => void;
+  
+  // Country visit tracking
+  countryVisitRequired: boolean;
+  requiredCountryToVisit: string | null;
+  visitedCountries: string[];
+  setCountryVisitRequired: (required: boolean) => void;
+  setRequiredCountryToVisit: (country: string | null) => void;
+  markCountryAsVisited: (country: string) => void;
+  isCountryVisited: (country: string) => boolean;
 }
 
 const GameContext = createContext<GameContextType | undefined>(undefined);
 
 // Create a key for localStorage to store game state
 const GAME_STATE_KEY = 'matriculabra_game_state';
+
+// Create a key for localStorage to store visited countries
+const VISITED_COUNTRIES_KEY = 'matriculabra_visited_countries';
 
 export const GameProvider: React.FC<{
   children: React.ReactNode;
@@ -344,6 +356,27 @@ export const GameProvider: React.FC<{
     console.log(`GameContext: Updated sessionStorage - Level: ${level}, Points: ${totalPoints}`);
   }, [totalPoints, level]);
   
+  // Load visited countries from localStorage on initial mount
+  useEffect(() => {
+    try {
+      const savedVisitedCountries = localStorage.getItem(VISITED_COUNTRIES_KEY);
+      if (savedVisitedCountries) {
+        setVisitedCountries(JSON.parse(savedVisitedCountries));
+      }
+    } catch (error) {
+      console.error('Error loading visited countries:', error);
+    }
+  }, []);
+  
+  // Save visited countries to localStorage whenever they change
+  useEffect(() => {
+    try {
+      localStorage.setItem(VISITED_COUNTRIES_KEY, JSON.stringify(visitedCountries));
+    } catch (error) {
+      console.error('Error saving visited countries:', error);
+    }
+  }, [visitedCountries]);
+
   // Game control functions
   const resetGame = () => {
     // Initialize with default country information
@@ -468,6 +501,14 @@ export const GameProvider: React.FC<{
         setLevel(newLevel);
         setShowLevelUp(true);
         
+        // Set country visit requirement for levels 1-9
+        const currentCountryDisplay = getCountryDisplayNameForLevel(newLevel);
+        if (currentCountryDisplay) {
+          setCountryVisitRequired(true);
+          setRequiredCountryToVisit(currentCountryDisplay);
+          console.log(`Country visit required: ${currentCountryDisplay}`);
+        }
+        
         // Play level up sound
         try {
           const audio = new Audio('/lovable-uploads/level-up.mp3');
@@ -488,6 +529,41 @@ export const GameProvider: React.FC<{
       }
     }
   }, [totalPoints]);
+  
+  // Helper function to get country display name for level
+  const getCountryDisplayNameForLevel = (currentLevel: number) => {
+    // For car game (default)
+    const currentPath = window.location.pathname;
+    const isMotorcycleGame = currentPath === '/motorcycle-game';
+    
+    if (isMotorcycleGame) {
+      switch (currentLevel) {
+        case 1: return "España";
+        case 2: return "Reino Unido";
+        case 3: return "Grecia";
+        case 4: return "Noruega";
+        case 5: return "China";
+        case 6: return "Canadá";
+        case 7: return "Costa Rica";
+        case 8: return "Brasil";
+        case 9: return "Perú";
+        default: return null;
+      }
+    } else {
+      switch (currentLevel) {
+        case 1: return "España";
+        case 2: return "Francia";
+        case 3: return "Italia";
+        case 4: return "Rusia";
+        case 5: return "Japón";
+        case 6: return "Estados Unidos";
+        case 7: return "México";
+        case 8: return "Australia";
+        case 9: return "Argentina";
+        default: return null;
+      }
+    }
+  };
   
   // Check for special license plate patterns and player age bonus
   useEffect(() => {
@@ -805,6 +881,29 @@ export const GameProvider: React.FC<{
     updateDestinations(level);
   }, []);
   
+  // Function to mark a country as visited
+  const markCountryAsVisited = (country: string) => {
+    console.log(`Marking country as visited: ${country}`);
+    setVisitedCountries(prev => {
+      if (!prev.includes(country)) {
+        return [...prev, country];
+      }
+      return prev;
+    });
+    
+    // If this was the required country, clear the requirement
+    if (country === requiredCountryToVisit) {
+      setCountryVisitRequired(false);
+      setRequiredCountryToVisit(null);
+      console.log(`Country visit requirement cleared for: ${country}`);
+    }
+  };
+  
+  // Function to check if a country has been visited
+  const isCountryVisited = (country: string) => {
+    return visitedCountries.includes(country);
+  };
+  
   // Create the context value
   const value: GameContextType = {
     originInfo,
@@ -875,6 +974,15 @@ export const GameProvider: React.FC<{
     // Add selectedMotorcycle property
     selectedMotorcycle,
     setSelectedMotorcycle,
+    
+    // Country visit tracking
+    countryVisitRequired,
+    requiredCountryToVisit,
+    visitedCountries,
+    setCountryVisitRequired,
+    setRequiredCountryToVisit,
+    markCountryAsVisited,
+    isCountryVisited,
   };
 
   return (
