@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -30,10 +29,11 @@ const CountryPageContent = () => {
 
   // Add zoom state for the map
   const [mapZoom, setMapZoom] = useState(1);
+  
+  // Ensure page starts from top when component mounts - UPDATED
   useEffect(() => {
-    // Scroll to top when component mounts
     window.scrollTo(0, 0);
-  }, []);
+  }, [country]); // Add country as dependency to ensure it scrolls on route change
 
   // Button classes based on language
   const buttonClasses = isEnglish ? "bg-orange-600 hover:bg-orange-700 text-white kids-text" : "bg-game-purple hover:bg-game-purple/90 kids-text";

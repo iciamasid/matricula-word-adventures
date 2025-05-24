@@ -4,6 +4,11 @@ import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const EstadosUnidosPage = () => {
+  // Ensure page starts from top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleNavigation = () => {
     sessionStorage.setItem('navigatingBack', 'true');
   };

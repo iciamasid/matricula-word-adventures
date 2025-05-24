@@ -74,7 +74,7 @@ const GameOverPopup: React.FC<GameOverPopupProps> = ({
             </div>
           </motion.div>
           
-          {/* Restart button */}
+          {/* Restart button - SHORTENED BUTTON TEXT */}
           <div className="pt-4">
             <motion.div
               whileHover={{ scale: 1.05 }}
@@ -86,7 +86,7 @@ const GameOverPopup: React.FC<GameOverPopupProps> = ({
                 size="lg"
               >
                 <RefreshCw className="w-6 h-6 mr-3" />
-                Iniciar nueva partida (desde 0km y nivel 1)
+                Iniciar nueva partida
               </Button>
             </motion.div>
           </div>
