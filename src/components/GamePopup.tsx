@@ -276,12 +276,12 @@ const GamePopup: React.FC<GamePopupProps> = ({
                             ))}
                           </div>
                           
-                          {/* New message for level up */}
-                          <div className="text-white kids-text text-lg mb-2 font-bold mt-4">
-                            ¡Visita el país para seguir jugando pinchando en su bandera en ¡TU VUELTA AL MUNDO!
+                          {/* Simplified messages with larger font - removed the middle message */}
+                          <div className="text-white kids-text text-xl mb-2 font-bold mt-4">
+                            ¡Visita el país pinchando en su bandera en ¡TU VUELTA AL MUNDO!
                           </div>
-                          <div className="text-yellow-300 kids-text text-base font-bold">
-                            Y recuerda que ahora puedes elegir otro modelo de coche más...
+                          <div className="text-yellow-300 kids-text text-lg font-bold">
+                            Y recuerda que ahora puedes elegir otro modelo más...
                           </div>
                         </div>
                       )}

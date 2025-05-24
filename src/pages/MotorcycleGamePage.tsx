@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -337,9 +338,11 @@ const MotorcycleGameContent = () => {
             <ScorePanel />
           </div>
           
-          {/* World Tour Progress */}
+          {/* World Tour Progress - Fixed to ensure proper configuration */}
           <div ref={worldTourRef} className="mt-1 w-full">
-            <WorldTourProgressMini />
+            <WorldTourProgressMini 
+              onOpenCountryModal={handleOpenCountryModal}
+            />
           </div>
           
           {/* Reset Game Button - Added more bottom margin */}
