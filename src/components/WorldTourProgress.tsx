@@ -3,8 +3,10 @@ import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
 import { Car, LockKeyhole } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import LockedCountryPopup from './LockedCountryPopup';
+import CountryModal from './CountryModal';
+import { getCountryInfo } from '@/data/countryData';
 
 // Function to get the flag emoji based on level - FOR MOTORCYCLE GAME
 const getMotorcycleLevelFlag = (level: number) => {
@@ -219,6 +221,7 @@ const isCountryUnlocked = (locationIndex: number, currentLevel: number, countryN
   // For other countries, check if level is high enough
   return currentLevel >= locationIndex;
 };
+
 const WorldTourProgress = () => {
   const {
     level
@@ -235,6 +238,8 @@ const WorldTourProgress = () => {
   const [hoveredCountry, setHoveredCountry] = useState<number | null>(null);
   const [showLockedPopup, setShowLockedPopup] = useState(false);
   const [lockedCountry, setLockedCountry] = useState("");
+  const [showCountryModal, setShowCountryModal] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
 
   // Determine if we're in motorcycle game
   const isMotorcycleGame = location.pathname === '/motorcycle-game';
@@ -512,8 +517,10 @@ const WorldTourProgress = () => {
   // Handle country selection with lock check
   const handleCountrySelection = (levelIndex: number, countryName: string) => {
     if (isCountryUnlocked(levelIndex, level, countryName)) {
-      // Country is unlocked - proceed with navigation
-      handleNavigateToCountry(getCountryCode(levelIndex));
+      // Country is unlocked - open modal
+      const countryCode = getCountryCode(levelIndex);
+      setSelectedCountry(countryCode);
+      setShowCountryModal(true);
     } else {
       // Country is locked - show popup
       setLockedCountry(countryName);
@@ -521,145 +528,170 @@ const WorldTourProgress = () => {
     }
   };
 
-  // Prepare for navigation when clicking on a flag
-  const handleNavigateToCountry = (countryCode: string) => {
-    // Set navigation flag for proper destination restoration
-    sessionStorage.setItem('navigatingBack', 'true');
+  const handleCloseCountryModal = () => {
+    setShowCountryModal(false);
+    setSelectedCountry(null);
   };
 
   // Get current country based on level
   const getCurrentCountry = () => {
     return getCountryName(level, isEnglish);
   };
-  return <motion.div initial={{
-    opacity: 0,
-    y: 20
-  }} animate={{
-    opacity: 1,
-    y: 0
-  }} transition={{
-    delay: 0.4
-  }} className={`${bgColor} rounded-xl`}>
-      <h3 className="py-[10px] text-xl text-center text-purple-800 font-bold">
-        {isEnglish ? "Your world tour!" : "¡TU VUELTA AL MUNDO!"}
-      </h3>
-      
-      {/* Current country indicator - MOVED to top */}
-      <div className="mt-2 text-center">
-        <span className="text-xl font-normal text-fuchsia-800">
-          {isEnglish ? "You are in:" : "Estás en:"} {getLevelFlag(level)} {getCurrentCountry()}
-        </span>
-      </div>
-      
-      {/* Current destination indicator - MOVED to top */}
-      {level <= 9 && <div className="mt-2 text-center mb-3">
+
+  return (
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+        className={`${bgColor} rounded-xl`}
+      >
+        <h3 className="py-[10px] text-xl text-center text-purple-800 font-bold">
+          {isEnglish ? "Your world tour!" : "¡TU VUELTA AL MUNDO!"}
+        </h3>
+        
+        {/* Current country indicator - MOVED to top */}
+        <div className="mt-2 text-center">
           <span className="text-xl font-normal text-fuchsia-800">
-            {isEnglish ? "Next destination:" : "Próximo destino:"} {getDestinationFlag(level)} {getCountryName(level + 1, isEnglish)}
+            {isEnglish ? "You are in:" : "Estás en:"} {getLevelFlag(level)} {getCurrentCountry()}
           </span>
-        </div>}
-      
-      {/* Elliptical world tour visualization */}
-      <div className="relative pt-2 pb-4">
-        <div className="w-full h-[220px] relative"> 
-          {/* Background elliptical path (dotted line) */}
-          <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-            {/* Background path always shown as gray dashed */}
-            <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="3,3" />
+        </div>
+        
+        {/* Current destination indicator - MOVED to top */}
+        {level <= 9 && <div className="mt-2 text-center mb-3">
+            <span className="text-xl font-normal text-fuchsia-800">
+              {isEnglish ? "Next destination:" : "Próximo destino:"} {getDestinationFlag(level)} {getCountryName(level + 1, isEnglish)}
+            </span>
+          </div>}
+        
+        {/* Elliptical world tour visualization */}
+        <div className="relative pt-2 pb-4">
+          <div className="w-full h-[220px] relative"> 
+            {/* Background elliptical path (dotted line) */}
+            <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+              {/* Background path always shown as gray dashed */}
+              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="3,3" />
+              
+              {/* Highlighted portion of the path based on progress */}
+              <path d={createEllipsePath()} fill="none" strokeWidth="2.5" stroke={getPathStrokeColor()} strokeLinecap="round" strokeDasharray={estimatedPathLength} strokeDashoffset={calculateStrokeDashOffset()} style={{
+              display: level <= 1 && progressValue === 0 ? 'none' : 'block'
+            }} />
+            </svg>
             
-            {/* Highlighted portion of the path based on progress */}
-            <path d={createEllipsePath()} fill="none" strokeWidth="2.5" stroke={getPathStrokeColor()} strokeLinecap="round" strokeDasharray={estimatedPathLength} strokeDashoffset={calculateStrokeDashOffset()} style={{
-            display: level <= 1 && progressValue === 0 ? 'none' : 'block'
-          }} />
-          </svg>
-          
-          {/* Earth image in the center */}
-          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
-            <motion.div animate={{
-            rotate: 360
-          }} transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "linear"
-          }} className="relative">
-              <img src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" alt="Earth" className="w-[100px] h-[100px] object-contain" />
-            </motion.div>
-          </div>
-          
-          {/* Country flags positioned on the ellipse */}
-          {[...Array(10)].map((_, i) => {
-          // Skip index 0 as it's just a placeholder
-          const levelIndex = i + 1;
-          const flag = getLevelFlag(levelIndex);
-          const position = getEllipsePosition(i);
-          const isCurrentLocation = animatingLevel === levelIndex;
-          const countryName = getCountryName(levelIndex, isEnglish);
-          // IMPORTANT: Use the updated function that checks both index and name
-          const isUnlocked = isCountryUnlocked(levelIndex, level, countryName);
-          const countryCode = getCountryCode(levelIndex);
-          return <div key={i} onClick={() => handleCountrySelection(levelIndex, countryName)} className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${!isUnlocked ? 'opacity-60' : ''}`} style={{
-            left: `${position.x}%`,
-            top: `${position.y}%`,
-            zIndex: hoveredCountry === levelIndex ? 30 : 10
-          }} onMouseEnter={() => setHoveredCountry(levelIndex)} onMouseLeave={() => setHoveredCountry(null)}>
-                {/* Country flag with pulse animation if current */}
-                <motion.div className="flex flex-col items-center justify-center" animate={isCurrentLocation ? {
-              scale: [1, 1.2, 1],
-              transition: {
-                repeat: Infinity,
-                duration: 2
-              }
-            } : {}}>
-                  {isUnlocked ? <Link to={`/country/${countryCode}`} onClick={() => handleNavigateToCountry(countryCode)}>
-                      <motion.div className="relative" whileHover={{
-                  scale: 1.3
-                }}>
-                        <span className="text-3xl z-10">{flag}</span>
-                      </motion.div>
-                    </Link> : <motion.div className="relative" whileHover={{
-                scale: 1.3
-              }}>
+            {/* Earth image in the center */}
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-0">
+              <motion.div animate={{
+              rotate: 360
+            }} transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear"
+            }} className="relative">
+                <img src="/lovable-uploads/5442b86d-0d51-47d8-b187-efc2e154d0e4.png" alt="Earth" className="w-[100px] h-[100px] object-contain" />
+              </motion.div>
+            </div>
+            
+            {/* Country flags positioned on the ellipse */}
+            {[...Array(10)].map((_, i) => {
+              // Skip index 0 as it's just a placeholder
+              const levelIndex = i + 1;
+              const flag = getLevelFlag(levelIndex);
+              const position = getEllipsePosition(i);
+              const isCurrentLocation = animatingLevel === levelIndex;
+              const countryName = getCountryName(levelIndex, isEnglish);
+              // IMPORTANT: Use the updated function that checks both index and name
+              const isUnlocked = isCountryUnlocked(levelIndex, level, countryName);
+              const countryCode = getCountryCode(levelIndex);
+              return (
+                <div
+                  key={i}
+                  onClick={() => handleCountrySelection(levelIndex, countryName)}
+                  className={`absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer ${!isUnlocked ? 'opacity-60' : ''}`}
+                  style={{
+                    left: `${position.x}%`,
+                    top: `${position.y}%`,
+                    zIndex: hoveredCountry === levelIndex ? 30 : 10
+                  }}
+                  onMouseEnter={() => setHoveredCountry(levelIndex)}
+                  onMouseLeave={() => setHoveredCountry(null)}
+                >
+                  {/* Country flag with pulse animation if current */}
+                  <motion.div
+                    className="flex flex-col items-center justify-center"
+                    animate={isCurrentLocation ? {
+                      scale: [1, 1.2, 1],
+                      transition: { repeat: Infinity, duration: 2 }
+                    } : {}}
+                  >
+                    <motion.div 
+                      className="relative" 
+                      whileHover={{ scale: 1.3 }}
+                    >
                       <span className="text-3xl z-10">{flag}</span>
                       
                       {/* Lock icon for locked countries */}
-                      <motion.div className="absolute -top-2 -right-2 bg-pink-500 rounded-full p-1" initial={{
-                  scale: 0
-                }} animate={{
-                  scale: 1
-                }} transition={{
-                  type: "spring"
-                }}>
-                        <LockKeyhole className="w-3 h-3 text-white" />
-                      </motion.div>
-                    </motion.div>}
-                  
-                  {/* Country name tooltip */}
-                  {hoveredCountry === levelIndex && <div className="absolute -bottom-12 bg-white/90 px-2 py-1 rounded shadow-md text-xs whitespace-nowrap z-20">
-                      {countryName}
-                      {!isUnlocked && <span className="ml-1 text-pink-600">{isEnglish ? "(Locked)" : "(Bloqueado)"}</span>}
-                    </div>}
-                </motion.div>
-              </div>;
-        })}
-          
-          {/* Moving vehicle icon - shown only when there is progress */}
-          {progressValue > 0 && level > 1 && <motion.div className="absolute transform -translate-x-1/2 -translate-y-1/2" style={{
-          left: `${vehiclePosition.x}%`,
-          top: `${vehiclePosition.y}%`,
-          transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 1.8 : 1.2})`,
-          zIndex: 20
-        }} initial={false}>
+                      {!isUnlocked && (
+                        <motion.div
+                          className="absolute -top-2 -right-2 bg-pink-500 rounded-full p-1"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring" }}
+                        >
+                          <LockKeyhole className="w-3 h-3 text-white" />
+                        </motion.div>
+                      )}
+                    </motion.div>
+                    
+                    {/* Country name tooltip */}
+                    {hoveredCountry === levelIndex && (
+                      <div className="absolute -bottom-12 bg-white/90 px-2 py-1 rounded shadow-md text-xs whitespace-nowrap z-20">
+                        {countryName}
+                        {!isUnlocked && (
+                          <span className="ml-1 text-pink-600">
+                            {isEnglish ? "(Locked)" : "(Bloqueado)"}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </motion.div>
+                </div>
+              );
+            })}
+            
+            {/* Moving vehicle icon - shown only when there is progress */}
+            {progressValue > 0 && level > 1 && <motion.div className="absolute transform -translate-x-1/2 -translate-y-1/2" style={{
+            left: `${vehiclePosition.x}%`,
+            top: `${vehiclePosition.y}%`,
+            transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 1.8 : 1.2})`,
+            zIndex: 20
+          }} initial={false}>
               {isMotorcycleGame ? <span className="text-xl">🏍️</span> : <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />}
             </motion.div>}
+          </div>
         </div>
-      </div>
-      
-      {/* Update text about clicking flags - MOVED below the graph */}
-      <p className="text-violet-900 font-normal text-base text-center mt-2">
-        {isEnglish ? "Click on the flags and explore that country!" : "¡Pincha sobre las banderas y explora ese país!"}
-      </p>
+        
+        {/* Update text about clicking flags - MOVED below the graph */}
+        <p className="text-violet-900 font-normal text-base text-center mt-2">
+          {isEnglish ? "Click on the flags and explore that country!" : "¡Pincha sobre las banderas y explora ese país!"}
+        </p>
+      </motion.div>
 
       {/* Locked country popup */}
-      {showLockedPopup && <LockedCountryPopup country={lockedCountry} onClose={() => setShowLockedPopup(false)} />}
-    </motion.div>;
+      {showLockedPopup && (
+        <LockedCountryPopup 
+          country={lockedCountry} 
+          onClose={() => setShowLockedPopup(false)} 
+        />
+      )}
+
+      {/* Country Modal */}
+      <CountryModal
+        open={showCountryModal}
+        onClose={handleCloseCountryModal}
+        country={selectedCountry ? getCountryInfo(selectedCountry) : null}
+      />
+    </>
+  );
 };
+
 export default WorldTourProgress;
