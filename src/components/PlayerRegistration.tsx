@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useGame } from "@/context/GameContext";
 import PlayerNameInput from "@/components/PlayerNameInput";
@@ -9,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { User, UserRound, Car, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useLanguage } from "@/context/LanguageContext";
-
 const PlayerRegistration: React.FC = () => {
   const {
     playerName,
@@ -24,7 +22,7 @@ const PlayerRegistration: React.FC = () => {
     t,
     isEnglish
   } = useLanguage();
-  
+
   // Always show the form when first loading if either name or age is not set
   const [showForm, setShowForm] = useState(true);
 
@@ -46,7 +44,7 @@ const PlayerRegistration: React.FC = () => {
       }
     }
   }, [playerName, playerGender, setPlayerGender]);
-  
+
   // Check if both name and age are set on initial load
   useEffect(() => {
     if (playerName && playerAge) {
@@ -55,7 +53,6 @@ const PlayerRegistration: React.FC = () => {
       setShowForm(true);
     }
   }, [playerName, playerAge]);
-  
   return <>
       {showForm ? <motion.div className={`w-full max-w-md ${bgColor} rounded-lg p-5 shadow-lg mb-4`} initial={{
       opacity: 0,
@@ -96,12 +93,11 @@ const PlayerRegistration: React.FC = () => {
                 </span>
               </div>
             </div>
-            <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-base text-violet-900 bg-transparent rounded-xl mt-2">
+            <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-base rounded-xl mt-2 text-purple-800 bg-teal-300 hover:bg-teal-200">
               {t('edit')}
             </Button>
           </motion.div>
         </motion.div>}
     </>;
 };
-
 export default PlayerRegistration;
