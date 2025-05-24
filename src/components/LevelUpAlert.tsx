@@ -43,19 +43,6 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
     }
   }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
 
-  // Auto-open country modal after 2 seconds for levels < 10
-  useEffect(() => {
-    if (showLevelUp && level < 10 && onOpenCountryModal) {
-      const timer = setTimeout(() => {
-        const countryCode = getCurrentCountry();
-        onOpenCountryModal(countryCode);
-        clearLevelUpMessage();
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [showLevelUp, level, onOpenCountryModal, clearLevelUpMessage]);
-
   // Get the current country based on origin info and game type
   const getCurrentCountry = () => {
     if (isMotorcycleGame) {
@@ -167,6 +154,15 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
       }
     }
   };
+
+  // Handle country visit button click
+  const handleVisitCountry = () => {
+    if (onOpenCountryModal) {
+      const countryCode = getCurrentCountry();
+      onOpenCountryModal(countryCode);
+      clearLevelUpMessage();
+    }
+  };
   
   // Add text about choosing another vehicle
   const vehicleText = isMotorcycleGame
@@ -186,12 +182,8 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
         : `¡Ahora estás en ${currentCountryDisplay}!`) 
     : "";
   
-  // Add the vehicle text to the explanation, and auto-open message for levels < 10
-  const autoOpenText = level < 10 
-    ? (isEnglish ? "Opening country info..." : "Abriendo información del país...")
-    : "";
-  
-  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${vehicleText}${autoOpenText ? "\n" + autoOpenText : ""}`;
+  // Add the vehicle text to the explanation
+  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${vehicleText}`;
   
   return (
     <GamePopup
@@ -202,7 +194,8 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
       level={level}
       explanation={explanation}
       points={0}
-      requireCountryVisit={false} // No longer require country visit button
+      requireCountryVisit={level < 10} // Show button for levels < 10
+      onVisitCountry={handleVisitCountry}
       preventAutoClose={level >= 10} // Only prevent auto-close for completion (level 10)
     />
   );

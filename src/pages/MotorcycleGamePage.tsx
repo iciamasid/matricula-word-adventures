@@ -335,7 +335,7 @@ const MotorcycleGameContent = () => {
         <SuccessAlert />
         
         {/* Level Up Alert using GamePopup */}
-        <LevelUpAlert />
+        <LevelUpAlert onOpenCountryModal={handleOpenCountryModal} />
         
         {/* Birthday Bonus Popup */}
         {playerAge && (

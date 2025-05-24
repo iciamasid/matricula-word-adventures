@@ -27,12 +27,38 @@ const getIcon = (iconName: string) => {
   }
 };
 
+// Function to get Google Maps embed URL for each country
+const getGoogleMapsUrl = (countryCode: string) => {
+  const locations: Record<string, string> = {
+    "España": "Spain",
+    "Francia": "France", 
+    "Italia": "Italy",
+    "Rusia": "Russia",
+    "Japón": "Japan",
+    "Estados_Unidos": "United States",
+    "México": "Mexico",
+    "Australia": "Australia",
+    "Argentina": "Argentina",
+    "Reino_Unido": "United Kingdom",
+    "Grecia": "Greece",
+    "Noruega": "Norway",
+    "China": "China",
+    "Canada": "Canada",
+    "Costa_Rica": "Costa Rica",
+    "Brasil": "Brazil",
+    "Peru": "Peru"
+  };
+  
+  const location = locations[countryCode] || "Spain";
+  return `https://www.google.com/maps/embed/v1/place?key=AIzaSyBFw0Qbyq9zTFTd-tUY6dOWTgaQzuU17R8&q=${encodeURIComponent(location)}&zoom=6`;
+};
+
 const CountryModal: React.FC<CountryModalProps> = ({ open, onClose, country }) => {
   if (!country) return null;
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-blue-50 to-purple-50">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-blue-50 to-purple-50">
         <DialogHeader className="text-center">
           <DialogTitle className="text-5xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text mb-4">
             {country.flag} {country.name}
@@ -65,6 +91,33 @@ const CountryModal: React.FC<CountryModalProps> = ({ open, onClose, country }) =
             </div>
           </motion.div>
         )}
+
+        {/* Google Maps Section */}
+        <motion.div
+          className="mb-8"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="bg-white rounded-2xl shadow-lg p-8 border-l-8 border-blue-400">
+            <h2 className="text-3xl font-bold text-gray-800 flex items-center mb-4">
+              <MapPin className="w-6 h-6 mr-3 text-blue-500" />
+              ¿Dónde está {country.name}? 🗺️
+            </h2>
+            <div className="w-full h-80 rounded-lg overflow-hidden shadow-md">
+              <iframe
+                src={getGoogleMapsUrl(country.code)}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={`Mapa de ${country.name}`}
+              />
+            </div>
+          </div>
+        </motion.div>
 
         <motion.div
           className="space-y-6"
