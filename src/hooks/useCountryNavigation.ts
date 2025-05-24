@@ -29,6 +29,12 @@ export const useCountryNavigation = (countryName: string) => {
   const navigate = useNavigate();
 
   const handleReturnToGame = () => {
+    // DEBUG: Log everything to trace the issue
+    console.log('=== DEBUGGING COUNTRY NAVIGATION ===');
+    console.log('Country name received:', countryName);
+    console.log('Country mapping:', COUNTRY_GAME_MAPPING);
+    console.log('Mapped game type:', COUNTRY_GAME_MAPPING[countryName as keyof typeof COUNTRY_GAME_MAPPING]);
+    
     // Restore game state if it was stored
     const gameState = sessionStorage.getItem('gameStateBeforeCountry');
     if (gameState) {
@@ -42,6 +48,10 @@ export const useCountryNavigation = (countryName: string) => {
     // Determine return path based on country mapping
     const gameType = COUNTRY_GAME_MAPPING[countryName as keyof typeof COUNTRY_GAME_MAPPING];
     const returnPath = gameType === 'motorcycle-game' ? '/motorcycle-game' : '/draw-game';
+    
+    console.log('Calculated return path:', returnPath);
+    console.log('About to navigate to:', returnPath);
+    console.log('=== END DEBUGGING ===');
     
     sessionStorage.removeItem('navigatingBack');
     navigate(returnPath);
