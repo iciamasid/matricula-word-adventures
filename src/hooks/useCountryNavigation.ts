@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 // Country mapping to determine which game they belong to
 const COUNTRY_GAME_MAPPING = {
-  // Car game countries
+  // Car game countries - THESE SHOULD GO TO INDEX (/)
   "España": "car-game",
   "Francia": "car-game", 
   "Italia": "car-game",
@@ -14,7 +14,7 @@ const COUNTRY_GAME_MAPPING = {
   "Australia": "car-game",
   "Argentina": "car-game",
   
-  // Motorcycle game countries
+  // Motorcycle game countries - THESE SHOULD GO TO MOTORCYCLE-GAME
   "Reino_Unido": "motorcycle-game",
   "Grecia": "motorcycle-game",
   "Noruega": "motorcycle-game", 
@@ -47,7 +47,8 @@ export const useCountryNavigation = (countryName: string) => {
     
     // Determine return path based on country mapping
     const gameType = COUNTRY_GAME_MAPPING[countryName as keyof typeof COUNTRY_GAME_MAPPING];
-    const returnPath = gameType === 'motorcycle-game' ? '/motorcycle-game' : '/draw-game';
+    // FIX: Car game countries should go to INDEX (/), not /draw-game
+    const returnPath = gameType === 'motorcycle-game' ? '/motorcycle-game' : '/';
     
     console.log('Calculated return path:', returnPath);
     console.log('About to navigate to:', returnPath);
