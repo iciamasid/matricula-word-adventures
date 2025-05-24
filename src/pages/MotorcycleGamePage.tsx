@@ -61,30 +61,6 @@ const MotorcycleGameContent = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Check for motorcycle game reset flags and apply them
-  useEffect(() => {
-    const motorcycleGameReset = sessionStorage.getItem('motorcycleGameReset');
-    const motorcycleStartLevel = sessionStorage.getItem('motorcycleStartLevel');
-    const motorcycleStartPoints = sessionStorage.getItem('motorcycleStartPoints');
-    
-    if (motorcycleGameReset === 'true') {
-      // Reset to the specified level and points
-      const startLevel = parseInt(motorcycleStartLevel || '1');
-      const startPoints = parseInt(motorcycleStartPoints || '0');
-      
-      setLevel(startLevel);
-      setTotalPoints(startPoints);
-      updateDestinations(startLevel);
-      
-      // Clear the reset flags
-      sessionStorage.removeItem('motorcycleGameReset');
-      sessionStorage.removeItem('motorcycleStartLevel');
-      sessionStorage.removeItem('motorcycleStartPoints');
-      
-      console.log(`Motorcycle game reset applied: Level ${startLevel}, Points ${startPoints}`);
-    }
-  }, []);
-
   // IMPORTANT: Always make sure Spain is unlocked regardless of level
   useEffect(() => {
     // This ensures Spain is always unlocked when the game starts

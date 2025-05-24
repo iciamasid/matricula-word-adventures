@@ -176,21 +176,44 @@ export const GameProvider: React.FC<{
   const clearError = () => setErrorMessage(null);
   const clearLevelUpMessage = () => setShowLevelUp(false);
   
-  // Load game state from localStorage on initial mount
+  // Load game state from localStorage on initial mount - MODIFIED TO HANDLE RESET FIRST
   useEffect(() => {
     try {
+      // Check for motorcycle game reset flags FIRST
+      const motorcycleGameReset = sessionStorage.getItem('motorcycleGameReset');
+      const motorcycleStartLevel = sessionStorage.getItem('motorcycleStartLevel');
+      const motorcycleStartPoints = sessionStorage.getItem('motorcycleStartPoints');
+      
+      if (motorcycleGameReset === 'true') {
+        // Apply reset immediately
+        const startLevel = parseInt(motorcycleStartLevel || '1');
+        const startPoints = parseInt(motorcycleStartPoints || '0');
+        
+        console.log(`Applying motorcycle game reset: Level ${startLevel}, Points ${startPoints}`);
+        
+        // Reset game state to specified values
+        setLevel(startLevel);
+        setTotalPoints(startPoints);
+        setScore(0);
+        setPreviousScore(0);
+        setGamesPlayed(0);
+        
+        // Clear the reset flags immediately
+        sessionStorage.removeItem('motorcycleGameReset');
+        sessionStorage.removeItem('motorcycleStartLevel');
+        sessionStorage.removeItem('motorcycleStartPoints');
+        
+        // Update destinations for the reset level
+        updateDestinations(startLevel);
+        
+        console.log(`Motorcycle game reset applied successfully: Level ${startLevel}, Points ${startPoints}`);
+        return; // Exit early, don't load saved state
+      }
+      
+      // Only load saved state if no reset flags were present
       const savedState = localStorage.getItem(GAME_STATE_KEY);
       if (savedState) {
         const parsedState = JSON.parse(savedState);
-        
-        // Check if we're in motorcycle game and should reset
-        const motorcycleGameReset = sessionStorage.getItem('motorcycleGameReset');
-        
-        if (motorcycleGameReset === 'true') {
-          // Don't load saved state, let the motorcycle page handle the reset
-          console.log('Motorcycle game reset flag detected, skipping saved state load');
-          return;
-        }
         
         // Restore game state
         if (parsedState.level) setLevel(parsedState.level);
