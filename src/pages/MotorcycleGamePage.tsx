@@ -168,18 +168,19 @@ const MotorcycleGameContent = () => {
     });
   };
 
-  // Handle game over restart
+  // Handle game over restart - Reset completely to level 1 and 0 points
   const handleGameOverRestart = () => {
-    // Set flags to reset the game completely and navigate back to car game
-    sessionStorage.setItem('motorcycleGameReset', 'true');
-    sessionStorage.setItem('motorcycleStartLevel', '1');
-    sessionStorage.setItem('motorcycleStartPoints', '0');
-    
-    // Reset the game completely
+    // Reset the game completely to initial state
     resetGame();
     
     // Navigate back to car game
     navigate('/');
+    
+    // Show toast confirming the complete reset
+    toast({
+      title: "¡Nueva partida iniciada!",
+      description: "Has empezado una nueva partida con coches desde 0km y nivel 1."
+    });
   };
 
   return (

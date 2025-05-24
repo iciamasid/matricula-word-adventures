@@ -86,7 +86,7 @@ const GameOverPopup: React.FC<GameOverPopupProps> = ({
                 size="lg"
               >
                 <RefreshCw className="w-6 h-6 mr-3" />
-                Iniciar nueva partida (con coches)
+                Iniciar nueva partida (desde 0km y nivel 1)
               </Button>
             </motion.div>
           </div>
