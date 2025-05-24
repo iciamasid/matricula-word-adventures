@@ -358,7 +358,7 @@ const GameContent = () => {
         <SuccessAlert />
         
         {/* Level Up Alert using GamePopup */}
-        <LevelUpAlert onOpenCountryModal={handleOpenCountryModal} />
+        <LevelUpAlert />
         
         {/* Max Level Popup */}
         <MaxLevelPopup 
