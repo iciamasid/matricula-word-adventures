@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Camera, Utensils, Mountain, Play } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CountryInfo } from '@/data/countryData';
+import { useGame } from '@/context/GameContext';
 
 interface CountryModalProps {
   open: boolean;
@@ -26,7 +27,22 @@ const getIcon = (iconName: string) => {
 };
 
 const CountryModal: React.FC<CountryModalProps> = ({ open, onClose, country }) => {
+  const { markCountryAsVisited, requiredCountryToVisit } = useGame();
+  
   if (!country) return null;
+
+  const handleContinuePlaying = () => {
+    console.log('CountryModal - Continue playing clicked for country:', country.name);
+    console.log('CountryModal - Required country to visit:', requiredCountryToVisit);
+    
+    // Mark the country as visited when closing the modal
+    if (requiredCountryToVisit && country.name === requiredCountryToVisit) {
+      console.log('CountryModal - Marking country as visited:', country.name);
+      markCountryAsVisited(country.name);
+    }
+    
+    onClose();
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -103,7 +119,7 @@ const CountryModal: React.FC<CountryModalProps> = ({ open, onClose, country }) =
             ¿Listo para seguir tu aventura? 🚗💨
           </p>
           <Button 
-            onClick={onClose}
+            onClick={handleContinuePlaying}
             className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white text-2xl px-12 py-6 rounded-2xl shadow-2xl transform hover:scale-110 transition-all duration-300 font-bold"
           >
             <Play className="w-8 h-8 mr-3" />

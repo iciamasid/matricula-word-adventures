@@ -29,6 +29,12 @@ const WordInput: React.FC = () => {
   const [fullPlaceholder, setFullPlaceholder] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   
+  // Debug logging for country visit state
+  useEffect(() => {
+    console.log('WordInput - countryVisitRequired:', countryVisitRequired);
+    console.log('WordInput - requiredCountryToVisit:', requiredCountryToVisit);
+  }, [countryVisitRequired, requiredCountryToVisit]);
+  
   // Remove the auto-focus on the input so keyboard doesn't appear automatically
   useEffect(() => {
     // Set the full placeholder text based on language
@@ -101,6 +107,7 @@ const WordInput: React.FC = () => {
   }, [submitSuccess, generateNewPlate]);
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('WordInput - handleInputChange - countryVisitRequired:', countryVisitRequired);
     if (!countryVisitRequired) {
       setCurrentWord(e.target.value.toUpperCase());
     }
@@ -113,6 +120,7 @@ const WordInput: React.FC = () => {
   };
   
   const handleSubmit = async () => {
+    console.log('WordInput - handleSubmit - countryVisitRequired:', countryVisitRequired);
     if (isSubmitting || countryVisitRequired) return;
     
     setIsSubmitting(true);

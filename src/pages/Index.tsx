@@ -58,8 +58,17 @@ const GameContent = () => {
     birthYearBonus,
     showAgeBonusPopup,
     setLevel,
-    setTotalPoints
+    setTotalPoints,
+    countryVisitRequired,
+    requiredCountryToVisit
   } = useGame();
+
+  // Debug logging for main game state
+  useEffect(() => {
+    console.log('Index - countryVisitRequired:', countryVisitRequired);
+    console.log('Index - requiredCountryToVisit:', requiredCountryToVisit);
+    console.log('Index - level:', level);
+  }, [countryVisitRequired, requiredCountryToVisit, level]);
 
   // Set current game type when component mounts
   useEffect(() => {
@@ -93,6 +102,8 @@ const GameContent = () => {
   // Check if we're navigating back from another page and restore proper destinations
   useEffect(() => {
     const isNavigatingBack = sessionStorage.getItem('navigatingBack');
+    console.log('Index - navigatingBack sessionStorage:', isNavigatingBack);
+    
     if (isNavigatingBack === 'car-game') {
       console.log('Index: Detected navigation back from country, restoring car game state');
       // Clear the navigation flag
@@ -228,11 +239,13 @@ const GameContent = () => {
   };
 
   const handleOpenCountryModal = (countryCode: string) => {
+    console.log('Index - Opening country modal for:', countryCode);
     setSelectedCountry(countryCode);
     setCountryModalOpen(true);
   };
 
   const handleCloseCountryModal = () => {
+    console.log('Index - Closing country modal');
     setCountryModalOpen(false);
     setSelectedCountry(null);
   };
