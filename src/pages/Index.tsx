@@ -57,6 +57,12 @@ const GameContent = () => {
     setTotalPoints
   } = useGame();
 
+  // Set current game type when component mounts
+  useEffect(() => {
+    sessionStorage.setItem('currentGameType', 'car-game');
+    console.log('Index: Set current game type to car-game');
+  }, []);
+
   // Ref to the license plate section
   const licensePlateRef = useRef<HTMLDivElement>(null);
 
@@ -83,11 +89,13 @@ const GameContent = () => {
   // Check if we're navigating back from another page and restore proper destinations
   useEffect(() => {
     const isNavigatingBack = sessionStorage.getItem('navigatingBack');
-    if (isNavigatingBack === 'true') {
+    if (isNavigatingBack === 'car-game') {
+      console.log('Index: Detected navigation back from country, restoring car game state');
       // Clear the navigation flag
       sessionStorage.removeItem('navigatingBack');
       // Restore proper destinations based on current level
       updateDestinations(level);
+      console.log(`Index: Restored destinations for level ${level}`);
 
       // If car is already selected, scroll to license plate section
       if (selectedCarColor && licensePlateRef.current) {
@@ -99,7 +107,7 @@ const GameContent = () => {
         }, 100);
       }
     }
-  }, []);
+  }, [level, updateDestinations]);
 
   // Function to scroll to world tour section
   const scrollToWorldTour = () => {

@@ -1,61 +1,58 @@
 
 import { useNavigate } from 'react-router-dom';
-
-// Country mapping to determine which game they belong to
-const COUNTRY_GAME_MAPPING = {
-  // Car game countries - THESE SHOULD GO TO INDEX (/)
-  "España": "car-game",
-  "Francia": "car-game", 
-  "Italia": "car-game",
-  "Rusia": "car-game",
-  "Japón": "car-game",
-  "Estados Unidos": "car-game",
-  "México": "car-game",
-  "Australia": "car-game",
-  "Argentina": "car-game",
-  
-  // Motorcycle game countries - THESE SHOULD GO TO MOTORCYCLE-GAME
-  "Reino_Unido": "motorcycle-game",
-  "Grecia": "motorcycle-game",
-  "Noruega": "motorcycle-game", 
-  "China": "motorcycle-game",
-  "Canada": "motorcycle-game",
-  "Costa_Rica": "motorcycle-game",
-  "Brasil": "motorcycle-game",
-  "Peru": "motorcycle-game"
-};
+import { useGame } from '@/context/GameContext';
 
 export const useCountryNavigation = (countryName: string) => {
   const navigate = useNavigate();
+  const { level, totalPoints } = useGame();
 
   const handleReturnToGame = () => {
-    // DEBUG: Log everything to trace the issue
-    console.log('=== DEBUGGING COUNTRY NAVIGATION ===');
-    console.log('Country name received:', countryName);
-    console.log('Country mapping:', COUNTRY_GAME_MAPPING);
-    console.log('Mapped game type:', COUNTRY_GAME_MAPPING[countryName as keyof typeof COUNTRY_GAME_MAPPING]);
+    console.log(`Navigating back from ${countryName} with level: ${level}, points: ${totalPoints}`);
     
-    // Restore game state if it was stored
-    const gameState = sessionStorage.getItem('gameStateBeforeCountry');
-    if (gameState) {
-      const parsedState = JSON.parse(gameState);
-      console.log(`Restoring game state from ${countryName}:`, parsedState);
-      
-      sessionStorage.setItem('restoreGameState', JSON.stringify(parsedState));
-      sessionStorage.removeItem('gameStateBeforeCountry');
+    // Save current game state to sessionStorage before navigating
+    const gameState = {
+      level: level,
+      totalPoints: totalPoints,
+      timestamp: Date.now()
+    };
+    
+    sessionStorage.setItem('restoreGameState', JSON.stringify(gameState));
+    console.log('Saved game state to sessionStorage:', gameState);
+    
+    // Determine which game to return to based on current URL or game type
+    const currentPath = window.location.pathname;
+    const motorcycleCountries = ['Portugal', 'Reino_Unido', 'Grecia', 'Noruega', 'China', 'Canada', 'Costa_Rica', 'Brasil', 'Peru'];
+    const carCountries = ['España', 'Francia', 'Italia', 'Rusia', 'Japón', 'Estados Unidos', 'México', 'Australia', 'Argentina'];
+    
+    // Check if it's a motorcycle game country
+    const isMotorcycleCountry = motorcycleCountries.some(country => 
+      currentPath.includes(country) || countryName === country
+    );
+    
+    // Check if it's a car game country  
+    const isCarCountry = carCountries.some(country => 
+      currentPath.includes(country) || countryName === country
+    );
+    
+    if (isMotorcycleCountry) {
+      console.log(`${countryName} is a motorcycle country, returning to motorcycle game`);
+      sessionStorage.setItem('navigatingBack', 'motorcycle-game');
+      navigate('/motorcycle-game');
+    } else if (isCarCountry) {
+      console.log(`${countryName} is a car country, returning to index`);
+      sessionStorage.setItem('navigatingBack', 'car-game');
+      navigate('/');
+    } else {
+      // Default fallback - check what was stored in sessionStorage
+      const storedGameType = sessionStorage.getItem('currentGameType');
+      if (storedGameType === 'motorcycle-game') {
+        sessionStorage.setItem('navigatingBack', 'motorcycle-game');
+        navigate('/motorcycle-game');
+      } else {
+        sessionStorage.setItem('navigatingBack', 'car-game');
+        navigate('/');
+      }
     }
-    
-    // Determine return path based on country mapping
-    const gameType = COUNTRY_GAME_MAPPING[countryName as keyof typeof COUNTRY_GAME_MAPPING];
-    // FIX: Car game countries should go to INDEX (/), not /draw-game
-    const returnPath = gameType === 'motorcycle-game' ? '/motorcycle-game' : '/';
-    
-    console.log('Calculated return path:', returnPath);
-    console.log('About to navigate to:', returnPath);
-    console.log('=== END DEBUGGING ===');
-    
-    sessionStorage.removeItem('navigatingBack');
-    navigate(returnPath);
   };
 
   return { handleReturnToGame };

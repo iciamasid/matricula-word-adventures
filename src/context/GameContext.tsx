@@ -176,31 +176,39 @@ export const GameProvider: React.FC<{
   const clearError = () => setErrorMessage(null);
   const clearLevelUpMessage = () => setShowLevelUp(false);
   
-  // Load game state from localStorage on initial mount - MODIFIED TO CHECK FOR RESTORE STATE FIRST
+  // Load game state from localStorage on initial mount - CRITICAL FIX FOR STATE RESTORATION
   useEffect(() => {
     try {
-      // CRITICAL FIX: Check for state restoration from country navigation FIRST
+      console.log('GameContext: Starting state initialization...');
+      
+      // PRIORITY 1: Check for state restoration from country navigation FIRST
       const restoreGameState = sessionStorage.getItem('restoreGameState');
       if (restoreGameState) {
         const parsedRestoreState = JSON.parse(restoreGameState);
-        console.log('Restoring game state from country navigation:', parsedRestoreState);
+        console.log('GameContext: Restoring game state from country navigation:', parsedRestoreState);
         
-        // Restore the saved state
-        if (parsedRestoreState.level) setLevel(parsedRestoreState.level);
-        if (parsedRestoreState.totalPoints) setTotalPoints(parseInt(parsedRestoreState.totalPoints));
+        // Restore the saved state IMMEDIATELY
+        if (parsedRestoreState.level !== undefined) {
+          setLevel(parsedRestoreState.level);
+          console.log(`GameContext: Restored level to ${parsedRestoreState.level}`);
+        }
+        if (parsedRestoreState.totalPoints !== undefined) {
+          setTotalPoints(parsedRestoreState.totalPoints);
+          console.log(`GameContext: Restored totalPoints to ${parsedRestoreState.totalPoints}`);
+        }
         
         // Update destinations for the restored level
-        if (parsedRestoreState.level) {
+        if (parsedRestoreState.level !== undefined) {
           updateDestinations(parsedRestoreState.level);
         }
         
-        // Clear the restore state
+        // Clear the restore state AFTER using it
         sessionStorage.removeItem('restoreGameState');
-        console.log('Game state restored successfully from country navigation');
+        console.log('GameContext: State restoration completed and cleared from sessionStorage');
         return; // Exit early, state has been restored
       }
       
-      // Check for car game reset flags
+      // PRIORITY 2: Check for car game reset flags
       const carGameReset = sessionStorage.getItem('carGameReset');
       const carStartLevel = sessionStorage.getItem('carStartLevel');
       const carStartPoints = sessionStorage.getItem('carStartPoints');
@@ -210,7 +218,7 @@ export const GameProvider: React.FC<{
         const startLevel = parseInt(carStartLevel || '1');
         const startPoints = parseInt(carStartPoints || '0');
         
-        console.log(`Applying car game reset: Level ${startLevel}, Points ${startPoints}`);
+        console.log(`GameContext: Applying car game reset: Level ${startLevel}, Points ${startPoints}`);
         
         // Reset game state to specified values
         setLevel(startLevel);
@@ -227,11 +235,11 @@ export const GameProvider: React.FC<{
         // Update destinations for the reset level
         updateDestinations(startLevel);
         
-        console.log(`Car game reset applied successfully: Level ${startLevel}, Points ${startPoints}`);
+        console.log(`GameContext: Car game reset applied successfully: Level ${startLevel}, Points ${startPoints}`);
         return; // Exit early, don't load saved state
       }
       
-      // Check for motorcycle game reset flags
+      // PRIORITY 3: Check for motorcycle game reset flags
       const motorcycleGameReset = sessionStorage.getItem('motorcycleGameReset');
       const motorcycleStartLevel = sessionStorage.getItem('motorcycleStartLevel');
       const motorcycleStartPoints = sessionStorage.getItem('motorcycleStartPoints');
@@ -241,7 +249,7 @@ export const GameProvider: React.FC<{
         const startLevel = parseInt(motorcycleStartLevel || '1');
         const startPoints = parseInt(motorcycleStartPoints || '0');
         
-        console.log(`Applying motorcycle game reset: Level ${startLevel}, Points ${startPoints}`);
+        console.log(`GameContext: Applying motorcycle game reset: Level ${startLevel}, Points ${startPoints}`);
         
         // Reset game state to specified values
         setLevel(startLevel);
@@ -258,16 +266,17 @@ export const GameProvider: React.FC<{
         // Update destinations for the reset level
         updateDestinations(startLevel);
         
-        console.log(`Motorcycle game reset applied successfully: Level ${startLevel}, Points ${startPoints}`);
+        console.log(`GameContext: Motorcycle game reset applied successfully: Level ${startLevel}, Points ${startPoints}`);
         return; // Exit early, don't load saved state
       }
       
-      // ALWAYS START AT LEVEL 1 FOR FRESH GAME - Only load player info, not game progress
+      // PRIORITY 4: Load from localStorage (normal game restoration)
       const savedState = localStorage.getItem(GAME_STATE_KEY);
       if (savedState) {
         const parsedState = JSON.parse(savedState);
+        console.log('GameContext: Loading saved state from localStorage:', parsedState);
         
-        // Only restore player information, NOT game progress
+        // Restore ALL game data from localStorage including progress
         if (parsedState.playerName) setPlayerName(parsedState.playerName);
         if (parsedState.playerAge) setPlayerAge(parsedState.playerAge);
         if (parsedState.playerGender) setPlayerGender(parsedState.playerGender);
@@ -275,21 +284,38 @@ export const GameProvider: React.FC<{
         if (parsedState.selectedMotorcycle) setSelectedMotorcycle(parsedState.selectedMotorcycle);
         if (parsedState.highScore) setHighScore(parsedState.highScore);
         
-        console.log('Player data loaded from localStorage, but starting fresh at level 1');
+        // IMPORTANT: Also restore game progress from localStorage
+        if (parsedState.level !== undefined) {
+          setLevel(parsedState.level);
+          console.log(`GameContext: Restored level from localStorage: ${parsedState.level}`);
+        }
+        if (parsedState.totalPoints !== undefined) {
+          setTotalPoints(parsedState.totalPoints);
+          console.log(`GameContext: Restored totalPoints from localStorage: ${parsedState.totalPoints}`);
+        }
+        if (parsedState.gamesPlayed !== undefined) {
+          setGamesPlayed(parsedState.gamesPlayed);
+        }
+        
+        // Update destinations based on restored level
+        const restoredLevel = parsedState.level || 1;
+        updateDestinations(restoredLevel);
+        
+        console.log(`GameContext: All data loaded from localStorage, level: ${restoredLevel}, points: ${parsedState.totalPoints || 0}`);
+      } else {
+        console.log('GameContext: No saved state found, starting fresh at level 1');
+        // Always start at level 1 for fresh experience
+        updateDestinations(1);
       }
       
-      // Always start at level 1 for fresh experience
-      updateDestinations(1);
-      console.log('Game initialized at level 1 for fresh start');
-      
     } catch (error) {
-      console.error('Error loading game state:', error);
+      console.error('GameContext: Error loading game state:', error);
       // If there's any error, ensure we start fresh
       updateDestinations(1);
     }
   }, []);
   
-  // Save game state to localStorage whenever important state changes
+  // Save game state to localStorage whenever important state changes - INCLUDING level and totalPoints
   useEffect(() => {
     try {
       const gameState = {
@@ -305,16 +331,18 @@ export const GameProvider: React.FC<{
       };
       
       localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
-      console.log('Game state saved to localStorage');
+      console.log('GameContext: Game state saved to localStorage:', gameState);
     } catch (error) {
-      console.error('Error saving game state:', error);
+      console.error('GameContext: Error saving game state:', error);
     }
   }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor, selectedMotorcycle]);
   
-  // Store current total points in sessionStorage for country navigation
+  // Store current total points and level in sessionStorage for country navigation
   useEffect(() => {
     sessionStorage.setItem('currentTotalPoints', totalPoints.toString());
-  }, [totalPoints]);
+    sessionStorage.setItem('currentLevel', level.toString());
+    console.log(`GameContext: Updated sessionStorage - Level: ${level}, Points: ${totalPoints}`);
+  }, [totalPoints, level]);
   
   // Game control functions
   const resetGame = () => {

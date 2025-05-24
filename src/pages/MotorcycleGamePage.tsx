@@ -56,6 +56,12 @@ const MotorcycleGameContent = () => {
     setTotalPoints
   } = useGame();
 
+  // Set current game type when component mounts
+  useEffect(() => {
+    sessionStorage.setItem('currentGameType', 'motorcycle-game');
+    console.log('MotorcycleGame: Set current game type to motorcycle-game');
+  }, []);
+
   // Ref to the license plate section
   const licensePlateRef = useRef<HTMLDivElement>(null);
 
@@ -83,10 +89,12 @@ const MotorcycleGameContent = () => {
   useEffect(() => {
     const isNavigatingBack = sessionStorage.getItem('navigatingBack');
     if (isNavigatingBack === 'motorcycle-game') {
+      console.log('MotorcycleGame: Detected navigation back from country, restoring motorcycle game state');
       // Clear the navigation flag
       sessionStorage.removeItem('navigatingBack');
       // Restore proper destinations based on current level
       updateDestinations(level);
+      console.log(`MotorcycleGame: Restored destinations for level ${level}`);
 
       // If motorcycle is already selected, scroll to license plate section
       if (selectedMotorcycle && licensePlateRef.current) {
@@ -98,7 +106,7 @@ const MotorcycleGameContent = () => {
         }, 100);
       }
     }
-  }, []);
+  }, [level, updateDestinations]);
 
   // Function to scroll to world tour section
   const scrollToWorldTour = () => {
