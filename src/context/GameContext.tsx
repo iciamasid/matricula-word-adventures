@@ -183,6 +183,15 @@ export const GameProvider: React.FC<{
       if (savedState) {
         const parsedState = JSON.parse(savedState);
         
+        // Check if we're in motorcycle game and should reset
+        const motorcycleGameReset = sessionStorage.getItem('motorcycleGameReset');
+        
+        if (motorcycleGameReset === 'true') {
+          // Don't load saved state, let the motorcycle page handle the reset
+          console.log('Motorcycle game reset flag detected, skipping saved state load');
+          return;
+        }
+        
         // Restore game state
         if (parsedState.level) setLevel(parsedState.level);
         if (parsedState.totalPoints) setTotalPoints(parsedState.totalPoints);
@@ -290,32 +299,10 @@ export const GameProvider: React.FC<{
     
     setPreviousDestination(null);
     
-    // Clear any active messages
-    clearSubmitSuccess();
-    clearError();
-    clearLevelUpMessage();
-    
-    // Reset popup states
-    setShowBonusPopup(false);
-    setShowAgeBonusPopup(false);
-    setShowCompletionBanner(false);
-    
-    // Reset previous destination
-    setPreviousDestination(null);
-    
-    // Reset origin and destination to defaults (Spain -> France for level 1)
-    setOriginInfo({ 
-      city: 'Madrid', 
-      country: 'España', 
-      flag: '🇪🇸',
-      fact: '¡En Madrid está el museo del Prado con obras de arte increíbles! Es una de las galerías de arte más famosas del mundo.'
-    });
-    setDestinationInfo({ 
-      city: 'París', 
-      country: 'Francia', 
-      flag: '🇫🇷',
-      fact: '¡La Torre Eiffel mide 324 metros! ¡Es tan alta como un edificio de 81 pisos y fue construida en 1889!'
-    });
+    // Clear any reset flags from sessionStorage
+    sessionStorage.removeItem('motorcycleGameReset');
+    sessionStorage.removeItem('motorcycleStartLevel');
+    sessionStorage.removeItem('motorcycleStartPoints');
     
     // Generate new plate after reset
     generateNewPlateImpl();

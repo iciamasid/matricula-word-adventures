@@ -179,18 +179,39 @@ const GameContent = () => {
     }
   };
 
-  // Handler for jump to level 9 button
+  // Handler for jump to level 9 button - Updated to use 4490 points
   const handleJumpToLevel9 = () => {
     // Set level to 9
     setLevel(9);
-    // Set points to a reasonable amount for level 9
-    setTotalPoints(4000);
+    // Set points to 4490 as requested
+    setTotalPoints(4490);
     // Update destinations based on new level
     updateDestinations(9);
     // Show success toast
     toast({
       title: "¡Nivel actualizado!",
-      description: "Has saltado al nivel 9. ¡Preparado para llegar al nivel 10!"
+      description: "Has saltado al nivel 9 con 4490 puntos. ¡Preparado para llegar al nivel 10!"
+    });
+  };
+
+  // Handle navigation to motorcycle game from button - with reset
+  const handleNavigateToMotorcycleGame = () => {
+    // Always reset to level 1 and 0 points when switching to motorcycle game
+    setLevel(1);
+    setTotalPoints(0);
+    
+    // Set navigation flags to ensure motorcycle game starts fresh
+    sessionStorage.setItem('motorcycleGameReset', 'true');
+    sessionStorage.setItem('motorcycleStartLevel', '1');
+    sessionStorage.setItem('motorcycleStartPoints', '0');
+    
+    // Navigate to motorcycle game
+    navigate('/motorcycle-game');
+    
+    // Show toast confirming the reset
+    toast({
+      title: "¡Cambiando a motos!",
+      description: "Empezando desde el nivel 1 con 0 puntos en el juego de motos."
     });
   };
 
@@ -204,15 +225,14 @@ const GameContent = () => {
     >
       {/* Motorcycle game button */}
       <div className="w-full pt-12 px-4">
-        <Link to="/motorcycle-game">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal"
-          >
-            <Bike className="w-4 h-4 mr-1" /> Jugar con motos
-          </Button>
-        </Link>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleNavigateToMotorcycleGame}
+          className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal"
+        >
+          <Bike className="w-4 h-4 mr-1" /> Jugar con motos
+        </Button>
         
         {/* Instructions button positioned at top right of the screen */}
         <Button

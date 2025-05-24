@@ -61,6 +61,30 @@ const MotorcycleGameContent = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  // Check for motorcycle game reset flags and apply them
+  useEffect(() => {
+    const motorcycleGameReset = sessionStorage.getItem('motorcycleGameReset');
+    const motorcycleStartLevel = sessionStorage.getItem('motorcycleStartLevel');
+    const motorcycleStartPoints = sessionStorage.getItem('motorcycleStartPoints');
+    
+    if (motorcycleGameReset === 'true') {
+      // Reset to the specified level and points
+      const startLevel = parseInt(motorcycleStartLevel || '1');
+      const startPoints = parseInt(motorcycleStartPoints || '0');
+      
+      setLevel(startLevel);
+      setTotalPoints(startPoints);
+      updateDestinations(startLevel);
+      
+      // Clear the reset flags
+      sessionStorage.removeItem('motorcycleGameReset');
+      sessionStorage.removeItem('motorcycleStartLevel');
+      sessionStorage.removeItem('motorcycleStartPoints');
+      
+      console.log(`Motorcycle game reset applied: Level ${startLevel}, Points ${startPoints}`);
+    }
+  }, []);
+
   // IMPORTANT: Always make sure Spain is unlocked regardless of level
   useEffect(() => {
     // This ensures Spain is always unlocked when the game starts
@@ -143,18 +167,18 @@ const MotorcycleGameContent = () => {
     }
   };
 
-  // Handler for jump to level 9 button
+  // Handler for jump to level 9 button - Updated to use 4490 points
   const handleJumpToLevel9 = () => {
     // Set level to 9
     setLevel(9);
-    // Set points to a reasonable amount for level 9
-    setTotalPoints(4000);
+    // Set points to 4490 as requested
+    setTotalPoints(4490);
     // Update destinations based on new level
     updateDestinations(9);
     // Show success toast
     toast({
       title: "¡Nivel actualizado!",
-      description: "Has saltado al nivel 9. ¡Preparado para llegar al nivel 10!"
+      description: "Has saltado al nivel 9 con 4490 puntos. ¡Preparado para llegar al nivel 10!"
     });
   };
 
