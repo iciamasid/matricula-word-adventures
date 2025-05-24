@@ -296,7 +296,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
               </motion.div>
             )}
             
-            {/* Country flags - MUCH BIGGER */}
+            {/* Country flags - Made smaller to fit better in panel */}
             {[...Array(10)].map((_, i) => {
               const levelIndex = i + 1;
               const flag = getLevelFlag(levelIndex);
@@ -326,15 +326,15 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                     } : {}}
                   >
                     <motion.div className="relative" whileHover={{ scale: 1.2 }}>
-                      <span className="text-6xl z-10 drop-shadow-lg">{flag}</span>
+                      <span className="text-4xl z-10 drop-shadow-lg">{flag}</span>
                       
                       {!isUnlocked && (
                         <motion.div
-                          className="absolute -top-3 -right-3 bg-red-500 rounded-full p-2 shadow-lg"
+                          className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1.5 shadow-lg"
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                         >
-                          <LockKeyhole className="w-6 h-6 text-white" />
+                          <LockKeyhole className="w-4 h-4 text-white" />
                         </motion.div>
                       )}
                     </motion.div>

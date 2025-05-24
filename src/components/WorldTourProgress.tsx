@@ -10,6 +10,20 @@ const WorldTourProgress = () => {
   const { level, markCountryAsVisited, requiredCountryToVisit, clearLevelUpMessage } = useGame();
   const { isEnglish } = useLanguage?.() || { language: 'es' };
 
+  // Function to get the latest unlocked country name
+  const getLatestUnlockedCountry = () => {
+    if (level >= 10) return isEnglish ? "Argentina (complete tour)" : "Argentina (vuelta completa)";
+    if (level >= 9) return isEnglish ? "Argentina" : "Argentina";
+    if (level >= 8) return isEnglish ? "Australia" : "Australia";
+    if (level >= 7) return isEnglish ? "Mexico" : "México";
+    if (level >= 6) return isEnglish ? "United States" : "Estados Unidos";
+    if (level >= 5) return isEnglish ? "Japan" : "Japón";
+    if (level >= 4) return isEnglish ? "Russia" : "Rusia";
+    if (level >= 3) return isEnglish ? "Italy" : "Italia";
+    if (level >= 2) return isEnglish ? "France" : "Francia";
+    return isEnglish ? "Spain" : "España";
+  };
+
   const handleCountryVisit = (countryCode: string) => {
     // This function will be called when a country modal is closed
     console.log(`Country visited: ${countryCode}`);
@@ -36,8 +50,11 @@ const WorldTourProgress = () => {
             <h3 className={`text-2xl font-bold mb-2 ${textColor} kids-text`}>
               🌍 {isEnglish ? "YOUR WORLD TOUR" : "TU VUELTA AL MUNDO"}
             </h3>
-            <p className={`text-lg font-medium ${textColorLight} kids-text`}>
+            <p className={`text-lg font-medium ${textColorLight} kids-text mb-2`}>
               {isEnglish ? "Click on the flags and explore that country!" : "¡Pincha sobre las banderas y explora ese país!"}
+            </p>
+            <p className={`text-base font-medium ${textColor} kids-text`}>
+              {isEnglish ? `You have reached: ${getLatestUnlockedCountry()}` : `Has llegado hasta: ${getLatestUnlockedCountry()}`}
             </p>
           </div>
           
