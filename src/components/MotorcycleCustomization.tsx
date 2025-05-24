@@ -270,10 +270,7 @@ const MotorcycleCustomization: React.FC = () => {
                   </div>
                   
                   {/* Motorcycle name */}
-                  <p className="text-xs text-center mt-1 text-teal-800 font-medium truncate w-full">
-                    {motorcycle.name}
-                    {isLocked}
-                  </p>
+                  
                 </motion.div>;
         })}
           </motion.div>}
