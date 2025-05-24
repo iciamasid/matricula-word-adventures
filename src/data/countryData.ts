@@ -214,7 +214,7 @@ export const countryData: Record<string, CountryInfo> = {
         content: "Celebra el Día de los Muertos, disfruta del mariachi, admira el arte de Frida Kahlo y Diego Rivera, las artesanías coloridas, y las fiestas tradicionales llenas de música y baile."
       }
     ],
-    image: "/lovable-uploads/Mejico.jpg",
+    image: "/lovable-uploads/5c9f474f-aacc-4729-a294-c1cfb159ff3c.png",
     wikipediaUrl: "https://es.wikipedia.org/wiki/México"
   },
   "Australia": {
