@@ -39,7 +39,7 @@ const EspanaPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/995183a5-24a9-4c91-8660-a0c9312a6a9d.png" 
+            src="/lovable-uploads/España.jpg" 
             alt="Plaza de España, Sevilla"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
