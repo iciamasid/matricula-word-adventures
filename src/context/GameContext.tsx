@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { CarColor } from '@/components/games/utils/carUtils';
 import { generateLicensePlate, getConsonantsFromPlate, getLevel } from '@/utils/gameUtils';
@@ -182,6 +183,11 @@ export const GameProvider: React.FC<{
   
   // Special 6666 bonus states - REMOVED DUPLICATES
   const [has6666Triggered, setHas6666Triggered] = useState<boolean>(false);
+  
+  // Country visit tracking states
+  const [countryVisitRequired, setCountryVisitRequired] = useState<boolean>(false);
+  const [requiredCountryToVisit, setRequiredCountryToVisit] = useState<string | null>(null);
+  const [visitedCountries, setVisitedCountries] = useState<string[]>([]);
   
   // Clear feedback functions
   const clearSubmitSuccess = () => setSubmitSuccess(null);
@@ -439,6 +445,11 @@ export const GameProvider: React.FC<{
     
     setPreviousDestination(null);
     
+    // Reset country visit tracking
+    setCountryVisitRequired(false);
+    setRequiredCountryToVisit(null);
+    setVisitedCountries([]);
+    
     // Clear any reset flags from sessionStorage
     sessionStorage.removeItem('motorcycleGameReset');
     sessionStorage.removeItem('motorcycleStartLevel');
@@ -528,7 +539,7 @@ export const GameProvider: React.FC<{
         updateDestinations(newLevel);
       }
     }
-  }, [totalPoints]);
+  }, [totalPoints, level, destinationInfo]);
   
   // Helper function to get country display name for level
   const getCountryDisplayNameForLevel = (currentLevel: number) => {
@@ -601,7 +612,7 @@ export const GameProvider: React.FC<{
         }, 4000);
       }
     }
-  }, [licensePlate, playerAge]);
+  }, [licensePlate, playerAge, showBonusPopup, showAgeBonusPopup]);
   
   // Check for birth year in license plate
   useEffect(() => {
@@ -622,7 +633,7 @@ export const GameProvider: React.FC<{
         }
       }
     }
-  }, [licensePlate, playerAge, gamesPlayed]);
+  }, [licensePlate, playerAge, gamesPlayed, showBirthdayBonusPopup, lastBirthYearShow, birthYearBonus]);
 
   // Check for 6666 in license plate
   useEffect(() => {
