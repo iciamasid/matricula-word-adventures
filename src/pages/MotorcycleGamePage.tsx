@@ -71,9 +71,9 @@ const MotorcycleGameContent = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  // IMPORTANT: Always make sure Spain is unlocked regardless of level
+  // IMPORTANT: Always make sure Portugal is unlocked regardless of level
   useEffect(() => {
-    // This ensures Spain is always unlocked when the game starts
+    // This ensures Portugal is always unlocked when the game starts
     if (level === 0) {
       updateDestinations(level);
     }
@@ -129,8 +129,8 @@ const MotorcycleGameContent = () => {
 
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
-    // IMPORTANT: Always include Spain regardless of level
-    const countries = ["España"];
+    // IMPORTANT: Always include Portugal regardless of level
+    const countries = ["Portugal"];
     if (level >= 2) countries.push("Reino Unido");
     if (level >= 3) countries.push("Grecia");
     if (level >= 4) countries.push("Noruega");
@@ -139,7 +139,7 @@ const MotorcycleGameContent = () => {
     if (level >= 7) countries.push("Costa Rica");
     if (level >= 8) countries.push("Brasil");
     if (level >= 9) countries.push("Perú");
-    if (level >= 10) countries.push("España (vuelta completa)");
+    if (level >= 10) countries.push("Portugal (vuelta completa)");
     return countries;
   }, [level]);
 

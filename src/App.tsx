@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import CountryPage from "./pages/CountryPage";
 
 // Import motorcycle game country pages (only the ones that exist)
+import Portugal from "./pages/CountryPage/Portugal";
 import Reino_Unido from "./pages/CountryPage/Reino_Unido";
 import Grecia from "./pages/CountryPage/Grecia";
 import Noruega from "./pages/CountryPage/Noruega";
@@ -64,6 +65,7 @@ const App = () => {
               <Route path="/draw-game/set-game" element={<Navigate to="/draw-game" replace />} action={setCarGame} />
               
               {/* Motorcycle game countries (existing pages) */}
+              <Route path="/country/Portugal" element={<Portugal />} />
               <Route path="/country/Reino_Unido" element={<Reino_Unido />} />
               <Route path="/country/Grecia" element={<Grecia />} />
               <Route path="/country/Noruega" element={<Noruega />} />
