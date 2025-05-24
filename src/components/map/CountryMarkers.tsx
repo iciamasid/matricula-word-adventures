@@ -16,7 +16,7 @@ const CountryMarkers: React.FC<CountryMarkersProps> = ({
 }) => {
   const [showCountryModal, setShowCountryModal] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<any>(null);
-  const { markCountryAsVisited, requiredCountryToVisit } = useGame();
+  const { markCountryAsVisited, requiredCountryToVisit, clearLevelUpMessage } = useGame();
   
   // Make sure Spain is always included in unlockedCountries
   const ensureSpainIsUnlocked = (countries: string[]) => {
@@ -40,13 +40,20 @@ const CountryMarkers: React.FC<CountryMarkersProps> = ({
     setShowCountryModal(true);
   };
   
-  // Handle closing the country modal
+  // Handle closing the country modal - CRITICAL FIX: Always clear level up message
   const handleCloseCountryModal = () => {
     // Mark the country as visited when the modal is closed
     if (selectedCountry && requiredCountryToVisit && selectedCountry.name === requiredCountryToVisit) {
       markCountryAsVisited(requiredCountryToVisit);
       console.log(`Country ${requiredCountryToVisit} marked as visited from map`);
     }
+    
+    // CRITICAL FIX: Always clear the level up message when closing country modal
+    // This ensures that whether the user came from the popup button or clicked the flag directly,
+    // the level up popup closes and the word input field gets enabled
+    clearLevelUpMessage();
+    console.log('Level up message cleared from country modal close');
+    
     setShowCountryModal(false);
     setSelectedCountry(null);
   };
