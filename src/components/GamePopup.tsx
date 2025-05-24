@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogContent, AlertDialogTitle, AlertDialogDescription } from "@/components/ui/alert-dialog";
@@ -272,7 +271,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
                       </div>
                     </div>}
                   
-                  {/* Visit Country Button - Only show for level up (except completion) if countryToVisit is provided */}
+                  {/* Visit Country Button - CRITICAL FIX: Properly save game state */}
                   {type === "levelUp" && !isCompletion && countryToVisit && <motion.div className="mt-4" animate={{
                 y: [0, -5, 0]
               }} transition={{
@@ -281,7 +280,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
               }}>
                       <Link to={`/country/${countryToVisit}`}>
                         <Button className={`${buttonClasses} flex items-center gap-2 w-full py-3`} onClick={() => {
-                    // Determine the correct game type to return to
+                    // CRITICAL FIX: Properly determine and save game state
                     const currentPath = window.location.pathname;
                     let gameType = 'car-game'; // default
                     
@@ -289,10 +288,20 @@ const GamePopup: React.FC<GamePopupProps> = ({
                       gameType = 'motorcycle-game';
                     }
                     
+                    // Get current game state from the page context
+                    const currentLevel = level || 0;
+                    const currentPoints = sessionStorage.getItem('currentTotalPoints') || '0';
+                    
+                    console.log('Saving game state before country visit:', {
+                      level: currentLevel,
+                      totalPoints: currentPoints,
+                      gameType: gameType
+                    });
+                    
                     // Store game state before navigation
                     const gameState = {
-                      level: level,
-                      totalPoints: sessionStorage.getItem('currentTotalPoints') || '0',
+                      level: currentLevel,
+                      totalPoints: currentPoints,
                       gameType: gameType
                     };
                     sessionStorage.setItem('gameStateBeforeCountry', JSON.stringify(gameState));
