@@ -23,7 +23,6 @@ const MaxLevelPopup: React.FC<MaxLevelPopupProps> = ({
         className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl border-4 border-purple-300"
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.8, opacity: 0 }}
         transition={{ type: "spring", duration: 0.5 }}
       >
         <div className="text-center space-y-4">
