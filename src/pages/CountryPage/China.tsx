@@ -35,7 +35,7 @@ const ChinaPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/54b230f6-8a76-4e9a-ae4c-5fa2f7087600.png" 
+            src="/lovable-uploads/China.jpg" 
             alt="Gran Muralla China"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
