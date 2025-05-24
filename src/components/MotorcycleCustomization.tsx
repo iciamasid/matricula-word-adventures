@@ -18,7 +18,7 @@ const motorcycleColors: CarColor[] = [{
 }, {
   id: "m2",
   name: "Roja Pequeña",
-  image: "Motorojapequeña.png",
+  image: "Motorojapequena.png",
   color: "bg-red-400",
   unlockedAtLevel: 2
 }, {
