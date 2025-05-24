@@ -46,7 +46,7 @@ const ScorePanel: React.FC = () => {
         transition={{ delay: 0.2 }}
         whileHover={{ scale: 1.03 }}
       >
-        <div className="flex items-center p-3 bg-teal-500">
+        <div className={`flex items-center p-3 ${iconBg}`}>
           <div className={`${iconBg} flex items-center justify-center p-2 rounded-full w-8 h-8 mr-2`}>
             <span className="text-white text-3xl">🚗</span>
           </div>
@@ -68,7 +68,7 @@ const ScorePanel: React.FC = () => {
         transition={{ delay: 0.3 }}
         whileHover={{ scale: 1.03 }}
       >
-        <div className="flex items-center p-3 bg-teal-500">
+        <div className={`flex items-center p-3 ${iconBg}`}>
           <div className="bg-yellow-500 flex items-center justify-center p-2 rounded-full w-8 h-8 mr-2">
             <span className="text-white text-3xl">⭐</span>
           </div>
