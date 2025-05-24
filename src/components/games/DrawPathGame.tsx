@@ -94,6 +94,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
         y: lastPoint.y
       });
       console.log("End point added at:", lastPoint);
+
+      // Set the path for animation and enable the "Conducir" button
+      setPath(points);
+      setPathExists(points.length > 0);
+      setIsDrawing(false); // Deactivate drawing mode after creating a path
+      if (fabricCanvas) {
+        fabricCanvas.isDrawingMode = false;
+      }
     },
     onError: handleError,
     backgroundColor: '#FFFFFF',
