@@ -39,7 +39,7 @@ const PeruPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/24de870a-769c-4544-8001-8554fe29e7f0.png" 
+            src="/lovable-uploads/Perú.jpg" 
             alt="Machu Picchu"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
