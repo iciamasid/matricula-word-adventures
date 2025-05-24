@@ -280,7 +280,7 @@ const MotorcycleGameContent = () => {
           >
             <img 
               src={selectedMotorcycle ? `/lovable-uploads/${selectedMotorcycle.image}` : "/lovable-uploads/Motoblanca.png"}
-              alt="Selected Motorcycle" 
+              alt={selectedMotorcycle ? selectedMotorcycle.name : "Motoblanca"} 
               className="w-full h-full object-contain" 
             />
           </motion.div>
