@@ -40,7 +40,7 @@ export const countryData: Record<string, CountryInfo> = {
         content: "Explora el flamenco andaluz, las fiestas de San Fermín en Pamplona, La Tomatina de Buñol, las Fallas de Valencia, y la rica arquitectura que va desde el románico hasta el modernismo de Gaudí."
       }
     ],
-    image: "/lovable-uploads/España.jpg",
+    image: "/lovable-uploads/Espana.jpg",
     wikipediaUrl: "https://es.wikipedia.org/wiki/España"
   },
   "Francia": {
@@ -156,7 +156,7 @@ export const countryData: Record<string, CountryInfo> = {
         content: "Explora el arte del origami, la ceremonia del té, los jardines zen, el anime y manga, los festivales matsuri, el teatro kabuki, y la filosofía del ikigai (propósito de vida)."
       }
     ],
-    image: "/lovable-uploads/Japón.jpg",
+    image: "/lovable-uploads/Japon.jpg",
     wikipediaUrl: "https://es.wikipedia.org/wiki/Japón"
   },
   "Estados_Unidos": {
@@ -448,7 +448,7 @@ export const countryData: Record<string, CountryInfo> = {
         content: "Descubre la cultura indígena de las Primeras Naciones, el hockey sobre hielo (deporte nacional), los colores otoñales, la observación de osos y ballenas, y la aurora boreal en el norte."
       }
     ],
-    image: "/lovable-uploads/Canadá.jpg",
+    image: "/lovable-uploads/Canada.jpg",
     wikipediaUrl: "https://es.wikipedia.org/wiki/Canadá"
   },
   "Costa_Rica": {
@@ -535,7 +535,7 @@ export const countryData: Record<string, CountryInfo> = {
         content: "Descubre la herencia inca y pre-inca, los textiles coloridos, la música andina con quena y charango, las tradiciones de los pueblos originarios, y la moderna gastronomía peruana reconocida mundialmente."
       }
     ],
-    image: "/lovable-uploads/Perú.jpg",
+    image: "/lovable-uploads/Peru.jpg",
     wikipediaUrl: "https://es.wikipedia.org/wiki/Perú"
   }
 };
