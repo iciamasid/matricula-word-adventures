@@ -39,7 +39,7 @@ const ItaliaPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/a799579c-7599-498b-a958-44929c7e89f5.png" 
+            src="/lovable-uploads/Italia.jpg" 
             alt="Coliseo Romano, Roma"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
