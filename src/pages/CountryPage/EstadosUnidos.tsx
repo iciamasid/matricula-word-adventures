@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Globe, Heart, Utensils, Building } from 'lucide-react';
+import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
@@ -36,7 +36,7 @@ const EstadosUnidosPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-red-50 p-4">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-red-100 p-4">
       <div className="max-w-4xl mx-auto">
         {/* Back button */}
         <Link to={returnGame}>
@@ -61,7 +61,7 @@ const EstadosUnidosPage = () => {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
             src="/lovable-uploads/24de870a-769c-4544-8001-8554fe29e7f0.png" 
-            alt="Estados Unidos"
+            alt="Paisaje de Estados Unidos"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
