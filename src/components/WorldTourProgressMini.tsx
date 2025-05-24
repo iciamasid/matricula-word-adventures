@@ -250,17 +250,17 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
     <>
       <div className="w-full h-full">
         {/* Mini world tour visualization - MUCH BIGGER with more space below */}
-        <div className="relative h-full min-h-[380px] pb-8">
+        <div className="relative h-full min-h-[420px] pb-12">
           <div className="w-full h-full relative">
             {/* Background elliptical path */}
             <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
-              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="0.7" strokeLinecap="round" strokeDasharray="4,4" />
+              <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="0.5" strokeLinecap="round" strokeDasharray="4,4" />
               <path 
                 d={createEllipsePath()} 
                 fill="none" 
-                strokeWidth="1.5" 
+                strokeWidth="1" 
                 stroke={isMotorcycleGame ? "#14B8A6" : "#8B5CF6"} 
-                strokeLineCap="round" 
+                strokeLinecap="round" 
                 strokeDasharray="250" 
                 strokeDashoffset={calculateStrokeDashOffset()}
                 style={{ display: level <= 1 && progressValue === 0 ? 'none' : 'block' }}
@@ -326,7 +326,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                     } : {}}
                   >
                     <motion.div className="relative" whileHover={{ scale: 1.2 }}>
-                      <span className="text-6xl z-10 drop-shadow-lg">{flag}</span>
+                      <span className="text-5xl z-10 drop-shadow-lg">{flag}</span>
                       
                       {!isUnlocked && (
                         <motion.div
