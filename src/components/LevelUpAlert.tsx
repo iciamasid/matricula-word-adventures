@@ -5,7 +5,11 @@ import GamePopup from "@/components/GamePopup";
 import { useLanguage } from "@/context/LanguageContext";
 import { useLocation } from "react-router-dom";
 
-const LevelUpAlert: React.FC = () => {
+interface LevelUpAlertProps {
+  onOpenCountryModal?: (countryCode: string) => void;
+}
+
+const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
   const { level, showLevelUp, clearLevelUpMessage, originInfo, resetGame } = useGame();
   const { isEnglish } = useLanguage();
   const location = useLocation();
@@ -38,6 +42,19 @@ const LevelUpAlert: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
+
+  // Auto-open country modal after 2 seconds for levels < 10
+  useEffect(() => {
+    if (showLevelUp && level < 10 && onOpenCountryModal) {
+      const timer = setTimeout(() => {
+        const countryCode = getCurrentCountry();
+        onOpenCountryModal(countryCode);
+        clearLevelUpMessage();
+      }, 2000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showLevelUp, level, onOpenCountryModal, clearLevelUpMessage]);
 
   // Get the current country based on origin info and game type
   const getCurrentCountry = () => {
@@ -169,8 +186,12 @@ const LevelUpAlert: React.FC = () => {
         : `¡Ahora estás en ${currentCountryDisplay}!`) 
     : "";
   
-  // Add the vehicle text to the explanation
-  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${vehicleText}`;
+  // Add the vehicle text to the explanation, and auto-open message for levels < 10
+  const autoOpenText = level < 10 
+    ? (isEnglish ? "Opening country info..." : "Abriendo información del país...")
+    : "";
+  
+  const explanation = `${baseExplanation}${countryMessage ? "\n" + countryMessage : ""}\n${vehicleText}${autoOpenText ? "\n" + autoOpenText : ""}`;
   
   return (
     <GamePopup
@@ -181,9 +202,8 @@ const LevelUpAlert: React.FC = () => {
       level={level}
       explanation={explanation}
       points={0}
-      countryToVisit={getCurrentCountry()} // Pass the country code for routing
-      requireCountryVisit={level < 10} // Require visit for all levels except completion (level 10)
-      preventAutoClose={level < 10} // Don't auto-close for levels requiring country visit
+      requireCountryVisit={false} // No longer require country visit button
+      preventAutoClose={level >= 10} // Only prevent auto-close for completion (level 10)
     />
   );
 };

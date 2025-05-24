@@ -1,8 +1,8 @@
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { MapPin, Camera, Utensils, Mountain, X, ExternalLink } from 'lucide-react';
+import { MapPin, Camera, Utensils, Mountain, Play } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { CountryInfo } from '@/data/countryData';
 
@@ -15,15 +15,15 @@ interface CountryModalProps {
 const getIcon = (iconName: string) => {
   switch (iconName) {
     case 'MapPin':
-      return <MapPin className="w-5 h-5 mr-2 text-blue-500" />;
+      return <MapPin className="w-6 h-6 mr-3 text-blue-500" />;
     case 'Camera':
-      return <Camera className="w-5 h-5 mr-2 text-green-500" />;
+      return <Camera className="w-6 h-6 mr-3 text-green-500" />;
     case 'Utensils':
-      return <Utensils className="w-5 h-5 mr-2 text-orange-500" />;
+      return <Utensils className="w-6 h-6 mr-3 text-orange-500" />;
     case 'Mountain':
-      return <Mountain className="w-5 h-5 mr-2 text-gray-500" />;
+      return <Mountain className="w-6 h-6 mr-3 text-purple-500" />;
     default:
-      return <MapPin className="w-5 h-5 mr-2 text-blue-500" />;
+      return <MapPin className="w-6 h-6 mr-3 text-blue-500" />;
   }
 };
 
@@ -32,97 +32,100 @@ const CountryModal: React.FC<CountryModalProps> = ({ open, onClose, country }) =
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-4xl font-bold text-indigo-800 kids-text mb-2 text-center">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-blue-50 to-purple-50">
+        <DialogHeader className="text-center">
+          <DialogTitle className="text-5xl font-bold text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text mb-4">
             {country.flag} {country.name}
           </DialogTitle>
-          <p className="text-indigo-600 kids-text text-center">
-            ¡Bienvenido a {country.name}!
-          </p>
+          <div className="text-2xl text-blue-600 font-semibold mb-6">
+            ¡Bienvenido a {country.name}! 🌟
+          </div>
         </DialogHeader>
 
-        {/* Country Image */}
+        {/* Country Image with fun overlay */}
         {country.image && (
           <motion.div
-            className="relative w-full h-64 rounded-lg overflow-hidden mb-6"
+            className="relative w-full h-80 rounded-2xl overflow-hidden mb-8 shadow-2xl"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.4 }}
           >
             <img 
               src={country.image} 
               alt={`Paisaje de ${country.name}`}
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-            <div className="absolute bottom-4 left-4 text-white">
-              <h3 className="text-xl font-bold">{country.name}</h3>
-              <p className="text-sm opacity-90">Explora este hermoso país</p>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-purple/20" />
+            <div className="absolute bottom-6 left-6 text-white">
+              <h3 className="text-3xl font-bold drop-shadow-lg">{country.name}</h3>
+              <p className="text-lg opacity-90 drop-shadow-md">¡Vamos a explorar juntos! 🚗✨</p>
+            </div>
+            <div className="absolute top-6 right-6 text-6xl animate-bounce">
+              {country.flag}
             </div>
           </motion.div>
         )}
 
         <motion.div
-          className="space-y-4"
+          className="space-y-6"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.5, staggerChildren: 0.1 }}
         >
           {country.sections.map((section, index) => (
             <motion.div
               key={index}
-              className="bg-white rounded-lg shadow-md p-6 border-l-4 border-indigo-500"
-              whileHover={{ scale: 1.02, boxShadow: "0 10px 25px rgba(0,0,0,0.1)" }}
-              transition={{ duration: 0.2 }}
+              className="bg-white rounded-2xl shadow-lg p-8 border-l-8 border-gradient-to-b from-blue-400 to-purple-400 transform hover:scale-105 transition-all duration-300"
+              style={{ borderLeftColor: index % 2 === 0 ? '#3B82F6' : '#8B5CF6' }}
+              whileHover={{ 
+                scale: 1.02, 
+                boxShadow: "0 20px 40px rgba(0,0,0,0.1)",
+                y: -5
+              }}
+              transition={{ duration: 0.3 }}
             >
-              <h2 className="text-2xl font-semibold text-indigo-700 flex items-center mb-3">
+              <h2 className="text-3xl font-bold text-gray-800 flex items-center mb-4">
                 {getIcon(section.icon)}
                 {section.title}
               </h2>
-              <p className="text-indigo-600 leading-relaxed text-base">
+              <p className="text-gray-700 leading-relaxed text-lg font-medium">
                 {section.content}
               </p>
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Interactive Map placeholder */}
+        {/* Fun facts section */}
         <motion.div
-          className="mt-6 bg-gray-100 rounded-lg p-6 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <h3 className="text-xl font-semibold text-indigo-700 mb-2">
-            📍 Ubicación de {country.name}
-          </h3>
-          <p className="text-indigo-600">
-            {country.name} te espera para una aventura increíble. ¡Descubre todos sus secretos!
-          </p>
-        </motion.div>
-
-        <motion.div
-          className="mt-6 text-center"
+          className="mt-8 bg-gradient-to-r from-yellow-200 to-orange-200 rounded-2xl p-8 text-center shadow-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <p className="text-indigo-700 mb-4 text-lg font-medium">
-            ¿Quieres saber más sobre {country.name}?
+          <h3 className="text-3xl font-bold text-orange-800 mb-4 flex items-center justify-center">
+            🌟 ¡Dato Curioso sobre {country.name}! 🌟
+          </h3>
+          <p className="text-orange-700 text-xl font-semibold">
+            {country.name} tiene muchos secretos increíbles esperándote. ¡Cada viaje es una nueva aventura!
           </p>
-          {country.wikipediaUrl && (
-            <a
-              href={country.wikipediaUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Button className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg px-6 py-3">
-                <ExternalLink className="w-5 h-5 mr-2" />
-                Explorar en Wikipedia
-              </Button>
-            </a>
-          )}
+        </motion.div>
+
+        <motion.div
+          className="mt-8 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <p className="text-2xl font-bold text-blue-700 mb-6">
+            ¿Listo para seguir tu aventura? 🚗💨
+          </p>
+          <Button 
+            onClick={onClose}
+            className="bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white text-2xl px-12 py-6 rounded-2xl shadow-2xl transform hover:scale-110 transition-all duration-300 font-bold"
+          >
+            <Play className="w-8 h-8 mr-3" />
+            ¡Continúa Jugando!
+          </Button>
         </motion.div>
       </DialogContent>
     </Dialog>

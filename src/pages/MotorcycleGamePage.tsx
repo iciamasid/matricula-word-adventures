@@ -20,6 +20,7 @@ import MotorcycleCustomization from "@/components/MotorcycleCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 import GameOverPopup from "@/components/GameOverPopup";
+import CountryModal from "@/components/CountryModal";
 
 const MotorcycleGamePage = () => {
   return (
@@ -33,6 +34,8 @@ const MotorcycleGamePage = () => {
 const MotorcycleGameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [showGameOver, setShowGameOver] = useState(false);
+  const [countryModalOpen, setCountryModalOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const worldTourRef = useRef<HTMLDivElement>(null);
@@ -199,6 +202,16 @@ const MotorcycleGameContent = () => {
     });
   };
 
+  const handleOpenCountryModal = (countryCode: string) => {
+    setSelectedCountry(countryCode);
+    setCountryModalOpen(true);
+  };
+
+  const handleCloseCountryModal = () => {
+    setCountryModalOpen(false);
+    setSelectedCountry(null);
+  };
+
   return (
     <div 
       className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
@@ -351,6 +364,11 @@ const MotorcycleGameContent = () => {
         {showInstructions && <MotorcycleGameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
+      <CountryModal 
+        open={countryModalOpen}
+        onClose={handleCloseCountryModal}
+        country={selectedCountry ? getCountryInfo(selectedCountry) : null}
+      />
     </div>
   );
 };

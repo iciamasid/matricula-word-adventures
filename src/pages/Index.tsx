@@ -21,6 +21,7 @@ import CarCustomization from "@/components/CarCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 import MaxLevelPopup from "@/components/MaxLevelPopup";
+import CountryModal from "@/components/CountryModal";
 
 const Index = () => {
   return (
@@ -34,6 +35,8 @@ const Index = () => {
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [showMaxLevelPopup, setShowMaxLevelPopup] = useState(false);
+  const [countryModalOpen, setCountryModalOpen] = useState(false);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const worldTourRef = useRef<HTMLDivElement>(null);
@@ -223,6 +226,16 @@ const GameContent = () => {
     });
   };
 
+  const handleOpenCountryModal = (countryCode: string) => {
+    setSelectedCountry(countryCode);
+    setCountryModalOpen(true);
+  };
+
+  const handleCloseCountryModal = () => {
+    setCountryModalOpen(false);
+    setSelectedCountry(null);
+  };
+
   return (
     <div 
       className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
@@ -374,6 +387,11 @@ const GameContent = () => {
         {showInstructions && <CarGameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
+      <CountryModal 
+        open={countryModalOpen}
+        onClose={handleCloseCountryModal}
+        country={selectedCountry ? getCountryInfo(selectedCountry) : null}
+      />
     </div>
   );
 };
