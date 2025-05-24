@@ -186,14 +186,15 @@ export const GameProvider: React.FC<{
         console.log('Restoring game state from country navigation:', parsedRestoreState);
         
         // Restore the saved state
-        if (parsedRestoreState.level !== undefined) {
-          setLevel(parsedRestoreState.level);
-        }
-        if (parsedRestoreState.totalPoints !== undefined) {
-          setTotalPoints(parseInt(parsedRestoreState.totalPoints));
+        if (parsedRestoreState.level) setLevel(parsedRestoreState.level);
+        if (parsedRestoreState.totalPoints) setTotalPoints(parseInt(parsedRestoreState.totalPoints));
+        
+        // Update destinations for the restored level
+        if (parsedRestoreState.level) {
+          updateDestinations(parsedRestoreState.level);
         }
         
-        // Clean up the restoration flag
+        // Clear the restore state
         sessionStorage.removeItem('restoreGameState');
         console.log('Game state restored successfully from country navigation');
         return; // Exit early, state has been restored
@@ -288,12 +289,6 @@ export const GameProvider: React.FC<{
     }
   }, []);
   
-  // CRITICAL FIX: Store totalPoints in sessionStorage whenever it changes
-  useEffect(() => {
-    sessionStorage.setItem('currentTotalPoints', totalPoints.toString());
-    console.log('Stored totalPoints in sessionStorage:', totalPoints);
-  }, [totalPoints]);
-
   // Save game state to localStorage whenever important state changes
   useEffect(() => {
     try {
@@ -315,6 +310,11 @@ export const GameProvider: React.FC<{
       console.error('Error saving game state:', error);
     }
   }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor, selectedMotorcycle]);
+  
+  // Store current total points in sessionStorage for country navigation
+  useEffect(() => {
+    sessionStorage.setItem('currentTotalPoints', totalPoints.toString());
+  }, [totalPoints]);
   
   // Game control functions
   const resetGame = () => {
