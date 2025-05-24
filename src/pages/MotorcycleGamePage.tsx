@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -47,7 +48,6 @@ const MotorcycleGameContent = () => {
     level,
     resetGame,
     plateConsonants,
-    selectedMotorcycleColor,
     updateDestinations,
     playerName,
     playerAge,
@@ -112,7 +112,7 @@ const MotorcycleGameContent = () => {
       console.log(`MotorcycleGamePage: Restored destinations for level ${level}`);
 
       // If motorcycle is already selected, scroll to license plate section
-      if (selectedMotorcycleColor && licensePlateRef.current) {
+      if (licensePlateRef.current) {
         // Slight delay to ensure DOM is ready
         setTimeout(() => {
           licensePlateRef.current?.scrollIntoView({
@@ -133,7 +133,7 @@ const MotorcycleGameContent = () => {
   };
 
   // Handle navigation to car game - Reset progress to start fresh
-  const handleGoToCar = () => {
+  const handleGoToMotorcycle = () => {
     // Reset to level 1 and 0 points for car game
     setLevel(1);
     setTotalPoints(0);
@@ -300,7 +300,7 @@ const MotorcycleGameContent = () => {
           <MotorcycleCustomization />
         </div>
         
-        {/* Show moving motorcycle BELOW the buttons - showing the selected motorcycle or default */}
+        {/* Show moving motorcycle BELOW the buttons - showing the default motorcycle */}
         {playerName && (
           <motion.div
             className="w-32 h-24 my-2"
@@ -314,8 +314,8 @@ const MotorcycleGameContent = () => {
             }}
           >
             <img 
-              src={selectedMotorcycleColor ? `/lovable-uploads/${selectedMotorcycleColor.image}` : "/lovable-uploads/0cad6430-1e91-48fc-a64c-c6d988cafb93.png"}
-              alt="Selected Motorcycle" 
+              src="/lovable-uploads/Motoblanca.png"
+              alt="Default Motorcycle" 
               className="w-full h-full object-contain" 
             />
           </motion.div>
@@ -376,7 +376,7 @@ const MotorcycleGameContent = () => {
         <MaxLevelPopup 
           open={showMaxLevelPopup}
           onClose={handleCloseMaxLevelPopup}
-          onGoToCar={handleGoToCar}
+          onGoToMotorcycle={handleGoToMotorcycle}
         />
         
         {/* Birthday Bonus Popup */}
