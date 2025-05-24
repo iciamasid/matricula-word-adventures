@@ -50,21 +50,6 @@ const LevelUpAlert: React.FC = () => {
     }
   }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
 
-  // Auto-open country modal 3 seconds after level up popup appears (for levels 1-9)
-  useEffect(() => {
-    if (showLevelUp && level < 10 && requiredCountryToVisit) {
-      const timer = setTimeout(() => {
-        const countryCode = getCurrentCountryCode();
-        const countryInfo = getCountryInfo(countryCode);
-        setSelectedCountry(countryInfo);
-        setShowCountryModal(true);
-        clearLevelUpMessage();
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [showLevelUp, level, clearLevelUpMessage, requiredCountryToVisit]);
-
   // Get the current country code based on level and game type
   const getCurrentCountryCode = () => {
     if (isMotorcycleGame) {
@@ -107,7 +92,7 @@ const LevelUpAlert: React.FC = () => {
     setShowCountryModal(true);
   };
 
-  // Handle closing the country modal - THIS IS THE KEY FIX
+  // Handle closing the country modal - Mark country as visited and clear level up
   const handleCloseCountryModal = () => {
     // Mark the country as visited when the modal is closed
     if (selectedCountry && requiredCountryToVisit) {
@@ -116,25 +101,27 @@ const LevelUpAlert: React.FC = () => {
     }
     setShowCountryModal(false);
     setSelectedCountry(null);
+    // Clear the level up message after visiting the country
+    clearLevelUpMessage();
   };
   
-  // Simplified explanation text - MUCH SHORTER AND CLEARER
+  // Simple and clear explanation text as requested
   const explanation = isEnglish 
-    ? `Level ${level} unlocked!\nVisit ${requiredCountryToVisit || 'the new country'} to continue playing.`
-    : `¡Nivel ${level} desbloqueado!\nVisita ${requiredCountryToVisit || 'el nuevo país'} para continuar.`;
+    ? `Level ${level}!\nVisit ${requiredCountryToVisit || 'the new country'} to continue!\nYou can now choose a new car.`
+    : `¡Nivel ${level}!\n¡Visita ${requiredCountryToVisit || 'el nuevo país'} para continuar!\nYa puedes elegir un nuevo ${isMotorcycleGame ? 'moto' : 'coche'}.`;
   
   return (
     <>
       <GamePopup
         open={showLevelUp}
-        onClose={clearLevelUpMessage}
+        onClose={() => {}} // Prevent manual closing
         type="levelUp"
         message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
         level={level}
         explanation={explanation}
         points={0}
         requireCountryVisit={level < 10}
-        preventAutoClose={level >= 10}
+        preventAutoClose={true} // Always prevent auto close
         countryToVisit={requiredCountryToVisit || undefined}
         onOpenCountryModal={handleOpenCountryModal}
       />

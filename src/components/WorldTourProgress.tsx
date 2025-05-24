@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -591,7 +592,17 @@ const WorldTourProgress = () => {
               </motion.div>
             </div>
             
-            {/* Country flags positioned on the ellipse */}
+            {/* Moving vehicle icon - CHANGED z-index to 5 so it's behind flags (z-10) */}
+            {progressValue > 0 && level > 1 && <motion.div className="absolute transform -translate-x-1/2 -translate-y-1/2" style={{
+            left: `${vehiclePosition.x}%`,
+            top: `${vehiclePosition.y}%`,
+            transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 1.8 : 1.2})`,
+            zIndex: 5
+          }} initial={false}>
+              {isMotorcycleGame ? <span className="text-xl">🏍️</span> : <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />}
+            </motion.div>}
+            
+            {/* Country flags positioned on the ellipse - HIGHER z-index for better click detection */}
             {[...Array(10)].map((_, i) => {
               // Skip index 0 as it's just a placeholder
               const levelIndex = i + 1;
@@ -657,16 +668,6 @@ const WorldTourProgress = () => {
                 </div>
               );
             })}
-            
-            {/* Moving vehicle icon - shown only when there is progress */}
-            {progressValue > 0 && level > 1 && <motion.div className="absolute transform -translate-x-1/2 -translate-y-1/2" style={{
-            left: `${vehiclePosition.x}%`,
-            top: `${vehiclePosition.y}%`,
-            transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 1.8 : 1.2})`,
-            zIndex: 20
-          }} initial={false}>
-              {isMotorcycleGame ? <span className="text-xl">🏍️</span> : <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={22} />}
-            </motion.div>}
           </div>
         </div>
         
