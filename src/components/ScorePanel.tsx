@@ -1,9 +1,7 @@
-
 import React from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/context/LanguageContext';
-
 const ScorePanel: React.FC = () => {
   const {
     totalPoints,
@@ -19,9 +17,7 @@ const ScorePanel: React.FC = () => {
   const textColor = isEnglish ? 'text-orange-800' : 'text-purple-800';
   const iconBg = isEnglish ? 'bg-orange-500' : 'bg-purple-500';
   const levelUpColor = isEnglish ? 'from-amber-300 to-orange-400' : 'from-violet-300 to-purple-400';
-  
-  return (
-    <div className="w-full grid grid-cols-2 gap-3 my-2">
+  return <div className="w-full grid grid-cols-2 gap-3 my-2">
       {/* KMS Panel - Gamer Style - Now displaying totalPoints instead of score */}
       <motion.div className={`${bgGradient} rounded-lg shadow-md overflow-hidden border border-white/20`} initial={{
       opacity: 0,
@@ -34,7 +30,7 @@ const ScorePanel: React.FC = () => {
     }} whileHover={{
       scale: 1.03
     }}>
-        <div className="flex items-center p-3">
+        <div className="flex items-center p-3 bg-teal-500">
           <div className={`${iconBg} flex items-center justify-center p-2 rounded-full w-8 h-8 mr-2`}>
             <span className="text-white text-3xl">🚗</span>
           </div>
@@ -72,8 +68,6 @@ const ScorePanel: React.FC = () => {
           </div>
         </div>
       </motion.div>
-    </div>
-  );
+    </div>;
 };
-
 export default ScorePanel;
