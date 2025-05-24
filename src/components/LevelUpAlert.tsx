@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
@@ -53,7 +54,7 @@ const LevelUpAlert: React.FC = () => {
     setShowCountryModal(true);
   };
 
-  // Handle closing the country modal - Mark country as visited and clear level up
+  // Handle closing the country modal - MUST mark country as visited and close level up popup
   const handleCloseCountryModal = () => {
     if (selectedCountry && requiredCountryToVisit) {
       markCountryAsVisited(requiredCountryToVisit);
@@ -61,6 +62,7 @@ const LevelUpAlert: React.FC = () => {
     }
     setShowCountryModal(false);
     setSelectedCountry(null);
+    // IMPORTANT: Clear the level up message to close the popup and enable input
     clearLevelUpMessage();
   };
   
@@ -68,7 +70,12 @@ const LevelUpAlert: React.FC = () => {
     <>
       <GamePopup
         open={showLevelUp}
-        onClose={clearLevelUpMessage}
+        onClose={() => {
+          // Only allow closing if level 10 completion
+          if (level >= 10) {
+            clearLevelUpMessage();
+          }
+        }}
         type="levelUp"
         message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
         level={level}
