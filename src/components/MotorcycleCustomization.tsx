@@ -12,13 +12,13 @@ import { Link } from "react-router-dom";
 const motorcycleColors: CarColor[] = [{
   id: "m1",
   name: "Blanca",
-  image: "413705d8-4bde-4638-9b9a-f4441177cbb7.png",
+  image: "Motoblanca.png",
   color: "bg-white",
   unlockedAtLevel: 0 // Always unlocked
 }, {
   id: "m2",
   name: "Roja Pequeña",
-  image: "4da10e1f-f9d0-40a2-9ea8-01e261a025d1.png",
+  image: "Motorojapequeña.png",
   color: "bg-red-400",
   unlockedAtLevel: 2
 }, {
@@ -30,7 +30,7 @@ const motorcycleColors: CarColor[] = [{
 }, {
   id: "m4",
   name: "Roja",
-  image: "3344a419-e17d-47b9-b45f-8821e4740564.png",
+  image: "Motoroja.png",
   color: "bg-red-500",
   unlockedAtLevel: 4
 }, {
@@ -48,7 +48,7 @@ const motorcycleColors: CarColor[] = [{
 }, {
   id: "m7",
   name: "Azul",
-  image: "f0c27460-5043-4577-8902-e3dad6baf872.png",
+  image: "Motoazul.png",
   color: "bg-blue-500",
   unlockedAtLevel: 7
 }, {
