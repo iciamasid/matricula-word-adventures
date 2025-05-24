@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -117,6 +118,11 @@ const GameContent = () => {
     
     // Close the popup
     setShowMaxLevelPopup(false);
+    
+    // Save the reset state to sessionStorage to ensure it persists during navigation
+    sessionStorage.setItem('motorcycleGameReset', 'true');
+    sessionStorage.setItem('motorcycleStartLevel', '1');
+    sessionStorage.setItem('motorcycleStartPoints', '0');
     
     // Navigate to motorcycle game
     navigate('/motorcycle-game');
