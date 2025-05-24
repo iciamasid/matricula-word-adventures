@@ -121,6 +121,15 @@ export const GameProvider: React.FC<{
     unlockedAtLevel: 0 // Always unlocked
   });
   
+  // Add the missing selectedMotorcycle state
+  const [selectedMotorcycle, setSelectedMotorcycle] = useState<CarColor | null>({ 
+    id: "1", 
+    name: "Moto Blanca", 
+    image: "Motoblanca.jpg", 
+    color: "bg-white",
+    unlockedAtLevel: 0 // Always unlocked
+  });
+  
   // Player information states
   const [playerName, setPlayerName] = useState<string>('');
   const [playerAge, setPlayerAge] = useState<number | null>(null);
@@ -183,6 +192,7 @@ export const GameProvider: React.FC<{
         if (parsedState.playerAge) setPlayerAge(parsedState.playerAge);
         if (parsedState.playerGender) setPlayerGender(parsedState.playerGender);
         if (parsedState.selectedCarColor) setSelectedCarColor(parsedState.selectedCarColor);
+        if (parsedState.selectedMotorcycle) setSelectedMotorcycle(parsedState.selectedMotorcycle);
         
         console.log('Game state loaded from localStorage:', parsedState);
         
@@ -208,6 +218,7 @@ export const GameProvider: React.FC<{
         playerAge,
         playerGender,
         selectedCarColor,
+        selectedMotorcycle,
       };
       
       localStorage.setItem(GAME_STATE_KEY, JSON.stringify(gameState));
@@ -215,7 +226,7 @@ export const GameProvider: React.FC<{
     } catch (error) {
       console.error('Error saving game state:', error);
     }
-  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor]);
+  }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor, selectedMotorcycle]);
   
   // Game control functions
   const resetGame = () => {
@@ -241,6 +252,14 @@ export const GameProvider: React.FC<{
       name: "Coche Azul", 
       image: "cocheazul.png", 
       color: "bg-blue-500",
+      unlockedAtLevel: 0
+    });
+    
+    setSelectedMotorcycle({ 
+      id: "1", 
+      name: "Moto Blanca", 
+      image: "Motoblanca.jpg", 
+      color: "bg-white",
       unlockedAtLevel: 0
     });
     
