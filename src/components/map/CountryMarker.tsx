@@ -14,8 +14,9 @@ interface CountryMarkerProps {
 const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlighted }) => {
   // Get country information
   const position = getCountryPosition(country);
+  const countryImage = getCountryImage(country);
   
-  // Find country flag
+  // Find country flag emoji as fallback
   const countryData = WORLD_DESTINATIONS.find(dest => dest.country === country);
   const countryFlag = countryData?.flag || "🚩";
   
@@ -54,23 +55,20 @@ const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlig
               }}
             />
             
-            {/* Inner marker */}
+            {/* Inner marker with flag image */}
             <div className="bg-white rounded-full p-1 shadow-lg relative z-20">
-              <div className="bg-red-500 rounded-full w-5 h-5 flex items-center justify-center">
-                <motion.span 
-                  className="text-white font-bold text-sm"
-                  animate={{ 
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 5, -5, 0]
+              <div className="bg-red-500 rounded-full w-5 h-5 flex items-center justify-center overflow-hidden">
+                <img 
+                  src={countryImage} 
+                  alt={`${country} flag`}
+                  className="w-full h-full object-cover rounded-full"
+                  onError={(e) => {
+                    // Fallback to emoji if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.parentElement!.innerHTML = `<span class="text-white font-bold text-xs">${countryFlag}</span>`;
                   }}
-                  transition={{ 
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  {countryFlag}
-                </motion.span>
+                />
               </div>
             </div>
             
@@ -85,19 +83,24 @@ const CountryMarker: React.FC<CountryMarkerProps> = ({ country, index, isHighlig
             </motion.div>
           </motion.div>
         ) : (
-          // Regular country marker (unlocked)
+          // Regular country marker (unlocked) with flag image
           <motion.div 
             className="relative"
             whileHover={{ scale: 1.2 }}
           >
             <div className="bg-white rounded-full p-0.5 shadow-lg">
-              <div className="bg-blue-500 rounded-full w-3 h-3 flex items-center justify-center">
-                <motion.span 
-                  className="text-white text-xs opacity-0"
-                  whileHover={{ opacity: 1 }}
-                >
-                  {countryFlag}
-                </motion.span>
+              <div className="bg-blue-500 rounded-full w-3 h-3 flex items-center justify-center overflow-hidden">
+                <img 
+                  src={countryImage} 
+                  alt={`${country} flag`}
+                  className="w-full h-full object-cover rounded-full opacity-90"
+                  onError={(e) => {
+                    // Fallback to emoji if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    target.parentElement!.innerHTML = `<span class="text-white text-xs">${countryFlag}</span>`;
+                  }}
+                />
               </div>
             </div>
             
