@@ -39,7 +39,7 @@ const Noruega = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/3eeeb432-83e7-40d5-839a-f72b03d08da9.png" 
+            src="/lovable-uploads/Noruega.jpg" 
             alt="Catedral de San Basilio, Moscú"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
