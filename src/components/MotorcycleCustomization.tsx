@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/context/GameContext";
@@ -115,8 +116,8 @@ const MotorcycleCustomization: React.FC = () => {
     setIsPanelOpen(!isPanelOpen);
   };
 
-  // Find the currently selected motorcycle
-  const currentCar = selectedMotorcycle || motorcycleColors[0];
+  // Find the currently selected motorcycle - Default to first motorcycle (Motoblanca.png)
+  const currentCar = selectedMotorcycle || motorcycleColors[0]; // This will be Motoblanca.png by default
 
   return (
     <div className="w-full flex flex-col items-center">

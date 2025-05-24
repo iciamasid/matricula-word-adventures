@@ -48,7 +48,7 @@ const MaxLevelPopup: React.FC<MaxLevelPopupProps> = ({
             </motion.div>
           </div>
           
-          {/* Main congratulations text - Removed ENHORABUENA */}
+          {/* Main congratulations text - ENHORABUENA word removed */}
           <div className="space-y-4">
             <div className="space-y-3">
               <p className="text-xl text-purple-700 kids-text font-semibold">
