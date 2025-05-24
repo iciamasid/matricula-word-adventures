@@ -1,8 +1,8 @@
 
 // Country positions on the map for CAR GAME
 const countryPositions: Record<string, { left: string, top: string }> = {
-  "España": { left: "47.5%", top: "38.5%" },
-  "Spain": { left: "47.5%", top: "38.5%" },
+  "España": { left: "48.5%", top: "35.5%" },
+  "Spain": { left: "48.5%", top: "35.5%" },
   "Francia": { left: "48.2%", top: "36%" },
   "France": { left: "48.2%", top: "36%" },
   "Italia": { left: "50.5%", top: "38%" },
