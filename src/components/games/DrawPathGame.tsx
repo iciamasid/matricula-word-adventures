@@ -336,11 +336,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     };
   }, [isDrawing, canvasRef.current]);
 
-  // Get the selected car image URL
-  const getSelectedCarImage = () => {
+  // Get the selected vehicle image URL - now supports both cars and motorcycles
+  const getSelectedVehicleImage = () => {
     if (!selectedCarColor) return "";
     return `/lovable-uploads/${selectedCarColor.image}`;
   };
+
+  // Check if we're using a motorcycle based on the image name
+  const isMotorcycle = selectedCarColor?.image?.toLowerCase().includes('moto') || false;
 
   return (
     <div className="flex flex-col w-full gap-4">
@@ -360,46 +363,46 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
         onHelp={handleHelp} 
       />
       
-      {/* Game canvas with much thicker purple border - 8px border (approx 3mm) */}
-      <Card className="border-8 border-purple-300 shadow-lg overflow-hidden" style={{
+      {/* Game canvas with border color based on vehicle type */}
+      <Card className={`border-8 shadow-lg overflow-hidden ${isMotorcycle ? 'border-teal-300' : 'border-purple-300'}`} style={{
         borderStyle: 'solid'
       }}>
         <CardContent className="p-0 touch-none">
           <div ref={containerRef} className="w-full relative">
             <canvas ref={canvasRef} />
             
-            {/* Overlay car image on top of the drawn car */}
+            {/* Overlay vehicle image on top of the drawn vehicle */}
             {selectedCarColor && showCarImage && (
               <div 
                 className="absolute pointer-events-none" 
                 style={{
-                  width: '140px',
-                  height: '110px',
-                  left: `${carPosition.x - 70}px`,
-                  top: `${carPosition.y - 55}px`,
+                  width: isMotorcycle ? '120px' : '140px',
+                  height: isMotorcycle ? '90px' : '110px',
+                  left: `${carPosition.x - (isMotorcycle ? 60 : 70)}px`,
+                  top: `${carPosition.y - (isMotorcycle ? 45 : 55)}px`,
                   transform: `rotate(${carRotation}deg)`,
                   transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
                   zIndex: 50 
                 }}
               >
                 <img 
-                  src={getSelectedCarImage()} 
-                  alt="Selected car" 
+                  src={getSelectedVehicleImage()} 
+                  alt={`Selected ${isMotorcycle ? 'motorcycle' : 'car'}`} 
                   className="w-full h-full object-contain" 
                 />
               </div>
             )}
             
-            {/* Drawing mode indicator */}
+            {/* Drawing mode indicator with color based on vehicle type */}
             {isDrawing && (
-              <div className="absolute top-0 left-0 right-0 bg-green-500 text-white text-center py-1 z-20 rounded-t-md kids-text">
+              <div className={`absolute top-0 left-0 right-0 text-white text-center py-1 z-20 rounded-t-md kids-text ${isMotorcycle ? 'bg-teal-500' : 'bg-green-500'}`}>
                 ¡Dibuja ahora el camino!
               </div>
             )}
             
-            {/* Progress indicator for animation */}
+            {/* Progress indicator for animation with color based on vehicle type */}
             {isPlaying && interpolatedPath.length > 0 && (
-              <div className="absolute bottom-0 left-0 right-0 bg-blue-500/80 backdrop-blur-sm text-white py-2 z-20 rounded-b-md">
+              <div className={`absolute bottom-0 left-0 right-0 backdrop-blur-sm text-white py-2 z-20 rounded-b-md ${isMotorcycle ? 'bg-teal-500/80' : 'bg-blue-500/80'}`}>
                 <div className="flex flex-col items-center gap-1 px-4">
                   <span className="text-xs font-medium kids-text">Llegando a tu destino...</span>
                   <Progress value={animationProgress} className="h-3 w-full" />
@@ -411,7 +414,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
         </CardContent>
       </Card>
       
-      {/* Game status indicators with higher z-index to appear above car */}
+      {/* Game status indicators */}
       <GameStatusIndicators 
         isInitializing={isInitializing} 
         canvasReady={canvasReady} 

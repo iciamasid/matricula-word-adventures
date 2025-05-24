@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/context/GameContext";
@@ -12,33 +11,33 @@ import { Link } from "react-router-dom";
 // Available motorcycle colors with unlock levels using real motorcycle images
 const motorcycleColors: CarColor[] = [{
   id: "m1",
-  name: "Azul",
-  image: "Motoazul.jpg",
-  color: "bg-blue-500",
-  unlockedAtLevel: 0 // Always unlocked
-}, {
-  id: "m2",
-  name: "Amarilla",
-  image: "Motoamarilla.png",
-  color: "bg-yellow-500",
-  unlockedAtLevel: 2
-}, {
-  id: "m3",
-  name: "Roja",
-  image: "Motoroja.jpg",
-  color: "bg-red-500",
-  unlockedAtLevel: 3
-}, {
-  id: "m4",
-  name: "Verde",
-  image: "Motoverde.png",
-  color: "bg-green-500",
-  unlockedAtLevel: 4
-}, {
-  id: "m5",
   name: "Blanca",
   image: "Motoblanca.jpg",
   color: "bg-white",
+  unlockedAtLevel: 0 // Always unlocked
+}, {
+  id: "m2",
+  name: "Roja Pequeña",
+  image: "Motorojapequeña.png",
+  color: "bg-red-400",
+  unlockedAtLevel: 2
+}, {
+  id: "m3",
+  name: "Verde",
+  image: "Motoverde.png",
+  color: "bg-green-500",
+  unlockedAtLevel: 3
+}, {
+  id: "m4",
+  name: "Roja",
+  image: "Motoroja.jpg",
+  color: "bg-red-500",
+  unlockedAtLevel: 4
+}, {
+  id: "m5",
+  name: "Amarilla",
+  image: "Motoamarilla.png",
+  color: "bg-yellow-500",
   unlockedAtLevel: 5
 }, {
   id: "m6",
@@ -48,9 +47,9 @@ const motorcycleColors: CarColor[] = [{
   unlockedAtLevel: 6
 }, {
   id: "m7",
-  name: "Harley",
-  image: "Motoharley.png",
-  color: "bg-orange-500",
+  name: "Azul",
+  image: "Motoazul.jpg",
+  color: "bg-blue-500",
   unlockedAtLevel: 7
 }, {
   id: "m8",
@@ -60,9 +59,9 @@ const motorcycleColors: CarColor[] = [{
   unlockedAtLevel: 8
 }, {
   id: "m9",
-  name: "Roja Pequeña",
-  image: "Motorojapequeña.png",
-  color: "bg-red-400",
+  name: "Harley",
+  image: "Motoharley.png",
+  color: "bg-orange-500",
   unlockedAtLevel: 9
 }];
 
@@ -176,7 +175,7 @@ const MotorcycleCustomization: React.FC = () => {
           whileTap={{ scale: 0.98 }}
         >
           <Link 
-            to="/draw-game" 
+            to="/motorcycle-drive-game" 
             onClick={handleNavigation} 
             className="block w-full py-2 px-3 text-white relative"
           >
