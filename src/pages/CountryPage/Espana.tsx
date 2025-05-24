@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin } from 'lucide-react';
@@ -8,7 +9,7 @@ const EspanaPage = () => {
   const [returnGame, setReturnGame] = useState('/');
 
   useEffect(() => {
-    // Check if coming from car game based on the referrer or localStorage
+    // Check if coming from motorcycle game based on the referrer or localStorage
     const referrer = document.referrer;
     if (referrer.includes('motorcycle-game')) {
       setReturnGame('/motorcycle-game');
