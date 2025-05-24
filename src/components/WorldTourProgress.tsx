@@ -219,7 +219,6 @@ const isCountryUnlocked = (locationIndex: number, currentLevel: number, countryN
   // For other countries, check if level is high enough
   return currentLevel >= locationIndex;
 };
-
 const WorldTourProgress = () => {
   const {
     level
@@ -532,15 +531,16 @@ const WorldTourProgress = () => {
   const getCurrentCountry = () => {
     return getCountryName(level, isEnglish);
   };
-
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }} 
-      animate={{ opacity: 1, y: 0 }} 
-      transition={{ delay: 0.4 }} 
-      className={`${bgColor} rounded-xl`}
-    >
-      <h3 className={`text-xl text-center ${textColor} kids-text mb-2 uppercase font-bold`}>
+  return <motion.div initial={{
+    opacity: 0,
+    y: 20
+  }} animate={{
+    opacity: 1,
+    y: 0
+  }} transition={{
+    delay: 0.4
+  }} className={`${bgColor} rounded-xl`}>
+      <h3 className="py-[10px] text-xl text-center text-purple-800 font-bold">
         {isEnglish ? "Your world tour!" : "¡TU VUELTA AL MUNDO!"}
       </h3>
       
@@ -552,13 +552,11 @@ const WorldTourProgress = () => {
       </div>
       
       {/* Current destination indicator - MOVED to top */}
-      {level <= 9 && (
-        <div className="mt-2 text-center mb-3">
+      {level <= 9 && <div className="mt-2 text-center mb-3">
           <span className="text-xl font-normal text-fuchsia-800">
             {isEnglish ? "Next destination:" : "Próximo destino:"} {getDestinationFlag(level)} {getCountryName(level + 1, isEnglish)}
           </span>
-        </div>
-      )}
+        </div>}
       
       {/* Elliptical world tour visualization */}
       <div className="relative pt-2 pb-4">
@@ -569,18 +567,9 @@ const WorldTourProgress = () => {
             <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="3,3" />
             
             {/* Highlighted portion of the path based on progress */}
-            <path 
-              d={createEllipsePath()} 
-              fill="none" 
-              strokeWidth="2.5" 
-              stroke={getPathStrokeColor()} 
-              strokeLinecap="round" 
-              strokeDasharray={estimatedPathLength} 
-              strokeDashoffset={calculateStrokeDashOffset()} 
-              style={{
-                display: level <= 1 && progressValue === 0 ? 'none' : 'block'
-              }} 
-            />
+            <path d={createEllipsePath()} fill="none" strokeWidth="2.5" stroke={getPathStrokeColor()} strokeLinecap="round" strokeDasharray={estimatedPathLength} strokeDashoffset={calculateStrokeDashOffset()} style={{
+            display: level <= 1 && progressValue === 0 ? 'none' : 'block'
+          }} />
           </svg>
           
           {/* Earth image in the center */}
@@ -670,14 +659,7 @@ const WorldTourProgress = () => {
       </p>
 
       {/* Locked country popup */}
-      {showLockedPopup && (
-        <LockedCountryPopup 
-          country={lockedCountry} 
-          onClose={() => setShowLockedPopup(false)} 
-        />
-      )}
-    </motion.div>
-  );
+      {showLockedPopup && <LockedCountryPopup country={lockedCountry} onClose={() => setShowLockedPopup(false)} />}
+    </motion.div>;
 };
-
 export default WorldTourProgress;
