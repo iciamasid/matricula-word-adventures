@@ -1,43 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import React, { useEffect } from 'react';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { useCountryNavigation } from '@/hooks/useCountryNavigation';
 
 const Reino_Unido = () => {
-  const navigate = useNavigate();
-  const [returnGame, setReturnGame] = useState('/draw-game');
+  const { handleReturnToGame } = useCountryNavigation('Reino_Unido');
 
   useEffect(() => {
-    const navigatingBack = sessionStorage.getItem('navigatingBack');
-    if (navigatingBack === 'motorcycle-game') {
-      setReturnGame('/motorcycle-game');
-    } else if (navigatingBack === 'car-game') {
-      setReturnGame('/draw-game');
-    } else {
-      // Default based on current URL or referrer
-      const referrer = document.referrer;
-      if (referrer.includes('motorcycle-game')) {
-        setReturnGame('/motorcycle-game');
-      } else {
-        setReturnGame('/draw-game');
-      }
-    }
+    window.scrollTo(0, 0);
   }, []);
-
-  const handleNavigation = () => {
-    const gameState = sessionStorage.getItem('gameStateBeforeCountry');
-    if (gameState) {
-      const parsedState = JSON.parse(gameState);
-      console.log('Restoring game state from Reino Unido:', parsedState);
-      
-      sessionStorage.setItem('restoreGameState', JSON.stringify(parsedState));
-      sessionStorage.removeItem('gameStateBeforeCountry');
-    }
-    
-    sessionStorage.removeItem('navigatingBack');
-    navigate(returnGame);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-red-50 p-4">
@@ -45,7 +18,7 @@ const Reino_Unido = () => {
         <Button 
           variant="outline" 
           size="sm" 
-          onClick={handleNavigation}
+          onClick={handleReturnToGame}
           className="mb-4 bg-blue-700/90 hover:bg-blue-800 text-white border-blue-600"
         >
           <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
