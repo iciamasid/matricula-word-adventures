@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
@@ -69,7 +68,7 @@ const LevelUpAlert: React.FC = () => {
     <>
       <GamePopup
         open={showLevelUp}
-        onClose={() => {}} // Prevent manual closing
+        onClose={clearLevelUpMessage}
         type="levelUp"
         message={isEnglish ? "LEVEL UP!" : "¡SUBIDA DE NIVEL!"}
         level={level}
@@ -78,7 +77,7 @@ const LevelUpAlert: React.FC = () => {
         preventAutoClose={true}
         countryToVisit={requiredCountryToVisit || undefined}
         onOpenCountryModal={handleOpenCountryModal}
-        showWorldTour={level < 10} // Show world tour for level ups (not completion)
+        showWorldTour={level < 10} // Always show world tour for level ups (not completion)
       />
 
       <CountryModal

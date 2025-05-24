@@ -175,7 +175,6 @@ const GamePopup: React.FC<GamePopupProps> = ({
   const handleVisitCountry = () => {
     if (countryToVisit && onOpenCountryModal) {
       onOpenCountryModal(countryToVisit);
-      onClose(); // Close the level up popup
     }
   };
 
@@ -192,7 +191,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
             handleClose();
           }
         }}>
-          <AlertDialogContent className={`${showWorldTour ? 'max-w-md' : 'max-w-sm'} border-0 p-0 bg-transparent ${isCompletion ? 'scale-110' : ''}`}>
+          <AlertDialogContent className={`${showWorldTour && type === "levelUp" && !isCompletion ? 'max-w-lg' : 'max-w-sm'} border-0 p-0 bg-transparent ${isCompletion ? 'scale-110' : ''}`}>
             <AlertDialogTitle className="sr-only">{message}</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">{explanation}</AlertDialogDescription>
             
@@ -285,36 +284,40 @@ const GamePopup: React.FC<GamePopupProps> = ({
                     </div>
                   )}
                   
-                  {/* Show simplified explanation and world tour for level up */}
-                  {type === "levelUp" && !isCompletion && countryToVisit && (
+                  {/* Show world tour and country visit for level up */}
+                  {type === "levelUp" && !isCompletion && (
                     <motion.div
-                      className="mt-4 space-y-3"
+                      className="mt-4 space-y-4"
                       animate={{ y: [0, -5, 0] }}
                       transition={{ duration: 1.5, repeat: Infinity }}
                     >
-                      <div className="text-white kids-text text-lg">
-                        {isEnglish 
-                          ? `Visit ${countryToVisit} to continue!`
-                          : `¡Visita ${countryToVisit} para continuar!`}
-                      </div>
+                      {countryToVisit && (
+                        <div className="text-white kids-text text-lg">
+                          {isEnglish 
+                            ? `Visit ${countryToVisit} to continue!`
+                            : `¡Visita ${countryToVisit} para continuar!`}
+                        </div>
+                      )}
                       
-                      {/* Show mini world tour if enabled */}
+                      {/* Show mini world tour for level ups */}
                       {showWorldTour && (
-                        <div className="bg-white/20 rounded-xl p-3 mt-3">
-                          <div className="text-yellow-300 kids-text text-sm mb-2">
+                        <div className="bg-white/20 rounded-xl p-4 mt-4">
+                          <div className="text-yellow-300 kids-text text-sm mb-3 text-center">
                             {isEnglish ? "Click on a flag:" : "Pincha en una bandera:"}
                           </div>
                           <WorldTourProgressMini onCountryVisit={handleCountryVisitFromMap} />
                         </div>
                       )}
                       
-                      <Button
-                        className={`${buttonClasses} flex items-center gap-2 w-full py-3 mt-3`}
-                        onClick={handleVisitCountry}
-                      >
-                        <MapPin size={18} />
-                        {isEnglish ? `Visit ${countryToVisit}` : `Visitar ${countryToVisit}`}
-                      </Button>
+                      {countryToVisit && (
+                        <Button
+                          className={`${buttonClasses} flex items-center gap-2 w-full py-3 mt-4`}
+                          onClick={handleVisitCountry}
+                        >
+                          <MapPin size={18} />
+                          {isEnglish ? `Visit ${countryToVisit}` : `Visitar ${countryToVisit}`}
+                        </Button>
+                      )}
                     </motion.div>
                   )}
                   
