@@ -60,7 +60,7 @@ const Reino_Unido = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/21e71de1-c8e4-4bbb-95d6-67ce7ae41316.png" 
+            src="/lovable-uploads/Reino_Unido.jpg" 
             alt="Empire State Building, Nueva York"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
