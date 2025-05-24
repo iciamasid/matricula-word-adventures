@@ -13,13 +13,15 @@ const LevelUpAlert: React.FC = () => {
   // Determine if we're in motorcycle game
   const isMotorcycleGame = location.pathname === '/motorcycle-game';
   
-  // Verificar si estamos navegando entre páginas
+  // Check for navigation back from countries - only clear if not coming from a level up
   useEffect(() => {
     const navigatingBack = sessionStorage.getItem('navigatingBack');
-    if (navigatingBack === 'true') {
-      // Si estamos navegando entre páginas, limpiar el mensaje de nivel
-      clearLevelUpMessage();
-      // Eliminar el flag de navegación
+    if (navigatingBack && navigatingBack !== 'motorcycle-game' && navigatingBack !== 'car-game') {
+      // If it's just 'true', clear the level up message
+      if (navigatingBack === 'true') {
+        clearLevelUpMessage();
+      }
+      // Remove the flag
       sessionStorage.removeItem('navigatingBack');
     }
   }, [clearLevelUpMessage]);
@@ -180,7 +182,7 @@ const LevelUpAlert: React.FC = () => {
       explanation={explanation}
       points={0}
       countryToVisit={getCurrentCountry()} // Pass the country code for routing
-      requireCountryVisit={!!getCurrentCountry()} // Require visit only if there's a country
+      requireCountryVisit={level < 10} // Require visit for all levels except completion (level 10)
     />
   );
 };

@@ -5,6 +5,7 @@ import { Award, Gift, Star, Check, X, Trophy, MapPin } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+
 interface GamePopupProps {
   open: boolean;
   onClose: () => void;
@@ -52,7 +53,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
       }));
       setStars(newStars);
 
-      // Auto-close after 2 seconds (shortened from 3) ONLY if not requiring country visit
+      // Only auto-close if NOT requiring country visit
       if (!requireCountryVisit) {
         const timer = setTimeout(() => {
           handleClose();
@@ -62,7 +63,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
     }
   }, [open, requireCountryVisit]);
 
-  // Handle proper closing with animation
+  // Handle proper closing with animation - prevent closing if country visit is required
   const handleClose = () => {
     // If country visit is required, don't allow closing without clicking the link
     if (requireCountryVisit && countryToVisit) {
@@ -156,7 +157,12 @@ const GamePopup: React.FC<GamePopupProps> = ({
   // Button style classes based on language
   const buttonClasses = isEnglish ? "bg-orange-600 hover:bg-orange-700 text-white kids-text" : "bg-game-purple hover:bg-game-purple/90 kids-text";
   return <AnimatePresence>
-      {open && <AlertDialog open={isVisible} onOpenChange={() => handleClose()}>
+      {open && <AlertDialog open={isVisible} onOpenChange={() => {
+        // Prevent closing if country visit is required
+        if (!requireCountryVisit || !countryToVisit) {
+          handleClose();
+        }
+      }}>
           <AlertDialogContent className={`max-w-sm border-0 p-0 bg-transparent ${isCompletion ? 'scale-110' : ''}`}>
             {/* Hidden, but needed for accessibility */}
             <AlertDialogTitle className="sr-only">{message}</AlertDialogTitle>
@@ -272,8 +278,17 @@ const GamePopup: React.FC<GamePopupProps> = ({
               }}>
                       <Link to={`/country/${countryToVisit}`}>
                         <Button className={`${buttonClasses} flex items-center gap-2 w-full py-3`} onClick={() => {
-                    // Set navigatingBack to true so when returning, the level up message is cleared
-                    sessionStorage.setItem('navigatingBack', 'true');
+                    // Determine the correct game type to return to
+                    const currentPath = window.location.pathname;
+                    let gameType = 'car-game'; // default
+                    
+                    if (currentPath === '/motorcycle-game') {
+                      gameType = 'motorcycle-game';
+                    }
+                    
+                    // Set the correct navigation flag
+                    sessionStorage.setItem('navigatingBack', gameType);
+                    
                     // Still call onClose to ensure state is updated correctly
                     onClose();
                   }}>
