@@ -279,7 +279,7 @@ const MotorcycleGameContent = () => {
             }}
           >
             <img 
-              src={selectedMotorcycle ? `/lovable-uploads/${selectedMotorcycle.image}` : "/lovable-uploads/Motoblanca.png"}
+              src={selectedMotorcycle ? `/lovable-uploads/${selectedMotorcycle.image}` : "/lovable-uploads/860e88f7-58ca-46ff-8fc7-a42ad0c35818.png"}
               alt={selectedMotorcycle ? selectedMotorcycle.name : "Motoblanca"} 
               className="w-full h-full object-contain" 
             />
