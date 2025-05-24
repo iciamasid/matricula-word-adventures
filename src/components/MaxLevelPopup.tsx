@@ -2,7 +2,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Bike, Trophy } from 'lucide-react';
+import { Bike, Trophy, Star } from 'lucide-react';
 
 interface MaxLevelPopupProps {
   open: boolean;
@@ -18,62 +18,92 @@ const MaxLevelPopup: React.FC<MaxLevelPopupProps> = ({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
       <motion.div
-        className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl border-4 border-purple-300"
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: "spring", duration: 0.5 }}
+        className="bg-white rounded-xl p-8 max-w-lg w-full shadow-2xl border-4 border-yellow-400"
+        initial={{ scale: 0.5, opacity: 0, y: -50 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        transition={{ type: "spring", duration: 0.6, bounce: 0.3 }}
       >
-        <div className="text-center space-y-4">
-          {/* Trophy icon */}
-          <motion.div
-            className="flex justify-center"
-            animate={{ rotate: [0, 10, -10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          >
-            <Trophy size={64} className="text-yellow-500" />
-          </motion.div>
-          
-          {/* Congratulations text */}
-          <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-purple-800 kids-text">
-              ¡Felicidades!
-            </h2>
-            <p className="text-lg text-purple-700 kids-text">
-              ¡Has completado todos los niveles con coches!
-            </p>
-            <p className="text-base text-purple-600 kids-text">
-              ¡Qué bien, ya puedes viajar en moto!
-            </p>
+        <div className="text-center space-y-6">
+          {/* Celebration elements */}
+          <div className="flex justify-center space-x-4">
+            <motion.div
+              animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Trophy size={48} className="text-yellow-500" />
+            </motion.div>
+            <motion.div
+              animate={{ rotate: [0, -15, 15, 0], scale: [1, 1.1, 1] }}
+              transition={{ duration: 2.2, repeat: Infinity }}
+            >
+              <Star size={40} className="text-yellow-400" />
+            </motion.div>
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.3, 1] }}
+              transition={{ duration: 1.8, repeat: Infinity }}
+            >
+              <Trophy size={48} className="text-yellow-600" />
+            </motion.div>
           </div>
           
-          {/* Motorcycle icon */}
+          {/* Main congratulations text */}
+          <div className="space-y-4">
+            <h2 className="text-3xl font-bold text-purple-800 kids-text">
+              ¡FELICIDADES!
+            </h2>
+            <div className="space-y-3">
+              <p className="text-xl text-purple-700 kids-text font-semibold">
+                ¡Has completado todos los niveles con coches!
+              </p>
+              <div className="bg-gradient-to-r from-teal-100 to-teal-50 p-4 rounded-lg border-2 border-teal-300">
+                <p className="text-lg text-teal-800 kids-text font-medium">
+                  Puedes pasar a la siguiente pantalla en la que conducirás motos
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Motorcycle animation */}
           <motion.div
-            className="flex justify-center"
-            animate={{ x: [0, 10, -10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
+            className="flex justify-center py-4"
+            animate={{ x: [0, 20, -20, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           >
-            <Bike size={48} className="text-teal-600" />
+            <div className="bg-teal-100 rounded-full p-4">
+              <Bike size={64} className="text-teal-600" />
+            </div>
           </motion.div>
           
           {/* Action buttons */}
-          <div className="space-y-3 pt-2">
-            <Button
-              onClick={onGoToMotorcycle}
-              className="w-full bg-teal-600 hover:bg-teal-700 text-white kids-text text-lg py-3"
+          <div className="space-y-4 pt-4">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <Bike className="w-5 h-5 mr-2" />
-              ¡Ir a jugar con motos!
-            </Button>
+              <Button
+                onClick={onGoToMotorcycle}
+                className="w-full bg-teal-600 hover:bg-teal-700 text-white kids-text text-xl py-4 h-auto"
+                size="lg"
+              >
+                <Bike className="w-6 h-6 mr-3" />
+                ¡Ir al juego de motos!
+              </Button>
+            </motion.div>
             
-            <Button
-              onClick={onClose}
-              variant="outline"
-              className="w-full border-purple-300 text-purple-700 hover:bg-purple-50 kids-text"
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              Continuar con coches
-            </Button>
+              <Button
+                onClick={onClose}
+                variant="outline"
+                className="w-full border-purple-300 text-purple-700 hover:bg-purple-50 kids-text text-lg py-3"
+              >
+                Seguir jugando con coches
+              </Button>
+            </motion.div>
           </div>
         </div>
       </motion.div>

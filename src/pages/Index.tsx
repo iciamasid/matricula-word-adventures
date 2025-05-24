@@ -11,7 +11,7 @@ import { RefreshCw, HelpCircle, Bike } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
@@ -19,6 +19,7 @@ import WorldTourProgress from "@/components/WorldTourProgress";
 import CarCustomization from "@/components/CarCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
+import MaxLevelPopup from "@/components/MaxLevelPopup";
 
 const Index = () => {
   return (
@@ -31,7 +32,9 @@ const Index = () => {
 // Component to handle the game content
 const GameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
+  const [showMaxLevelPopup, setShowMaxLevelPopup] = useState(false);
   const isMobile = useIsMobile();
+  const navigate = useNavigate();
   const worldTourRef = useRef<HTMLDivElement>(null);
   const {
     totalPoints,
@@ -55,6 +58,13 @@ const GameContent = () => {
 
   // Ref to the license plate section
   const licensePlateRef = useRef<HTMLDivElement>(null);
+
+  // Check if max level (level 10) is reached and show popup
+  useEffect(() => {
+    if (level >= 10) {
+      setShowMaxLevelPopup(true);
+    }
+  }, [level]);
 
   // Asegura que la página comience desde la parte superior al cargar
   useEffect(() => {
@@ -99,6 +109,17 @@ const GameContent = () => {
     }
   };
 
+  // Handle navigation to motorcycle game
+  const handleGoToMotorcycle = () => {
+    setShowMaxLevelPopup(false);
+    navigate('/motorcycle-game');
+  };
+
+  // Handle closing the max level popup
+  const handleCloseMaxLevelPopup = () => {
+    setShowMaxLevelPopup(false);
+  };
+
   // Determine the color theme for car page (purple)
   const bgColor = "bg-purple-100";
   const panelBgColor = "bg-purple-200";
@@ -131,6 +152,7 @@ const GameContent = () => {
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
+      setShowMaxLevelPopup(false);
       toast({
         title: "¡Juego reiniciado!",
         description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
@@ -276,6 +298,13 @@ const GameContent = () => {
         
         {/* Level Up Alert using GamePopup */}
         <LevelUpAlert />
+        
+        {/* Max Level Popup */}
+        <MaxLevelPopup 
+          open={showMaxLevelPopup}
+          onClose={handleCloseMaxLevelPopup}
+          onGoToMotorcycle={handleGoToMotorcycle}
+        />
         
         {/* Birthday Bonus Popup */}
         {playerAge && (
