@@ -23,7 +23,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
 }) => {
   const {
     selectedCarColor,
-    setSelectedCarColor
+    setSelectedCarColor,
+    selectedMotorcycle
   } = useGame();
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -49,6 +50,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     y: 50
   }); // Initial car position
 
+  // Determine if we're in motorcycle mode based on current page
+  const isMotorcycleMode = window.location.pathname.includes('motorcycle');
+  
+  // Get the current selected vehicle (car or motorcycle)
+  const currentVehicle = isMotorcycleMode ? selectedMotorcycle : selectedCarColor;
+
   // Handle errors
   const handleError = (message: string) => {
     console.error(message);
@@ -70,33 +77,23 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     canvasRef,
     containerRef,
     onPathCreated: (points: Point[]) => {
-      if (points.length > 0) {
-        // Add end point at the last position of the path
-        const lastPoint = points[points.length - 1];
+      // Add end point at the last position of the path
+      const lastPoint = points[points.length - 1];
 
-        // Remove existing end point if any
-        if (endPointObj && fabricCanvas) {
-          fabricCanvas.remove(endPointObj);
-        }
-
-        // Create end point with WHITE color instead of red
-        const endPoint = createEndPoint(lastPoint.x, lastPoint.y);
-        fabricCanvas?.add(endPoint);
-        setEndPointObj(endPoint);
-        setEndPosition({
-          x: lastPoint.x,
-          y: lastPoint.y
-        });
-        console.log("End point added at:", lastPoint);
+      // Remove existing end point if any
+      if (endPointObj && fabricCanvas) {
+        fabricCanvas.remove(endPointObj);
       }
 
-      // Set the path for animation
-      setPath(points);
-      setPathExists(points.length > 0);
-      setIsDrawing(false); // Deactivate drawing mode after creating a path
-      if (fabricCanvas) {
-        fabricCanvas.isDrawingMode = false;
-      }
+      // Create end point with WHITE color instead of red
+      const endPoint = createEndPoint(lastPoint.x, lastPoint.y);
+      fabricCanvas?.add(endPoint);
+      setEndPointObj(endPoint);
+      setEndPosition({
+        x: lastPoint.x,
+        y: lastPoint.y
+      });
+      console.log("End point added at:", lastPoint);
     },
     onError: handleError,
     backgroundColor: '#FFFFFF',
@@ -338,12 +335,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
 
   // Get the selected vehicle image URL - now supports both cars and motorcycles
   const getSelectedVehicleImage = () => {
-    if (!selectedCarColor) return "";
-    return `/lovable-uploads/${selectedCarColor.image}`;
+    if (!currentVehicle) return "";
+    return `/lovable-uploads/${currentVehicle.image}`;
   };
 
   // Check if we're using a motorcycle based on the image name
-  const isMotorcycle = selectedCarColor?.image?.toLowerCase().includes('moto') || false;
+  const isMotorcycle = currentVehicle?.image?.toLowerCase().includes('moto') || isMotorcycleMode;
 
   return (
     <div className="flex flex-col w-full gap-4">
@@ -372,7 +369,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
             <canvas ref={canvasRef} />
             
             {/* Overlay vehicle image on top of the drawn vehicle */}
-            {selectedCarColor && showCarImage && (
+            {currentVehicle && showCarImage && (
               <div 
                 className="absolute pointer-events-none" 
                 style={{
