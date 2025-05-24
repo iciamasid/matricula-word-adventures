@@ -100,9 +100,7 @@ const GAME_STATE_KEY = 'matriculabra_game_state';
 // Create a key for localStorage to store visited countries
 const VISITED_COUNTRIES_KEY = 'matriculabra_visited_countries';
 
-export const GameProvider: React.FC<{
-  children: React.ReactNode;
-}> = ({ children }) => {
+export const GameProvider: React.FC<GameProviderProps> = ({ children }) => {
   // Get current language from LanguageContext
   const { language } = useLanguage?.() || { language: 'es' };
 
@@ -133,13 +131,13 @@ export const GameProvider: React.FC<{
     unlockedAtLevel: 0 // Always unlocked
   });
   
-  // Add the missing selectedMotorcycle state
-  const [selectedMotorcycle, setSelectedMotorcycle] = useState<CarColor | null>({ 
-    id: "1", 
-    name: "Moto Blanca", 
-    image: "Motoblanca.jpg", 
+  // Selected motorcycle for motorcycle game - Default to white motorcycle (Motoblanca.png)
+  const [selectedMotorcycle, setSelectedMotorcycle] = useState<CarColor | null>({
+    id: "m1",
+    name: "Blanca",
+    image: "Motoblanca.png",
     color: "bg-white",
-    unlockedAtLevel: 0 // Always unlocked
+    unlockedAtLevel: 0
   });
   
   // Player information states
@@ -410,9 +408,9 @@ export const GameProvider: React.FC<{
     });
     
     setSelectedMotorcycle({ 
-      id: "1", 
-      name: "Moto Blanca", 
-      image: "Motoblanca.jpg", 
+      id: "m1", 
+      name: "Blanca", 
+      image: "Motoblanca.png", 
       color: "bg-white",
       unlockedAtLevel: 0
     });
