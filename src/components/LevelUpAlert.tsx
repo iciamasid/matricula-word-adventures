@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useGame } from "@/context/GameContext";
 import GamePopup from "@/components/GamePopup";
@@ -45,6 +46,21 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
       return () => clearTimeout(timer);
     }
   }, [showLevelUp, level, resetGame, clearLevelUpMessage]);
+
+  // Auto-open country modal 3 seconds after level up popup appears
+  useEffect(() => {
+    if (showLevelUp && level < 10) {
+      const timer = setTimeout(() => {
+        const countryCode = getCurrentCountry();
+        const countryInfo = getCountryInfo(countryCode);
+        setSelectedCountry(countryInfo);
+        setShowCountryModal(true);
+        clearLevelUpMessage();
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [showLevelUp, level, clearLevelUpMessage]);
 
   // Get the current country based on origin info and game type
   const getCurrentCountry = () => {
@@ -158,15 +174,6 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
     }
   };
 
-  // Handle country visit button click
-  const handleVisitCountry = () => {
-    const countryCode = getCurrentCountry();
-    const countryInfo = getCountryInfo(countryCode);
-    setSelectedCountry(countryInfo);
-    setShowCountryModal(true);
-    clearLevelUpMessage();
-  };
-
   // Handle closing the country modal
   const handleCloseCountryModal = () => {
     setShowCountryModal(false);
@@ -207,20 +214,6 @@ const LevelUpAlert: React.FC<LevelUpAlertProps> = ({ onOpenCountryModal }) => {
         requireCountryVisit={level < 10}
         preventAutoClose={level >= 10}
       />
-      
-      {/* Custom visit country button overlay */}
-      {showLevelUp && level < 10 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
-          <div className="bg-white rounded-lg p-4 shadow-lg pointer-events-auto mt-80">
-            <button
-              onClick={handleVisitCountry}
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg font-bold text-lg transition-colors"
-            >
-              {isEnglish ? `Visit ${getCountryDisplayName()}!` : `¡Visitar ${getCountryDisplayName()}!`}
-            </button>
-          </div>
-        </div>
-      )}
 
       <CountryModal
         open={showCountryModal}
