@@ -1,46 +1,30 @@
-import React, { useEffect, useNavigate } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { useCountryNavigation } from '@/hooks/useCountryNavigation';
 
 const RusiaPage = () => {
-  const navigate = useNavigate();
+  const { handleReturnToGame } = useCountryNavigation('Rusia');
 
   // Ensure page starts from top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleNavigation = () => {
-    // Rusia belongs to car game
-    const gameState = sessionStorage.getItem('gameStateBeforeCountry');
-    if (gameState) {
-      const parsedState = JSON.parse(gameState);
-      console.log('Restoring game state from Rusia:', parsedState);
-      
-      sessionStorage.setItem('restoreGameState', JSON.stringify(parsedState));
-      sessionStorage.removeItem('gameStateBeforeCountry');
-    }
-    
-    sessionStorage.removeItem('navigatingBack');
-    navigate('/draw-game'); // Always return to car game
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-red-200 to-white p-4">
       <div className="max-w-4xl mx-auto">
         {/* Back button */}
-        <Link to="/motorcycle-game">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleNavigation}
-            className="mb-4 bg-red-700/90 hover:bg-red-800 text-white border-red-600"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
-          </Button>
-        </Link>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleReturnToGame}
+          className="mb-4 bg-red-700/90 hover:bg-red-800 text-white border-red-600"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
+        </Button>
 
         {/* Header with flag and country name */}
         <div className="text-center mb-8">
