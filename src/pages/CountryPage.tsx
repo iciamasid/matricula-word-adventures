@@ -9,84 +9,61 @@ const CountryPage = () => {
   const { country } = useParams<{ country: string }>();
   const navigate = useNavigate();
 
-  // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // Determine the correct return path based on navigation context
   const getReturnPath = () => {
     const navigatingBack = sessionStorage.getItem('navigatingBack');
     
     if (navigatingBack === 'motorcycle-game') {
       return '/motorcycle-game';
+    } else if (navigatingBack === 'car-game') {
+      return '/draw-game';
     } else {
-      return '/'; // Default to car game (Index page)
+      return '/draw-game'; // Default to car game
     }
   };
 
   const handleReturn = () => {
-    // CRITICAL FIX: Restore game state if it was stored
     const gameState = sessionStorage.getItem('gameStateBeforeCountry');
     if (gameState) {
       const parsedState = JSON.parse(gameState);
       console.log('Restoring game state from country page:', parsedState);
       
-      // Store the state for the GameContext to restore
       sessionStorage.setItem('restoreGameState', JSON.stringify(parsedState));
       sessionStorage.removeItem('gameStateBeforeCountry');
     }
     
-    // Clear the navigation flag when returning
     sessionStorage.removeItem('navigatingBack');
     navigate(getReturnPath());
   };
 
-  // Country-specific display logic
   const getCountryDisplayName = (countryCode: string) => {
     switch (countryCode) {
-      case "España":
-        return "España";
-      case "Francia":
-        return "Francia";
-      case "Italia":
-        return "Italia";
-      case "Rusia":
-        return "Rusia";
-      case "Japón":
-        return "Japón";
-      case "Estados Unidos":
-        return "Estados Unidos";
-      case "México":
-        return "México";
-      case "Australia":
-        return "Australia";
-      case "Argentina":
-        return "Argentina";
-      case "Reino_Unido":
-        return "Reino Unido";
-      case "Grecia":
-        return "Grecia";
-      case "Noruega":
-        return "Noruega";
-      case "China":
-        return "China";
-      case "Canada":
-        return "Canadá";
-      case "Costa_Rica":
-        return "Costa Rica";
-      case "Brasil":
-        return "Brasil";
-      case "Peru":
-        return "Perú";
-      default:
-        return countryCode; // Fallback to the country code if no display name is found
+      case "España": return "España";
+      case "Francia": return "Francia";
+      case "Italia": return "Italia";
+      case "Rusia": return "Rusia";
+      case "Japón": return "Japón";
+      case "Estados Unidos": return "Estados Unidos";
+      case "México": return "México";
+      case "Australia": return "Australia";
+      case "Argentina": return "Argentina";
+      case "Reino_Unido": return "Reino Unido";
+      case "Grecia": return "Grecia";
+      case "Noruega": return "Noruega";
+      case "China": return "China";
+      case "Canada": return "Canadá";
+      case "Costa_Rica": return "Costa Rica";
+      case "Brasil": return "Brasil";
+      case "Peru": return "Perú";
+      default: return countryCode;
     }
   };
 
   const displayName = getCountryDisplayName(country);
 
-  // Content sections
   const sections = [
     {
       title: `Acerca de ${displayName}`,
@@ -113,7 +90,6 @@ const CountryPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-2xl mx-auto">
-        {/* Header with return button */}
         <div className="flex items-center justify-between mb-6">
           <Button
             onClick={handleReturn}
@@ -134,10 +110,9 @@ const CountryPage = () => {
             </p>
           </div>
 
-          <div className="w-24"></div> {/* Spacer for centering */}
+          <div className="w-24"></div>
         </div>
 
-        {/* Content sections */}
         <motion.div
           className="space-y-4"
           initial={{ opacity: 0, y: 20 }}
@@ -162,7 +137,6 @@ const CountryPage = () => {
           ))}
         </motion.div>
 
-        {/* Explore More */}
         <motion.div
           className="mt-8 text-center"
           initial={{ opacity: 0, y: 20 }}

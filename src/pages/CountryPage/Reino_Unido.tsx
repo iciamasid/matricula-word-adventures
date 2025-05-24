@@ -1,54 +1,55 @@
-
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 const Reino_Unido = () => {
-  const [returnGame, setReturnGame] = useState('/motorcycle-game');
+  const navigate = useNavigate();
+  const [returnGame, setReturnGame] = useState('/draw-game');
 
   useEffect(() => {
-    // Check sessionStorage to determine which game we came from
     const navigatingBack = sessionStorage.getItem('navigatingBack');
-    if (navigatingBack === 'car-game') {
-      setReturnGame('/draw-game');
-    } else if (navigatingBack === 'motorcycle-game') {
+    if (navigatingBack === 'motorcycle-game') {
       setReturnGame('/motorcycle-game');
+    } else if (navigatingBack === 'car-game') {
+      setReturnGame('/draw-game');
     } else {
       // Default based on current URL or referrer
       const referrer = document.referrer;
-      if (referrer.includes('draw-game')) {
-        setReturnGame('/draw-game');
-      } else {
+      if (referrer.includes('motorcycle-game')) {
         setReturnGame('/motorcycle-game');
+      } else {
+        setReturnGame('/draw-game');
       }
     }
   }, []);
 
   const handleNavigation = () => {
-    // Store which game we're returning to
-    if (returnGame === '/draw-game') {
-      sessionStorage.setItem('navigatingBack', 'car-game');
-    } else {
-      sessionStorage.setItem('navigatingBack', 'motorcycle-game');
+    const gameState = sessionStorage.getItem('gameStateBeforeCountry');
+    if (gameState) {
+      const parsedState = JSON.parse(gameState);
+      console.log('Restoring game state from Reino Unido:', parsedState);
+      
+      sessionStorage.setItem('restoreGameState', JSON.stringify(parsedState));
+      sessionStorage.removeItem('gameStateBeforeCountry');
     }
+    
+    sessionStorage.removeItem('navigatingBack');
+    navigate(returnGame);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-red-50 p-4">
       <div className="max-w-4xl mx-auto">
-        {/* Back button */}
-        <Link to={returnGame}>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleNavigation}
-            className="mb-4 bg-blue-700/90 hover:bg-blue-800 text-white border-blue-600"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
-          </Button>
-        </Link>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={handleNavigation}
+          className="mb-4 bg-blue-700/90 hover:bg-blue-800 text-white border-blue-600"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
+        </Button>
 
         {/* Header with flag and country name */}
         <div className="text-center mb-8">
@@ -61,7 +62,7 @@ const Reino_Unido = () => {
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
             src="/lovable-uploads/Reino_Unido.jpg" 
-            alt="Empire State Building, Nueva York"
+            alt="Big Ben, Londres"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}

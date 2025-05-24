@@ -1,17 +1,30 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useNavigate } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 const RusiaPage = () => {
+  const navigate = useNavigate();
+
   // Ensure page starts from top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const handleNavigation = () => {
-    sessionStorage.setItem('navigatingBack', 'true');
+    // Rusia belongs to car game
+    const gameState = sessionStorage.getItem('gameStateBeforeCountry');
+    if (gameState) {
+      const parsedState = JSON.parse(gameState);
+      console.log('Restoring game state from Rusia:', parsedState);
+      
+      sessionStorage.setItem('restoreGameState', JSON.stringify(parsedState));
+      sessionStorage.removeItem('gameStateBeforeCountry');
+    }
+    
+    sessionStorage.removeItem('navigatingBack');
+    navigate('/draw-game'); // Always return to car game
   };
 
   return (
@@ -132,7 +145,7 @@ const RusiaPage = () => {
             <p>🎶 <strong>Música:</strong> Compositores famosos como Tchaikovsky y Rachmaninoff.</p>
             <p>🎨 <strong>Arte:</strong> Iconos religiosos y pinturas realistas.</p>
             <p>🎭 <strong>Teatro:</strong> El Bolshói y el Mariinsky son teatros de renombre mundial.</p>
-            <p> Matrioskas: Muñecas de madera pintadas que se encajan una dentro de otra.</p>
+            <p>🪆 <strong>Matrioskas:</strong> Muñecas de madera pintadas que se encajan una dentro de otra.</p>
           </div>
         </div>
       </div>
