@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/context/GameContext";
@@ -137,11 +136,11 @@ const CarCustomization: React.FC = () => {
           <button onClick={togglePanel} className="w-full py-2 px-3 flex flex-col items-center justify-center relative text-xl bg-transparent text-white rounded-none">
             {/* Car icon instead of car image */}
             <motion.div animate={{
-              rotate: [0, 10, -10, 0]
-            }} transition={{
-              duration: 3,
-              repeat: Infinity
-            }} className="text-2xl mb-1">
+            rotate: [0, 10, -10, 0]
+          }} transition={{
+            duration: 3,
+            repeat: Infinity
+          }} className="text-2xl mb-1">
               <Car size={28} className="text-yellow-300" />
             </motion.div>
             
@@ -272,9 +271,7 @@ const CarCustomization: React.FC = () => {
                   {/* Car name without "Coche" word */}
                   <p className="text-xs text-center mt-1 text-purple-800 font-medium truncate w-full">
                     {car.name}
-                    {isLocked && <span className="block text-gray-500">
-                        (Nivel {car.unlockedAtLevel})
-                      </span>}
+                    {isLocked}
                   </p>
                 </motion.div>;
         })}
