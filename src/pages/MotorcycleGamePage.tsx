@@ -7,7 +7,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, HelpCircle, Car } from "lucide-react";
+import { RefreshCw, HelpCircle, ArrowLeft } from "lucide-react";
 import MotorcycleGameInstructions from "@/components/MotorcycleGameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
@@ -15,11 +15,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
 import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
-import WorldTourProgressMini from "@/components/WorldTourProgressMini";
+import WorldTourProgress from "@/components/WorldTourProgress";
 import MotorcycleCustomization from "@/components/MotorcycleCustomization";
 import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
-import MaxLevelPopup from "@/components/MaxLevelPopup";
+import GameOverPopup from "@/components/GameOverPopup";
 import CountryModal from "@/components/CountryModal";
 import { getCountryInfo } from "@/data/countryData";
 
@@ -31,10 +31,10 @@ const MotorcycleGamePage = () => {
   );
 };
 
-// Component to handle the motorcycle game content
+// Component to handle the game content
 const MotorcycleGameContent = () => {
   const [showInstructions, setShowInstructions] = useState(false);
-  const [showMaxLevelPopup, setShowMaxLevelPopup] = useState(false);
+  const [showGameOver, setShowGameOver] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const isMobile = useIsMobile();
@@ -47,6 +47,7 @@ const MotorcycleGameContent = () => {
     level,
     resetGame,
     plateConsonants,
+    selectedMotorcycle,
     updateDestinations,
     playerName,
     playerAge,
@@ -56,43 +57,34 @@ const MotorcycleGameContent = () => {
     birthYearBonus,
     showAgeBonusPopup,
     setLevel,
-    setTotalPoints,
-    countryVisitRequired,
-    requiredCountryToVisit
+    setTotalPoints
   } = useGame();
-
-  // Debug logging for main game state
-  useEffect(() => {
-    console.log('MotorcycleGamePage - countryVisitRequired:', countryVisitRequired);
-    console.log('MotorcycleGamePage - requiredCountryToVisit:', requiredCountryToVisit);
-    console.log('MotorcycleGamePage - level:', level);
-  }, [countryVisitRequired, requiredCountryToVisit, level]);
 
   // Set current game type when component mounts
   useEffect(() => {
     sessionStorage.setItem('currentGameType', 'motorcycle-game');
-    console.log('MotorcycleGamePage: Set current game type to motorcycle-game');
+    console.log('MotorcycleGame: Set current game type to motorcycle-game');
   }, []);
 
   // Ref to the license plate section
   const licensePlateRef = useRef<HTMLDivElement>(null);
 
-  // Check if max level (level 10) is reached and show popup
+  // Check for level 10 and show game over popup
   useEffect(() => {
-    if (level >= 10) {
-      setShowMaxLevelPopup(true);
+    if (level >= 10 && !showGameOver) {
+      setShowGameOver(true);
     }
-  }, [level]);
+  }, [level, showGameOver]);
 
   // Asegura que la página comience desde la parte superior al cargar
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // IMPORTANT: Always make sure Spain is unlocked regardless of level
+  // IMPORTANT: Always make sure Portugal is unlocked regardless of level
   useEffect(() => {
-    // This ensures Spain is always unlocked when the game starts
-    if (level === 1) {
+    // This ensures Portugal is always unlocked when the game starts
+    if (level === 0) {
       updateDestinations(level);
     }
   }, []);
@@ -100,18 +92,16 @@ const MotorcycleGameContent = () => {
   // Check if we're navigating back from another page and restore proper destinations
   useEffect(() => {
     const isNavigatingBack = sessionStorage.getItem('navigatingBack');
-    console.log('MotorcycleGamePage - navigatingBack sessionStorage:', isNavigatingBack);
-    
     if (isNavigatingBack === 'motorcycle-game') {
-      console.log('MotorcycleGamePage: Detected navigation back from country, restoring motorcycle game state');
+      console.log('MotorcycleGame: Detected navigation back from country, restoring motorcycle game state');
       // Clear the navigation flag
       sessionStorage.removeItem('navigatingBack');
       // Restore proper destinations based on current level
       updateDestinations(level);
-      console.log(`MotorcycleGamePage: Restored destinations for level ${level}`);
+      console.log(`MotorcycleGame: Restored destinations for level ${level}`);
 
       // If motorcycle is already selected, scroll to license plate section
-      if (licensePlateRef.current) {
+      if (selectedMotorcycle && licensePlateRef.current) {
         // Slight delay to ensure DOM is ready
         setTimeout(() => {
           licensePlateRef.current?.scrollIntoView({
@@ -131,36 +121,7 @@ const MotorcycleGameContent = () => {
     }
   };
 
-  // Handle navigation to car game - Reset progress to start fresh
-  const handleGoToMotorcycle = () => {
-    // Reset to level 1 and 0 points for car game
-    setLevel(1);
-    setTotalPoints(0);
-    
-    // Close the popup
-    setShowMaxLevelPopup(false);
-    
-    // Save the reset state to sessionStorage to ensure it persists during navigation
-    sessionStorage.setItem('carGameReset', 'true');
-    sessionStorage.setItem('carStartLevel', '1');
-    sessionStorage.setItem('carStartPoints', '0');
-    
-    // Navigate to car game
-    navigate('/');
-    
-    // Show toast confirming the reset
-    toast({
-      title: "¡Nuevo juego de coches!",
-      description: "Empezando desde el nivel 1 con los coches. ¡Buena suerte!"
-    });
-  };
-
-  // Handle closing the max level popup
-  const handleCloseMaxLevelPopup = () => {
-    setShowMaxLevelPopup(false);
-  };
-
-  // Determine the color theme for motorcycle page (teal)
+  // Determine the color theme for motorcycle page (turquoise)
   const bgColor = "bg-teal-100";
   const panelBgColor = "bg-teal-200";
   const panelGradientBg = "bg-gradient-to-r from-teal-300 to-teal-200";
@@ -170,32 +131,36 @@ const MotorcycleGameContent = () => {
   const borderColor = "border-teal-300";
   const hoverBgColor = "hover:bg-teal-100";
 
+  // Using sessionStorage to mark when we're navigating between pages
+  const handleNavigation = () => {
+    sessionStorage.setItem('navigatingBack', 'true');
+  };
+
   // Helper function to get localized country names (now only Spanish)
   const getLocalizedCountry = (country: string) => country;
 
   // Simular países desbloqueados basados en nivel actual
   const unlockedCountries = React.useMemo(() => {
-    // IMPORTANT: Always include Spain regardless of level
-    const countries = ["España"];
+    // IMPORTANT: Always include Portugal regardless of level
+    const countries = ["Portugal"];
     if (level >= 2) countries.push("Reino Unido");
     if (level >= 3) countries.push("Grecia");
     if (level >= 4) countries.push("Noruega");
     if (level >= 5) countries.push("China");
-    if (level >= 6) countries.push("Canada");
+    if (level >= 6) countries.push("Canadá");
     if (level >= 7) countries.push("Costa Rica");
     if (level >= 8) countries.push("Brasil");
-    if (level >= 9) countries.push("Peru");
-    if (level >= 10) countries.push("España (vuelta completa)");
+    if (level >= 9) countries.push("Perú");
+    if (level >= 10) countries.push("Portugal (vuelta completa)");
     return countries;
   }, [level]);
 
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
-      setShowMaxLevelPopup(false);
       toast({
         title: "¡Juego reiniciado!",
-        description: "Has vuelto al nivel 1 y todos tus puntos se han reiniciado."
+        description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
       });
     }
   };
@@ -215,57 +180,58 @@ const MotorcycleGameContent = () => {
     });
   };
 
-  // Handle navigation to car game from button - with reset
-  const handleNavigateToCarGame = () => {
-    // Always reset to level 1 and 0 points when switching to car game
-    setLevel(1);
-    setTotalPoints(0);
+  // Handle game over restart - Reset completely to level 1 and 0 points
+  const handleGameOverRestart = () => {
+    // Close the popup first
+    setShowGameOver(false);
     
-    // Set navigation flags to ensure car game starts fresh
+    // Reset the game completely to initial state
+    resetGame();
+    
+    // Set session storage flags to ensure the car game starts fresh
     sessionStorage.setItem('carGameReset', 'true');
     sessionStorage.setItem('carStartLevel', '1');
     sessionStorage.setItem('carStartPoints', '0');
     
-    // Navigate to car game
+    // Navigate back to car game
     navigate('/');
     
-    // Show toast confirming the reset
+    // Show toast confirming the complete reset
     toast({
-      title: "¡Cambiando a coches!",
-      description: "Empezando desde el nivel 1 con 0 puntos en el juego de coches."
+      title: "¡Nueva partida iniciada!",
+      description: "Has empezado una nueva partida con coches desde 0km y nivel 1."
     });
   };
 
-  const handleCountryVisit = (countryCode: string) => {
-    console.log('MotorcycleGamePage - Country visited:', countryCode);
+  const handleOpenCountryModal = (countryCode: string) => {
     setSelectedCountry(countryCode);
     setCountryModalOpen(true);
   };
 
   const handleCloseCountryModal = () => {
-    console.log('MotorcycleGamePage - Closing country modal');
     setCountryModalOpen(false);
     setSelectedCountry(null);
   };
 
   return (
     <div 
-      className={`min-h-screen flex flex-col items-center relative overflow-hidden bg-teal-100`}
+      className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
       style={{
         backgroundSize: "cover",
         backgroundAttachment: "fixed"
       }}
     >
-      {/* Car game button */}
+      {/* Return button to car game */}
       <div className="w-full pt-12 px-4">
-        <Button 
-          variant="outline" 
-          size="sm" 
-          onClick={handleNavigateToCarGame}
-          className="absolute top-2 left-4 bg-purple-700/90 hover:bg-purple-800 text-white border-purple-600 kids-text text-base font-normal"
-        >
-          <Car className="w-4 h-4 mr-1" /> Jugar con coches
-        </Button>
+        <Link to="/">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal"
+          >
+            <ArrowLeft className="w-4 h-4 mr-1" /> Volver a coches
+          </Button>
+        </Link>
         
         {/* Instructions button positioned at top right of the screen */}
         <Button
@@ -299,8 +265,8 @@ const MotorcycleGameContent = () => {
           <MotorcycleCustomization />
         </div>
         
-        {/* Show moving motorcycle BELOW the buttons - showing the default motorcycle */}
-        {playerName && (
+        {/* Show moving motorcycle BELOW the buttons - showing the selected motorcycle */}
+        {playerName && selectedMotorcycle && (
           <motion.div
             className="w-32 h-24 my-2"
             animate={{
@@ -313,8 +279,8 @@ const MotorcycleGameContent = () => {
             }}
           >
             <img 
-              src="/lovable-uploads/Motoblanca.png"
-              alt="Default Motorcycle" 
+              src={`/lovable-uploads/${selectedMotorcycle.image}`}
+              alt="Selected Motorcycle" 
               className="w-full h-full object-contain" 
             />
           </motion.div>
@@ -336,11 +302,9 @@ const MotorcycleGameContent = () => {
             <ScorePanel />
           </div>
           
-          {/* World Tour Progress - Fixed to use correct prop name */}
+          {/* World Tour Progress */}
           <div ref={worldTourRef} className="mt-1 w-full">
-            <WorldTourProgressMini 
-              onCountryVisit={handleCountryVisit}
-            />
+            <WorldTourProgress />
           </div>
           
           {/* Reset Game Button - Added more bottom margin */}
@@ -373,13 +337,6 @@ const MotorcycleGameContent = () => {
         {/* Level Up Alert using GamePopup */}
         <LevelUpAlert />
         
-        {/* Max Level Popup */}
-        <MaxLevelPopup 
-          open={showMaxLevelPopup}
-          onClose={handleCloseMaxLevelPopup}
-          onGoToMotorcycle={handleGoToMotorcycle}
-        />
-        
         {/* Birthday Bonus Popup */}
         {playerAge && (
           <BirthdayBonusPopup 
@@ -398,9 +355,15 @@ const MotorcycleGameContent = () => {
           age={playerAge || 0} 
         />
         
+        {/* Game Over Popup */}
+        <GameOverPopup 
+          open={showGameOver}
+          onRestart={handleGameOverRestart}
+        />
+        
+        {/* Instructions modal - Updated to use MotorcycleGameInstructions */}
         {showInstructions && <MotorcycleGameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
-      
       <Toaster />
       <CountryModal 
         open={countryModalOpen}

@@ -185,7 +185,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
         <AlertDialog open={isVisible} onOpenChange={() => {
           handleClose();
         }}>
-          <AlertDialogContent className="max-w-lg">
+          <AlertDialogContent className="max-w-sm border-0 p-0 bg-transparent">
             <AlertDialogTitle className="sr-only">{message}</AlertDialogTitle>
             <AlertDialogDescription className="sr-only">{explanation}</AlertDialogDescription>
             
@@ -274,14 +274,6 @@ const GamePopup: React.FC<GamePopupProps> = ({
                                 <Star className="h-6 w-6 text-yellow-300" />
                               </motion.div>
                             ))}
-                          </div>
-                          
-                          {/* Simplified messages with larger font - removed the middle message */}
-                          <div className="text-white kids-text text-xl mb-2 font-bold mt-4">
-                            ¡Visita el país pinchando en su bandera en ¡TU VUELTA AL MUNDO!
-                          </div>
-                          <div className="text-yellow-300 kids-text text-lg font-bold">
-                            Y recuerda que ahora puedes elegir otro modelo más...
                           </div>
                         </div>
                       )}
