@@ -59,7 +59,7 @@ const AustraliaPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/b1c2b1e5-8e65-49d3-b857-7b1e3a96c4f2.png" 
+            src="/lovable-uploads/Australia.jpg" 
             alt="Paisaje de Australia"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
