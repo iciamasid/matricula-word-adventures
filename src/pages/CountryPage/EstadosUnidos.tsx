@@ -9,7 +9,7 @@ const EstadosUnidosPage = () => {
   const [returnGame, setReturnGame] = useState('/draw-game');
 
   useEffect(() => {
-    // Check if coming from car game based on the referrer or localStorage
+    // Check if coming from motorcycle game based on the referrer or localStorage
     const referrer = document.referrer;
     if (referrer.includes('motorcycle-game')) {
       setReturnGame('/motorcycle-game');
@@ -36,151 +36,124 @@ const EstadosUnidosPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-red-100 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Back button */}
-        <Link to={returnGame}>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleNavigation}
-            className="mb-4 bg-blue-700/90 hover:bg-blue-800 text-white border-blue-600"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
-          </Button>
-        </Link>
-
-        {/* Header with flag and country name */}
-        <div className="text-center mb-8">
-          <div className="text-8xl mb-4">🇺🇸</div>
-          <h1 className="text-4xl font-bold text-blue-800 kids-text mb-2">Estados Unidos</h1>
-          <p className="text-xl text-blue-700 kids-text">¡Bienvenido a Estados Unidos!</p>
+    <div className="min-h-screen bg-gradient-to-b from-purple-100 to-blue-100 p-4 pt-0">
+      <div className="max-w-md mx-auto">
+        {/* Back button and title at top */}
+        <div className="sticky top-0 z-10 bg-gradient-to-b from-purple-100 to-purple-100/95 pt-2 pb-2">
+          <Link to={returnGame}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleNavigation}
+              className="mb-4 bg-blue-700/90 hover:bg-blue-800 text-white border-blue-600"
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" /> Volver al juego
+            </Button>
+          </Link>
+          
+          {/* Country title moved to top */}
+          <h1 className="text-3xl font-normal kids-text flex items-center mb-2">
+            Estados Unidos 🇺🇸
+          </h1>
+          <p className="text-gray-600 kids-text">Capital: Washington D.C.</p>
         </div>
-
-        {/* Country image */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+        
+        <motion.div 
+          className="bg-white rounded-lg shadow-lg overflow-hidden mt-2" 
+          initial={{ opacity: 0, y: 20 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.5 }}
+        >
           <motion.img 
-            src="/lovable-uploads/21e71de1-c8e4-4bbb-95d6-67ce7ae41316.png" 
-            alt="Paisaje de Estados Unidos"
-            className="w-full h-64 object-cover"
+            src="/lovable-uploads/10737802-ed6b-48c7-a4af-7df7deb120be.png" 
+            alt="Empire State Building, Nueva York"
+            className="w-full h-48 object-cover"
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 1 }}
           />
-        </div>
-
-        {/* Country map location */}
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
-          <div className="p-4 bg-blue-50">
-            <h2 className="text-2xl font-bold text-blue-800 kids-text mb-2 flex items-center">
-              <MapPin className="w-6 h-6 mr-2 text-blue-700" /> Ubicación
-            </h2>
-          </div>
-          <div className="relative pb-[56.25%] h-0">
-            {/* Animated capital city emoji */}
-            <motion.div 
-              className="absolute z-10"
-              style={{ 
-                top: '45%', 
-                left: '75%',
-                transform: 'translate(-50%, -50%)'
-              }}
-              animate={{ 
-                y: [0, -10, 0],
-              }}
-              transition={{ 
-                repeat: Infinity, 
-                duration: 1.5,
-                ease: "easeInOut"
-              }}
-            >
-              <div className="bg-white rounded-full p-1 shadow-lg">
-                <span className="text-2xl">🏙️</span>
-              </div>
-              <div className="text-xs font-bold bg-white px-1 rounded mt-1 text-center shadow-sm">
-                Washington D.C.
-              </div>
-            </motion.div>
+          
+          <div className="p-6">
+            {/* Country description */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+              <h3 className="text-xl font-normal text-purple-800 kids-text mb-2 flex items-center">
+                <motion.span 
+                  className="mr-2"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  🌍
+                </motion.span>
+                Acerca de Estados Unidos
+              </h3>
+              <p className="kids-text text-fuchsia-600 text-lg font-normal">
+                Estados Unidos es el tercer país más grande del mundo y uno de los más diversos culturalmente. 
+                Desde los rascacielos de Nueva York hasta las playas de California, ofrece paisajes variados y 
+                algunas de las ciudades más famosas del mundo.
+              </p>
+            </div>
             
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d25265652.97663289!2d-119.3103448!3d44.58537949!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54eab584e432360b%3A0x1c3bb99243deb742!2sUnited%20States!5e0!3m2!1sen!2ses!4v1653130678901!5m2!1sen!2ses"
-              width="100%"
-              height="100%"
-              style={{ border: 0, position: 'absolute', top: 0, left: 0 }}
-              allowFullScreen={true}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            ></iframe>
+            {/* Fun fact */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+              <h3 className="text-xl font-normal text-purple-800 kids-text mb-2 flex items-center">
+                <motion.span 
+                  className="mr-2"
+                  animate={{ rotate: [0, 10, 0, -10, 0], scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  🌟
+                </motion.span>
+                ¡Dato curioso!
+              </h3>
+              <p className="kids-text text-fuchsia-600 text-lg font-normal">
+                ¡Estados Unidos tiene 63 parques nacionales que protegen paisajes increíbles!
+              </p>
+            </div>
+            
+            {/* Language */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+              <h3 className="text-xl font-normal text-purple-800 kids-text mb-2 flex items-center">
+                <motion.span 
+                  className="mr-2"
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  🗣️
+                </motion.span>
+                Idioma
+              </h3>
+              <p className="kids-text text-fuchsia-600 text-lg font-normal">
+                En Estados Unidos se habla inglés.
+              </p>
+            </div>
+            
+            {/* Famous for */}
+            <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+              <h3 className="text-xl font-normal text-purple-800 kids-text mb-2 flex items-center">
+                <motion.span 
+                  className="mr-2"
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  ⭐
+                </motion.span>
+                Famoso por
+              </h3>
+              <p className="kids-text text-fuchsia-600 text-lg font-normal">
+                Estados Unidos es famoso por Hollywood, los rascacielos y la Estatua de la Libertad.
+              </p>
+            </div>
+            
+            <Link to={returnGame}>
+              <Button 
+                className="w-full mt-4 bg-game-purple hover:bg-game-purple/90 kids-text" 
+                onClick={handleNavigation}
+              >
+                Volver al juego
+              </Button>
+            </Link>
           </div>
-        </div>
-
-        {/* Basic info section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Información básica</h2>
-          <div className="grid grid-cols-2 gap-4 text-lg">
-            <div>
-              <h3 className="font-semibold text-blue-700 kids-text">Capital</h3>
-              <p className="text-gray-700 kids-text">Washington D.C.</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-blue-700 kids-text">Idioma</h3>
-              <p className="text-gray-700 kids-text">Inglés</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-blue-700 kids-text">Población</h3>
-              <p className="text-gray-700 kids-text">331.9 millones</p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-blue-700 kids-text">Moneda</h3>
-              <p className="text-gray-700 kids-text">Dólar estadounidense ($)</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Fun facts section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">¡Datos curiosos!</h2>
-          <div className="space-y-4 text-lg text-gray-700">
-            <p>🗽 <strong>¡La Estatua de la Libertad fue un regalo de Francia!</strong> Se inauguró en 1886 como símbolo de libertad.</p>
-            <p>🏔️ <strong>¡Estados Unidos tiene todos los climas del mundo!</strong> Desde desiertos hasta glaciares.</p>
-            <p>🎬 <strong>¡Hollywood es la capital mundial del cine!</strong> Donde se producen las películas más famosas.</p>
-            <p>🚀 <strong>¡Fueron los primeros en llegar a la Luna!</strong> Neil Armstrong pisó la Luna en 1969.</p>
-          </div>
-        </div>
-
-        {/* Landmarks section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Lugares famosos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg text-gray-700">
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-bold text-blue-800">🗽 Estatua de la Libertad</h3>
-              <p>Símbolo de libertad y democracia en Nueva York.</p>
-            </div>
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-bold text-blue-800">🏔️ Gran Cañón</h3>
-              <p>Formación rocosa espectacular en Arizona de 446 km de largo.</p>
-            </div>
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-bold text-blue-800">🏛️ Casa Blanca</h3>
-              <p>Residencia oficial del Presidente en Washington D.C.</p>
-            </div>
-            <div className="p-4 bg-blue-50 rounded-lg">
-              <h3 className="font-bold text-blue-800">🌉 Golden Gate</h3>
-              <p>Puente icónico de color rojo en San Francisco.</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Cultural section */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <h2 className="text-2xl font-bold text-blue-800 kids-text mb-4">Cultura y tradiciones</h2>
-          <div className="space-y-4 text-lg text-gray-700">
-            <p>🍔 <strong>Comida rápida:</strong> Hamburguesas, hot dogs y pizza son comidas típicas.</p>
-            <p>🏈 <strong>Deportes:</strong> Fútbol americano, baloncesto y béisbol son muy populares.</p>
-            <p>🎵 <strong>Música:</strong> Cuna del jazz, blues, rock and roll y hip hop.</p>
-            <p>🎆 <strong>4 de Julio:</strong> Día de la Independencia con fuegos artificiales y barbacoas.</p>
-          </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
