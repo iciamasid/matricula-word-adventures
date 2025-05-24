@@ -60,7 +60,7 @@ const MexicoPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/2957a4f7-6a54-4e2f-bda1-2177609abc5f.png" 
+            src="/lovable-uploads/Méjico.jpg" 
             alt="Paisaje de México"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
