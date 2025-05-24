@@ -13,7 +13,6 @@ export const getPlateConsonants = (): string => {
   
   // Special cases - about 5% chance to get a special plate
   const random = Math.random();
-  if (random < 0.01) return "6666"; // very rare special license plate for bonus
   if (random < 0.05) {
     // Generate a 4-digit number (birth year like)
     const currentYear = new Date().getFullYear();

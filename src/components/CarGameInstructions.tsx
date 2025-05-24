@@ -1,7 +1,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { X, Target, Award, Star, Book, Globe, Car, Gift } from "lucide-react";
+import { X, Target, Award, Book, Globe, Car } from "lucide-react";
 
 interface CarGameInstructionsProps {
   onClose: () => void;
@@ -10,120 +10,137 @@ interface CarGameInstructionsProps {
 const CarGameInstructions: React.FC<CarGameInstructionsProps> = ({
   onClose
 }) => {
-  const primaryColor = "purple";
-  const bgGradient = "from-purple-600 to-purple-800";
-  const iconColor = "text-yellow-300";
-
   return (
     <motion.div 
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       exit={{ opacity: 0 }} 
-      className="fixed inset-0 flex items-center justify-center z-50 bg-black/70 p-4" 
+      className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 p-4" 
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 50 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className={`bg-gradient-to-br ${bgGradient} rounded-xl p-6 max-w-md w-full mb-4 mr-4 shadow-lg relative overflow-y-auto max-h-[80vh] border-4 border-yellow-400`}
+        className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8 max-w-2xl w-full shadow-2xl relative overflow-y-auto max-h-[85vh] border-4 border-blue-200"
         onClick={e => e.stopPropagation()}
       >
-        <button onClick={onClose} className="absolute top-3 right-3 text-white hover:text-yellow-300">
-          <X className="w-6 h-6" />
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-600 hover:text-purple-600 transition-colors">
+          <X className="w-8 h-8" />
         </button>
 
-        <h2 className="text-3xl kids-text mb-4 text-white flex items-center gap-2">
-          <Book className={iconColor + " w-7 h-7"} />
-          ¿Cómo jugar con coches?
+        <h2 className="text-5xl font-bold mb-6 text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text flex items-center gap-3">
+          <Book className="w-12 h-12 text-blue-500" />
+          ¡Aventura con coches! 🚗
         </h2>
 
-        <div className="space-y-5">
-          <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }} className="backdrop-blur-sm p-4 rounded-lg bg-stone-400">
-            <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
-              <Target className={iconColor + " w-6 h-6"} />
-              Objetivo del juego
+        <div className="space-y-6">
+          <motion.div 
+            whileHover={{ scale: 1.02 }} 
+            transition={{ type: "spring", stiffness: 300 }} 
+            className="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-blue-400"
+          >
+            <h3 className="text-3xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <Target className="w-8 h-8 text-blue-500" />
+              🎯 Tu primera aventura
             </h3>
-            <p className="instruction-text kids-text text-white text-lg font-light">
-              ¡Forma palabras usando las consonantes de la matrícula del coche! Las palabras deben tener al menos 5 letras (las palabras de 4 letras o menos no son válidas).
+            <p className="text-lg font-medium text-gray-700 leading-relaxed">
+              ¡Bienvenido a la aventura con coches! 🚗 Forma palabras con las letras de las matrículas de los coches. ¡Recuerda que las palabras deben tener al menos 5 letras para ganar puntos! ✨
             </p>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }} className="backdrop-blur-sm p-4 rounded-lg bg-zinc-400">
-            <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
-              <Award className={iconColor + " w-6 h-6"} />
-              Puntuación
+          <motion.div 
+            whileHover={{ scale: 1.02 }} 
+            transition={{ type: "spring", stiffness: 300 }} 
+            className="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-green-400"
+          >
+            <h3 className="text-3xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <Award className="w-8 h-8 text-green-500" />
+              🏆 ¿Cómo ganar puntos?
             </h3>
-            <ul className="list-none space-y-2">
-              <li className="instruction-text kids-text text-white text-lg flex items-start gap-2">
-                <span className="text-green-400 mt-1 flex-shrink-0">✓</span> 
-                <span>100 puntos por usar las 3 consonantes en el mismo orden</span>
-              </li>
-              <li className="instruction-text kids-text text-white text-lg flex items-start gap-2">
-                <span className="text-green-400 mt-1 flex-shrink-0">✓</span> 
-                <span>75 puntos por usar las 3 consonantes en otro orden</span>
-              </li>
-              <li className="instruction-text kids-text text-white text-lg flex items-start gap-2">
-                <span className="text-green-400 mt-1 flex-shrink-0">✓</span>
-                <span>50 puntos por usar 2 consonantes en el mismo orden</span>
-              </li>
-              <li className="instruction-text kids-text text-white text-lg flex items-start gap-2">
-                <span className="text-green-400 mt-1 flex-shrink-0">✓</span> 
-                <span>25 puntos por usar 2 consonantes en otro orden</span>
-              </li>
-              <li className="instruction-text kids-text text-white text-lg flex items-start gap-2">
-                <span className="text-green-400 mt-1 flex-shrink-0">✓</span> 
-                <span>10 puntos por usar 1 consonante</span>
-              </li>
-              <li className="instruction-text kids-text text-white text-lg flex items-start gap-2">
-                <span className="text-green-400 mt-1 flex-shrink-0">✓</span> 
-                <span>
-                  Bonus por longitud: +5 puntos por letra para palabras de más de 5 letras (máximo 50 puntos)
-                </span>
-              </li>
-              
-              <li className="instruction-text kids-text text-red-300 text-lg flex items-start gap-2">
-                <X className="w-5 h-5 text-red-400 mt-1 flex-shrink-0" /> 
-                <span>
-                  -20 puntos de penalización si la palabra no existe, es demasiado corta (menos de 5 letras), o no contiene ninguna consonante de la matrícula
-                </span>
-              </li>
-            </ul>
+            <div className="space-y-3">
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">🌟</span>
+                <span className="text-lg font-medium text-gray-700">100 puntos por usar las 3 consonantes en el mismo orden</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">⭐</span>
+                <span className="text-lg font-medium text-gray-700">75 puntos por usar las 3 consonantes en otro orden</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">✨</span>
+                <span className="text-lg font-medium text-gray-700">50 puntos por usar 2 consonantes en el mismo orden</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">💫</span>
+                <span className="text-lg font-medium text-gray-700">25 puntos por usar 2 consonantes en otro orden</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">🎈</span>
+                <span className="text-lg font-medium text-gray-700">10 puntos por usar 1 consonante</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">🎁</span>
+                <span className="text-lg font-medium text-gray-700">Bonus por longitud: +5 puntos por letra extra (máximo 50)</span>
+              </div>
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">❌</span>
+                <span className="text-lg font-medium text-red-500">-20 puntos si la palabra no existe o es muy corta</span>
+              </div>
+            </div>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }} className="backdrop-blur-sm p-4 rounded-lg bg-gray-400">
-            <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
-              <Globe className={iconColor + " w-6 h-6"} />
-              Niveles y viajes en coche
+          <motion.div 
+            whileHover={{ scale: 1.02 }} 
+            transition={{ type: "spring", stiffness: 300 }} 
+            className="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-yellow-400"
+          >
+            <h3 className="text-3xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <Globe className="w-8 h-8 text-yellow-500" />
+              🌍 ¡Viaja por el mundo!
             </h3>
-            <p className="instruction-text kids-text text-white text-lg">
-              Por cada 500 puntos, subirás de nivel y desbloquearás un viaje a un nuevo país con tu coche. ¡Explora el mundo conduciendo y descubre lugares increíbles! Pincha sobre las banderas y explora cada país.
+            <p className="text-lg font-medium text-gray-700 leading-relaxed">
+              Con cada 500 puntos subirás de nivel y desbloquearás un nuevo país. ¡Hay 10 niveles increíbles esperándote! Haz clic en las banderas para aprender sobre cada lugar que visites. 🗺️
             </p>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }} className="backdrop-blur-sm p-4 rounded-lg bg-gray-400">
-            <h3 className={`text-2xl kids-text text-yellow-300 mb-2 flex items-center gap-2`}>
-              <Car className={iconColor + " w-6 h-6"} />
-              Personalización de coches
+          <motion.div 
+            whileHover={{ scale: 1.02 }} 
+            transition={{ type: "spring", stiffness: 300 }} 
+            className="bg-white p-6 rounded-2xl shadow-lg border-l-4 border-purple-400"
+          >
+            <h3 className="text-3xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+              <Car className="w-8 h-8 text-purple-500" />
+              🚙 ¡Colecciona coches geniales!
             </h3>
-            <p className="instruction-text kids-text text-white text-lg">
-              ¡Cada vez que subas de nivel podrás elegir un nuevo coche! Personaliza tu vehículo y viaja con estilo por todo el mundo. ¡Completa todos los niveles para desbloquear las motos!
+            <p className="text-lg font-medium text-gray-700 leading-relaxed">
+              ¡Cada vez que subas de nivel podrás elegir un nuevo coche súper genial! Personaliza tu vehículo y viaja con estilo por todo el mundo. 🎨
             </p>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }} className="backdrop-blur-sm p-4 rounded-lg bg-teal-400">
-            <h3 className="text-lg font-semibold text-fuchsia-700">
-              <Gift className={iconColor + " w-6 h-6"} />
-              Bonificaciones especiales
+          <motion.div 
+            whileHover={{ scale: 1.02 }} 
+            transition={{ type: "spring", stiffness: 300 }} 
+            className="bg-gradient-to-r from-orange-100 to-pink-100 p-6 rounded-2xl shadow-lg border-l-4 border-orange-400"
+          >
+            <h3 className="text-3xl font-bold text-gray-800 mb-3">
+              🏍️ ¡Desbloquea las motos!
             </h3>
-            <p className="instruction-text kids-text text-white text-lg">
-              ¡Atento a las bonificaciones especiales! Si tu matrícula muestra el número '6666', podrías recibir un bonus de 500 puntos con un mensaje plateado especial. Esta bonificación aparece aproximadamente cada 20 partidas.
+            <p className="text-lg font-medium text-gray-700 leading-relaxed">
+              ¡Cuando completes todos los 10 niveles con coches, podrás empezar una nueva aventura con motos súper veloces! Una experiencia completamente nueva te está esperando. 🌟
             </p>
           </motion.div>
 
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="pt-2">
-            <button onClick={onClose} className={`w-full bg-yellow-400 hover:bg-yellow-500 text-purple-900 py-3 px-4 rounded-lg kids-text text-xl font-bold`}>
-              ¡Entendido!
+          <motion.div 
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }} 
+            className="pt-4"
+          >
+            <button 
+              onClick={onClose} 
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-4 px-6 rounded-2xl text-2xl font-bold shadow-lg transition-all duration-200"
+            >
+              ¡Vamos a conducir! 🚗💨
             </button>
           </motion.div>
         </div>
