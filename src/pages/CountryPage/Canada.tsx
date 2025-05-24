@@ -39,7 +39,7 @@ const CanadaPage = () => {
         {/* Country image */}
         <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
           <motion.img 
-            src="/lovable-uploads/501f7c44-46fc-44ae-8a9f-94b1215f5544.png" 
+            src="/lovable-uploads/Canadá.jpg" 
             alt="Paisaje canadiense"
             className="w-full h-64 object-cover"
             initial={{ scale: 1.1 }}
