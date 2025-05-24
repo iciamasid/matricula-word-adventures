@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -41,7 +40,7 @@ const MotorcycleGameContent = () => {
     level,
     resetGame,
     plateConsonants,
-    selectedCarColor,
+    selectedMotorcycle,
     updateDestinations,
     playerName,
     playerAge,
@@ -80,7 +79,7 @@ const MotorcycleGameContent = () => {
       updateDestinations(level);
 
       // If motorcycle is already selected, scroll to license plate section
-      if (selectedCarColor && licensePlateRef.current) {
+      if (selectedMotorcycle && licensePlateRef.current) {
         // Slight delay to ensure DOM is ready
         setTimeout(() => {
           licensePlateRef.current?.scrollIntoView({
@@ -212,7 +211,7 @@ const MotorcycleGameContent = () => {
         </div>
         
         {/* Show moving motorcycle BELOW the buttons - showing the selected motorcycle */}
-        {playerName && selectedCarColor && (
+        {playerName && selectedMotorcycle && (
           <motion.div
             className="w-32 h-24 my-2"
             animate={{
@@ -225,7 +224,7 @@ const MotorcycleGameContent = () => {
             }}
           >
             <img 
-              src={`/lovable-uploads/${selectedCarColor.image}`}
+              src={`/lovable-uploads/${selectedMotorcycle.image}`}
               alt="Selected Motorcycle" 
               className="w-full h-full object-contain" 
             />

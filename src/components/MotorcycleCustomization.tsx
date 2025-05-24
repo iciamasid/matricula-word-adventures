@@ -67,8 +67,8 @@ const motorcycleColors: CarColor[] = [{
 
 const MotorcycleCustomization: React.FC = () => {
   const {
-    selectedCarColor,
-    setSelectedCarColor,
+    selectedMotorcycle,
+    setSelectedMotorcycle,
     level
   } = useGame();
 
@@ -95,7 +95,7 @@ const MotorcycleCustomization: React.FC = () => {
     }
 
     // Set the selected motorcycle
-    setSelectedCarColor(car);
+    setSelectedMotorcycle(car);
 
     // Close the panel after selection
     setIsPanelOpen(false);
@@ -116,7 +116,7 @@ const MotorcycleCustomization: React.FC = () => {
   };
 
   // Find the currently selected motorcycle
-  const currentCar = selectedCarColor || motorcycleColors[0];
+  const currentCar = selectedMotorcycle || motorcycleColors[0];
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -220,7 +220,7 @@ const MotorcycleCustomization: React.FC = () => {
           >
             {motorcycleColors.map(motorcycle => {
               const isLocked = level < motorcycle.unlockedAtLevel;
-              const isSelected = selectedCarColor?.id === motorcycle.id;
+              const isSelected = selectedMotorcycle?.id === motorcycle.id;
               
               return (
                 <motion.div

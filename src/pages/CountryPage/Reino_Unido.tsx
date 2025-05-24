@@ -9,20 +9,20 @@ const Reino_Unido = () => {
   const [returnGame, setReturnGame] = useState('/motorcycle-game');
 
   useEffect(() => {
-    // Check if coming from car game based on the referrer or localStorage
-    const referrer = document.referrer;
-    if (referrer.includes('motorcycle-game')) {
-      setReturnGame('/motorcycle-game');
-    } else {
-      setReturnGame('/draw-game');
-    }
-
-    // Check if localStorage has info about which game we came from
+    // Check sessionStorage to determine which game we came from
     const navigatingBack = sessionStorage.getItem('navigatingBack');
     if (navigatingBack === 'car-game') {
       setReturnGame('/draw-game');
     } else if (navigatingBack === 'motorcycle-game') {
       setReturnGame('/motorcycle-game');
+    } else {
+      // Default based on current URL or referrer
+      const referrer = document.referrer;
+      if (referrer.includes('draw-game')) {
+        setReturnGame('/draw-game');
+      } else {
+        setReturnGame('/motorcycle-game');
+      }
     }
   }, []);
 

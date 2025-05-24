@@ -77,9 +77,13 @@ interface GameContextType {
   
   // Add updateDestinations function to the interface
   updateDestinations: (level: number) => void;
+  
+  // Add selectedMotorcycle property
+  selectedMotorcycle: CarColor | null;
+  setSelectedMotorcycle: (motorcycle: CarColor | null) => void;
 }
 
-const GameContext = createContext<GameContextType | null>(null);
+const GameContext = createContext<GameContextType | undefined>(undefined);
 
 // Create a key for localStorage to store game state
 const GAME_STATE_KEY = 'matriculabra_game_state';
@@ -686,7 +690,7 @@ export const GameProvider: React.FC<{
   }, []);
   
   // Create the context value
-  const contextValue: GameContextType = {
+  const value: GameContextType = {
     originInfo,
     destinationInfo,
     originWord,
@@ -751,10 +755,14 @@ export const GameProvider: React.FC<{
     
     // Add updateDestinations function to the context value
     updateDestinations,
+    
+    // Add selectedMotorcycle property
+    selectedMotorcycle,
+    setSelectedMotorcycle,
   };
 
   return (
-    <GameContext.Provider value={contextValue}>
+    <GameContext.Provider value={value}>
       {children}
     </GameContext.Provider>
   );
