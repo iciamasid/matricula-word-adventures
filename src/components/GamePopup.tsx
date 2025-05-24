@@ -56,8 +56,8 @@ const GamePopup: React.FC<GamePopupProps> = ({
       }));
       setStars(newStars);
 
-      // Only auto-close if NOT requiring country visit and NOT preventing auto-close
-      if (!requireCountryVisit && !preventAutoClose) {
+      // CRITICAL FIX: Only auto-close if NOT preventing auto-close AND NOT requiring country visit
+      if (!preventAutoClose && !requireCountryVisit) {
         const timer = setTimeout(() => {
           handleClose();
         }, 2000);
@@ -66,10 +66,10 @@ const GamePopup: React.FC<GamePopupProps> = ({
     }
   }, [open, requireCountryVisit, preventAutoClose]);
 
-  // Handle proper closing with animation - prevent closing if country visit is required
+  // Handle proper closing with animation - prevent closing if country visit is required or auto-close is prevented
   const handleClose = () => {
-    // If country visit is required or auto-close is prevented, don't allow closing without clicking the link
-    if ((requireCountryVisit || preventAutoClose) && countryToVisit) {
+    // CRITICAL FIX: If country visit is required OR auto-close is prevented, don't allow closing without clicking the visit button
+    if ((requireCountryVisit && countryToVisit) || (preventAutoClose && countryToVisit)) {
       return;
     }
     setIsVisible(false);
@@ -161,7 +161,7 @@ const GamePopup: React.FC<GamePopupProps> = ({
   const buttonClasses = isEnglish ? "bg-orange-600 hover:bg-orange-700 text-white kids-text" : "bg-game-purple hover:bg-game-purple/90 kids-text";
   return <AnimatePresence>
       {open && <AlertDialog open={isVisible} onOpenChange={() => {
-        // Prevent closing if country visit is required or auto-close is prevented
+        // CRITICAL FIX: Prevent closing if country visit is required or auto-close is prevented
         if (!requireCountryVisit && !preventAutoClose) {
           handleClose();
         }

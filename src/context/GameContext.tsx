@@ -176,10 +176,31 @@ export const GameProvider: React.FC<{
   const clearError = () => setErrorMessage(null);
   const clearLevelUpMessage = () => setShowLevelUp(false);
   
-  // Load game state from localStorage on initial mount - MODIFIED TO ALWAYS START AT LEVEL 1
+  // Load game state from localStorage on initial mount - MODIFIED TO CHECK FOR RESTORE STATE FIRST
   useEffect(() => {
     try {
-      // Check for car game reset flags FIRST
+      // CRITICAL FIX: Check for state restoration from country navigation FIRST
+      const restoreGameState = sessionStorage.getItem('restoreGameState');
+      if (restoreGameState) {
+        const parsedRestoreState = JSON.parse(restoreGameState);
+        console.log('Restoring game state from country navigation:', parsedRestoreState);
+        
+        // Restore the saved state
+        if (parsedRestoreState.level) setLevel(parsedRestoreState.level);
+        if (parsedRestoreState.totalPoints) setTotalPoints(parseInt(parsedRestoreState.totalPoints));
+        
+        // Update destinations for the restored level
+        if (parsedRestoreState.level) {
+          updateDestinations(parsedRestoreState.level);
+        }
+        
+        // Clear the restore state
+        sessionStorage.removeItem('restoreGameState');
+        console.log('Game state restored successfully from country navigation');
+        return; // Exit early, state has been restored
+      }
+      
+      // Check for car game reset flags
       const carGameReset = sessionStorage.getItem('carGameReset');
       const carStartLevel = sessionStorage.getItem('carStartLevel');
       const carStartPoints = sessionStorage.getItem('carStartPoints');
@@ -289,6 +310,11 @@ export const GameProvider: React.FC<{
       console.error('Error saving game state:', error);
     }
   }, [level, totalPoints, gamesPlayed, highScore, playerName, playerAge, playerGender, selectedCarColor, selectedMotorcycle]);
+  
+  // Store current total points in sessionStorage for country navigation
+  useEffect(() => {
+    sessionStorage.setItem('currentTotalPoints', totalPoints.toString());
+  }, [totalPoints]);
   
   // Game control functions
   const resetGame = () => {

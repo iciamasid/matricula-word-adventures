@@ -26,11 +26,13 @@ const CountryPage = () => {
   };
 
   const handleReturn = () => {
-    // Restore game state if it was stored
+    // CRITICAL FIX: Restore game state if it was stored
     const gameState = sessionStorage.getItem('gameStateBeforeCountry');
     if (gameState) {
       const parsedState = JSON.parse(gameState);
-      // Store the state for the target game to restore
+      console.log('Restoring game state from country page:', parsedState);
+      
+      // Store the state for the GameContext to restore
       sessionStorage.setItem('restoreGameState', JSON.stringify(parsedState));
       sessionStorage.removeItem('gameStateBeforeCountry');
     }
