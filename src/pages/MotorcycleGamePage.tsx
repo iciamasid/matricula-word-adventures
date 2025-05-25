@@ -23,13 +23,10 @@ import GameOverPopup from "@/components/GameOverPopup";
 import CountryModal from "@/components/CountryModal";
 import FriendlyConfirmDialog from "@/components/FriendlyConfirmDialog";
 import { getCountryInfo } from "@/data/countryData";
-
 const MotorcycleGamePage = () => {
-  return (
-    <GameProvider>
+  return <GameProvider>
       <MotorcycleGameContent />
-    </GameProvider>
-  );
+    </GameProvider>;
 };
 
 // Component to handle the game content
@@ -156,16 +153,13 @@ const MotorcycleGameContent = () => {
     if (level >= 10) countries.push("Portugal (vuelta completa)");
     return countries;
   }, [level]);
-
   const handleResetGame = () => {
     setShowResetConfirm(true);
   };
-
   const handleConfirmReset = () => {
     resetGame();
     setShowResetConfirm(false);
   };
-
   const handleCancelReset = () => {
     setShowResetConfirm(false);
   };
@@ -184,68 +178,45 @@ const MotorcycleGameContent = () => {
   const handleGameOverRestart = () => {
     // Close the popup first
     setShowGameOver(false);
-    
+
     // Reset the game completely to initial state
     resetGame();
-    
+
     // Set session storage flags to ensure the car game starts fresh
     sessionStorage.setItem('carGameReset', 'true');
     sessionStorage.setItem('carStartLevel', '1');
     sessionStorage.setItem('carStartPoints', '0');
-    
+
     // Navigate back to car game
     navigate('/');
   };
-
   const handleOpenCountryModal = (countryCode: string) => {
     setSelectedCountry(countryCode);
     setCountryModalOpen(true);
   };
-
   const handleCloseCountryModal = () => {
     setCountryModalOpen(false);
     setSelectedCountry(null);
   };
-
-  return (
-    <div 
-      className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`}
-      style={{
-        backgroundSize: "cover",
-        backgroundAttachment: "fixed"
-      }}
-    >
+  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
+    backgroundSize: "cover",
+    backgroundAttachment: "fixed"
+  }}>
       {/* Return button to car game */}
       <div className="w-full pt-12 px-4">
         <Link to="/">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal"
-          >
+          <Button variant="outline" size="sm" className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal">
             <ArrowLeft className="w-4 h-4 mr-1" /> Volver a coches
           </Button>
         </Link>
         
         {/* Instructions button positioned at top right of the screen */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowInstructions(true)}
-          className={`absolute top-2 right-4 bg-teal-100/90 hover:bg-teal-200 text-teal-900 border-teal-300 kids-text text-base font-normal`}
-        >
+        <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute top-2 right-4 bg-teal-100/90 hover:bg-teal-200 text-teal-900 border-teal-300 kids-text text-base font-normal`}>
           <HelpCircle className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
         
         {/* Debug button positioned at center top of the screen */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleJumpToLevel9}
-          className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal"
-        >
-          Saltar a Nivel 9
-        </Button>
+        
       </div>
 
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
@@ -260,25 +231,15 @@ const MotorcycleGameContent = () => {
         </div>
         
         {/* Show moving motorcycle BELOW the buttons - showing the selected motorcycle or default white motorcycle */}
-        {playerName && (
-          <motion.div
-            className="w-32 h-24 my-2"
-            animate={{
-              x: ["-100%", "100%"]
-            }}
-            transition={{
-              duration: 6,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-          >
-            <img 
-              src={selectedMotorcycle ? `/lovable-uploads/${selectedMotorcycle.image}` : "/lovable-uploads/Motoblanca.png"}
-              alt={selectedMotorcycle ? selectedMotorcycle.name : "Motoblanca"} 
-              className="w-full h-full object-contain" 
-            />
-          </motion.div>
-        )}
+        {playerName && <motion.div className="w-32 h-24 my-2" animate={{
+        x: ["-100%", "100%"]
+      }} transition={{
+        duration: 6,
+        repeat: Infinity,
+        ease: "linear"
+      }}>
+            <img src={selectedMotorcycle ? `/lovable-uploads/${selectedMotorcycle.image}` : "/lovable-uploads/Motoblanca.png"} alt={selectedMotorcycle ? selectedMotorcycle.name : "Motoblanca"} className="w-full h-full object-contain" />
+          </motion.div>}
         
         {/* This div will be the reference for scrolling */}
         <div ref={licensePlateRef} className="w-full"></div>
@@ -302,21 +263,13 @@ const MotorcycleGameContent = () => {
           </div>
           
           {/* Reset Game Button - Added more bottom margin */}
-          <motion.div
-            className="w-full max-w-xs mt-8 mb-16"
-            whileHover={{
-              scale: 1.03
-            }}
-            transition={{
-              type: "spring",
-              stiffness: 400
-            }}
-          >
-            <Button
-              onClick={handleResetGame}
-              size="lg"
-              className={`w-full text-white kids-text text-xl font-normal bg-teal-700 hover:bg-teal-600 px-[10px] mx-0 my-0 py-[20px]`}
-            >
+          <motion.div className="w-full max-w-xs mt-8 mb-16" whileHover={{
+          scale: 1.03
+        }} transition={{
+          type: "spring",
+          stiffness: 400
+        }}>
+            <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal bg-teal-700 hover:bg-teal-600 px-[10px] mx-0 my-0 py-[20px]`}>
               <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
             </Button>
           </motion.div>
@@ -332,51 +285,22 @@ const MotorcycleGameContent = () => {
         <LevelUpAlert />
         
         {/* Birthday Bonus Popup */}
-        {playerAge && (
-          <BirthdayBonusPopup 
-            open={showBirthdayBonusPopup} 
-            onClose={() => setShowBirthdayBonusPopup(false)} 
-            birthYear={new Date().getFullYear() - (playerAge || 0)} 
-            points={50} 
-          />
-        )}
+        {playerAge && <BirthdayBonusPopup open={showBirthdayBonusPopup} onClose={() => setShowBirthdayBonusPopup(false)} birthYear={new Date().getFullYear() - (playerAge || 0)} points={50} />}
 
         {/* Age Bonus Alert */}
-        <AgeBonusPopup 
-          open={showAgeBonusPopup} 
-          onClose={() => {}} 
-          points={20} 
-          age={playerAge || 0} 
-        />
+        <AgeBonusPopup open={showAgeBonusPopup} onClose={() => {}} points={20} age={playerAge || 0} />
         
         {/* Game Over Popup */}
-        <GameOverPopup 
-          open={showGameOver}
-          onRestart={handleGameOverRestart}
-        />
+        <GameOverPopup open={showGameOver} onRestart={handleGameOverRestart} />
         
         {/* Instructions modal - Updated to use MotorcycleGameInstructions */}
         {showInstructions && <MotorcycleGameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
-      <CountryModal 
-        open={countryModalOpen}
-        onClose={handleCloseCountryModal}
-        country={selectedCountry ? getCountryInfo(selectedCountry) : null}
-      />
+      <CountryModal open={countryModalOpen} onClose={handleCloseCountryModal} country={selectedCountry ? getCountryInfo(selectedCountry) : null} />
       
       {/* Friendly Reset Confirmation Dialog */}
-      <FriendlyConfirmDialog
-        open={showResetConfirm}
-        onConfirm={handleConfirmReset}
-        onCancel={handleCancelReset}
-        title="¿Empezar de nuevo?"
-        message="Si reinicias el juego, perderás todo tu progreso y tendrás que empezar desde el principio. ¡Pero podrás vivir una nueva aventura!"
-        confirmText="¡Sí, empezar de nuevo!"
-        cancelText="No, seguir jugando"
-      />
-    </div>
-  );
+      <FriendlyConfirmDialog open={showResetConfirm} onConfirm={handleConfirmReset} onCancel={handleCancelReset} title="¿Empezar de nuevo?" message="Si reinicias el juego, perderás todo tu progreso y tendrás que empezar desde el principio. ¡Pero podrás vivir una nueva aventura!" confirmText="¡Sí, empezar de nuevo!" cancelText="No, seguir jugando" />
+    </div>;
 };
-
 export default MotorcycleGamePage;
