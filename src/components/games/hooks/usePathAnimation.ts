@@ -1,3 +1,4 @@
+
 import { useRef, useState, useCallback } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, Polygon } from 'fabric';
 import { toast } from '@/hooks/use-toast';
@@ -267,18 +268,31 @@ export const usePathAnimation = ({
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
     
-    // Use step size for movement - doubled for faster animation
-    const stepSize = Math.max(2, Math.floor(interpolatedPath.length / 750)); // Doubled step size for faster movement
+    // Adaptive speed based on path length - faster for shorter distances
+    const pathLength = interpolatedPath.length;
+    let baseStepSize = 2;
+    let baseSpeed = 15;
     
-    // Doubled speed: convert slider value (0-100) to speed where 0 = fastest, 100 = slowest
-    // The new speed mapping: what used to be slowest (100) is now fastest, and fastest is double the old speed
-    const invertedSpeed = 100 - currentAnimationSpeed; // Invert so higher slider = faster
-    const doubledSpeed = Math.max(5, Math.min(25, 25 - (invertedSpeed / 100) * 20)); // Much faster speed range
+    // If it's a short path (early levels), make it faster
+    if (pathLength < 500) {
+      baseStepSize = 4; // Double step size for short paths
+      baseSpeed = 8;   // Much faster speed
+    } else if (pathLength < 1000) {
+      baseStepSize = 3; // 1.5x step size for medium paths
+      baseSpeed = 12;
+    }
+    
+    // Use step size for movement
+    const stepSize = Math.max(baseStepSize, Math.floor(pathLength / 750));
+    
+    // Speed calculation with adaptive base speed
+    const invertedSpeed = 100 - currentAnimationSpeed;
+    const calculatedSpeed = Math.max(5, Math.min(25, baseSpeed + (invertedSpeed / 100) * 15));
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
       animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
-    }, doubledSpeed);
+    }, calculatedSpeed);
     
     // Skip points for smoother animation
     const nextIndex = currentIndex + stepSize;

@@ -311,14 +311,14 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                 style={{
                   left: `${vehiclePosition.x}%`,
                   top: `${vehiclePosition.y}%`,
-                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 2.2 : 1.8})`,
+                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 2.2 : 2.4})`,
                   zIndex: 5
                 }}
               >
                 {isMotorcycleGame ? (
                   <span className="text-2xl">🏍️</span>
                 ) : (
-                  <Car className={isEnglish ? 'text-orange-500' : 'text-purple-500'} size={32} />
+                  <span className="text-3xl">🚗</span>
                 )}
               </motion.div>
             )}
