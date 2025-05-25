@@ -263,25 +263,24 @@ export const usePathAnimation = ({
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
     
-    // FIXED SPEED CALCULATION: Map slider value (0-100) to actual speeds
+    // FIXED SPEED CALCULATION: Correct mapping of slider to speeds
     // Slider: 0 = 20km/h (slowest), 100 = 120km/h (fastest)
-    // We need to invert the delay calculation so higher slider values = faster movement
+    // Higher slider values should result in faster movement
     
     // Convert slider value (0-100) to speed multiplier
-    // At 0 (20km/h): slower movement
-    // At 100 (120km/h): fastest movement
-    const speedMultiplier = (currentAnimationSpeed / 100); // 0 to 1
+    // At 0 (20km/h): slowest movement (speedMultiplier = 0)
+    // At 100 (120km/h): fastest movement (speedMultiplier = 1)
+    const speedMultiplier = currentAnimationSpeed / 100; // 0 to 1
     
-    // Calculate step size based on speed
-    // Faster speeds = bigger steps = less frames to cover same distance
+    // Calculate step size based on speed - faster speeds skip more frames
     const baseStepSize = 1;
-    const maxStepSize = 4;
+    const maxStepSize = 3; // Reduced from 4 to decrease speed difference
     const stepSize = Math.max(baseStepSize, Math.floor(baseStepSize + (speedMultiplier * (maxStepSize - baseStepSize))));
     
-    // Calculate delay based on speed
-    // Higher speed = lower delay
-    const maxDelay = 50; // Slowest speed (20km/h)
-    const minDelay = 8;  // Fastest speed (120km/h)
+    // Calculate delay based on speed - INVERTED so higher speed = lower delay
+    // Reduced the range to make speeds more similar
+    const maxDelay = 35; // Slowest speed (20km/h) - reduced from 50
+    const minDelay = 15; // Fastest speed (120km/h) - increased from 8
     const calculatedDelay = Math.max(minDelay, Math.floor(maxDelay - (speedMultiplier * (maxDelay - minDelay))));
     
     if (debugMode) {
