@@ -13,7 +13,6 @@ import CarGameInstructions from "@/components/CarGameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Toaster } from "@/components/ui/toaster";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "@/hooks/use-toast";
 import ScorePanel from "@/components/ScorePanel";
 import PlayerRegistration from "@/components/PlayerRegistration";
 import WorldTourProgress from "@/components/WorldTourProgress";
@@ -22,7 +21,9 @@ import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 import MaxLevelPopup from "@/components/MaxLevelPopup";
 import CountryModal from "@/components/CountryModal";
+import FriendlyConfirmDialog from "@/components/FriendlyConfirmDialog";
 import { getCountryInfo } from "@/data/countryData";
+import { toast } from "@/hooks/use-toast";
 
 const Index = () => {
   return (
@@ -38,6 +39,7 @@ const GameContent = () => {
   const [showMaxLevelPopup, setShowMaxLevelPopup] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const worldTourRef = useRef<HTMLDivElement>(null);
@@ -122,7 +124,7 @@ const GameContent = () => {
         }, 100);
       }
     }
-  }, [level, updateDestinations]);
+  }, [level, updateDestinations, selectedCarColor]);
 
   // Function to scroll to world tour section
   const scrollToWorldTour = () => {
@@ -131,6 +133,50 @@ const GameContent = () => {
         behavior: 'smooth'
       });
     }
+  };
+
+  // Handle reset game with friendly dialog
+  const handleResetGame = () => {
+    setShowResetConfirm(true);
+  };
+
+  const handleConfirmReset = () => {
+    resetGame();
+    setShowMaxLevelPopup(false);
+    setShowResetConfirm(false);
+    // Removed toast notification
+  };
+
+  const handleCancelReset = () => {
+    setShowResetConfirm(false);
+  };
+
+  // Handler for jump to level 9 button - Updated to use 4490 points
+  const handleJumpToLevel9 = () => {
+    // Set level to 9
+    setLevel(9);
+    // Set points to 4490 as requested
+    setTotalPoints(4490);
+    // Update destinations based on new level
+    updateDestinations(9);
+    // Removed toast notification
+  };
+
+  // Handle navigation to motorcycle game from button - with reset
+  const handleNavigateToMotorcycleGame = () => {
+    // Always reset to level 1 and 0 points when switching to motorcycle game
+    setLevel(1);
+    setTotalPoints(0);
+    
+    // Set navigation flags to ensure motorcycle game starts fresh
+    sessionStorage.setItem('motorcycleGameReset', 'true');
+    sessionStorage.setItem('motorcycleStartLevel', '1');
+    sessionStorage.setItem('motorcycleStartPoints', '0');
+    
+    // Navigate to motorcycle game
+    navigate('/motorcycle-game');
+    
+    // Removed toast notification
   };
 
   // Handle navigation to motorcycle game - Reset progress to start fresh
@@ -150,11 +196,7 @@ const GameContent = () => {
     // Navigate to motorcycle game
     navigate('/motorcycle-game');
     
-    // Show toast confirming the reset
-    toast({
-      title: "¡Nuevo juego de motos!",
-      description: "Empezando desde el nivel 1 con las motos. ¡Buena suerte!"
-    });
+    // Removed toast notification
   };
 
   // Handle closing the max level popup
@@ -190,53 +232,6 @@ const GameContent = () => {
     if (level >= 10) countries.push("España (vuelta completa)");
     return countries;
   }, [level]);
-
-  const handleResetGame = () => {
-    if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
-      resetGame();
-      setShowMaxLevelPopup(false);
-      toast({
-        title: "¡Juego reiniciado!",
-        description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
-      });
-    }
-  };
-
-  // Handler for jump to level 9 button - Updated to use 4490 points
-  const handleJumpToLevel9 = () => {
-    // Set level to 9
-    setLevel(9);
-    // Set points to 4490 as requested
-    setTotalPoints(4490);
-    // Update destinations based on new level
-    updateDestinations(9);
-    // Show success toast
-    toast({
-      title: "¡Nivel actualizado!",
-      description: "Has saltado al nivel 9 con 4490 puntos. ¡Preparado para llegar al nivel 10!"
-    });
-  };
-
-  // Handle navigation to motorcycle game from button - with reset
-  const handleNavigateToMotorcycleGame = () => {
-    // Always reset to level 1 and 0 points when switching to motorcycle game
-    setLevel(1);
-    setTotalPoints(0);
-    
-    // Set navigation flags to ensure motorcycle game starts fresh
-    sessionStorage.setItem('motorcycleGameReset', 'true');
-    sessionStorage.setItem('motorcycleStartLevel', '1');
-    sessionStorage.setItem('motorcycleStartPoints', '0');
-    
-    // Navigate to motorcycle game
-    navigate('/motorcycle-game');
-    
-    // Show toast confirming the reset
-    toast({
-      title: "¡Cambiando a motos!",
-      description: "Empezando desde el nivel 1 con 0 puntos en el juego de motos."
-    });
-  };
 
   const handleOpenCountryModal = (countryCode: string) => {
     console.log('Index - Opening country modal for:', countryCode);
@@ -396,6 +391,17 @@ const GameContent = () => {
           onClose={() => {}} 
           points={20} 
           age={playerAge || 0} 
+        />
+        
+        {/* Friendly Reset Confirmation Dialog */}
+        <FriendlyConfirmDialog
+          open={showResetConfirm}
+          onConfirm={handleConfirmReset}
+          onCancel={handleCancelReset}
+          title="🎮 ¿Empezar de nuevo?"
+          message="¿Estás seguro de que quieres empezar una nueva aventura? Perderás todo tu progreso actual, pero podrás vivir la diversión otra vez desde el principio. 🚗✨"
+          confirmText="¡Sí, nueva aventura!"
+          cancelText="No, seguir jugando"
         />
         
         {showInstructions && <CarGameInstructions onClose={() => setShowInstructions(false)} />}
