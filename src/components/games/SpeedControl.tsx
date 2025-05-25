@@ -21,10 +21,10 @@ const SpeedControl: React.FC<SpeedControlProps> = ({
           <h3 className="text-purple-800 kids-text font-normal text-base">Velocidad de conducción</h3>
         </div>
         
-        <div className="flex items-center gap-3 pt-1">
-          <div className="flex items-center gap-1 text-purple-700">
-            <Rabbit className="h-4 w-4" />
-            <span className="text-xs font-semibold">RÁPIDO</span>
+        <div className="flex items-center gap-4 pt-1">
+          <div className="flex flex-col items-center gap-1 text-purple-700 min-w-[80px]">
+            <Rabbit className="h-8 w-8 stroke-2" />
+            <span className="text-xs font-bold text-center">MÁS RÁPIDO</span>
           </div>
           
           <Slider 
@@ -36,9 +36,9 @@ const SpeedControl: React.FC<SpeedControlProps> = ({
             className="flex-1" 
           />
           
-          <div className="flex items-center gap-1 text-purple-700">
-            <span className="text-xs font-semibold">DESPACIO</span>
-            <Turtle className="h-4 w-4" />
+          <div className="flex flex-col items-center gap-1 text-purple-700 min-w-[80px]">
+            <Turtle className="h-8 w-8 stroke-2" />
+            <span className="text-xs font-bold text-center">MÁS DESPACIO</span>
           </div>
         </div>
       </div>
