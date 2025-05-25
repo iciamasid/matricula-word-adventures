@@ -19,7 +19,7 @@ export const usePathAnimation = ({
   path,
   startPointObj,
   endPointObj,
-  animationSpeed = 180,
+  animationSpeed = 50, // Default to middle of slider (50 = ~70km/h)
   onCarRotationUpdate,
   onCarPositionUpdate
 }: UsePathAnimationProps) => {
@@ -160,7 +160,6 @@ export const usePathAnimation = ({
       setIsPlaying(false);
       setAnimationCompleted(true);
       setAnimationProgress(100); // Set progress to 100% when complete
-      // REMOVED: toast notification that was showing "¡Muy bien! ¡El coche ha llegado a su destino!"
       return;
     }
     
@@ -264,34 +263,35 @@ export const usePathAnimation = ({
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
     
-    // Adaptive speed based on path length - faster for shorter distances
-    const pathLength = interpolatedPath.length;
-    let baseStepSize = 2;
-    let baseSpeed = 15;
+    // FIXED SPEED CALCULATION: Map slider value (0-100) to actual speeds
+    // Slider: 0 = 20km/h (slowest), 100 = 120km/h (fastest)
+    // We need to invert the delay calculation so higher slider values = faster movement
     
-    // If it's a short path (early levels), make it faster
-    if (pathLength < 500) {
-      baseStepSize = 4; // Double step size for short paths
-      baseSpeed = 8;   // Much faster speed
-    } else if (pathLength < 1000) {
-      baseStepSize = 3; // 1.5x step size for medium paths
-      baseSpeed = 12;
+    // Convert slider value (0-100) to speed multiplier
+    // At 0 (20km/h): slower movement
+    // At 100 (120km/h): fastest movement
+    const speedMultiplier = (currentAnimationSpeed / 100); // 0 to 1
+    
+    // Calculate step size based on speed
+    // Faster speeds = bigger steps = less frames to cover same distance
+    const baseStepSize = 1;
+    const maxStepSize = 4;
+    const stepSize = Math.max(baseStepSize, Math.floor(baseStepSize + (speedMultiplier * (maxStepSize - baseStepSize))));
+    
+    // Calculate delay based on speed
+    // Higher speed = lower delay
+    const maxDelay = 50; // Slowest speed (20km/h)
+    const minDelay = 8;  // Fastest speed (120km/h)
+    const calculatedDelay = Math.max(minDelay, Math.floor(maxDelay - (speedMultiplier * (maxDelay - minDelay))));
+    
+    if (debugMode) {
+      console.log(`Speed: ${currentAnimationSpeed}, Multiplier: ${speedMultiplier.toFixed(2)}, Step: ${stepSize}, Delay: ${calculatedDelay}ms`);
     }
-    
-    // Use step size for movement
-    const stepSize = Math.max(baseStepSize, Math.floor(pathLength / 750));
-    
-    // Speed calculation with adaptive base speed
-    const invertedSpeed = 100 - currentAnimationSpeed;
-    const calculatedSpeed = Math.max(5, Math.min(25, baseSpeed + (invertedSpeed / 100) * 15));
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
-      animationRef.current = requestAnimationFrame(() => moveCar(nextIndex));
-    }, calculatedSpeed);
-    
-    // Skip points for smoother animation
-    const nextIndex = currentIndex + stepSize;
+      animationRef.current = requestAnimationFrame(() => moveCar(currentIndex + stepSize));
+    }, calculatedDelay);
   }, [fabricCanvas, interpolatedPath, updatePathTrace, debugMode, currentAnimationSpeed, onCarRotationUpdate, onCarPositionUpdate]);
 
   // Cancel any ongoing animation
@@ -311,14 +311,13 @@ export const usePathAnimation = ({
   // Toggle debug mode
   const toggleDebugMode = useCallback(() => {
     setDebugMode((prev) => !prev);
-    // REMOVED: toast notification for debug mode toggle
   }, [debugMode]);
 
   // Set animation speed
   const setAnimationSpeed = useCallback((speed: number) => {
     setCurrentAnimationSpeed(speed);
     if (debugMode) {
-      console.log(`Animation speed updated to: ${speed}ms`);
+      console.log(`Animation speed updated to: ${speed} (${20 + (speed / 100) * 100}km/h)`);
     }
   }, [debugMode]);
 
