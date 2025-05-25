@@ -242,7 +242,9 @@ const GameContent = () => {
   }}>
       {/* Motorcycle game button */}
       <div className="w-full pt-12 px-4">
-        
+        <Button variant="outline" size="sm" onClick={handleNavigateToMotorcycleGame} className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal">
+          <Bike className="w-4 h-4 mr-1" /> Jugar con motos
+        </Button>
         
         {/* Instructions button positioned at top right of the screen */}
         <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute top-2 right-4 bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text text-base font-normal`}>
