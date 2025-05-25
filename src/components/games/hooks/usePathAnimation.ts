@@ -1,4 +1,3 @@
-
 import { useRef, useState, useCallback } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, Polygon } from 'fabric';
 import { Point, interpolatePoints } from '../utils/pathUtils';
@@ -252,9 +251,27 @@ export const usePathAnimation = ({
     const progress = Math.round((currentIndex / interpolatedPath.length) * 100);
     setAnimationProgress(progress);
     
-    // Debug info for every 100th point
-    if (debugMode && currentIndex % 100 === 0) {
-      console.log(`Animation at point: ${currentIndex} of ${interpolatedPath.length}, progress: ${progress}%, position: ${newX},${newY}`);
+    // CORRECTED SPEED CALCULATION - COMPLETELY INVERTED
+    // Slider: 0 = 20km/h (slowest), 100 = 120km/h (fastest)
+    // NOW: Higher slider values = FASTER movement (lower delays)
+    
+    // INVERTED: Convert to "slowness factor" - higher slider = lower slowness
+    const slownessMultiplier = (100 - currentAnimationSpeed) / 100; // Inverted: 0 to 1
+    
+    // Calculate step size - higher slider = bigger steps (faster)
+    const baseStepSize = 1;
+    const maxStepSize = 2; // Reduced difference between speeds
+    const stepSize = Math.max(baseStepSize, Math.floor(baseStepSize + ((1 - slownessMultiplier) * (maxStepSize - baseStepSize))));
+    
+    // Calculate delay - higher slider = lower delay (faster)
+    const minDelay = 20; // Fastest speed (120km/h) - increased for smoother animation
+    const maxDelay = 40; // Slowest speed (20km/h) - reduced difference
+    const calculatedDelay = Math.max(minDelay, Math.floor(minDelay + (slownessMultiplier * (maxDelay - minDelay))));
+    
+    // Temporary debug logs to verify correct calculation
+    if (debugMode || currentIndex % 200 === 0) {
+      const kmh = 20 + (currentAnimationSpeed / 100) * 100;
+      console.log(`🚗 Speed Debug - Slider: ${currentAnimationSpeed}, KM/H: ${kmh.toFixed(0)}, Slowness: ${slownessMultiplier.toFixed(2)}, Step: ${stepSize}, Delay: ${calculatedDelay}ms`);
     }
     
     // Update the canvas
@@ -262,30 +279,6 @@ export const usePathAnimation = ({
     
     // Update progress in the interface
     setCurrentPathIndex(currentIndex);
-    
-    // FIXED SPEED CALCULATION: Correct mapping of slider to speeds
-    // Slider: 0 = 20km/h (slowest), 100 = 120km/h (fastest)
-    // Higher slider values should result in faster movement
-    
-    // Convert slider value (0-100) to speed multiplier
-    // At 0 (20km/h): slowest movement (speedMultiplier = 0)
-    // At 100 (120km/h): fastest movement (speedMultiplier = 1)
-    const speedMultiplier = currentAnimationSpeed / 100; // 0 to 1
-    
-    // Calculate step size based on speed - faster speeds skip more frames
-    const baseStepSize = 1;
-    const maxStepSize = 3; // Reduced from 4 to decrease speed difference
-    const stepSize = Math.max(baseStepSize, Math.floor(baseStepSize + (speedMultiplier * (maxStepSize - baseStepSize))));
-    
-    // Calculate delay based on speed - INVERTED so higher speed = lower delay
-    // Reduced the range to make speeds more similar
-    const maxDelay = 35; // Slowest speed (20km/h) - reduced from 50
-    const minDelay = 15; // Fastest speed (120km/h) - increased from 8
-    const calculatedDelay = Math.max(minDelay, Math.floor(maxDelay - (speedMultiplier * (maxDelay - minDelay))));
-    
-    if (debugMode) {
-      console.log(`Speed: ${currentAnimationSpeed}, Multiplier: ${speedMultiplier.toFixed(2)}, Step: ${stepSize}, Delay: ${calculatedDelay}ms`);
-    }
     
     timeoutRef.current = setTimeout(() => {
       // Use requestAnimationFrame to optimize animation
