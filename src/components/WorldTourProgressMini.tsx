@@ -144,7 +144,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
   const getCountryName = isMotorcycleGame ? getMotorcycleCountryName : getCarCountryName;
   const getCountryCode = isMotorcycleGame ? getMotorcycleCountryCode : getCarCountryCode;
 
-  // Animation effect - MUCH SLOWER and stops at destination
+  // Animation effect - SLIGHTLY FASTER speed
   useEffect(() => {
     const targetLevel = Math.min(level, 10);
     
@@ -165,14 +165,14 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
         setProgressValue(0);
         setAnimatingLevel(1);
 
-        // Much slower animation - 1% increments with longer delays
+        // SLIGHTLY FASTER animation - reduced delay from 150ms to 100ms
         for (let i = 0; i <= 100; i += 1) {
           if (!animationActive) break;
           const currentProgress = Math.min(i / 100 * targetValue, targetValue);
           setProgressValue(currentProgress);
           const currentLevelBasedOnProgress = Math.min(Math.ceil(currentProgress / 100 * 9) + 1, targetLevel);
           setAnimatingLevel(currentLevelBasedOnProgress);
-          await new Promise(resolve => setTimeout(resolve, 150)); // Even slower - 150ms between steps
+          await new Promise(resolve => setTimeout(resolve, 100)); // Faster - 100ms between steps
         }
         
         // Ensure we end exactly at the target
@@ -205,24 +205,6 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
       points.push(`${pos.x},${pos.y}`);
     }
     return `M ${points.join(" L ")}`;
-  };
-
-  // Calculate stroke dash offset - FIXED to stop exactly at unlocked country flag
-  const calculateStrokeDashOffset = () => {
-    const totalLength = 200;
-    if (level <= 1) return totalLength; // No trace for level 1
-    
-    // Calculate the exact position where the trace should stop (at the flag center)
-    const targetLevel = Math.min(level, 10);
-    const targetSegmentIndex = targetLevel - 1; // 0-based index for the target flag
-    const targetPosition = targetSegmentIndex / 9; // Position along the path (0-1)
-    
-    // Use the exact progress value, but clamp it to not exceed the target
-    const maxAllowedProgress = targetPosition * 100;
-    const clampedProgress = Math.min(progressValue, maxAllowedProgress);
-    
-    const progressRatio = clampedProgress / 100;
-    return totalLength * (1 - progressRatio);
   };
 
   // Get vehicle position - stops exactly at unlocked country flag
@@ -267,6 +249,34 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
   };
 
   const vehiclePosition = getVehiclePosition();
+
+  // Calculate stroke dash offset - SYNCHRONIZED WITH VEHICLE POSITION
+  const calculateStrokeDashOffset = () => {
+    const totalLength = 200;
+    if (level <= 1) return totalLength; // No trace for level 1
+    
+    // Get the actual vehicle position and calculate progress based on that
+    const vehiclePos = getVehiclePosition();
+    
+    // Calculate the actual progress along the path based on vehicle position
+    // We'll use the vehicle's actual position to determine the trace length
+    const targetLevel = Math.min(level, 10);
+    const targetSegment = targetLevel - 1;
+    
+    // Calculate how far along the path the vehicle is
+    let pathProgress = 0;
+    
+    if (targetLevel <= 1) {
+      pathProgress = 0;
+    } else {
+      // Calculate the actual distance traveled by the vehicle
+      const maxAllowedProgress = (targetSegment / 9) * 100;
+      const currentProgress = Math.min(progressValue, maxAllowedProgress);
+      pathProgress = currentProgress / 100;
+    }
+    
+    return totalLength * (1 - pathProgress);
+  };
 
   // Handle country selection
   const handleCountrySelection = (levelIndex: number, countryName: string) => {
@@ -343,7 +353,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
               </motion.div>
             )}
             
-            {/* Country flags - Larger size */}
+            {/* Country flags - BIGGER SIZE */}
             {[...Array(10)].map((_, i) => {
               const levelIndex = i + 1;
               const flag = getLevelFlag(levelIndex);
@@ -373,7 +383,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                     } : {}}
                   >
                     <motion.div className="relative" whileHover={{ scale: 1.2 }}>
-                      <span className="text-3xl z-10 drop-shadow-lg">{flag}</span>
+                      <span className="text-4xl z-10 drop-shadow-lg">{flag}</span>
                       
                       {!isUnlocked && (
                         <motion.div
