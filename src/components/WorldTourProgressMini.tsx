@@ -154,7 +154,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
   const getCountryName = isMotorcycleGame ? getMotorcycleCountryName : getCarCountryName;
   const getCountryCode = isMotorcycleGame ? getMotorcycleCountryCode : getCarCountryCode;
 
-  // Animation effect - SLIGHTLY FASTER speed
+  // Animation effect - MUCH FASTER speed
   useEffect(() => {
     const targetLevel = Math.min(level, 10);
     
@@ -175,21 +175,21 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
         setProgressValue(0);
         setAnimatingLevel(1);
 
-        // SLIGHTLY FASTER animation - reduced delay from 150ms to 100ms
-        for (let i = 0; i <= 100; i += 1) {
+        // MUCH FASTER animation - reduced delay from 100ms to 40ms
+        for (let i = 0; i <= 100; i += 2) { // Increased step size from 1 to 2
           if (!animationActive) break;
           const currentProgress = Math.min(i / 100 * targetValue, targetValue);
           setProgressValue(currentProgress);
           const currentLevelBasedOnProgress = Math.min(Math.ceil(currentProgress / 100 * 9) + 1, targetLevel);
           setAnimatingLevel(currentLevelBasedOnProgress);
-          await new Promise(resolve => setTimeout(resolve, 100)); // Faster - 100ms between steps
+          await new Promise(resolve => setTimeout(resolve, 40)); // Much faster - 40ms between steps
         }
         
         // Ensure we end exactly at the target
         setProgressValue(targetValue);
         setAnimatingLevel(targetLevel);
         
-        await new Promise(resolve => setTimeout(resolve, 4000)); // Longer pause before restart
+        await new Promise(resolve => setTimeout(resolve, 3000)); // Shorter pause before restart
       }
     };
     runAnimation();
