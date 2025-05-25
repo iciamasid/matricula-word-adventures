@@ -92,7 +92,7 @@ const LockedMotorcyclePopup = ({
                   <p className="text-teal-800 kids-text font-semibold">
                     Nivel actual: <span className="text-purple-600">{currentLevel}</span>/10
                   </p>
-                  {levelsRemaining > 0 && <p className="text-teal-700 kids-text text-sm mt-2">
+                  {levelsRemaining > 0 && <p className="text-teal-700 kids-text mt-2 text-xl">
                       Te faltan <span className="font-bold text-amber-600">{levelsRemaining} niveles</span> para desbloquear las motos
                     </p>}
                 </div>
