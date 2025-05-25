@@ -7,7 +7,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, HelpCircle, Motorcycle } from "lucide-react";
+import { RefreshCw, HelpCircle, Bike } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import CarGameInstructions from "@/components/CarGameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -272,7 +272,7 @@ const GameContent = () => {
               animate={{ rotate: [0, 5, -5, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
             >
-              <Motorcycle className="w-4 h-4 mr-1" />
+              <Bike className="w-4 h-4 mr-1" />
             </motion.div>
             Jugar con motos
           </Button>

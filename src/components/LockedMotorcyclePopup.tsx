@@ -2,7 +2,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Lock, Car, Motorcycle } from "lucide-react";
+import { Lock, Car, Bike } from "lucide-react";
 
 interface LockedMotorcyclePopupProps {
   open: boolean;
@@ -60,7 +60,7 @@ const LockedMotorcyclePopup = ({ open, onClose, currentLevel }: LockedMotorcycle
                     animate={{ rotate: [0, 10, -10, 0] }}
                     transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
                   >
-                    <Motorcycle className="w-12 h-12 text-teal-600" />
+                    <Bike className="w-12 h-12 text-teal-600" />
                   </motion.div>
                 </div>
                 
