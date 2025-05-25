@@ -23,6 +23,7 @@ import GameOverPopup from "@/components/GameOverPopup";
 import CountryModal from "@/components/CountryModal";
 import FriendlyConfirmDialog from "@/components/FriendlyConfirmDialog";
 import { getCountryInfo } from "@/data/countryData";
+
 const MotorcycleGamePage = () => {
   return <GameProvider>
       <MotorcycleGameContent />
@@ -202,21 +203,12 @@ const MotorcycleGameContent = () => {
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
-      {/* Return button to car game */}
+      {/* Instructions button positioned at top right of the screen */}
       <div className="w-full pt-12 px-4">
-        <Link to="/">
-          <Button variant="outline" size="sm" className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal">
-            <ArrowLeft className="w-4 h-4 mr-1" /> Volver a coches
-          </Button>
-        </Link>
-        
         {/* Instructions button positioned at top right of the screen */}
         <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute top-2 right-4 bg-teal-100/90 hover:bg-teal-200 text-teal-900 border-teal-300 kids-text text-base font-normal`}>
           <HelpCircle className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
-        
-        {/* Debug button positioned at center top of the screen */}
-        
       </div>
 
       <div className="w-full max-w-md flex flex-col items-center justify-center px-4">
@@ -262,8 +254,22 @@ const MotorcycleGameContent = () => {
             <WorldTourProgress />
           </div>
           
+          {/* Volver a coches button - moved here and changed to purple */}
+          <motion.div className="w-full max-w-xs mt-6" whileHover={{
+          scale: 1.03
+        }} transition={{
+          type: "spring",
+          stiffness: 400
+        }}>
+            <Link to="/">
+              <Button className="w-full bg-purple-700/90 hover:bg-purple-800 text-white border-purple-600 kids-text text-xl font-normal">
+                <ArrowLeft className="w-5 h-5 mr-2" /> Volver a coches
+              </Button>
+            </Link>
+          </motion.div>
+          
           {/* Reset Game Button - Added more bottom margin */}
-          <motion.div className="w-full max-w-xs mt-8 mb-16" whileHover={{
+          <motion.div className="w-full max-w-xs mt-4 mb-16" whileHover={{
           scale: 1.03
         }} transition={{
           type: "spring",
@@ -303,4 +309,5 @@ const MotorcycleGameContent = () => {
       <FriendlyConfirmDialog open={showResetConfirm} onConfirm={handleConfirmReset} onCancel={handleCancelReset} title="¿Empezar de nuevo?" message="Si reinicias el juego, perderás todo tu progreso y tendrás que empezar desde el principio. ¡Pero podrás vivir una nueva aventura!" confirmText="¡Sí, empezar de nuevo!" cancelText="No, seguir jugando" />
     </div>;
 };
+
 export default MotorcycleGamePage;
