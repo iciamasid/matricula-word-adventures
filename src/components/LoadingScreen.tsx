@@ -53,7 +53,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
       >
         <img 
-          src="/lovable-uploads/847940d0-2e98-474e-b662-cf0543a5a513.png" 
+          src="/lovable-uploads/MAC6.jpg" 
           alt="Matriculabra Cadabra" 
           className="w-full max-h-60 object-contain mb-8"
         />
