@@ -243,42 +243,8 @@ const GameContent = () => {
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
-      {/* Animated Motorcycle game button */}
+      {/* Instructions button positioned at top right of the screen */}
       <div className="w-full pt-12 px-4">
-        <motion.div
-          className="absolute top-2 left-4"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          animate={{ 
-            y: [0, -5, 0],
-            boxShadow: [
-              "0 4px 6px rgba(0, 0, 0, 0.1)",
-              "0 8px 12px rgba(0, 0, 0, 0.15)",
-              "0 4px 6px rgba(0, 0, 0, 0.1)"
-            ]
-          }}
-          transition={{ 
-            y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
-            boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
-          }}
-        >
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleNavigateToMotorcycleGame} 
-            className="bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white border-teal-500 kids-text text-base font-normal shadow-lg"
-          >
-            <motion.div
-              animate={{ rotate: [0, 5, -5, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              <Bike className="w-4 h-4 mr-1" />
-            </motion.div>
-            Jugar con motos
-          </Button>
-        </motion.div>
-        
-        {/* Instructions button positioned at top right of the screen */}
         <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute top-2 right-4 bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text text-base font-normal`}>
           <HelpCircle className="w-4 h-4 mr-1" /> {"Ayuda"}
         </Button>
@@ -330,8 +296,41 @@ const GameContent = () => {
             <WorldTourProgress />
           </div>
           
+          {/* Animated Motorcycle game button - moved here */}
+          <motion.div
+            className="w-full max-w-xs mt-6"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            animate={{ 
+              y: [0, -5, 0],
+              boxShadow: [
+                "0 4px 6px rgba(0, 0, 0, 0.1)",
+                "0 8px 12px rgba(0, 0, 0, 0.15)",
+                "0 4px 6px rgba(0, 0, 0, 0.1)"
+              ]
+            }}
+            transition={{ 
+              y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+              boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+            }}
+          >
+            <Button 
+              onClick={handleNavigateToMotorcycleGame} 
+              size="lg"
+              className="w-full bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white border-teal-500 kids-text text-xl font-normal shadow-lg"
+            >
+              <motion.div
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <Bike className="w-5 h-5 mr-2" />
+              </motion.div>
+              Jugar con motos
+            </Button>
+          </motion.div>
+          
           {/* Reset Game Button - Added more bottom margin */}
-          <motion.div className="w-full max-w-xs mt-8 mb-16" whileHover={{
+          <motion.div className="w-full max-w-xs mt-4 mb-16" whileHover={{
           scale: 1.03
         }} transition={{
           type: "spring",
