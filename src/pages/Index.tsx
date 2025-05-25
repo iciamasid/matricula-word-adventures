@@ -7,7 +7,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, HelpCircle, Bike } from "lucide-react";
+import { RefreshCw, HelpCircle, Motorcycle } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import CarGameInstructions from "@/components/CarGameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -22,8 +22,10 @@ import AgeBonusPopup from "@/components/AgeBonusPopup";
 import MaxLevelPopup from "@/components/MaxLevelPopup";
 import CountryModal from "@/components/CountryModal";
 import FriendlyConfirmDialog from "@/components/FriendlyConfirmDialog";
+import LockedMotorcyclePopup from "@/components/LockedMotorcyclePopup";
 import { getCountryInfo } from "@/data/countryData";
 import { toast } from "@/hooks/use-toast";
+
 const Index = () => {
   return <GameProvider>
       <GameContent />
@@ -37,6 +39,7 @@ const GameContent = () => {
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [showLockedMotorcyclePopup, setShowLockedMotorcyclePopup] = useState(false);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const worldTourRef = useRef<HTMLDivElement>(null);
@@ -156,21 +159,21 @@ const GameContent = () => {
     // Removed toast notification
   };
 
-  // Handle navigation to motorcycle game from button - with reset
+  // Handle navigation to motorcycle game with level check
   const handleNavigateToMotorcycleGame = () => {
-    // Always reset to level 1 and 0 points when switching to motorcycle game
+    // Check if player has completed all car levels (level 10)
+    if (level < 10) {
+      setShowLockedMotorcyclePopup(true);
+      return;
+    }
+
+    // If level 10 is reached, allow navigation
     setLevel(1);
     setTotalPoints(0);
-
-    // Set navigation flags to ensure motorcycle game starts fresh
     sessionStorage.setItem('motorcycleGameReset', 'true');
     sessionStorage.setItem('motorcycleStartLevel', '1');
     sessionStorage.setItem('motorcycleStartPoints', '0');
-
-    // Navigate to motorcycle game
     navigate('/motorcycle-game');
-
-    // Removed toast notification
   };
 
   // Handle navigation to motorcycle game - Reset progress to start fresh
@@ -240,11 +243,40 @@ const GameContent = () => {
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
-      {/* Motorcycle game button */}
+      {/* Animated Motorcycle game button */}
       <div className="w-full pt-12 px-4">
-        <Button variant="outline" size="sm" onClick={handleNavigateToMotorcycleGame} className="absolute top-2 left-4 bg-teal-700/90 hover:bg-teal-800 text-white border-teal-600 kids-text text-base font-normal">
-          <Bike className="w-4 h-4 mr-1" /> Jugar con motos
-        </Button>
+        <motion.div
+          className="absolute top-2 left-4"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          animate={{ 
+            y: [0, -5, 0],
+            boxShadow: [
+              "0 4px 6px rgba(0, 0, 0, 0.1)",
+              "0 8px 12px rgba(0, 0, 0, 0.15)",
+              "0 4px 6px rgba(0, 0, 0, 0.1)"
+            ]
+          }}
+          transition={{ 
+            y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+            boxShadow: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+          }}
+        >
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleNavigateToMotorcycleGame} 
+            className="bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white border-teal-500 kids-text text-base font-normal shadow-lg"
+          >
+            <motion.div
+              animate={{ rotate: [0, 5, -5, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <Motorcycle className="w-4 h-4 mr-1" />
+            </motion.div>
+            Jugar con motos
+          </Button>
+        </motion.div>
         
         {/* Instructions button positioned at top right of the screen */}
         <Button variant="outline" size="sm" onClick={() => setShowInstructions(true)} className={`absolute top-2 right-4 bg-purple-100/90 hover:bg-purple-200 text-purple-900 border-purple-300 kids-text text-base font-normal`}>
@@ -332,10 +364,18 @@ const GameContent = () => {
         {/* Friendly Reset Confirmation Dialog */}
         <FriendlyConfirmDialog open={showResetConfirm} onConfirm={handleConfirmReset} onCancel={handleCancelReset} title="🎮 ¿Empezar de nuevo?" message="¿Estás seguro de que quieres empezar una nueva aventura? Perderás todo tu progreso actual, pero podrás vivir la diversión otra vez desde el principio. 🚗✨" confirmText="¡Sí, nueva aventura!" cancelText="No, seguir jugando" />
         
+        {/* Locked Motorcycle Popup */}
+        <LockedMotorcyclePopup 
+          open={showLockedMotorcyclePopup} 
+          onClose={() => setShowLockedMotorcyclePopup(false)}
+          currentLevel={level}
+        />
+        
         {showInstructions && <CarGameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
       <Toaster />
       <CountryModal open={countryModalOpen} onClose={handleCloseCountryModal} country={selectedCountry ? getCountryInfo(selectedCountry) : null} />
     </div>;
 };
+
 export default Index;
