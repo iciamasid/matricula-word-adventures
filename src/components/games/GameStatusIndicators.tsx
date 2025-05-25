@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Progress } from "@/components/ui/progress";
-import { Trophy, AlertCircle, Globe } from "lucide-react";
+import { Trophy, AlertCircle, Globe, Play } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface GameStatusIndicatorsProps {
@@ -69,12 +69,21 @@ const GameStatusIndicators: React.FC<GameStatusIndicatorsProps> = ({
               </p>
               <Trophy className="w-7 h-7 text-yellow-300" />
             </div>
-            <button 
-              className="mt-2 bg-purple-600 text-white kids-text py-2 px-4 rounded-md hover:bg-purple-700"
-              onClick={() => window.history.back()}
-            >
-              Volver al juego
-            </button>
+            <div className="flex gap-3 mt-3">
+              <button 
+                className="bg-purple-600 text-white kids-text py-2 px-4 rounded-md hover:bg-purple-700 flex items-center gap-2"
+                onClick={() => window.history.back()}
+              >
+                Volver al juego
+              </button>
+              <button 
+                className="bg-green-600 text-white kids-text py-2 px-4 rounded-md hover:bg-green-700 flex items-center gap-2"
+                onClick={() => window.location.reload()}
+              >
+                <Play className="w-4 h-4" />
+                Seguir conduciendo
+              </button>
+            </div>
           </div>
         </motion.div>
       )}
