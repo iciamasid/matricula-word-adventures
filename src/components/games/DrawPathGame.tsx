@@ -1,5 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
+import { Canvas as FabricCanvas, Rect, Circle, Polygon, PencilBrush } from 'fabric';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
 import { Point } from './utils/pathUtils';
@@ -246,10 +247,10 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       const objects = fabricCanvas.getObjects();
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
-        // Fix type comparison by checking object type properly using instanceof
-        if (obj instanceof fabric.Rect || obj instanceof fabric.Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10 || obj instanceof fabric.Polygon) {
+        // Fix type comparison - check object type properly using type property
+        if (obj.type === 'rect' || (obj.type === 'circle' && obj !== startPointObj && obj !== endPointObj) || obj.type === 'polygon') {
           // Additional check to ensure we don't remove start/end points
-          const isStartOrEndPoint = startPointObj && obj === startPointObj || endPointObj && obj === endPointObj;
+          const isStartOrEndPoint = (startPointObj && obj === startPointObj) || (endPointObj && obj === endPointObj);
           if (!isStartOrEndPoint) {
             fabricCanvas.remove(obj);
           }
@@ -290,7 +291,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       // Ensure the brush is set correctly - draw with a light purple color on white background
       if (!fabricCanvas.freeDrawingBrush) {
         console.log("Creating new brush");
-        const pencilBrush = new fabric.PencilBrush(fabricCanvas);
+        const pencilBrush = new PencilBrush(fabricCanvas);
         pencilBrush.color = '#9B59B6';
         pencilBrush.width = 8;
         fabricCanvas.freeDrawingBrush = pencilBrush;
