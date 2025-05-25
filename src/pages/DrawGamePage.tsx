@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, HelpCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import DrawPathGame from '@/components/games/DrawPathGame';
-import GameInstructions from '@/components/GameInstructions';
+import CarDriveGameInstructions from '@/components/CarDriveGameInstructions';
 import { Toaster } from '@/components/ui/toaster';
 
 const DrawGamePage = () => {
@@ -113,9 +113,9 @@ const DrawGameContent = () => {
         </motion.div>
       )}
 
-      {/* Instructions modal */}
+      {/* Instructions modal - Updated to use CarDriveGameInstructions */}
       {showInstructions && (
-        <GameInstructions onClose={() => setShowInstructions(false)} />
+        <CarDriveGameInstructions onClose={() => setShowInstructions(false)} />
       )}
 
       <Toaster />
