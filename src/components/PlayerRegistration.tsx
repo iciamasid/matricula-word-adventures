@@ -93,7 +93,7 @@ const PlayerRegistration: React.FC = () => {
                 </span>
               </div>
             </div>
-            <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-base rounded-xl mt-2 text-purple-800 bg-teal-300 hover:bg-teal-200">
+            <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="text-base rounded-xl mt-2 text-purple-800 bg-violet-400 hover:bg-violet-300">
               {t('edit')}
             </Button>
           </motion.div>
