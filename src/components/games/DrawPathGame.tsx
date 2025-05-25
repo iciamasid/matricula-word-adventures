@@ -1,15 +1,13 @@
+
 import React, { useEffect, useRef, useState } from 'react';
-import { Canvas as FabricCanvas, Circle, Path, Rect, PencilBrush, Polygon, Object as FabricObject } from 'fabric';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from "@/components/ui/progress";
-import { Button } from "@/components/ui/button";
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
 import { usePathAnimation } from './hooks/usePathAnimation';
 import { Point } from './utils/pathUtils';
-import { createCar, createEndPoint, createStartPoint, CarColor } from './utils/carUtils';
+import { createCar, createEndPoint, createStartPoint } from './utils/carUtils';
 import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
+import GameCanvas from './GameCanvas';
 import LoadingScreen from '@/components/LoadingScreen';
 import { useGame } from '@/context/GameContext';
 
@@ -24,7 +22,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
 }) => {
   const {
     selectedCarColor,
-    setSelectedCarColor,
     selectedMotorcycle
   } = useGame();
 
@@ -57,6 +54,9 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   
   // Get the current selected vehicle (car or motorcycle)
   const currentVehicle = isMotorcycleMode ? selectedMotorcycle : selectedCarColor;
+
+  // Check if we're using a motorcycle based on the image name
+  const isMotorcycle = currentVehicle?.image?.toLowerCase().includes('moto') || isMotorcycleMode;
 
   // Handle errors
   const handleError = (message: string) => {
@@ -107,8 +107,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     },
     onError: handleError,
     backgroundColor: '#FFFFFF',
-    // WHITE background color
-    showCarImage: showCarImage // Pass the flag to show car image from the beginning
+    showCarImage: showCarImage
   });
 
   // Show loading screen for exactly 3 seconds regardless of canvas state
@@ -166,7 +165,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
 
   // Update animation speed when slider changes
   useEffect(() => {
-    // Update the animation speed, making 120km/h faster
     setPathAnimationSpeed(animationSpeed);
   }, [animationSpeed]);
 
@@ -213,12 +211,12 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       setEndPointObj(null);
       setAnimationCompleted(false);
       setCurrentPathIndex(0);
-      setCarRotation(0); // Reset rotation
+      setCarRotation(0);
       setCarPosition({
         x: 50,
         y: 50
-      }); // Reset car position
-      setShowCarImage(true); // Always show car image overlay
+      });
+      setShowCarImage(true);
       fabricCanvas.isDrawingMode = false;
     } catch (error) {
       console.error("Error clearing canvas:", error);
@@ -238,8 +236,8 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     setIsDrawing(false);
     setAnimationCompleted(false);
     setCurrentPathIndex(0);
-    setCarRotation(0); // Reset rotation
-    setShowCarImage(true); // Always show car image overlay
+    setCarRotation(0);
+    setShowCarImage(true);
 
     if (fabricCanvas) {
       fabricCanvas.isDrawingMode = false;
@@ -249,7 +247,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
       for (let i = objects.length - 1; i >= 0; i--) {
         const obj = objects[i];
         // Fix type comparison by checking object type properly using instanceof
-        if (obj instanceof Rect || obj instanceof Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10 || obj instanceof Polygon) {
+        if (obj instanceof fabric.Rect || obj instanceof fabric.Circle && obj !== startPointObj && obj !== endPointObj && obj.radius !== 10 || obj instanceof fabric.Polygon) {
           // Additional check to ensure we don't remove start/end points
           const isStartOrEndPoint = startPointObj && obj === startPointObj || endPointObj && obj === endPointObj;
           if (!isStartOrEndPoint) {
@@ -287,14 +285,13 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     try {
       console.log("Activating drawing mode");
       setIsDrawing(true);
-      // CHANGED: Keep car image overlay visible even during drawing
       setShowCarImage(true);
 
       // Ensure the brush is set correctly - draw with a light purple color on white background
       if (!fabricCanvas.freeDrawingBrush) {
         console.log("Creating new brush");
-        const pencilBrush = new PencilBrush(fabricCanvas);
-        pencilBrush.color = '#9B59B6'; // Keep purple brush color
+        const pencilBrush = new fabric.PencilBrush(fabricCanvas);
+        pencilBrush.color = '#9B59B6';
         pencilBrush.width = 8;
         fabricCanvas.freeDrawingBrush = pencilBrush;
       } else {
@@ -352,15 +349,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     };
   }, [isDrawing, canvasRef.current]);
 
-  // Get the selected vehicle image URL - now supports both cars and motorcycles
-  const getSelectedVehicleImage = () => {
-    if (!currentVehicle) return "";
-    return `/lovable-uploads/${currentVehicle.image}`;
-  };
-
-  // Check if we're using a motorcycle based on the image name
-  const isMotorcycle = currentVehicle?.image?.toLowerCase().includes('moto') || isMotorcycleMode;
-
   return (
     <>
       {/* Loading screen - show for 3 seconds */}
@@ -388,56 +376,20 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
           onHelp={handleHelp} 
         />
         
-        {/* Game canvas with border color based on vehicle type */}
-        <Card className={`border-8 shadow-lg overflow-hidden ${isMotorcycle ? 'border-teal-300' : 'border-purple-300'}`} style={{
-          borderStyle: 'solid'
-        }}>
-          <CardContent className="p-0 touch-none">
-            <div ref={containerRef} className="w-full relative">
-              <canvas ref={canvasRef} />
-              
-              {/* Overlay vehicle image on top of the drawn vehicle */}
-              {currentVehicle && showCarImage && (
-                <div 
-                  className="absolute pointer-events-none" 
-                  style={{
-                    width: isMotorcycle ? '120px' : '140px',
-                    height: isMotorcycle ? '90px' : '110px',
-                    left: `${carPosition.x - (isMotorcycle ? 60 : 70)}px`,
-                    top: `${carPosition.y - (isMotorcycle ? 45 : 55)}px`,
-                    transform: `rotate(${carRotation}deg)`,
-                    transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
-                    zIndex: 50 
-                  }}
-                >
-                  <img 
-                    src={getSelectedVehicleImage()} 
-                    alt={`Selected ${isMotorcycle ? 'motorcycle' : 'car'}`} 
-                    className="w-full h-full object-contain" 
-                  />
-                </div>
-              )}
-              
-              {/* Drawing mode indicator with color based on vehicle type */}
-              {isDrawing && (
-                <div className={`absolute top-0 left-0 right-0 text-white text-center py-1 z-20 rounded-t-md kids-text ${isMotorcycle ? 'bg-teal-500' : 'bg-green-500'}`}>
-                  ¡Dibuja ahora el camino!
-                </div>
-              )}
-              
-              {/* Progress indicator for animation with color based on vehicle type */}
-              {isPlaying && interpolatedPath.length > 0 && (
-                <div className={`absolute bottom-0 left-0 right-0 backdrop-blur-sm text-white py-2 z-20 rounded-b-md ${isMotorcycle ? 'bg-teal-500/80' : 'bg-blue-500/80'}`}>
-                  <div className="flex flex-col items-center gap-1 px-4">
-                    <span className="text-xs font-medium kids-text">Llegando a tu destino...</span>
-                    <Progress value={animationProgress} className="h-3 w-full" />
-                    <span className="text-xs kids-text">{animationProgress}%</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* Game canvas */}
+        <GameCanvas
+          containerRef={containerRef}
+          canvasRef={canvasRef}
+          isMotorcycle={isMotorcycle}
+          currentVehicle={currentVehicle}
+          showCarImage={showCarImage}
+          carPosition={carPosition}
+          carRotation={carRotation}
+          isDrawing={isDrawing}
+          isPlaying={isPlaying}
+          interpolatedPathLength={interpolatedPath.length}
+          animationProgress={animationProgress}
+        />
         
         {/* Game status indicators */}
         <GameStatusIndicators 
