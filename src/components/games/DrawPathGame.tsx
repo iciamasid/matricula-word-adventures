@@ -10,6 +10,7 @@ import { createCar, createEndPoint, createStartPoint, CarColor } from './utils/c
 import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
+import LoadingScreen from '@/components/LoadingScreen';
 import { useGame } from '@/context/GameContext';
 
 interface DrawPathGameProps {
@@ -49,6 +50,7 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     x: 50,
     y: 50
   });
+  const [showLoadingScreen, setShowLoadingScreen] = useState<boolean>(true);
 
   // Determine if we're in motorcycle mode based on current page
   const isMotorcycleMode = window.location.pathname.includes('motorcycle');
@@ -108,6 +110,13 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     // WHITE background color
     showCarImage: showCarImage // Pass the flag to show car image from the beginning
   });
+
+  // Hide loading screen when canvas is ready
+  useEffect(() => {
+    if (canvasReady && !isInitializing) {
+      setShowLoadingScreen(false);
+    }
+  }, [canvasReady, isInitializing]);
 
   // Path animation
   const {
@@ -351,85 +360,95 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   const isMotorcycle = currentVehicle?.image?.toLowerCase().includes('moto') || isMotorcycleMode;
 
   return (
-    <div className="flex flex-col w-full gap-4">
-      {/* Speed control slider */}
-      <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
-      
-      {/* Game controls */}
-      <DrawControls 
-        isPlaying={isPlaying} 
-        isDrawing={isDrawing} 
-        pathExists={pathExists} 
-        canvasReady={canvasReady} 
-        isInitializing={isInitializing} 
-        onDraw={handleDrawMode} 
-        onPlay={handlePlay} 
-        onClear={handleClear} 
-        onHelp={handleHelp} 
-      />
-      
-      {/* Game canvas with border color based on vehicle type */}
-      <Card className={`border-8 shadow-lg overflow-hidden ${isMotorcycle ? 'border-teal-300' : 'border-purple-300'}`} style={{
-        borderStyle: 'solid'
-      }}>
-        <CardContent className="p-0 touch-none">
-          <div ref={containerRef} className="w-full relative">
-            <canvas ref={canvasRef} />
-            
-            {/* Overlay vehicle image on top of the drawn vehicle */}
-            {currentVehicle && showCarImage && (
-              <div 
-                className="absolute pointer-events-none" 
-                style={{
-                  width: isMotorcycle ? '120px' : '140px',
-                  height: isMotorcycle ? '90px' : '110px',
-                  left: `${carPosition.x - (isMotorcycle ? 60 : 70)}px`,
-                  top: `${carPosition.y - (isMotorcycle ? 45 : 55)}px`,
-                  transform: `rotate(${carRotation}deg)`,
-                  transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
-                  zIndex: 50 
-                }}
-              >
-                <img 
-                  src={getSelectedVehicleImage()} 
-                  alt={`Selected ${isMotorcycle ? 'motorcycle' : 'car'}`} 
-                  className="w-full h-full object-contain" 
-                />
-              </div>
-            )}
-            
-            {/* Drawing mode indicator with color based on vehicle type */}
-            {isDrawing && (
-              <div className={`absolute top-0 left-0 right-0 text-white text-center py-1 z-20 rounded-t-md kids-text ${isMotorcycle ? 'bg-teal-500' : 'bg-green-500'}`}>
-                ¡Dibuja ahora el camino!
-              </div>
-            )}
-            
-            {/* Progress indicator for animation with color based on vehicle type */}
-            {isPlaying && interpolatedPath.length > 0 && (
-              <div className={`absolute bottom-0 left-0 right-0 backdrop-blur-sm text-white py-2 z-20 rounded-b-md ${isMotorcycle ? 'bg-teal-500/80' : 'bg-blue-500/80'}`}>
-                <div className="flex flex-col items-center gap-1 px-4">
-                  <span className="text-xs font-medium kids-text">Llegando a tu destino...</span>
-                  <Progress value={animationProgress} className="h-3 w-full" />
-                  <span className="text-xs kids-text">{animationProgress}%</span>
+    <>
+      {/* Loading screen */}
+      {showLoadingScreen && (
+        <LoadingScreen 
+          onLoadComplete={() => setShowLoadingScreen(false)}
+          bgColor={isMotorcycle ? "bg-teal-900/50" : "bg-purple-900/50"}
+        />
+      )}
+
+      <div className="flex flex-col w-full gap-4">
+        {/* Speed control slider */}
+        <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
+        
+        {/* Game controls */}
+        <DrawControls 
+          isPlaying={isPlaying} 
+          isDrawing={isDrawing} 
+          pathExists={pathExists} 
+          canvasReady={canvasReady} 
+          isInitializing={isInitializing} 
+          onDraw={handleDrawMode} 
+          onPlay={handlePlay} 
+          onClear={handleClear} 
+          onHelp={handleHelp} 
+        />
+        
+        {/* Game canvas with border color based on vehicle type */}
+        <Card className={`border-8 shadow-lg overflow-hidden ${isMotorcycle ? 'border-teal-300' : 'border-purple-300'}`} style={{
+          borderStyle: 'solid'
+        }}>
+          <CardContent className="p-0 touch-none">
+            <div ref={containerRef} className="w-full relative">
+              <canvas ref={canvasRef} />
+              
+              {/* Overlay vehicle image on top of the drawn vehicle */}
+              {currentVehicle && showCarImage && (
+                <div 
+                  className="absolute pointer-events-none" 
+                  style={{
+                    width: isMotorcycle ? '120px' : '140px',
+                    height: isMotorcycle ? '90px' : '110px',
+                    left: `${carPosition.x - (isMotorcycle ? 60 : 70)}px`,
+                    top: `${carPosition.y - (isMotorcycle ? 45 : 55)}px`,
+                    transform: `rotate(${carRotation}deg)`,
+                    transition: 'transform 0.3s ease-out, left 0.2s linear, top 0.2s linear',
+                    zIndex: 50 
+                  }}
+                >
+                  <img 
+                    src={getSelectedVehicleImage()} 
+                    alt={`Selected ${isMotorcycle ? 'motorcycle' : 'car'}`} 
+                    className="w-full h-full object-contain" 
+                  />
                 </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-      
-      {/* Game status indicators */}
-      <GameStatusIndicators 
-        isInitializing={isInitializing} 
-        canvasReady={canvasReady} 
-        isDrawing={isDrawing} 
-        isPlaying={isPlaying} 
-        animationProgress={animationProgress} 
-        interpolatedPathLength={interpolatedPath.length} 
-        animationCompleted={animationCompleted} 
-      />
-    </div>
+              )}
+              
+              {/* Drawing mode indicator with color based on vehicle type */}
+              {isDrawing && (
+                <div className={`absolute top-0 left-0 right-0 text-white text-center py-1 z-20 rounded-t-md kids-text ${isMotorcycle ? 'bg-teal-500' : 'bg-green-500'}`}>
+                  ¡Dibuja ahora el camino!
+                </div>
+              )}
+              
+              {/* Progress indicator for animation with color based on vehicle type */}
+              {isPlaying && interpolatedPath.length > 0 && (
+                <div className={`absolute bottom-0 left-0 right-0 backdrop-blur-sm text-white py-2 z-20 rounded-b-md ${isMotorcycle ? 'bg-teal-500/80' : 'bg-blue-500/80'}`}>
+                  <div className="flex flex-col items-center gap-1 px-4">
+                    <span className="text-xs font-medium kids-text">Llegando a tu destino...</span>
+                    <Progress value={animationProgress} className="h-3 w-full" />
+                    <span className="text-xs kids-text">{animationProgress}%</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* Game status indicators */}
+        <GameStatusIndicators 
+          isInitializing={isInitializing} 
+          canvasReady={canvasReady} 
+          isDrawing={isDrawing} 
+          isPlaying={isPlaying} 
+          animationProgress={animationProgress} 
+          interpolatedPathLength={interpolatedPath.length} 
+          animationCompleted={animationCompleted} 
+        />
+      </div>
+    </>
   );
 };
 
