@@ -102,7 +102,7 @@ const LockedMotorcyclePopup = ({
               {/* Close Button */}
               <div className="text-center">
                 <Button onClick={onClose} className="bg-teal-600 hover:bg-teal-700 text-white kids-text px-8 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200 text-xs">
-                  ¡Entendido! Seguiré con coches 🚗
+                  ¡Entendido! 🚗
                 </Button>
               </div>
             </div>
