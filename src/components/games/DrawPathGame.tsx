@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Canvas as FabricCanvas, Rect, Circle, Polygon, PencilBrush } from 'fabric';
 import { useDrawPathCanvas } from './hooks/useDrawPathCanvas';
@@ -9,7 +8,6 @@ import DrawControls from './DrawControls';
 import GameStatusIndicators from './GameStatusIndicators';
 import SpeedControl from './SpeedControl';
 import GameCanvas from './GameCanvas';
-import LoadingScreen from '@/components/LoadingScreen';
 import { useGame } from '@/context/GameContext';
 
 interface DrawPathGameProps {
@@ -48,7 +46,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     x: 50,
     y: 50
   });
-  const [showLoadingScreen, setShowLoadingScreen] = useState<boolean>(true);
 
   // Determine if we're in motorcycle mode based on current page
   const isMotorcycleMode = window.location.pathname.includes('motorcycle');
@@ -110,15 +107,6 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     backgroundColor: '#FFFFFF',
     showCarImage: showCarImage
   });
-
-  // Show loading screen for exactly 3 seconds regardless of canvas state
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoadingScreen(false);
-    }, 3000); // Exactly 3 seconds
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Path animation
   const {
@@ -351,59 +339,49 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
   }, [isDrawing, canvasRef.current]);
 
   return (
-    <>
-      {/* Loading screen - show for 3 seconds */}
-      {showLoadingScreen && (
-        <LoadingScreen 
-          onLoadComplete={() => setShowLoadingScreen(false)}
-          bgColor="bg-black/70"
-        />
-      )}
-
-      <div className="flex flex-col w-full gap-4">
-        {/* Speed control slider */}
-        <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
-        
-        {/* Game controls */}
-        <DrawControls 
-          isPlaying={isPlaying} 
-          isDrawing={isDrawing} 
-          pathExists={pathExists} 
-          canvasReady={canvasReady} 
-          isInitializing={isInitializing} 
-          onDraw={handleDrawMode} 
-          onPlay={handlePlay} 
-          onClear={handleClear} 
-          onHelp={handleHelp} 
-        />
-        
-        {/* Game canvas */}
-        <GameCanvas
-          containerRef={containerRef}
-          canvasRef={canvasRef}
-          isMotorcycle={isMotorcycle}
-          currentVehicle={currentVehicle}
-          showCarImage={showCarImage}
-          carPosition={carPosition}
-          carRotation={carRotation}
-          isDrawing={isDrawing}
-          isPlaying={isPlaying}
-          interpolatedPathLength={interpolatedPath.length}
-          animationProgress={animationProgress}
-        />
-        
-        {/* Game status indicators */}
-        <GameStatusIndicators 
-          isInitializing={isInitializing} 
-          canvasReady={canvasReady} 
-          isDrawing={isDrawing} 
-          isPlaying={isPlaying} 
-          animationProgress={animationProgress} 
-          interpolatedPathLength={interpolatedPath.length} 
-          animationCompleted={animationCompleted} 
-        />
-      </div>
-    </>
+    <div className="flex flex-col w-full gap-4">
+      {/* Speed control slider */}
+      <SpeedControl disabled={isPlaying || isInitializing || !canvasReady} onValueChange={handleSpeedChange} />
+      
+      {/* Game controls */}
+      <DrawControls 
+        isPlaying={isPlaying} 
+        isDrawing={isDrawing} 
+        pathExists={pathExists} 
+        canvasReady={canvasReady} 
+        isInitializing={isInitializing} 
+        onDraw={handleDrawMode} 
+        onPlay={handlePlay} 
+        onClear={handleClear} 
+        onHelp={handleHelp} 
+      />
+      
+      {/* Game canvas */}
+      <GameCanvas
+        containerRef={containerRef}
+        canvasRef={canvasRef}
+        isMotorcycle={isMotorcycle}
+        currentVehicle={currentVehicle}
+        showCarImage={showCarImage}
+        carPosition={carPosition}
+        carRotation={carRotation}
+        isDrawing={isDrawing}
+        isPlaying={isPlaying}
+        interpolatedPathLength={interpolatedPath.length}
+        animationProgress={animationProgress}
+      />
+      
+      {/* Game status indicators */}
+      <GameStatusIndicators 
+        isInitializing={isInitializing} 
+        canvasReady={canvasReady} 
+        isDrawing={isDrawing} 
+        isPlaying={isPlaying} 
+        animationProgress={animationProgress} 
+        interpolatedPathLength={interpolatedPath.length} 
+        animationCompleted={animationCompleted} 
+      />
+    </div>
   );
 };
 

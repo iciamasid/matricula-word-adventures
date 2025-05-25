@@ -158,14 +158,10 @@ const MotorcycleGameContent = () => {
   const handleResetGame = () => {
     if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
       resetGame();
-      toast({
-        title: "¡Juego reiniciado!",
-        description: "Has vuelto al nivel 0 y todos tus puntos se han reiniciado."
-      });
     }
   };
 
-  // Handler for jump to level 9 button - Updated to use 4490 points
+  // Handler for jump to level 9 button - Updated to use 4490 points without toast
   const handleJumpToLevel9 = () => {
     // Set level to 9
     setLevel(9);
@@ -173,11 +169,6 @@ const MotorcycleGameContent = () => {
     setTotalPoints(4490);
     // Update destinations based on new level
     updateDestinations(9);
-    // Show success toast
-    toast({
-      title: "¡Nivel actualizado!",
-      description: "Has saltado al nivel 9 con 4490 puntos. ¡Preparado para llegar al nivel 10!"
-    });
   };
 
   // Handle game over restart - Reset completely to level 1 and 0 points
@@ -195,12 +186,6 @@ const MotorcycleGameContent = () => {
     
     // Navigate back to car game
     navigate('/');
-    
-    // Show toast confirming the complete reset
-    toast({
-      title: "¡Nueva partida iniciada!",
-      description: "Has empezado una nueva partida con coches desde 0km y nivel 1."
-    });
   };
 
   const handleOpenCountryModal = (countryCode: string) => {
