@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { User, Check, Child } from "lucide-react";
+import { User, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import NameSavedPopup from "@/components/NameSavedPopup";
 
