@@ -21,6 +21,7 @@ import BirthdayBonusPopup from "@/components/BirthdayBonusPopup";
 import AgeBonusPopup from "@/components/AgeBonusPopup";
 import GameOverPopup from "@/components/GameOverPopup";
 import CountryModal from "@/components/CountryModal";
+import FriendlyConfirmDialog from "@/components/FriendlyConfirmDialog";
 import { getCountryInfo } from "@/data/countryData";
 
 const MotorcycleGamePage = () => {
@@ -37,6 +38,7 @@ const MotorcycleGameContent = () => {
   const [showGameOver, setShowGameOver] = useState(false);
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const worldTourRef = useRef<HTMLDivElement>(null);
@@ -156,9 +158,16 @@ const MotorcycleGameContent = () => {
   }, [level]);
 
   const handleResetGame = () => {
-    if (confirm("¿Estás seguro de que quieres reiniciar el juego? Perderás todo tu progreso.")) {
-      resetGame();
-    }
+    setShowResetConfirm(true);
+  };
+
+  const handleConfirmReset = () => {
+    resetGame();
+    setShowResetConfirm(false);
+  };
+
+  const handleCancelReset = () => {
+    setShowResetConfirm(false);
   };
 
   // Handler for jump to level 9 button - Updated to use 4490 points without toast
@@ -354,6 +363,17 @@ const MotorcycleGameContent = () => {
         open={countryModalOpen}
         onClose={handleCloseCountryModal}
         country={selectedCountry ? getCountryInfo(selectedCountry) : null}
+      />
+      
+      {/* Friendly Reset Confirmation Dialog */}
+      <FriendlyConfirmDialog
+        open={showResetConfirm}
+        onConfirm={handleConfirmReset}
+        onCancel={handleCancelReset}
+        title="¿Empezar de nuevo?"
+        message="Si reinicias el juego, perderás todo tu progreso y tendrás que empezar desde el principio. ¡Pero podrás vivir una nueva aventura!"
+        confirmText="¡Sí, empezar de nuevo!"
+        cancelText="No, seguir jugando"
       />
     </div>
   );
