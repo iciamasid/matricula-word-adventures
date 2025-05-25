@@ -1,7 +1,6 @@
 
 import { useRef, useState, useCallback } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, Rect, Polygon } from 'fabric';
-import { toast } from '@/hooks/use-toast';
 import { Point, interpolatePoints } from '../utils/pathUtils';
 import { CarObject } from '../utils/carUtils';
 
@@ -157,14 +156,11 @@ export const usePathAnimation = ({
     
     // Check if animation is complete
     if (currentIndex >= interpolatedPath.length) {
-      // Animation is complete
+      // Animation is complete - NO TOAST MESSAGE
       setIsPlaying(false);
       setAnimationCompleted(true);
       setAnimationProgress(100); // Set progress to 100% when complete
-      toast({
-        title: "¡Muy bien!",
-        description: "¡El coche ha llegado a su destino!"
-      });
+      // REMOVED: toast notification that was showing "¡Muy bien! ¡El coche ha llegado a su destino!"
       return;
     }
     
@@ -315,10 +311,7 @@ export const usePathAnimation = ({
   // Toggle debug mode
   const toggleDebugMode = useCallback(() => {
     setDebugMode((prev) => !prev);
-    toast({
-      title: debugMode ? "Modo depuración desactivado" : "Modo depuración activado",
-      description: debugMode ? "Los mensajes de depuración ya no se mostrarán" : "Se mostrarán mensajes detallados de depuración"
-    });
+    // REMOVED: toast notification for debug mode toggle
   }, [debugMode]);
 
   // Set animation speed

@@ -1,7 +1,6 @@
 
 import { useState, useEffect, useRef, RefObject } from 'react';
 import { Canvas as FabricCanvas, Circle, Path, PencilBrush } from 'fabric';
-import { toast } from '@/hooks/use-toast';
 import { createStartPoint, createCar, CarObject } from '../utils/carUtils';
 import { Point, extractPointsFromPath } from '../utils/pathUtils';
 
@@ -106,17 +105,10 @@ export const useDrawPathCanvas = ({
           // Call the onPathCreated callback with the extracted points
           onPathCreated(points);
           
-          toast({
-            title: "¡Camino dibujado!",
-            description: "Pulsa JUGAR para que el coche siga tu camino."
-          });
+          // REMOVED: toast notification that was showing "¡Camino dibujado! Pulsa JUGAR para que el coche siga tu camino."
         } catch (error) {
           console.error("Error processing path:", error);
-          toast({
-            title: "Error",
-            description: "Hubo un problema al procesar tu dibujo. Inténtalo de nuevo.",
-            variant: "destructive"
-          });
+          // REMOVED: toast notification for path processing error
           onError("Error processing path: " + (error instanceof Error ? error.message : String(error)));
         }
       });
@@ -130,11 +122,7 @@ export const useDrawPathCanvas = ({
       console.error("Error initializing canvas:", error);
       setIsInitializing(false);
       setCanvasReady(false);
-      toast({
-        title: "Error",
-        description: "No se pudo inicializar el juego. Inténtalo de nuevo.",
-        variant: "destructive"
-      });
+      // REMOVED: toast notification for canvas initialization error
       onError("Error initializing canvas: " + (error instanceof Error ? error.message : String(error)));
     }
   }, []);
