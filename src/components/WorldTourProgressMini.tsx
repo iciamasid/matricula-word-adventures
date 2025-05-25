@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -250,34 +249,6 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
 
   const vehiclePosition = getVehiclePosition();
 
-  // Calculate stroke dash offset - SYNCHRONIZED WITH VEHICLE POSITION
-  const calculateStrokeDashOffset = () => {
-    const totalLength = 200;
-    if (level <= 1) return totalLength; // No trace for level 1
-    
-    // Get the actual vehicle position and calculate progress based on that
-    const vehiclePos = getVehiclePosition();
-    
-    // Calculate the actual progress along the path based on vehicle position
-    // We'll use the vehicle's actual position to determine the trace length
-    const targetLevel = Math.min(level, 10);
-    const targetSegment = targetLevel - 1;
-    
-    // Calculate how far along the path the vehicle is
-    let pathProgress = 0;
-    
-    if (targetLevel <= 1) {
-      pathProgress = 0;
-    } else {
-      // Calculate the actual distance traveled by the vehicle
-      const maxAllowedProgress = (targetSegment / 9) * 100;
-      const currentProgress = Math.min(progressValue, maxAllowedProgress);
-      pathProgress = currentProgress / 100;
-    }
-    
-    return totalLength * (1 - pathProgress);
-  };
-
   // Handle country selection
   const handleCountrySelection = (levelIndex: number, countryName: string) => {
     if (isCountryUnlocked(levelIndex, level, countryName)) {
@@ -312,15 +283,14 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
             {/* Background elliptical path */}
             <svg className="absolute top-0 left-0 w-full h-full overflow-visible" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
               <path d={createEllipsePath()} fill="none" stroke="#D1D5DB" strokeWidth="0.5" strokeLinecap="round" strokeDasharray="4,4" />
+              {/* Complete purple trace - always visible */}
               <path 
                 d={createEllipsePath()} 
                 fill="none" 
                 strokeWidth="1" 
                 stroke={isMotorcycleGame ? "#14B8A6" : "#8B5CF6"} 
                 strokeLinecap="round" 
-                strokeDasharray="250" 
-                strokeDashoffset={calculateStrokeDashOffset()}
-                style={{ display: level <= 1 ? 'none' : 'block' }}
+                opacity="0.8"
               />
             </svg>
             
