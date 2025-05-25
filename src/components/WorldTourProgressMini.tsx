@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -207,17 +206,21 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
     return `M ${points.join(" L ")}`;
   };
 
-  // Calculate stroke dash offset
+  // Calculate stroke dash offset - MODIFIED to stop exactly at unlocked country
   const calculateStrokeDashOffset = () => {
     const totalLength = 200;
     if (level <= 1 && progressValue === 0) return totalLength;
-    const segmentSize = 100 / 9;
-    const currentSegmentIndex = Math.floor(progressValue / segmentSize);
-    const progressInSegment = progressValue % segmentSize / segmentSize;
-    const completedSegmentsRatio = currentSegmentIndex / 9;
-    const progressInCurrentSegmentRatio = progressInSegment * (1 / 9);
-    const combinedRatio = completedSegmentsRatio + progressInCurrentSegmentRatio;
-    return totalLength * (1 - combinedRatio);
+    
+    // Calculate the exact position where the trace should stop
+    const targetLevel = Math.min(level, 10);
+    const targetPosition = (targetLevel - 1) / 9; // 0-1 range for levels 1-10
+    const maxAllowedProgress = targetPosition * 100;
+    
+    // Ensure progress doesn't exceed the target
+    const clampedProgress = Math.min(progressValue, maxAllowedProgress);
+    
+    const progressRatio = clampedProgress / 100;
+    return totalLength * (1 - progressRatio);
   };
 
   // Get vehicle position - stops exactly at unlocked country
@@ -228,13 +231,20 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
       return { x: startPoint.x, y: startPoint.y, angle: 0 };
     }
     
+    // Calculate the target position based on current level
+    const targetLevel = Math.min(level, 10);
+    const targetSegment = targetLevel - 1; // 0-based index for segments
+    
+    // Calculate progress within the allowed range
+    const maxAllowedProgress = (targetSegment / 9) * 100;
+    const clampedProgress = Math.min(progressValue, maxAllowedProgress);
+    
     const segmentSize = 100 / 9;
-    const completedSegments = Math.floor(progressValue / segmentSize);
-    const progressInSegment = progressValue % segmentSize / segmentSize;
+    const completedSegments = Math.floor(clampedProgress / segmentSize);
+    const progressInSegment = (clampedProgress % segmentSize) / segmentSize;
     
     // If we've reached the target level, stay exactly at that position
-    const targetSegment = Math.min(level - 1, 9);
-    if (completedSegments >= targetSegment) {
+    if (completedSegments >= targetSegment || clampedProgress >= maxAllowedProgress) {
       const finalPoint = getEllipsePosition(targetSegment);
       const prevPoint = getEllipsePosition(Math.max(0, targetSegment - 1));
       const dx = finalPoint.x - prevPoint.x;
@@ -243,6 +253,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
       return { x: finalPoint.x, y: finalPoint.y, angle };
     }
     
+    // Otherwise, interpolate between current and next position
     const currentPoint = getEllipsePosition(completedSegments);
     const nextPoint = getEllipsePosition(completedSegments + 1);
     const x = currentPoint.x + (nextPoint.x - currentPoint.x) * progressInSegment;
@@ -360,7 +371,7 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
                     } : {}}
                   >
                     <motion.div className="relative" whileHover={{ scale: 1.2 }}>
-                      <span className="text-3xl z-10 drop-shadow-lg">{flag}</span>
+                      <span className="text-2xl z-10 drop-shadow-lg">{flag}</span>
                       
                       {!isUnlocked && (
                         <motion.div
