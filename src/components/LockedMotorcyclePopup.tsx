@@ -96,9 +96,7 @@ const LockedMotorcyclePopup = ({
                       Te faltan <span className="font-bold text-amber-600">{levelsRemaining} niveles</span> para desbloquear las motos
                     </p>}
                 </div>
-                <p className="text-base text-teal-600 kids-text">
-                  ¡Sigue jugando con coches y pronto podrás usar motos increíbles! 🌟
-                </p>
+                
               </div>
 
               {/* Close Button */}
