@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useGame } from '@/context/GameContext';
 import { motion } from 'framer-motion';
@@ -126,7 +127,14 @@ interface WorldTourProgressMiniProps {
 }
 
 const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountryVisit }) => {
-  const { level, markCountryAsVisited, requiredCountryToVisit, clearLevelUpMessage } = useGame();
+  const { 
+    level, 
+    markCountryAsVisited, 
+    requiredCountryToVisit, 
+    clearLevelUpMessage,
+    selectedCarColor,
+    selectedMotorcycle
+  } = useGame();
   const { isEnglish } = useLanguage?.() || { language: 'es' };
   const location = useLocation();
   const [animatingLevel, setAnimatingLevel] = useState(0);
@@ -137,6 +145,9 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
 
   // Determine if we're in motorcycle game
   const isMotorcycleGame = location.pathname === '/motorcycle-game';
+
+  // Get the current selected vehicle (car or motorcycle)
+  const currentVehicle = isMotorcycleGame ? selectedMotorcycle : selectedCarColor;
 
   // Use appropriate functions based on game type
   const getLevelFlag = isMotorcycleGame ? getMotorcycleLevelFlag : getCarLevelFlag;
@@ -304,22 +315,22 @@ const WorldTourProgressMini: React.FC<WorldTourProgressMiniProps> = ({ onCountry
               </motion.div>
             </div>
             
-            {/* Moving vehicle icon - only show if level > 1 */}
-            {level > 1 && (
+            {/* Moving vehicle - show selected car/motorcycle image */}
+            {level > 1 && currentVehicle && (
               <motion.div 
                 className="absolute transform -translate-x-1/2 -translate-y-1/2" 
                 style={{
                   left: `${vehiclePosition.x}%`,
                   top: `${vehiclePosition.y}%`,
-                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg) scale(${isMotorcycleGame ? 2.2 : 2.4})`,
+                  transform: `translate(-50%, -50%) rotate(${vehiclePosition.angle}deg)`,
                   zIndex: 5
                 }}
               >
-                {isMotorcycleGame ? (
-                  <span className="text-2xl">🏍️</span>
-                ) : (
-                  <span className="text-3xl">🚗</span>
-                )}
+                <img 
+                  src={`/lovable-uploads/${currentVehicle.image}`} 
+                  alt={`Selected ${isMotorcycleGame ? 'motorcycle' : 'car'}`} 
+                  className={`object-contain ${isMotorcycleGame ? 'w-12 h-12' : 'w-14 h-14'}`}
+                />
               </motion.div>
             )}
             
