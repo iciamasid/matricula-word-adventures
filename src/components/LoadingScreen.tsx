@@ -12,7 +12,7 @@ interface LoadingScreenProps {
 const LoadingScreen: React.FC<LoadingScreenProps> = ({ 
   onLoadComplete, 
   isRestarting = false,
-  bgColor = "bg-gray-900/50" // Default background color 
+  bgColor = "bg-black/70" // Default to dark translucent background
 }) => {
   const [progress, setProgress] = useState(0);
   
@@ -53,7 +53,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
       >
         <img 
-          src="/lovable-uploads/9e7f018b-48ce-4158-acf0-ddcc7e2b4804.png" 
+          src="/lovable-uploads/847940d0-2e98-474e-b662-cf0543a5a513.png" 
           alt="Matriculabra Cadabra" 
           className="w-full max-h-60 object-contain mb-8"
         />

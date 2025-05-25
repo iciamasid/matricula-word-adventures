@@ -111,12 +111,14 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
     showCarImage: showCarImage // Pass the flag to show car image from the beginning
   });
 
-  // Hide loading screen when canvas is ready
+  // Show loading screen for exactly 3 seconds regardless of canvas state
   useEffect(() => {
-    if (canvasReady && !isInitializing) {
+    const timer = setTimeout(() => {
       setShowLoadingScreen(false);
-    }
-  }, [canvasReady, isInitializing]);
+    }, 3000); // Exactly 3 seconds
+
+    return () => clearTimeout(timer);
+  }, []);
 
   // Path animation
   const {
@@ -361,11 +363,11 @@ const DrawPathGame: React.FC<DrawPathGameProps> = ({
 
   return (
     <>
-      {/* Loading screen */}
+      {/* Loading screen - show for 3 seconds */}
       {showLoadingScreen && (
         <LoadingScreen 
           onLoadComplete={() => setShowLoadingScreen(false)}
-          bgColor={isMotorcycle ? "bg-teal-900/50" : "bg-purple-900/50"}
+          bgColor="bg-black/70"
         />
       )}
 
