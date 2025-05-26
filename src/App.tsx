@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import MotorcycleGamePage from "./pages/MotorcycleGamePage";
 import DrawGamePage from "./pages/DrawGamePage";
 import MotorcycleDriveGamePage from "./pages/MotorcycleDriveGamePage";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -46,6 +47,7 @@ const App = () => {
               <Route path="/motorcycle-game" element={<MotorcycleGamePage />} />
               <Route path="/draw-game" element={<DrawGamePage />} />
               <Route path="/motorcycle-drive-game" element={<MotorcycleDriveGamePage />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

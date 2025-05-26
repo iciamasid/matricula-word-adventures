@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -7,7 +8,7 @@ import SuccessAlert from "@/components/SuccessAlert";
 import LevelUpAlert from "@/components/LevelUpAlert";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, HelpCircle, Bike } from "lucide-react";
+import { RefreshCw, HelpCircle, Bike, Shield } from "lucide-react";
 import GameInstructions from "@/components/GameInstructions";
 import CarGameInstructions from "@/components/CarGameInstructions";
 import { useIsMobile } from "@/hooks/use-mobile";
