@@ -229,7 +229,7 @@ const PrivacyPolicy = () => {
                 mostrados, puedes contactarnos a través de:
               </p>
               <div className="bg-blue-50 p-4 rounded-md">
-                <p><strong>Email:</strong> privacidad@matriculabacadabra.com</p>
+                <p><strong>Email:</strong> imasidur@gmail.com</p>
                 
                 <p><strong>Aplicación:</strong> Matriculaba Cadabra - Juego Educativo</p>
                 <p><strong>Desarrollador:</strong> Equipo Matriculaba Cadabra</p>
