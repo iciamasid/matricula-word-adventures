@@ -70,17 +70,53 @@ const PrivacyPolicy = () => {
                 <li><strong>Nombre del jugador:</strong> Solo para personalizar la experiencia de juego</li>
                 <li><strong>Edad:</strong> Para adaptar el contenido y otorgar bonificaciones apropiadas</li>
                 <li><strong>Progreso del juego:</strong> Niveles completados, puntuación y vehículos desbloqueados</li>
+                <li><strong>Identificadores técnicos:</strong> Para mostrar anuncios apropiados para la edad (sin almacenar datos personales)</li>
               </ul>
               <p className="bg-green-50 p-3 rounded-md border-l-4 border-green-400">
-                <strong>✅ Importante:</strong> Toda esta información se guarda únicamente en el dispositivo 
-                y nunca se envía a servidores externos.
+                <strong>✅ Importante:</strong> Los datos del juego se guardan únicamente en el dispositivo 
+                y nunca se envían a servidores externos. Los anuncios utilizan identificadores técnicos 
+                temporales que no almacenan información personal.
               </p>
             </div>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-800 mb-4 kids-text">
-              2. Cómo utilizamos la información
+              2. Publicidad dirigida a niños
+            </h2>
+            <div className="space-y-3 text-gray-700">
+              <p>
+                <strong>Matriculaba Cadabra</strong> incluye anuncios apropiados para niños que aparecen en dos formatos:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li><strong>Anuncios en banner:</strong> Aparecen ocasionalmente durante el juego</li>
+                <li><strong>Anuncios recompensados:</strong> Los niños pueden elegir ver un anuncio para obtener recompensas en el juego</li>
+              </ul>
+              
+              <div className="bg-blue-50 p-4 rounded-md border-l-4 border-blue-400">
+                <h4 className="font-semibold mb-2">🛡️ Cumplimiento con COPPA y GDPR</h4>
+                <ul className="list-disc pl-4 space-y-1">
+                  <li>Utilizamos tecnologías publicitarias que cumplen estrictamente con COPPA (Children's Online Privacy Protection Act)</li>
+                  <li>Cumplimos con el GDPR (Reglamento General de Protección de Datos) europeo</li>
+                  <li>Los anuncios están específicamente diseñados y filtrados para ser apropiados para niños</li>
+                  <li>No se recopilan datos personales para la segmentación publicitaria</li>
+                  <li>No se utilizan cookies de seguimiento comportamental</li>
+                </ul>
+              </div>
+
+              <div className="bg-yellow-50 p-4 rounded-md border-l-4 border-yellow-400">
+                <h4 className="font-semibold mb-2">👨‍👩‍👧‍👦 Control parental</h4>
+                <p>
+                  Los padres pueden contactarnos en cualquier momento para solicitar la desactivación 
+                  de anuncios o para obtener más información sobre el contenido publicitario mostrado.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 kids-text">
+              3. Cómo utilizamos la información
             </h2>
             <div className="space-y-3 text-gray-700">
               <p>La información recopilada se utiliza exclusivamente para:</p>
@@ -89,29 +125,30 @@ const PrivacyPolicy = () => {
                 <li>Guardar el progreso del juego para continuar donde se quedó</li>
                 <li>Proporcionar bonificaciones especiales relacionadas con la edad</li>
                 <li>Adaptar la dificultad del juego según el nivel alcanzado</li>
+                <li>Mostrar anuncios apropiados para la edad del usuario (sin almacenar datos personales)</li>
               </ul>
             </div>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-800 mb-4 kids-text">
-              3. Seguridad infantil
+              4. Seguridad infantil
             </h2>
             <div className="space-y-3 text-gray-700">
               <p><strong>Matriculaba Cadabra</strong> está diseñado pensando en la seguridad de los niños:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Sin comunicación externa:</strong> La aplicación no se conecta a internet</li>
-                <li><strong>Sin publicidad:</strong> Completamente libre de anuncios</li>
-                <li><strong>Sin compras integradas:</strong> No hay transacciones dentro de la aplicación</li>
-                <li><strong>Sin seguimiento:</strong> No utilizamos cookies ni herramientas de seguimiento</li>
+                <li><strong>Anuncios seguros:</strong> Solo se muestran anuncios pre-aprobados y apropiados para niños</li>
+                <li><strong>Sin seguimiento personal:</strong> Los anuncios no rastrean comportamientos individuales</li>
+                <li><strong>Cumplimiento legal:</strong> Compatible con COPPA, GDPR y otras regulaciones de protección infantil</li>
                 <li><strong>Sin redes sociales:</strong> No hay integración con plataformas sociales</li>
+                <li><strong>Contenido educativo:</strong> Los anuncios priorizan contenido educativo y apropiado</li>
               </ul>
             </div>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-800 mb-4 kids-text">
-              4. Almacenamiento de datos
+              5. Almacenamiento de datos
             </h2>
             <div className="space-y-3 text-gray-700">
               <p>
@@ -119,37 +156,59 @@ const PrivacyPolicy = () => {
                 el almacenamiento local del navegador. Esto significa que:
               </p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Los datos nunca salen del dispositivo</li>
-                <li>No hay servidores externos involucrados</li>
+                <li>Los datos del juego nunca salen del dispositivo</li>
+                <li>No hay servidores externos que almacenen información personal</li>
                 <li>Los padres tienen control total sobre la información</li>
                 <li>Los datos se pueden eliminar desinstalando la aplicación</li>
+                <li>Los identificadores publicitarios son temporales y no persistentes</li>
               </ul>
             </div>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-800 mb-4 kids-text">
-              5. Derechos de los padres
+              6. Derechos de los padres
             </h2>
             <div className="space-y-3 text-gray-700">
               <p>Los padres y tutores tienen derecho a:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Revisar la información almacenada en el dispositivo</li>
                 <li>Eliminar todos los datos del juego en cualquier momento</li>
+                <li>Solicitar la desactivación de anuncios</li>
+                <li>Obtener información detallada sobre el contenido publicitario</li>
                 <li>Supervisar el uso de la aplicación por parte de sus hijos</li>
-                <li>Contactarnos para cualquier consulta sobre privacidad</li>
+                <li>Contactarnos para cualquier consulta sobre privacidad o publicidad</li>
               </ul>
             </div>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-gray-800 mb-4 kids-text">
-              6. Cambios en esta política
+              7. Terceros y socios publicitarios
+            </h2>
+            <div className="space-y-3 text-gray-700">
+              <p>
+                Trabajamos únicamente con socios publicitarios que cumplen con las más estrictas 
+                normas de protección infantil:
+              </p>
+              <ul className="list-disc pl-6 space-y-2">
+                <li>Todos los socios están certificados para publicidad dirigida a menores</li>
+                <li>Los anuncios pasan por filtros de contenido apropiado</li>
+                <li>No se comparten datos personales con terceros</li>
+                <li>Los socios cumplen con COPPA, GDPR y regulaciones locales</li>
+              </ul>
+            </div>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 kids-text">
+              8. Cambios en esta política
             </h2>
             <div className="space-y-3 text-gray-700">
               <p>
                 Si realizamos cambios en esta política de privacidad, actualizaremos la fecha 
-                de "última actualización" en la parte superior de esta página. Recomendamos 
+                de "última actualización" en la parte superior de esta página. Los cambios 
+                significativos serán comunicados a través de la aplicación. Recomendamos 
                 revisar esta política periódicamente.
               </p>
             </div>
@@ -157,15 +216,17 @@ const PrivacyPolicy = () => {
 
           <section>
             <h2 className="text-2xl font-bold text-gray-800 mb-4 kids-text">
-              7. Contacto
+              9. Contacto
             </h2>
             <div className="space-y-3 text-gray-700">
               <p>
-                Si tienes preguntas sobre esta política de privacidad o sobre cómo manejamos 
-                la información en <strong>Matriculaba Cadabra</strong>, puedes contactarnos a través de:
+                Si tienes preguntas sobre esta política de privacidad, sobre cómo manejamos 
+                la información en <strong>Matriculaba Cadabra</strong>, o sobre los anuncios 
+                mostrados, puedes contactarnos a través de:
               </p>
               <div className="bg-blue-50 p-4 rounded-md">
                 <p><strong>Email:</strong> privacidad@matriculabacadabra.com</p>
+                <p><strong>Email para consultas sobre anuncios:</strong> anuncios@matriculabacadabra.com</p>
                 <p><strong>Aplicación:</strong> Matriculaba Cadabra - Juego Educativo</p>
                 <p><strong>Desarrollador:</strong> Equipo Matriculaba Cadabra</p>
               </div>
@@ -175,6 +236,9 @@ const PrivacyPolicy = () => {
           <div className="border-t pt-6 mt-8">
             <p className="text-center text-gray-600 kids-text">
               <strong>Matriculaba Cadabra</strong> - Un juego educativo seguro y divertido para niños
+            </p>
+            <p className="text-center text-sm text-gray-500 mt-2">
+              Con anuncios apropiados y compatibles con COPPA/GDPR
             </p>
           </div>
         </motion.div>
