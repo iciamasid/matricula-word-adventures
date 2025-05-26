@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -330,8 +329,8 @@ const GameContent = () => {
             </Button>
           </motion.div>
           
-          {/* Reset Game Button - Added more bottom margin */}
-          <motion.div className="w-full max-w-xs mt-4 mb-16" whileHover={{
+          {/* Reset Game Button */}
+          <motion.div className="w-full max-w-xs mt-4" whileHover={{
           scale: 1.03
         }} transition={{
           type: "spring",
@@ -340,6 +339,24 @@ const GameContent = () => {
             <Button onClick={handleResetGame} size="lg" className={`w-full text-white kids-text text-xl font-normal bg-purple-700 hover:bg-purple-600 px-[10px] mx-0 my-0 py-[20px]`}>
               <RefreshCw className="mr-2 h-5 w-5" /> {"Iniciar nueva partida"}
             </Button>
+          </motion.div>
+
+          {/* Privacy Policy Link */}
+          <motion.div 
+            className="w-full max-w-xs mt-4 mb-16" 
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 400 }}
+          >
+            <Link to="/privacy-policy">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full bg-transparent hover:bg-purple-50 text-purple-700 border-purple-300 kids-text text-sm font-normal"
+              >
+                <Shield className="w-4 h-4 mr-2" />
+                Política de Privacidad
+              </Button>
+            </Link>
           </motion.div>
         </div>
         
