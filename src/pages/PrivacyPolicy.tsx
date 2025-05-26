@@ -3,19 +3,18 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
+
 const PrivacyPolicy = () => {
-  return <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 px-4">
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-8 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <motion.div className="text-center mb-8" initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        duration: 0.6
-      }}>
+        <motion.div
+          className="text-center mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="flex items-center justify-center mb-4">
             <Shield className="w-12 h-12 text-blue-600 mr-3" />
             <h1 className="text-4xl font-bold text-gray-800 kids-text">
@@ -28,15 +27,12 @@ const PrivacyPolicy = () => {
         </motion.div>
 
         {/* Back button */}
-        <motion.div className="mb-6" initial={{
-        opacity: 0,
-        x: -20
-      }} animate={{
-        opacity: 1,
-        x: 0
-      }} transition={{
-        duration: 0.5
-      }}>
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <Link to="/">
             <Button variant="outline" className="bg-blue-100 hover:bg-blue-200 text-blue-800 border-blue-300 kids-text">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -46,16 +42,12 @@ const PrivacyPolicy = () => {
         </motion.div>
 
         {/* Content */}
-        <motion.div className="bg-white rounded-lg shadow-lg p-8 space-y-6" initial={{
-        opacity: 0,
-        y: 20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        duration: 0.6,
-        delay: 0.2
-      }}>
+        <motion.div
+          className="bg-white rounded-lg shadow-lg p-8 space-y-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
           <div className="text-sm text-gray-500 mb-4">
             Última actualización: {new Date().toLocaleDateString('es-ES')}
           </div>
@@ -229,8 +221,7 @@ const PrivacyPolicy = () => {
                 mostrados, puedes contactarnos a través de:
               </p>
               <div className="bg-blue-50 p-4 rounded-md">
-                <p><strong>Email:</strong>imasidur@gmail.com</p>
-                
+                <p><strong>Email:</strong> imasidur@gmail.com</p>
                 <p><strong>Aplicación:</strong> Matriculaba Cadabra - Juego Educativo</p>
                 <p><strong>Desarrollador:</strong> Equipo Matriculaba Cadabra</p>
               </div>
@@ -247,6 +238,8 @@ const PrivacyPolicy = () => {
           </div>
         </motion.div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default PrivacyPolicy;
