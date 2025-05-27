@@ -18,9 +18,9 @@ export class AdService {
   private constructor() {
     // Configuración de anuncios (IDs de prueba para desarrollo)
     this.config = {
-      bannerId: 'ca-app-pub-3940256099942544/6300978111', // Test banner ID
-      rewardedId: 'ca-app-pub-3940256099942544/5224354917', // Test rewarded ID
-      testMode: true
+      bannerId: 'ca-app-pub-4321448416977763/7672317288', // Test banner ID
+      rewardedId: 'ca-app-pub-4321448416977763/8398850253', // Test rewarded ID
+      testMode: false
     };
   }
 
