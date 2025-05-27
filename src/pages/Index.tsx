@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from "react";
 import { GameProvider, useGame } from "@/context/GameContext";
 import LicensePlate from "@/components/LicensePlate";
@@ -227,8 +228,8 @@ const GameContent = () => {
   const handleAdRewardEarned = (reward: RewardedAdReward) => {
     console.log('Rewarded ad completed:', reward);
     
-    // Add points to total
-    setTotalPoints(prevPoints => prevPoints + reward.amount);
+    // Add points to total - Fixed: use direct number instead of function
+    setTotalPoints(totalPoints + reward.amount);
     
     // Show reward popup
     setLastAdReward(reward.amount);

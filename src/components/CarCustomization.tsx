@@ -97,8 +97,8 @@ const CarCustomization: React.FC = () => {
   const handleAdRewardForCar = (reward: RewardedAdReward, car: CarColor) => {
     console.log('Ad reward for car unlock:', reward, car);
     
-    // Add points to total
-    setTotalPoints(prevPoints => prevPoints + reward.amount);
+    // Add points to total - Fixed: use direct number instead of function
+    setTotalPoints(totalPoints + reward.amount);
     
     // Show reward popup
     setLastAdReward(reward.amount);
