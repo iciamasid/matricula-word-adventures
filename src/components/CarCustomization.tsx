@@ -1,12 +1,16 @@
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useGame } from "@/context/GameContext";
 import { CarColor } from "./games/utils/carUtils";
-import { Lock, ChevronDown, ChevronUp, Route, Car } from "lucide-react";
+import { Lock, ChevronDown, ChevronUp, Route, Car, Gift } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import LockedCarPopup from "./LockedCarPopup";
+import RewardedAdButton from "./ads/RewardedAdButton";
+import AdRewardPopup from "./ads/AdRewardPopup";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
+import { RewardedAdReward } from "@/services/AdService";
 
 // Available car colors with updated unlock levels
 const carColors: CarColor[] = [{
@@ -64,11 +68,14 @@ const carColors: CarColor[] = [{
   color: "bg-amber-300",
   unlockedAtLevel: 9
 }];
+
 const CarCustomization: React.FC = () => {
   const {
     selectedCarColor,
     setSelectedCarColor,
-    level
+    level,
+    totalPoints,
+    setTotalPoints
   } = useGame();
 
   // State to control panel visibility
@@ -77,10 +84,34 @@ const CarCustomization: React.FC = () => {
   const [showLockedCarPopup, setShowLockedCarPopup] = useState(false);
   // State to store the selected locked car for popup
   const [selectedLockedCar, setSelectedLockedCar] = useState<CarColor | null>(null);
+  // Ad reward popup state
+  const [showAdRewardPopup, setShowAdRewardPopup] = useState(false);
+  const [lastAdReward, setLastAdReward] = useState<number>(0);
 
   // Helper function to mark when we're navigating between pages
   const handleNavigation = () => {
     sessionStorage.setItem('navigatingBack', 'true');
+  };
+
+  // Handle rewarded ad completion for unlocking cars
+  const handleAdRewardForCar = (reward: RewardedAdReward, car: CarColor) => {
+    console.log('Ad reward for car unlock:', reward, car);
+    
+    // Add points to total
+    setTotalPoints(prevPoints => prevPoints + reward.amount);
+    
+    // Show reward popup
+    setLastAdReward(reward.amount);
+    setShowAdRewardPopup(true);
+    
+    // Show special toast for car unlock opportunity
+    setTimeout(() => {
+      toast({
+        title: "🚗 ¡Puntos ganados!",
+        description: `Has ganado ${reward.amount} puntos. ¡Sigue jugando para desbloquear más coches!`,
+        duration: 5000
+      });
+    }, 1000);
   };
 
   // Handle car selection
@@ -116,6 +147,7 @@ const CarCustomization: React.FC = () => {
 
   // Find the currently selected car
   const currentCar = selectedCarColor || carColors[0];
+  
   return <div className="w-full flex flex-col items-center">
       {/* Homogeneous design for car selection and CONDUCE buttons */}
       <div className="w-full flex flex-row items-center justify-center gap-4">
@@ -222,7 +254,7 @@ const CarCustomization: React.FC = () => {
       
       {/* Car selection panel */}
       <AnimatePresence>
-        {isPanelOpen && <motion.div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 p-4 bg-white/80 rounded-lg shadow-md w-full max-w-xl mt-3" initial={{
+        {isPanelOpen && <motion.div className="bg-white/80 rounded-lg shadow-md w-full max-w-xl mt-3 p-4" initial={{
         opacity: 0,
         height: 0,
         y: -10
@@ -237,46 +269,73 @@ const CarCustomization: React.FC = () => {
       }} transition={{
         duration: 0.3
       }}>
-            {carColors.map(car => {
-          const isLocked = level < car.unlockedAtLevel;
-          const isSelected = selectedCarColor?.id === car.id;
-          return <motion.div key={car.id} className={`relative flex flex-col items-center p-2 rounded-lg cursor-pointer transition-all duration-200
-                    ${isSelected ? 'bg-purple-100 ring-2 ring-purple-500' : 'hover:bg-purple-50'}
-                  `} onClick={() => handleCarSelect(car)} whileHover={{
-            scale: 1.05
-          }} whileTap={{
-            scale: 0.95
-          }}>
-                  <div className="relative">
-                    {/* Car image - always in color */}
-                    <img src={`/lovable-uploads/${car.image}`} alt={car.name} className="w-16 h-16 object-contain" />
-                    
-                    {/* Lock overlay for locked cars */}
-                    {isLocked && <div className="absolute -right-2 -top-2 w-6 h-6 bg-pink-500/90 rounded-full flex items-center justify-center">
-                        <Lock className="w-3 h-3 text-white" />
-                      </div>}
-                    
-                    {/* Selected indicator */}
-                    {isSelected && <motion.div className="absolute -right-2 -top-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center" initial={{
-                scale: 0
-              }} animate={{
-                scale: 1
-              }} transition={{
-                type: "spring"
-              }}>
-                        <span className="text-white text-sm">✓</span>
-                      </motion.div>}
-                  </div>
-                  
-                  {/* Car name without "Coche" word */}
-                  
-                </motion.div>;
-        })}
+            {/* Grid of cars */}
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-4">
+              {carColors.map(car => {
+            const isLocked = level < car.unlockedAtLevel;
+            const isSelected = selectedCarColor?.id === car.id;
+            return <motion.div key={car.id} className={`relative flex flex-col items-center p-2 rounded-lg cursor-pointer transition-all duration-200
+                        ${isSelected ? 'bg-purple-100 ring-2 ring-purple-500' : 'hover:bg-purple-50'}
+                      `} onClick={() => handleCarSelect(car)} whileHover={{
+              scale: 1.05
+            }} whileTap={{
+              scale: 0.95
+            }}>
+                      <div className="relative">
+                        {/* Car image - always in color */}
+                        <img src={`/lovable-uploads/${car.image}`} alt={car.name} className="w-16 h-16 object-contain" />
+                        
+                        {/* Lock overlay for locked cars */}
+                        {isLocked && <div className="absolute -right-2 -top-2 w-6 h-6 bg-pink-500/90 rounded-full flex items-center justify-center">
+                            <Lock className="w-3 h-3 text-white" />
+                          </div>}
+                        
+                        {/* Selected indicator */}
+                        {isSelected && <motion.div className="absolute -right-2 -top-2 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center" initial={{
+                    scale: 0
+                  }} animate={{
+                    scale: 1
+                  }} transition={{
+                    type: "spring"
+                  }}>
+                            <span className="text-white text-sm">✓</span>
+                          </motion.div>}
+                      </div>
+                    </motion.div>;
+          })}
+            </div>
+            
+            {/* Rewarded ad section for unlocking cars - only show if there are locked cars and player is above level 3 */}
+            {level >= 3 && carColors.some(car => level < car.unlockedAtLevel) && (
+              <div className="border-t pt-4">
+                <div className="text-center mb-3">
+                  <p className="text-sm text-purple-700 kids-text font-medium">
+                    🎯 ¡Gana puntos extra para desbloquear más coches!
+                  </p>
+                </div>
+                <RewardedAdButton 
+                  onRewardEarned={(reward) => handleAdRewardForCar(reward, carColors[0])}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white kids-text text-sm py-2"
+                >
+                  <Gift className="w-4 h-4 mr-2" />
+                  Ver anuncio para puntos extra
+                </RewardedAdButton>
+              </div>
+            )}
           </motion.div>}
       </AnimatePresence>
       
       {/* Locked Car Popup */}
       {showLockedCarPopup && selectedLockedCar && <LockedCarPopup carName={selectedLockedCar.name} level={selectedLockedCar.unlockedAtLevel} onClose={() => setShowLockedCarPopup(false)} />}
+      
+      {/* Ad Reward Popup */}
+      <AdRewardPopup 
+        open={showAdRewardPopup}
+        onClose={() => setShowAdRewardPopup(false)}
+        pointsEarned={lastAdReward}
+        bonusType="Personalización"
+      />
     </div>;
 };
+
 export default CarCustomization;

@@ -22,7 +22,11 @@ import AgeBonusPopup from "@/components/AgeBonusPopup";
 import GameOverPopup from "@/components/GameOverPopup";
 import CountryModal from "@/components/CountryModal";
 import FriendlyConfirmDialog from "@/components/FriendlyConfirmDialog";
+import BannerAd from "@/components/ads/BannerAd";
+import RewardedAdButton from "@/components/ads/RewardedAdButton";
+import AdRewardPopup from "@/components/ads/AdRewardPopup";
 import { getCountryInfo } from "@/data/countryData";
+import { adService, RewardedAdReward } from "@/services/AdService";
 
 const MotorcycleGamePage = () => {
   return <GameProvider>
@@ -37,6 +41,12 @@ const MotorcycleGameContent = () => {
   const [countryModalOpen, setCountryModalOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  
+  // Ad-related state
+  const [showBannerAd, setShowBannerAd] = useState(false);
+  const [showAdRewardPopup, setShowAdRewardPopup] = useState(false);
+  const [lastAdReward, setLastAdReward] = useState<number>(0);
+
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const worldTourRef = useRef<HTMLDivElement>(null);
@@ -59,6 +69,19 @@ const MotorcycleGameContent = () => {
     setLevel,
     setTotalPoints
   } = useGame();
+
+  // Initialize AdService when component mounts
+  useEffect(() => {
+    const initializeAds = async () => {
+      await adService.initialize();
+      // Show banner ad after a short delay
+      setTimeout(() => {
+        setShowBannerAd(true);
+      }, 3000);
+    };
+    
+    initializeAds();
+  }, []);
 
   // Set current game type when component mounts
   useEffect(() => {
@@ -160,6 +183,9 @@ const MotorcycleGameContent = () => {
   const handleConfirmReset = () => {
     resetGame();
     setShowResetConfirm(false);
+    setShowBannerAd(false);
+    // Show banner again after reset
+    setTimeout(() => setShowBannerAd(true), 5000);
   };
   const handleCancelReset = () => {
     setShowResetConfirm(false);
@@ -191,6 +217,19 @@ const MotorcycleGameContent = () => {
     // Navigate back to car game
     navigate('/');
   };
+
+  // Handle rewarded ad reward
+  const handleAdRewardEarned = (reward: RewardedAdReward) => {
+    console.log('Rewarded ad completed:', reward);
+    
+    // Add points to total
+    setTotalPoints(prevPoints => prevPoints + reward.amount);
+    
+    // Show reward popup
+    setLastAdReward(reward.amount);
+    setShowAdRewardPopup(true);
+  };
+
   const handleOpenCountryModal = (countryCode: string) => {
     setSelectedCountry(countryCode);
     setCountryModalOpen(true);
@@ -199,7 +238,8 @@ const MotorcycleGameContent = () => {
     setCountryModalOpen(false);
     setSelectedCountry(null);
   };
-  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
+  
+  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor} ${showBannerAd ? 'pb-20' : ''}`} style={{
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
@@ -249,6 +289,17 @@ const MotorcycleGameContent = () => {
             <ScorePanel />
           </div>
           
+          {/* Rewarded Ad Button - Show after level 2 */}
+          {level >= 2 && playerName && (
+            <div className="w-full max-w-xs mt-4">
+              <RewardedAdButton 
+                onRewardEarned={handleAdRewardEarned}
+                disabled={false}
+                className="w-full text-lg py-3"
+              />
+            </div>
+          )}
+          
           {/* World Tour Progress */}
           <div ref={worldTourRef} className="mt-1 w-full">
             <WorldTourProgress />
@@ -296,12 +347,27 @@ const MotorcycleGameContent = () => {
         {/* Age Bonus Alert */}
         <AgeBonusPopup open={showAgeBonusPopup} onClose={() => {}} points={20} age={playerAge || 0} />
         
+        {/* Ad Reward Popup */}
+        <AdRewardPopup 
+          open={showAdRewardPopup}
+          onClose={() => setShowAdRewardPopup(false)}
+          pointsEarned={lastAdReward}
+        />
+        
         {/* Game Over Popup */}
         <GameOverPopup open={showGameOver} onRestart={handleGameOverRestart} />
         
         {/* Instructions modal - Updated to use MotorcycleGameInstructions */}
         {showInstructions && <MotorcycleGameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
+      
+      {/* Banner Ad - Fixed position at bottom */}
+      <BannerAd 
+        position="bottom"
+        visible={showBannerAd}
+        onClose={() => setShowBannerAd(false)}
+      />
+      
       <Toaster />
       <CountryModal open={countryModalOpen} onClose={handleCloseCountryModal} country={selectedCountry ? getCountryInfo(selectedCountry) : null} />
       

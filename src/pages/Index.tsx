@@ -23,8 +23,12 @@ import MaxLevelPopup from "@/components/MaxLevelPopup";
 import CountryModal from "@/components/CountryModal";
 import FriendlyConfirmDialog from "@/components/FriendlyConfirmDialog";
 import LockedMotorcyclePopup from "@/components/LockedMotorcyclePopup";
+import BannerAd from "@/components/ads/BannerAd";
+import RewardedAdButton from "@/components/ads/RewardedAdButton";
+import AdRewardPopup from "@/components/ads/AdRewardPopup";
 import { getCountryInfo } from "@/data/countryData";
 import { toast } from "@/hooks/use-toast";
+import { adService, RewardedAdReward } from "@/services/AdService";
 
 const Index = () => {
   return <GameProvider>
@@ -40,6 +44,12 @@ const GameContent = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showLockedMotorcyclePopup, setShowLockedMotorcyclePopup] = useState(false);
+  
+  // Ad-related state
+  const [showBannerAd, setShowBannerAd] = useState(false);
+  const [showAdRewardPopup, setShowAdRewardPopup] = useState(false);
+  const [lastAdReward, setLastAdReward] = useState<number>(0);
+
   const isMobile = useIsMobile();
   const navigate = useNavigate();
   const worldTourRef = useRef<HTMLDivElement>(null);
@@ -64,6 +74,19 @@ const GameContent = () => {
     countryVisitRequired,
     requiredCountryToVisit
   } = useGame();
+
+  // Initialize AdService when component mounts
+  useEffect(() => {
+    const initializeAds = async () => {
+      await adService.initialize();
+      // Show banner ad after a short delay
+      setTimeout(() => {
+        setShowBannerAd(true);
+      }, 3000);
+    };
+    
+    initializeAds();
+  }, []);
 
   // Debug logging for main game state
   useEffect(() => {
@@ -142,7 +165,9 @@ const GameContent = () => {
     resetGame();
     setShowMaxLevelPopup(false);
     setShowResetConfirm(false);
-    // Removed toast notification
+    setShowBannerAd(false);
+    // Show banner again after reset
+    setTimeout(() => setShowBannerAd(true), 5000);
   };
   const handleCancelReset = () => {
     setShowResetConfirm(false);
@@ -156,7 +181,6 @@ const GameContent = () => {
     setTotalPoints(4490);
     // Update destinations based on new level
     updateDestinations(9);
-    // Removed toast notification
   };
 
   // Handle navigation to motorcycle game with level check
@@ -192,13 +216,23 @@ const GameContent = () => {
 
     // Navigate to motorcycle game
     navigate('/motorcycle-game');
-
-    // Removed toast notification
   };
 
   // Handle closing the max level popup
   const handleCloseMaxLevelPopup = () => {
     setShowMaxLevelPopup(false);
+  };
+
+  // Handle rewarded ad reward
+  const handleAdRewardEarned = (reward: RewardedAdReward) => {
+    console.log('Rewarded ad completed:', reward);
+    
+    // Add points to total
+    setTotalPoints(prevPoints => prevPoints + reward.amount);
+    
+    // Show reward popup
+    setLastAdReward(reward.amount);
+    setShowAdRewardPopup(true);
   };
 
   // Determine the color theme for car page (purple)
@@ -239,7 +273,7 @@ const GameContent = () => {
     setCountryModalOpen(false);
     setSelectedCountry(null);
   };
-  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor}`} style={{
+  return <div className={`min-h-screen flex flex-col items-center relative overflow-hidden ${bgColor} ${showBannerAd ? 'pb-20' : ''}`} style={{
     backgroundSize: "cover",
     backgroundAttachment: "fixed"
   }}>
@@ -290,6 +324,17 @@ const GameContent = () => {
           <div className="w-full mt-2">
             <ScorePanel />
           </div>
+          
+          {/* Rewarded Ad Button - Show after level 2 */}
+          {level >= 2 && playerName && (
+            <div className="w-full max-w-xs mt-4">
+              <RewardedAdButton 
+                onRewardEarned={handleAdRewardEarned}
+                disabled={false}
+                className="w-full text-lg py-3"
+              />
+            </div>
+          )}
           
           {/* World Tour Progress */}
           <div ref={worldTourRef} className="mt-1 w-full">
@@ -378,6 +423,13 @@ const GameContent = () => {
         {/* Age Bonus Alert */}
         <AgeBonusPopup open={showAgeBonusPopup} onClose={() => {}} points={20} age={playerAge || 0} />
         
+        {/* Ad Reward Popup */}
+        <AdRewardPopup 
+          open={showAdRewardPopup}
+          onClose={() => setShowAdRewardPopup(false)}
+          pointsEarned={lastAdReward}
+        />
+        
         {/* Friendly Reset Confirmation Dialog */}
         <FriendlyConfirmDialog open={showResetConfirm} onConfirm={handleConfirmReset} onCancel={handleCancelReset} title="🎮 ¿Empezar de nuevo?" message="¿Estás seguro de que quieres empezar una nueva aventura? Perderás todo tu progreso actual, pero podrás vivir la diversión otra vez desde el principio. 🚗✨" confirmText="¡Sí, nueva aventura!" cancelText="No, seguir jugando" />
         
@@ -390,6 +442,14 @@ const GameContent = () => {
         
         {showInstructions && <CarGameInstructions onClose={() => setShowInstructions(false)} />}
       </div>
+      
+      {/* Banner Ad - Fixed position at bottom */}
+      <BannerAd 
+        position="bottom"
+        visible={showBannerAd}
+        onClose={() => setShowBannerAd(false)}
+      />
+      
       <Toaster />
       <CountryModal open={countryModalOpen} onClose={handleCloseCountryModal} country={selectedCountry ? getCountryInfo(selectedCountry) : null} />
     </div>;
