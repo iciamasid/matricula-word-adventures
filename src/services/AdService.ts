@@ -1,4 +1,7 @@
 
+import { AdMob, BannerAdOptions, BannerAdSize, BannerAdPosition, RewardAdOptions, AdmobConsentStatus, AdmobConsentInfo } from '@capacitor-community/admob';
+import { Capacitor } from '@capacitor/core';
+
 export interface AdConfig {
   bannerId: string;
   rewardedId: string;
@@ -14,14 +17,18 @@ export class AdService {
   private static instance: AdService;
   private config: AdConfig;
   private isInitialized = false;
+  private isNativeApp = false;
   
   private constructor() {
-    // Configuración de anuncios (IDs de prueba para desarrollo)
+    // Configuración de anuncios - IDs reales de producción
     this.config = {
-      bannerId: 'ca-app-pub-4321448416977763/7672317288', // Test banner ID
-      rewardedId: 'ca-app-pub-4321448416977763/8398850253', // Test rewarded ID
+      bannerId: 'ca-app-pub-4321448416977763/7672317288',
+      rewardedId: 'ca-app-pub-4321448416977763/8398850253',
       testMode: false
     };
+    
+    // Detectar si estamos en una app nativa
+    this.isNativeApp = Capacitor.isNativePlatform();
   }
 
   static getInstance(): AdService {
@@ -33,18 +40,35 @@ export class AdService {
 
   async initialize(): Promise<boolean> {
     try {
-      // En producción, aquí se inicializaría AdMob
-      // Para el prototipo, simulamos la inicialización
-      console.log('AdService: Initializing ads...');
+      if (!this.isNativeApp) {
+        // Fallback para web - simulación
+        console.log('AdService: Running in web mode, using simulation');
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        this.isInitialized = true;
+        return true;
+      }
+
+      console.log('AdService: Initializing AdMob for native app...');
       
-      // Simular tiempo de inicialización
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Inicializar AdMob en modo nativo
+      await AdMob.initialize({
+        requestTrackingAuthorization: true,
+        testingDevices: this.config.testMode ? ['YOUR_DEVICE_ID'] : [],
+        initializeForTesting: this.config.testMode
+      });
+
+      // Verificar el estado de consentimiento
+      const consentInfo = await AdMob.requestConsentInfo();
       
+      if (consentInfo.status === AdmobConsentStatus.REQUIRED) {
+        await AdMob.showConsentForm();
+      }
+
       this.isInitialized = true;
-      console.log('AdService: Ads initialized successfully');
+      console.log('AdService: AdMob initialized successfully for native app');
       return true;
     } catch (error) {
-      console.error('AdService: Failed to initialize ads:', error);
+      console.error('AdService: Failed to initialize AdMob:', error);
       return false;
     }
   }
@@ -55,9 +79,23 @@ export class AdService {
       return false;
     }
 
+    if (!this.isNativeApp) {
+      // Fallback para web
+      console.log(`AdService: Showing simulated banner ad at ${position}`);
+      return true;
+    }
+
     try {
-      console.log(`AdService: Showing banner ad at ${position}`);
-      // En producción, aquí se mostraría el banner real
+      const options: BannerAdOptions = {
+        adId: this.config.bannerId,
+        adSize: BannerAdSize.BANNER,
+        position: position === 'top' ? BannerAdPosition.TOP_CENTER : BannerAdPosition.BOTTOM_CENTER,
+        margin: 0,
+        isTesting: this.config.testMode
+      };
+
+      await AdMob.showBanner(options);
+      console.log(`AdService: Showing real banner ad at ${position}`);
       return true;
     } catch (error) {
       console.error('AdService: Failed to show banner:', error);
@@ -66,9 +104,14 @@ export class AdService {
   }
 
   async hideBanner(): Promise<boolean> {
+    if (!this.isNativeApp) {
+      console.log('AdService: Hiding simulated banner ad');
+      return true;
+    }
+
     try {
-      console.log('AdService: Hiding banner ad');
-      // En producción, aquí se ocultaría el banner
+      await AdMob.hideBanner();
+      console.log('AdService: Hiding real banner ad');
       return true;
     } catch (error) {
       console.error('AdService: Failed to hide banner:', error);
@@ -82,25 +125,46 @@ export class AdService {
       return null;
     }
 
-    try {
-      console.log('AdService: Loading rewarded ad...');
-      
-      // Simular carga del anuncio
+    if (!this.isNativeApp) {
+      // Fallback para web - simulación
+      console.log('AdService: Loading simulated rewarded ad...');
       await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('AdService: Showing simulated rewarded ad');
+      await new Promise(resolve => setTimeout(resolve, 3000)); // Anuncio más corto para testing
       
-      console.log('AdService: Showing rewarded ad');
-      
-      // Simular visualización del anuncio
-      await new Promise(resolve => setTimeout(resolve, 30000)); // 30 segundos de anuncio
-      
-      // Simular recompensa ganada
       const reward: RewardedAdReward = {
         type: 'points',
-        amount: Math.floor(Math.random() * 50) + 25 // 25-75 puntos
+        amount: Math.floor(Math.random() * 50) + 25
       };
       
-      console.log('AdService: Rewarded ad completed, reward:', reward);
+      console.log('AdService: Simulated rewarded ad completed, reward:', reward);
       return reward;
+    }
+
+    try {
+      const options: RewardAdOptions = {
+        adId: this.config.rewardedId,
+        isTesting: this.config.testMode
+      };
+
+      console.log('AdService: Loading real rewarded ad...');
+      await AdMob.prepareRewardVideoAd(options);
+      
+      console.log('AdService: Showing real rewarded ad');
+      const result = await AdMob.showRewardVideoAd();
+      
+      if (result.rewarded) {
+        const reward: RewardedAdReward = {
+          type: result.type || 'points',
+          amount: result.amount || 50
+        };
+        
+        console.log('AdService: Real rewarded ad completed, reward:', reward);
+        return reward;
+      } else {
+        console.log('AdService: Rewarded ad was not completed');
+        return null;
+      }
     } catch (error) {
       console.error('AdService: Failed to show rewarded ad:', error);
       return null;
@@ -110,8 +174,18 @@ export class AdService {
   async isRewardedAdReady(): Promise<boolean> {
     if (!this.isInitialized) return false;
     
-    // Simular disponibilidad del anuncio
-    return Math.random() > 0.1; // 90% de probabilidad de estar disponible
+    if (!this.isNativeApp) {
+      // Simulación para web
+      return Math.random() > 0.1;
+    }
+    
+    try {
+      // En apps nativas, siempre intentamos cargar el anuncio
+      return true;
+    } catch (error) {
+      console.error('AdService: Error checking rewarded ad availability:', error);
+      return false;
+    }
   }
 
   getConfig(): AdConfig {
@@ -121,6 +195,10 @@ export class AdService {
   setTestMode(enabled: boolean): void {
     this.config.testMode = enabled;
     console.log(`AdService: Test mode ${enabled ? 'enabled' : 'disabled'}`);
+  }
+
+  isRunningNatively(): boolean {
+    return this.isNativeApp;
   }
 }
 

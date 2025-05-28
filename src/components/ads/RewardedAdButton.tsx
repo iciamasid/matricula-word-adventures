@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Gift, Loader2, Play } from 'lucide-react';
+import { Gift, Loader2, Play, Smartphone, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { adService, RewardedAdReward } from '@/services/AdService';
 import { toast } from '@/hooks/use-toast';
@@ -21,9 +21,11 @@ const RewardedAdButton: React.FC<RewardedAdButtonProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAdReady, setIsAdReady] = useState(false);
+  const [isNativeApp, setIsNativeApp] = useState(false);
 
   useEffect(() => {
     checkAdAvailability();
+    setIsNativeApp(adService.isRunningNatively());
   }, []);
 
   const checkAdAvailability = async () => {
@@ -38,8 +40,8 @@ const RewardedAdButton: React.FC<RewardedAdButtonProps> = ({
     
     try {
       toast({
-        title: "🎬 Cargando anuncio...",
-        description: "Preparando tu recompensa especial",
+        title: isNativeApp ? "📱 Cargando anuncio real..." : "🎬 Cargando anuncio...",
+        description: isNativeApp ? "AdMob preparando tu recompensa" : "Preparando tu recompensa especial",
         duration: 2000
       });
 
@@ -48,7 +50,7 @@ const RewardedAdButton: React.FC<RewardedAdButtonProps> = ({
       if (reward) {
         toast({
           title: "🎉 ¡Recompensa ganada!",
-          description: `Has ganado ${reward.amount} puntos extra`,
+          description: `Has ganado ${reward.amount} puntos extra ${isNativeApp ? '(AdMob real)' : '(simulado)'}`,
           duration: 4000
         });
         
@@ -98,7 +100,7 @@ const RewardedAdButton: React.FC<RewardedAdButtonProps> = ({
       <Button
         onClick={handleWatchAd}
         disabled={isButtonDisabled}
-        className={`bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-yellow-400 kids-text font-bold ${className}`}
+        className={`${isNativeApp ? 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600' : 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600'} text-white border-yellow-400 kids-text font-bold ${className}`}
         size="lg"
       >
         {isLoading ? (
@@ -108,16 +110,23 @@ const RewardedAdButton: React.FC<RewardedAdButtonProps> = ({
           </>
         ) : (
           <>
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-            >
-              <Gift className="w-5 h-5 mr-2" />
-            </motion.div>
+            <div className="flex items-center mr-2">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <Gift className="w-5 h-5 mr-1" />
+              </motion.div>
+              {isNativeApp ? (
+                <Smartphone className="w-4 h-4" />
+              ) : (
+                <Globe className="w-4 h-4" />
+              )}
+            </div>
             {children || (
               <>
                 <Play className="w-4 h-4 mr-1" />
-                Ver anuncio para puntos extra
+                {isNativeApp ? 'Ver anuncio real (AdMob)' : 'Ver anuncio para puntos extra'}
               </>
             )}
           </>
