@@ -52,7 +52,6 @@ export class AdService {
       
       // Inicializar AdMob en modo nativo
       await AdMob.initialize({
-        requestTrackingAuthorization: true,
         testingDevices: this.config.testMode ? ['YOUR_DEVICE_ID'] : [],
         initializeForTesting: this.config.testMode
       });
@@ -153,10 +152,10 @@ export class AdService {
       console.log('AdService: Showing real rewarded ad');
       const result = await AdMob.showRewardVideoAd();
       
-      if (result.rewarded) {
+      if (result && result.type && result.amount !== undefined) {
         const reward: RewardedAdReward = {
-          type: result.type || 'points',
-          amount: result.amount || 50
+          type: result.type,
+          amount: result.amount
         };
         
         console.log('AdService: Real rewarded ad completed, reward:', reward);
