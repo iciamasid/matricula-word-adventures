@@ -1,0 +1,32 @@
+// .devcontainer/devcontainer.json
+    {
+        "name": "Capacitor Android Build Environment",
+        "image": "mcr.microsoft.com/devcontainers/universal:latest",
+        
+        "features": {
+            "ghcr.io/devcontainers/features/node:1": {
+                "version": "20"
+            },
+            "ghcr.io/devcontainers/features/java:1": {
+                "version": "17"
+            },
+            "ghcr.io/devcontainers/features/android:1": {
+                "sdk_version": "34",
+                "build_tools_version": "34.0.0"
+            }
+        },
+        
+        "postCreateCommand": "npm install && npm run build && npx cap add android && npx cap sync android",
+        
+        "customizations": {
+            "vscode": {
+                "extensions": [
+                    "esbenp.prettier-vscode",
+                    "dbaeumer.vscode-eslint",
+                    "ms-vscode.vscode-typescript-next",
+                    "formulahendry.auto-rename-tag"
+                ]
+            }
+        }
+    }
+    
