@@ -1,23 +1,26 @@
 // .devcontainer/devcontainer.json
     {
         "name": "Capacitor Android Build Environment",
+        // Utiliza una imagen base que ya incluya Node.js, Java y herramientas básicas
         "image": "mcr.microsoft.com/devcontainers/universal:latest",
         
         "features": {
+            // Instala Node.js v20
             "ghcr.io/devcontainers/features/node:1": {
                 "version": "20"
             },
+            // Instala Java (JDK) v17
             "ghcr.io/devcontainers/features/java:1": {
                 "version": "17"
-            },
-            "ghcr.io/devcontainers/features/android:1": {
-                "sdk_version": "34",
-                "build_tools_version": "34.0.0"
             }
+            // *** LA FEATURE DE ANDROID HA SIDO ELIMINADA ***
         },
         
+        // Comandos que se ejecutarán automáticamente al crear el Codespace
+        // Mantendremos estos comandos, ya que npx cap add android intentará descargar el SDK si no lo encuentra.
         "postCreateCommand": "npm install && npm run build && npx cap add android && npx cap sync android",
         
+        // Extensiones de VS Code útiles para el desarrollo web/móvil
         "customizations": {
             "vscode": {
                 "extensions": [
