@@ -2,7 +2,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.001c7f33800c4a7583f820908228325e',
+  appId: 'app.lovable.matriculabracadabra',
   appName: 'matriculaba-cadabra',
   webDir: 'dist',
   server: {
