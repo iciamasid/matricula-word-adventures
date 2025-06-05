@@ -12,7 +12,7 @@
         }
     },
     
-    "postCreateCommand": "npm install && npm run build && export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk && mkdir -p $ANDROID_SDK_ROOT && export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin && yes | sdkmanager --install 'platforms;android-34' 'build-tools;34.0.0' 'cmdline-tools;latest' 'patcher;v4' && npx cap add android && npx cap sync android && cd android && chmod +x gradlew && echo 'sdk.dir=/usr/local/lib/android/sdk' > local.properties && ./gradlew clean",
+    "postCreateCommand": "npm install --legacy-peer-deps && npm run build && export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk && mkdir -p $ANDROID_SDK_ROOT && export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin && yes | sdkmanager --install 'platforms;android-34' 'build-tools;34.0.0' 'cmdline-tools;latest' 'patcher;v4' && npx cap add android && npx cap sync android && cd android && chmod +x gradlew && echo 'sdk.dir=/usr/local/lib/android/sdk' > local.properties && ./gradlew clean",
     
     "customizations": {
         "vscode": {
