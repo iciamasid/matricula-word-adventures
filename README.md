@@ -1,3 +1,4 @@
+
 # Welcome to your Lovable project
 
 ## Project info
@@ -71,3 +72,52 @@ Yes, you can!
 To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
 Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+
+## Mobile App Development (Android APK)
+
+This project is configured for mobile app development using Capacitor.
+
+### Automatic Setup (GitHub Codespaces)
+
+When you create a new Codespace, the Android build environment will be automatically configured. The setup includes:
+- Node.js and npm dependencies
+- Android SDK and build tools
+- Capacitor Android platform
+
+### Manual Setup
+
+If the automatic setup fails or you want to set up manually:
+
+```bash
+# Make scripts executable
+chmod +x setup-android.sh build-apk.sh
+
+# Run the setup script
+./setup-android.sh
+```
+
+### Building the APK
+
+After setup is complete:
+
+```bash
+# Build the APK
+./build-apk.sh
+```
+
+The APK will be available at: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+### Troubleshooting
+
+- If you encounter permission issues, restart the Codespace
+- If the build fails, try running `./setup-android.sh` manually
+- Check that all environment variables are set: `echo $ANDROID_SDK_ROOT`
+- Ensure Java 17 is being used: `java -version`
+
+### Requirements for Local Development
+
+To build locally, you need:
+- Node.js 20+
+- Java 17
+- Android SDK
+- Android Studio (for emulator testing)

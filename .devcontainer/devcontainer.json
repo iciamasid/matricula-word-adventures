@@ -12,7 +12,7 @@
         }
     },
     
-    "postCreateCommand": "npm install --legacy-peer-deps && npm run build && wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip && unzip -q commandlinetools-linux-9477386_latest.zip && sudo mkdir -p /usr/local/lib/android/sdk/cmdline-tools && sudo mv cmdline-tools /usr/local/lib/android/sdk/cmdline-tools/latest && sudo chown -R codespace:codespace /usr/local/lib/android/sdk && export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk && export ANDROID_HOME=/usr/local/lib/android/sdk && export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools && yes | sdkmanager --licenses && sdkmanager --install 'platforms;android-34' 'build-tools;34.0.0' 'platform-tools' && npx cap add android && npx cap sync android && cd android && chmod +x gradlew && echo 'sdk.dir=/usr/local/lib/android/sdk' > local.properties && echo 'ANDROID_SDK_ROOT=/usr/local/lib/android/sdk' >> ~/.bashrc && echo 'ANDROID_HOME=/usr/local/lib/android/sdk' >> ~/.bashrc && echo 'PATH=$PATH:/usr/local/lib/android/sdk/cmdline-tools/latest/bin:/usr/local/lib/android/sdk/platform-tools' >> ~/.bashrc",
+    "postCreateCommand": "bash -c 'set -e && echo \"Starting setup...\" && npm install --legacy-peer-deps && echo \"Dependencies installed\" && npm run build && echo \"Build completed\" && echo \"Setting up Android SDK...\" && wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip && unzip -q commandlinetools-linux-9477386_latest.zip && sudo mkdir -p /usr/local/lib/android/sdk/cmdline-tools && sudo mv cmdline-tools /usr/local/lib/android/sdk/cmdline-tools/latest && sudo chown -R codespace:codespace /usr/local/lib/android/sdk && export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk && export ANDROID_HOME=/usr/local/lib/android/sdk && export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools && echo \"Accepting Android licenses...\" && yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses && echo \"Installing Android SDK components...\" && $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install \"platforms;android-34\" \"build-tools;34.0.0\" \"platform-tools\" && echo \"Adding Capacitor Android platform...\" && npx cap add android && echo \"Syncing Capacitor...\" && npx cap sync android && cd android && chmod +x gradlew && echo \"sdk.dir=/usr/local/lib/android/sdk\" > local.properties && echo \"Environment variables setup...\" && echo \"export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk\" >> ~/.bashrc && echo \"export ANDROID_HOME=/usr/local/lib/android/sdk\" >> ~/.bashrc && echo \"export PATH=\\$PATH:/usr/local/lib/android/sdk/cmdline-tools/latest/bin:/usr/local/lib/android/sdk/platform-tools\" >> ~/.bashrc && echo \"Setup completed successfully!\"'",
     
     "customizations": {
         "vscode": {
@@ -23,5 +23,10 @@
                 "formulahendry.auto-rename-tag"
             ]
         }
+    },
+    
+    "remoteEnv": {
+        "ANDROID_SDK_ROOT": "/usr/local/lib/android/sdk",
+        "ANDROID_HOME": "/usr/local/lib/android/sdk"
     }
 }
