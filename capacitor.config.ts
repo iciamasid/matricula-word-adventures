@@ -19,7 +19,8 @@ const config: CapacitorConfig = {
     buildOptions: {
       keystorePath: undefined,
       keystoreAlias: undefined,
-      releaseType: "APK" // Generar APK en lugar de AAB para testing
+      releaseType: "APK", // Generar APK en lugar de AAB para testing
+      javaVersion: "17" // Force Java 17 for Capacitor build
     }
   }
 };
