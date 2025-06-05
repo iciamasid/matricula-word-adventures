@@ -6,31 +6,26 @@ set -e
 
 echo "📱 Building Android APK..."
 
-# Source Java detection utility
-source ./detect-java.sh
+# Set environment variables explicitly
+export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
+export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
+export ANDROID_HOME=/usr/local/lib/android/sdk
+export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$JAVA_HOME/bin
 
-# Setup Java
-if ! setup_java; then
-    echo "❌ Failed to setup Java. Cannot continue."
-    exit 1
-fi
+# Verify Java version
+echo "☕ Using Java version:"
+java -version
 
 # Check if Android environment is set up
 if [ ! -d "/usr/local/lib/android/sdk" ]; then
-    echo "❌ Android SDK not found. Please run setup-android.sh first."
+    echo "❌ Android SDK not found. Please rebuild the Codespace."
     exit 1
 fi
 
-# Set environment variables
-export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
-export ANDROID_HOME=/usr/local/lib/android/sdk
-export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
-
 # Verify Android platform exists
 if [ ! -d "android" ]; then
-    echo "❌ Android platform not found. Running setup..."
-    chmod +x setup-android.sh
-    ./setup-android.sh
+    echo "❌ Android platform not found. Please rebuild the Codespace."
+    exit 1
 fi
 
 # Build the web app
@@ -45,7 +40,7 @@ npx cap sync android
 echo "📦 Building APK..."
 cd android
 
-# Ensure gradle.properties has correct Java settings (without MaxPermSize)
+# Ensure gradle.properties has correct Java settings
 cat > gradle.properties << EOF
 # Android SDK and build settings
 sdk.dir=$ANDROID_SDK_ROOT
@@ -68,9 +63,7 @@ chmod +x gradlew
 # Build with error handling
 echo "🔨 Starting Gradle build..."
 if ! ./gradlew assembleDebug --info; then
-    echo "❌ Build failed. You can try:"
-    echo "1. Run fallback build: chmod +x build-apk-fallback.sh && ./build-apk-fallback.sh"
-    echo "2. Run fresh build: chmod +x fresh-build.sh && ./fresh-build.sh"
+    echo "❌ Build failed. Try rebuilding the Codespace."
     exit 1
 fi
 

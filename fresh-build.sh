@@ -6,24 +6,22 @@ set -e
 
 echo "🚀 Starting fresh build process..."
 
-# Source Java detection utility
-source ./detect-java.sh
-
-# Setup Java first
-if ! setup_java; then
-    echo "❌ Failed to setup Java. Cannot continue."
-    exit 1
-fi
-
-# Set Android environment variables
+# Set environment variables explicitly
+export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
 export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
 export ANDROID_HOME=/usr/local/lib/android/sdk
-export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$JAVA_HOME/bin
+
+# Verify Java version
+echo "☕ Using Java version:"
+java -version
 
 # Step 1: Clean everything
 echo "📋 Step 1: Cleaning previous builds..."
-chmod +x clean-build.sh
-./clean-build.sh
+rm -rf node_modules package-lock.json dist .vite
+if [ -d "android" ]; then
+    rm -rf android
+fi
 
 # Step 2: Install dependencies
 echo "📋 Step 2: Installing dependencies..."
@@ -36,9 +34,8 @@ npm run build
 # Step 4: Check Android SDK
 echo "📋 Step 4: Verifying Android SDK..."
 if [ ! -d "$ANDROID_SDK_ROOT/cmdline-tools/latest" ]; then
-    echo "❌ Android SDK not found. Running setup..."
-    chmod +x setup-android.sh
-    ./setup-android.sh
+    echo "❌ Android SDK not found. Please rebuild the Codespace."
+    exit 1
 fi
 
 # Step 5: Add Android platform
@@ -55,7 +52,7 @@ chmod +x gradlew
 # Create/update local.properties
 echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-# Create/update gradle.properties with dynamic Java home (without MaxPermSize)
+# Create/update gradle.properties with Java 17
 cat > gradle.properties << EOF
 # Android SDK and build settings
 sdk.dir=$ANDROID_SDK_ROOT
