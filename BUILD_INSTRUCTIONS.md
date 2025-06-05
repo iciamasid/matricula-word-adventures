@@ -17,6 +17,7 @@ chmod +x fresh-build.sh && ./fresh-build.sh
 chmod +x fresh-build.sh && ./fresh-build.sh
 ```
 - Cleans everything and builds from scratch
+- Automatically detects and configures Java
 - Handles all setup automatically
 - Most reliable for first-time builds
 
@@ -25,7 +26,8 @@ chmod +x fresh-build.sh && ./fresh-build.sh
 chmod +x build-apk.sh && ./build-apk.sh
 ```
 - Standard build process
-- Assumes environment is already set up
+- Automatically detects Java environment
+- Assumes Android SDK is already set up
 
 ### 3. Fallback Build
 ```bash
@@ -47,24 +49,45 @@ chmod +x clean-build.sh && ./clean-build.sh
 chmod +x setup-android.sh && ./setup-android.sh
 ```
 - Sets up Android environment only
+- Automatically detects and configures Java
 - Use if you want to configure environment without building
+
+## Automatic Java Detection
+
+All build scripts now include automatic Java detection that:
+
+- **Searches multiple locations**: Checks standard Java installation paths
+- **Verifies Java 17**: Ensures the correct Java version is being used
+- **Fallback installation**: Automatically installs Java 17 if not found
+- **Dynamic configuration**: Updates all build configurations with the detected Java path
+
+### Supported Java Locations
+The scripts automatically check these locations:
+- `/usr/lib/jvm/msopenjdk-17`
+- `/usr/lib/jvm/java-17-openjdk-amd64`
+- `/usr/lib/jvm/java-17-openjdk`
+- `/usr/lib/jvm/temurin-17-jdk-amd64`
+- `/opt/java/openjdk`
+- `/usr/local/openjdk-17`
+- System alternatives and PATH
 
 ## Build Process Steps
 
 The fresh build process includes:
 
-1. **Clean**: Remove all previous build artifacts
-2. **Install**: Install npm dependencies with legacy peer deps
-3. **Build Web**: Build the React web application
-4. **Android SDK**: Verify and set up Android SDK
-5. **Add Platform**: Add Capacitor Android platform
-6. **Configure**: Set up Android project with Java 17
-7. **Sync**: Sync Capacitor with Android project
-8. **Build APK**: Generate the Android APK
+1. **Java Detection**: Automatically find and configure Java 17
+2. **Clean**: Remove all previous build artifacts
+3. **Install**: Install npm dependencies with legacy peer deps
+4. **Build Web**: Build the React web application
+5. **Android SDK**: Verify and set up Android SDK
+6. **Add Platform**: Add Capacitor Android platform
+7. **Configure**: Set up Android project with detected Java path
+8. **Sync**: Sync Capacitor with Android project
+9. **Build APK**: Generate the Android APK
 
 ## Environment Requirements
 
-- **Java**: Version 17 (automatically configured)
+- **Java**: Version 17 (automatically detected/installed)
 - **Node.js**: Version 20+ (provided by Codespace)
 - **Android SDK**: API Level 34 (automatically installed)
 - **Build Tools**: 34.0.0 (automatically installed)
@@ -81,12 +104,12 @@ android/app/build/outputs/apk/debug/app-debug.apk
 ### Common Issues and Solutions
 
 1. **Java Version Conflicts**
-   - All scripts ensure Java 17 is used
-   - Check with: `java -version`
+   - Scripts now automatically detect and configure Java 17
+   - If issues persist, check: `java -version` and `echo $JAVA_HOME`
 
 2. **Gradle Build Failures**
    - Try the fallback build script
-   - Run fresh build to clean everything
+   - Run fresh build to clean everything and reconfigure
 
 3. **Missing Android SDK**
    - Scripts automatically download and configure SDK
@@ -96,14 +119,23 @@ android/app/build/outputs/apk/debug/app-debug.apk
    - Use fallback build to temporarily disable AdMob
    - Check plugin compatibility with current Capacitor version
 
-5. **Memory Issues**
-   - Gradle is configured with 2GB heap size
-   - Consider using clean build first
+5. **Java Detection Issues**
+   - Scripts include fallback Java installation
+   - Manual verification: `source ./detect-java.sh && setup_java`
+
+### Manual Java Detection
+
+You can manually run the Java detection utility:
+```bash
+chmod +x detect-java.sh
+source ./detect-java.sh
+setup_java
+```
 
 ### Build Logs
 
 All scripts provide detailed output including:
-- Java version verification
+- Java detection and version verification
 - Build progress indicators
 - Error messages with suggested solutions
 - APK size and location information
@@ -121,6 +153,9 @@ du -h android/app/build/outputs/apk/debug/app-debug.apk
 # Verify Java version
 java -version
 
+# Check Java home
+echo $JAVA_HOME
+
 # Check Android SDK
 echo $ANDROID_SDK_ROOT
 ```
@@ -136,7 +171,10 @@ After successful APK generation:
 ## Support
 
 If you encounter persistent issues:
-1. Try the fresh build script first
+1. Try the fresh build script first (it reconfigures everything)
 2. Use the fallback build if AdMob causes problems
 3. Check the build logs for specific error messages
-4. Ensure your Codespace has sufficient resources
+4. Verify Java detection with: `source ./detect-java.sh && setup_java`
+5. Ensure your Codespace has sufficient resources
+
+The new Java detection system should resolve most environment-related build issues automatically.

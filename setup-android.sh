@@ -6,12 +6,14 @@ set -e
 
 echo "🚀 Starting Android build environment setup..."
 
-# Set Java 17 environment
-export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
-export PATH=$JAVA_HOME/bin:$PATH
+# Source Java detection utility
+source ./detect-java.sh
 
-echo "☕ Using Java version:"
-java -version
+# Setup Java first
+if ! setup_java; then
+    echo "❌ Failed to setup Java. Cannot continue."
+    exit 1
+fi
 
 # Check if we're in the right directory
 if [ ! -f "package.json" ]; then
@@ -97,6 +99,10 @@ EOF
 cd ..
 
 echo "✅ Android build environment setup completed!"
+echo ""
+echo "📋 Environment Summary:"
+echo "Java Home: $JAVA_HOME"
+echo "Android SDK: $ANDROID_SDK_ROOT"
 echo ""
 echo "📋 Next steps:"
 echo "1. Restart your terminal or run: source ~/.bashrc"

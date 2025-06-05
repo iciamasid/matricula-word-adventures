@@ -6,12 +6,14 @@ set -e
 
 echo "🚀 Starting fresh build process..."
 
-# Set Java 17 environment
-export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
-export PATH=$JAVA_HOME/bin:$PATH
+# Source Java detection utility
+source ./detect-java.sh
 
-echo "☕ Using Java version:"
-java -version
+# Setup Java first
+if ! setup_java; then
+    echo "❌ Failed to setup Java. Cannot continue."
+    exit 1
+fi
 
 # Set Android environment variables
 export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
@@ -53,11 +55,22 @@ chmod +x gradlew
 # Create/update local.properties
 echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-# Create/update gradle.properties with Java 17
-echo "org.gradle.java.home=$JAVA_HOME" > gradle.properties
-echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8" >> gradle.properties
-echo "android.useAndroidX=true" >> gradle.properties
-echo "android.enableJetifier=true" >> gradle.properties
+# Create/update gradle.properties with dynamic Java home
+cat > gradle.properties << EOF
+# Android SDK and build settings
+sdk.dir=$ANDROID_SDK_ROOT
+org.gradle.java.home=$JAVA_HOME
+org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+
+# Android build settings
+android.useAndroidX=true
+android.enableJetifier=true
+
+# Gradle daemon settings
+org.gradle.daemon=true
+org.gradle.parallel=true
+org.gradle.configureondemand=true
+EOF
 
 cd ..
 

@@ -6,12 +6,14 @@ set -e
 
 echo "📱 Building Android APK (Fallback mode)..."
 
-# Set Java 17 environment
-export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
-export PATH=$JAVA_HOME/bin:$PATH
+# Source Java detection utility
+source ./detect-java.sh
 
-echo "☕ Using Java version:"
-java -version
+# Setup Java
+if ! setup_java; then
+    echo "❌ Failed to setup Java. Cannot continue."
+    exit 1
+fi
 
 # Set environment variables
 export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
@@ -61,9 +63,17 @@ npx cap sync android
 echo "📦 Building APK..."
 cd android
 
-# Ensure gradle.properties has Java 17 setting
-echo "org.gradle.java.home=$JAVA_HOME" > gradle.properties
-echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m" >> gradle.properties
+# Ensure gradle.properties has correct Java setting
+cat > gradle.properties << EOF
+# Android SDK and build settings
+sdk.dir=$ANDROID_SDK_ROOT
+org.gradle.java.home=$JAVA_HOME
+org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+
+# Android build settings
+android.useAndroidX=true
+android.enableJetifier=true
+EOF
 
 ./gradlew assembleDebug --info
 

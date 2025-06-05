@@ -6,12 +6,14 @@ set -e
 
 echo "📱 Building Android APK..."
 
-# Set Java 17 environment
-export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
-export PATH=$JAVA_HOME/bin:$PATH
+# Source Java detection utility
+source ./detect-java.sh
 
-echo "☕ Using Java version:"
-java -version
+# Setup Java
+if ! setup_java; then
+    echo "❌ Failed to setup Java. Cannot continue."
+    exit 1
+fi
 
 # Check if Android environment is set up
 if [ ! -d "/usr/local/lib/android/sdk" ]; then
@@ -43,7 +45,7 @@ npx cap sync android
 echo "📦 Building APK..."
 cd android
 
-# Ensure gradle.properties has correct Java 17 settings
+# Ensure gradle.properties has correct Java settings
 cat > gradle.properties << EOF
 # Android SDK and build settings
 sdk.dir=$ANDROID_SDK_ROOT

@@ -6,12 +6,16 @@ set -e
 
 echo "🧹 Cleaning build artifacts and caches..."
 
-# Set Java 17 environment
-export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
-export PATH=$JAVA_HOME/bin:$PATH
+# Source Java detection utility
+source ./detect-java.sh
+
+# Setup Java
+if ! setup_java; then
+    echo "⚠️ Java setup failed, but continuing with cleanup..."
+fi
 
 echo "☕ Using Java version:"
-java -version
+java -version || echo "⚠️ Java not available"
 
 # Clean npm cache and node_modules
 echo "🗑️ Cleaning npm cache and node_modules..."
