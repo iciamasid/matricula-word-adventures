@@ -68,12 +68,12 @@ cd android
 chmod +x gradlew
 echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-# Create comprehensive gradle.properties
+# Create comprehensive gradle.properties (without MaxPermSize)
 cat > gradle.properties << EOF
 # Android SDK and build settings
 sdk.dir=$ANDROID_SDK_ROOT
 org.gradle.java.home=$JAVA_HOME
-org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+org.gradle.jvmargs=-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
 
 # Android build settings
 android.useAndroidX=true

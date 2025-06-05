@@ -63,12 +63,12 @@ npx cap sync android
 echo "📦 Building APK..."
 cd android
 
-# Ensure gradle.properties has correct Java setting
+# Ensure gradle.properties has correct Java setting (without MaxPermSize)
 cat > gradle.properties << EOF
 # Android SDK and build settings
 sdk.dir=$ANDROID_SDK_ROOT
 org.gradle.java.home=$JAVA_HOME
-org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+org.gradle.jvmargs=-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
 
 # Android build settings
 android.useAndroidX=true
