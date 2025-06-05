@@ -51,8 +51,9 @@ yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
 echo "⬇️ Installing Android SDK components..."
 $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "platforms;android-34" "build-tools;34.0.0" "platform-tools"
 
-# Add Capacitor Android platform
+# Add Capacitor Android platform (remove first if exists)
 echo "📱 Adding Capacitor Android platform..."
+npx cap remove android || true
 npx cap add android
 
 # Sync Capacitor
@@ -64,14 +65,34 @@ echo "⚙️ Configuring Android project..."
 cd android
 chmod +x gradlew
 echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
-echo "org.gradle.java.home=$JAVA_HOME" >> gradle.properties
+
+# Create comprehensive gradle.properties
+cat > gradle.properties << EOF
+# Android SDK and build settings
+sdk.dir=$ANDROID_SDK_ROOT
+org.gradle.java.home=$JAVA_HOME
+org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+
+# Android build settings
+android.useAndroidX=true
+android.enableJetifier=true
+
+# Gradle daemon settings
+org.gradle.daemon=true
+org.gradle.parallel=true
+org.gradle.configureondemand=true
+EOF
 
 # Add environment variables to bashrc
 echo "🌍 Setting up environment variables..."
-grep -qxF "export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" ~/.bashrc || echo "export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> ~/.bashrc
-grep -qxF "export ANDROID_HOME=$ANDROID_SDK_ROOT" ~/.bashrc || echo "export ANDROID_HOME=$ANDROID_SDK_ROOT" >> ~/.bashrc
-grep -qxF "export JAVA_HOME=$JAVA_HOME" ~/.bashrc || echo "export JAVA_HOME=$JAVA_HOME" >> ~/.bashrc
-grep -qxF "export PATH=\$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:\$JAVA_HOME/bin" ~/.bashrc || echo "export PATH=\$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:\$JAVA_HOME/bin" >> ~/.bashrc
+cat >> ~/.bashrc << EOF
+
+# Android Development Environment
+export ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT
+export ANDROID_HOME=$ANDROID_SDK_ROOT
+export JAVA_HOME=$JAVA_HOME
+export PATH=\$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:\$JAVA_HOME/bin
+EOF
 
 cd ..
 
@@ -79,5 +100,7 @@ echo "✅ Android build environment setup completed!"
 echo ""
 echo "📋 Next steps:"
 echo "1. Restart your terminal or run: source ~/.bashrc"
-echo "2. To build APK: cd android && ./gradlew assembleDebug"
-echo "3. APK will be available at: android/app/build/outputs/apk/debug/app-debug.apk"
+echo "2. To build APK with fresh setup: chmod +x fresh-build.sh && ./fresh-build.sh"
+echo "3. To build APK normally: chmod +x build-apk.sh && ./build-apk.sh"
+echo "4. If issues persist: chmod +x build-apk-fallback.sh && ./build-apk-fallback.sh"
+echo "5. APK will be available at: android/app/build/outputs/apk/debug/app-debug.apk"
