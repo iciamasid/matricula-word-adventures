@@ -11,8 +11,15 @@ const config: CapacitorConfig = {
   },
   plugins: {
     AdMob: {
-      testMode: false,
-      initializeForTesting: false
+      testMode: true, // Activado para testing
+      initializeForTesting: true // Activado para testing
+    }
+  },
+  android: {
+    buildOptions: {
+      keystorePath: undefined,
+      keystoreAlias: undefined,
+      releaseType: "APK" // Generar APK en lugar de AAB para testing
     }
   }
 };

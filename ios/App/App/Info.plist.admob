@@ -3,8 +3,9 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <!-- App ID de prueba para testing en Google Play -->
     <key>GADApplicationIdentifier</key>
-    <string>ca-app-pub-4321448416977763~1234567890</string>
+    <string>ca-app-pub-3940256099942544~3347511713</string>
     <key>SKAdNetworkItems</key>
     <array>
         <dict>
