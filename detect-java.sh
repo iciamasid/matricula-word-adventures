@@ -7,20 +7,23 @@
 setup_java() {
     echo "🔍 Detecting Java installation..."
     
-    # Check common Java locations
+    # Check common Java locations (prioritizing standard Ubuntu locations)
     POSSIBLE_JAVA_HOMES=(
-        # Check standard Linux locations
-        "/usr/lib/jvm/java-17-openjdk"
+        # Standard Ubuntu OpenJDK locations (most reliable)
         "/usr/lib/jvm/java-17-openjdk-amd64"
+        "/usr/lib/jvm/java-17-openjdk"
+        # Alternative locations
+        "/usr/lib/jvm/java-1.17.0-openjdk-amd64"
+        "/usr/lib/jvm/java-1.17.0-openjdk"
+        # Check Microsoft OpenJDK locations
         "/usr/lib/jvm/msopenjdk-17"
         "/usr/lib/jvm/ms-openjdk-17"
-        "/usr/lib/jvm/java-17"
-        "/usr/lib/jvm/jdk-17"
-        # Check Microsoft OpenJDK location
         "/opt/msopenjdk-17"
         # Check GitHub Codespaces default Java location
         "/usr/lib/jvm/temurin-17-jdk-amd64"
         # Check other possible locations
+        "/usr/lib/jvm/java-17"
+        "/usr/lib/jvm/jdk-17"
         "/usr/local/lib/jvm/java-17"
         "/usr/local/openjdk-17"
     )
@@ -31,36 +34,51 @@ setup_java() {
             echo "✅ Found Java 17 at: $java_home"
             export JAVA_HOME="$java_home"
             export PATH="$JAVA_HOME/bin:$PATH"
-            java -version
-            return 0
+            
+            # Verify it's actually Java 17
+            JAVA_VERSION=$($JAVA_HOME/bin/java -version 2>&1 | head -n 1)
+            if echo "$JAVA_VERSION" | grep -q "17\."; then
+                echo "✅ Confirmed Java 17: $JAVA_VERSION"
+                return 0
+            else
+                echo "⚠️ Found Java but not version 17: $JAVA_VERSION"
+            fi
         fi
     done
     
     # Check if "java" executable is in PATH
     if command -v java >/dev/null 2>&1; then
         echo "✅ Found Java in PATH"
-        java -version
+        JAVA_VERSION=$(java -version 2>&1 | head -n 1)
+        echo "Java version: $JAVA_VERSION"
         
-        # Try to determine JAVA_HOME from java binary location
-        JAVA_BIN=$(command -v java)
-        JAVA_BIN_DIR=$(dirname "$JAVA_BIN")
-        
-        if [ "$JAVA_BIN_DIR" != "/usr/bin" ] && [ -d "$JAVA_BIN_DIR/.." ]; then
-            # Most installations have java in bin/ subdirectory
-            export JAVA_HOME=$(cd "$JAVA_BIN_DIR/.." && pwd)
-            echo "✅ Set JAVA_HOME to: $JAVA_HOME"
-            return 0
-        fi
-        
-        # Try using readlink on Linux to follow symlinks
-        if command -v readlink >/dev/null 2>&1; then
-            JAVA_REAL_PATH=$(readlink -f "$JAVA_BIN")
-            JAVA_REAL_DIR=$(dirname "$JAVA_REAL_PATH")
-            if [ -d "$JAVA_REAL_DIR/.." ]; then
-                export JAVA_HOME=$(cd "$JAVA_REAL_DIR/.." && pwd)
-                echo "✅ Set JAVA_HOME to: $JAVA_HOME (from symlink resolution)"
+        # Check if it's Java 17
+        if echo "$JAVA_VERSION" | grep -q "17\."; then
+            echo "✅ Java 17 confirmed in PATH"
+            
+            # Try to determine JAVA_HOME from java binary location
+            JAVA_BIN=$(command -v java)
+            JAVA_BIN_DIR=$(dirname "$JAVA_BIN")
+            
+            if [ "$JAVA_BIN_DIR" != "/usr/bin" ] && [ -d "$JAVA_BIN_DIR/.." ]; then
+                # Most installations have java in bin/ subdirectory
+                export JAVA_HOME=$(cd "$JAVA_BIN_DIR/.." && pwd)
+                echo "✅ Set JAVA_HOME to: $JAVA_HOME"
                 return 0
             fi
+            
+            # Try using readlink on Linux to follow symlinks
+            if command -v readlink >/dev/null 2>&1; then
+                JAVA_REAL_PATH=$(readlink -f "$JAVA_BIN")
+                JAVA_REAL_DIR=$(dirname "$JAVA_REAL_PATH")
+                if [ -d "$JAVA_REAL_DIR/.." ]; then
+                    export JAVA_HOME=$(cd "$JAVA_REAL_DIR/.." && pwd)
+                    echo "✅ Set JAVA_HOME to: $JAVA_HOME (from symlink resolution)"
+                    return 0
+                fi
+            fi
+        else
+            echo "⚠️ Java found but not version 17: $JAVA_VERSION"
         fi
     fi
     
@@ -78,7 +96,25 @@ setup_java() {
         fi
     fi
     
-    echo "❌ Failed to detect Java installation"
+    echo "❌ Failed to detect Java 17 installation"
+    echo "💡 Attempting to install Java 17..."
+    
+    # Try to install Java 17 if possible
+    if command -v apt-get >/dev/null 2>&1; then
+        echo "📦 Installing OpenJDK 17 via apt..."
+        sudo apt-get update
+        sudo apt-get install -y openjdk-17-jdk
+        
+        # Try setup again after installation
+        export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+        if [ -d "$JAVA_HOME" ] && [ -f "$JAVA_HOME/bin/java" ]; then
+            export PATH="$JAVA_HOME/bin:$PATH"
+            echo "✅ Java 17 installed successfully at: $JAVA_HOME"
+            $JAVA_HOME/bin/java -version
+            return 0
+        fi
+    fi
+    
     return 1
 }
 

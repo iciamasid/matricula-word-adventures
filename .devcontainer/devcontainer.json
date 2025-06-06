@@ -6,14 +6,10 @@
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
             "version": "20"
-        },
-        "ghcr.io/devcontainers/features/java:1": {
-            "version": "17",
-            "jdkDistro": "temurin",
-            "installGradle": true
         }
     },
     
+    "onCreateCommand": "sudo apt-get update && sudo apt-get install -y openjdk-17-jdk gradle && export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64",
     "postCreateCommand": "chmod +x setup-android.sh detect-java.sh && ./detect-java.sh && ./setup-android.sh",
     
     "customizations": {
@@ -29,12 +25,18 @@
                 "java.configuration.runtimes": [
                     {
                         "name": "JavaSE-17",
-                        "path": "/usr/lib/jvm/temurin-17-jdk-amd64",
+                        "path": "/usr/lib/jvm/java-17-openjdk-amd64",
                         "default": true
                     }
                 ],
-                "java.home": "/usr/lib/jvm/temurin-17-jdk-amd64"
+                "java.home": "/usr/lib/jvm/java-17-openjdk-amd64"
             }
         }
+    },
+    
+    "remoteEnv": {
+        "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64",
+        "ANDROID_SDK_ROOT": "/usr/local/lib/android/sdk",
+        "ANDROID_HOME": "/usr/local/lib/android/sdk"
     }
 }
