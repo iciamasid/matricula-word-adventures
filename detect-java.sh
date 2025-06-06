@@ -1,5 +1,5 @@
 
-#!/bin/bash
+#!/bin/sh
 
 # Enhanced Java Detection and Setup Utility
 # This script detects and configures Java for Android builds
@@ -8,7 +8,6 @@ setup_java() {
     echo "🔍 Detecting Java installation..."
     
     # Check common Java locations (prioritizing standard Ubuntu locations)
-    # Using a more compatible approach for shell arrays
     JAVA_HOME_CANDIDATES="/usr/lib/jvm/java-17-openjdk-amd64 /usr/lib/jvm/java-17-openjdk /usr/lib/jvm/java-1.17.0-openjdk-amd64 /usr/lib/jvm/java-1.17.0-openjdk /usr/lib/jvm/msopenjdk-17 /usr/lib/jvm/ms-openjdk-17 /opt/msopenjdk-17 /usr/lib/jvm/temurin-17-jdk-amd64 /usr/lib/jvm/java-17 /usr/lib/jvm/jdk-17 /usr/local/lib/jvm/java-17 /usr/local/openjdk-17"
     
     # Find the first valid Java installation
@@ -127,8 +126,10 @@ display_java_info() {
     fi
 }
 
-# If script is executed directly
-if [ "${BASH_SOURCE[0]}" = "${0}" ] 2>/dev/null || [ "${0##*/}" = "detect-java.sh" ]; then
-    setup_java
-    display_java_info
-fi
+# If script is executed directly (work with both bash and sh)
+case "$0" in
+    *detect-java.sh) 
+        setup_java
+        display_java_info
+        ;;
+esac
