@@ -8,28 +8,11 @@ setup_java() {
     echo "🔍 Detecting Java installation..."
     
     # Check common Java locations (prioritizing standard Ubuntu locations)
-    POSSIBLE_JAVA_HOMES=(
-        # Standard Ubuntu OpenJDK locations (most reliable)
-        "/usr/lib/jvm/java-17-openjdk-amd64"
-        "/usr/lib/jvm/java-17-openjdk"
-        # Alternative locations
-        "/usr/lib/jvm/java-1.17.0-openjdk-amd64"
-        "/usr/lib/jvm/java-1.17.0-openjdk"
-        # Check Microsoft OpenJDK locations
-        "/usr/lib/jvm/msopenjdk-17"
-        "/usr/lib/jvm/ms-openjdk-17"
-        "/opt/msopenjdk-17"
-        # Check GitHub Codespaces default Java location
-        "/usr/lib/jvm/temurin-17-jdk-amd64"
-        # Check other possible locations
-        "/usr/lib/jvm/java-17"
-        "/usr/lib/jvm/jdk-17"
-        "/usr/local/lib/jvm/java-17"
-        "/usr/local/openjdk-17"
-    )
+    # Using a more compatible approach for shell arrays
+    JAVA_HOME_CANDIDATES="/usr/lib/jvm/java-17-openjdk-amd64 /usr/lib/jvm/java-17-openjdk /usr/lib/jvm/java-1.17.0-openjdk-amd64 /usr/lib/jvm/java-1.17.0-openjdk /usr/lib/jvm/msopenjdk-17 /usr/lib/jvm/ms-openjdk-17 /opt/msopenjdk-17 /usr/lib/jvm/temurin-17-jdk-amd64 /usr/lib/jvm/java-17 /usr/lib/jvm/jdk-17 /usr/local/lib/jvm/java-17 /usr/local/openjdk-17"
     
     # Find the first valid Java installation
-    for java_home in "${POSSIBLE_JAVA_HOMES[@]}"; do
+    for java_home in $JAVA_HOME_CANDIDATES; do
         if [ -d "$java_home" ] && [ -f "$java_home/bin/java" ]; then
             echo "✅ Found Java 17 at: $java_home"
             export JAVA_HOME="$java_home"
@@ -145,7 +128,7 @@ display_java_info() {
 }
 
 # If script is executed directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+if [ "${BASH_SOURCE[0]}" = "${0}" ] 2>/dev/null || [ "${0##*/}" = "detect-java.sh" ]; then
     setup_java
     display_java_info
 fi
