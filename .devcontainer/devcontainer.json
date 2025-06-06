@@ -6,33 +6,19 @@
     "features": {
         "ghcr.io/devcontainers/features/node:1": {
             "version": "20"
+        },
+        "ghcr.io/devcontainers/features/java:1": {
+            "version": "17",
+            "jdkDistro": "ms"
         }
     },
     
-    "onCreateCommand": "sudo apt-get update && sudo apt-get install -y openjdk-17-jdk gradle",
+    "onCreateCommand": "sudo apt-get update && sudo apt-get install -y gradle",
     
     "postCreateCommand": [
-        "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64",
-        "export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk",
-        "export ANDROID_HOME=/usr/local/lib/android/sdk",
-        "export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$JAVA_HOME/bin", 
-        "echo '📋 Environment setup started...'",
-        "echo '☕ Using Java:' && echo $JAVA_HOME && java -version || echo 'Java not found in path'",
-        "echo '📦 Installing npm dependencies...' && npm install --legacy-peer-deps || echo 'npm install failed but continuing'",
-        "echo '🔨 Building project...' && npm run build || echo 'Build failed but continuing'",
-        "echo '📱 Setting up Android SDK...'",
-        "sudo mkdir -p $ANDROID_SDK_ROOT",
-        "sudo chown -R $(whoami):$(whoami) $ANDROID_SDK_ROOT",
-        "if [ ! -d \"$ANDROID_SDK_ROOT/cmdline-tools/latest\" ]; then echo '⬇️ Downloading Android command line tools...' && wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip && unzip -q commandlinetools-linux-9477386_latest.zip && sudo mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && sudo mv cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest && sudo chown -R $(whoami):$(whoami) $ANDROID_SDK_ROOT && rm commandlinetools-linux-9477386_latest.zip; fi",
-        "echo '📋 Accepting licenses...' && yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || echo 'License acceptance failed but continuing'", 
-        "echo '⬇️ Installing SDK components...' && $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install 'platforms;android-34' 'build-tools;34.0.0' 'platform-tools' || echo 'SDK installation failed but continuing'",
-        "echo '📱 Adding Android platform...' && npx cap remove android || true && rm -rf android || true",
-        "npx cap add android || echo 'Adding Android platform failed but continuing'",
-        "npx cap sync android || echo 'Sync failed but continuing'",
-        "echo '⚙️ Configuring Android project...'",
-        "if [ -d 'android' ]; then cd android && chmod +x gradlew && echo \"sdk.dir=$ANDROID_SDK_ROOT\" > local.properties && echo 'org.gradle.java.home=$JAVA_HOME' > gradle.properties && echo 'android.useAndroidX=true' >> gradle.properties && echo 'android.enableJetifier=true' >> gradle.properties && echo 'org.gradle.daemon=true' >> gradle.properties && echo 'org.gradle.parallel=true' >> gradle.properties && echo 'org.gradle.jvmargs=-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8' >> gradle.properties && cd ..; fi",
-        "echo '✅ Setup completed successfully!'",
-        "echo '📋 Environment ready for Android development'"
+        "bash",
+        "-c",
+        "set -e && echo '📋 Environment setup started...' && echo '☕ Detecting Java installation...' && export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java)))) && echo \"Java Home: $JAVA_HOME\" && export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk && export ANDROID_HOME=/usr/local/lib/android/sdk && export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$JAVA_HOME/bin && echo '📦 Installing npm dependencies...' && npm install --legacy-peer-deps && echo '🔨 Building project...' && npm run build && echo '📱 Setting up Android SDK...' && sudo mkdir -p $ANDROID_SDK_ROOT && sudo chown -R $(whoami):$(whoami) $ANDROID_SDK_ROOT && if [ ! -d \"$ANDROID_SDK_ROOT/cmdline-tools/latest\" ]; then echo '⬇️ Downloading Android command line tools...' && wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip && unzip -q commandlinetools-linux-9477386_latest.zip && sudo mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && sudo mv cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest && sudo chown -R $(whoami):$(whoami) $ANDROID_SDK_ROOT && rm commandlinetools-linux-9477386_latest.zip; fi && echo '📋 Accepting licenses...' && yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || echo 'License acceptance failed but continuing' && echo '⬇️ Installing SDK components...' && $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install 'platforms;android-34' 'build-tools;34.0.0' 'platform-tools' || echo 'SDK installation failed but continuing' && echo '📱 Adding Android platform...' && (npx cap remove android || true) && (rm -rf android || true) && npx cap add android && npx cap sync android && echo '⚙️ Configuring Android project...' && if [ -d 'android' ]; then cd android && chmod +x gradlew && echo \"sdk.dir=$ANDROID_SDK_ROOT\" > local.properties && echo \"org.gradle.java.home=$JAVA_HOME\" > gradle.properties && echo 'android.useAndroidX=true' >> gradle.properties && echo 'android.enableJetifier=true' >> gradle.properties && echo 'org.gradle.daemon=true' >> gradle.properties && echo 'org.gradle.parallel=true' >> gradle.properties && echo 'org.gradle.jvmargs=-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8' >> gradle.properties && cd ..; fi && echo '✅ Setup completed successfully!' && echo '📋 Environment ready for Android development'"
     ],
     
     "customizations": {
@@ -48,17 +34,16 @@
                 "java.configuration.runtimes": [
                     {
                         "name": "JavaSE-17",
-                        "path": "/usr/lib/jvm/java-17-openjdk-amd64",
+                        "path": "/usr/lib/jvm/msopenjdk-17",
                         "default": true
                     }
                 ],
-                "java.home": "/usr/lib/jvm/java-17-openjdk-amd64"
+                "java.home": "/usr/lib/jvm/msopenjdk-17"
             }
         }
     },
     
     "remoteEnv": {
-        "JAVA_HOME": "/usr/lib/jvm/java-17-openjdk-amd64",
         "ANDROID_SDK_ROOT": "/usr/local/lib/android/sdk",
         "ANDROID_HOME": "/usr/local/lib/android/sdk"
     }
