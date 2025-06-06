@@ -11,16 +11,30 @@ echo "📋 Build started at: $(date)"
 if [ -f "./detect-java.sh" ]; then
     source ./detect-java.sh
     if ! setup_java; then
-        echo "❌ Java setup failed. Attempting manual configuration..."
-        export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
-        if [ ! -d "$JAVA_HOME" ]; then
-            echo "❌ Java 17 not found. Please rebuild the Codespace."
+        echo "❌ Java setup failed. Attempting to install Java 17..."
+        
+        # Try to install Java 17 if possible
+        if command -v apt-get >/dev/null 2>&1; then
+            echo "📦 Installing OpenJDK 17 via apt..."
+            sudo apt-get update
+            sudo apt-get install -y openjdk-17-jdk
+            
+            # Try setup again after installation
+            if ! setup_java; then
+                echo "❌ Failed to set up Java even after installation attempt."
+                exit 1
+            fi
+        else
+            echo "❌ Cannot install Java automatically. Please install Java 17 manually."
             exit 1
         fi
     fi
+    
+    # Display detailed Java info for debugging
+    display_java_info
 else
-    echo "⚠️ Java detection script not found. Using default configuration..."
-    export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
+    echo "❌ Java detection script not found at ./detect-java.sh"
+    exit 1
 fi
 
 # Set environment variables explicitly
@@ -133,10 +147,24 @@ if [ ! -f "local.properties" ]; then
     echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 fi
 
+# Create a Java environment file for Gradle scripts
+echo "📝 Creating Java environment file for Gradle..."
+cat > setup-java-env.sh << EOF
+#!/bin/bash
+export JAVA_HOME="$JAVA_HOME"
+export PATH="\$JAVA_HOME/bin:\$PATH"
+EOF
+chmod +x setup-java-env.sh
+
 # Verify Gradle wrapper
 echo "📋 Verifying Gradle wrapper:"
 if [ -f "gradlew" ]; then
     echo "✅ Gradle wrapper found"
+    
+    # Modify gradlew to ensure it sources our Java environment
+    cp gradlew gradlew.original
+    sed -i '4i source "./setup-java-env.sh" || true' gradlew
+    
     echo "Gradle wrapper version:"
     ./gradlew --version || echo "⚠️ Could not get Gradle version, but continuing..."
 else
@@ -148,7 +176,7 @@ fi
 echo "📦 Starting APK build..."
 echo "📋 Build command: ./gradlew assembleDebug --info --stacktrace"
 
-if ! ./gradlew assembleDebug --info --stacktrace; then
+if ! JAVA_HOME="$JAVA_HOME" PATH="$JAVA_HOME/bin:$PATH" ./gradlew assembleDebug --info --stacktrace; then
     echo "❌ APK build failed"
     echo "📋 Troubleshooting suggestions:"
     echo "1. Try rebuilding the Codespace"

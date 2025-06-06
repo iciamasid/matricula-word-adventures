@@ -9,11 +9,12 @@
         },
         "ghcr.io/devcontainers/features/java:1": {
             "version": "17",
-            "jdkDistro": "ms"
+            "jdkDistro": "temurin",
+            "installGradle": true
         }
     },
     
-    "postCreateCommand": "chmod +x setup-android.sh && ./setup-android.sh",
+    "postCreateCommand": "chmod +x setup-android.sh detect-java.sh && ./detect-java.sh && ./setup-android.sh",
     
     "customizations": {
         "vscode": {
@@ -21,8 +22,19 @@
                 "esbenp.prettier-vscode",
                 "dbaeumer.vscode-eslint",
                 "ms-vscode.vscode-typescript-next",
-                "formulahendry.auto-rename-tag"
-            ]
+                "formulahendry.auto-rename-tag",
+                "vscjava.vscode-java-pack"
+            ],
+            "settings": {
+                "java.configuration.runtimes": [
+                    {
+                        "name": "JavaSE-17",
+                        "path": "/usr/lib/jvm/temurin-17-jdk-amd64",
+                        "default": true
+                    }
+                ],
+                "java.home": "/usr/lib/jvm/temurin-17-jdk-amd64"
+            }
         }
     }
 }

@@ -7,8 +7,41 @@ set -e
 echo "🚀 Starting Android build environment setup..."
 echo "📋 Setup started at: $(date)"
 
+# Source Java detection utility
+if [ -f "./detect-java.sh" ]; then
+    source ./detect-java.sh
+    if ! setup_java; then
+        echo "❌ Java setup failed. Attempting to install Java 17..."
+        
+        # Try to install Java 17 if possible
+        if command -v apt-get >/dev/null 2>&1; then
+            echo "📦 Installing OpenJDK 17 via apt..."
+            sudo apt-get update
+            sudo apt-get install -y openjdk-17-jdk
+            
+            # Try setup again after installation
+            if ! setup_java; then
+                echo "❌ Failed to set up Java even after installation attempt."
+                exit 1
+            fi
+        else
+            echo "❌ Cannot install Java automatically. Please install Java 17 manually."
+            exit 1
+        fi
+    fi
+    
+    # Display detailed Java info for debugging
+    display_java_info
+else
+    echo "❌ Java detection script not found. Creating..."
+    # Create detect-java.sh if it doesn't exist
+    curl -fsSL https://raw.githubusercontent.com/your-org/android-build-scripts/main/detect-java.sh > detect-java.sh
+    chmod +x detect-java.sh
+    source ./detect-java.sh
+    setup_java || exit 1
+fi
+
 # Set environment variables
-export JAVA_HOME=/usr/lib/jvm/msopenjdk-17
 export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
 export ANDROID_HOME=/usr/local/lib/android/sdk
 export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$JAVA_HOME/bin
@@ -27,7 +60,25 @@ if [ -f "$JAVA_HOME/bin/java" ]; then
         echo "✅ Java 17 confirmed"
     else
         echo "⚠️ Wrong Java version detected. Expected Java 17."
-        echo "Using default Java 17 path..."
+        echo "Searching for Java 17 installation..."
+        
+        # Try to find Java 17 specifically
+        POSSIBLE_JAVA17_HOMES=(
+            "/usr/lib/jvm/java-17-openjdk"
+            "/usr/lib/jvm/java-17-openjdk-amd64"
+            "/usr/lib/jvm/msopenjdk-17"
+            "/usr/lib/jvm/temurin-17-jdk-amd64"
+        )
+        
+        for java_home in "${POSSIBLE_JAVA17_HOMES[@]}"; do
+            if [ -d "$java_home" ] && [ -f "$java_home/bin/java" ]; then
+                export JAVA_HOME="$java_home"
+                export PATH="$JAVA_HOME/bin:$PATH"
+                echo "✅ Found Java 17 at: $JAVA_HOME"
+                $JAVA_HOME/bin/java -version
+                break
+            fi
+        done
     fi
 else
     echo "⚠️ Java executable not found at expected location"
@@ -61,7 +112,7 @@ echo "📱 Setting up Android SDK..."
 if [ ! -d "$ANDROID_SDK_ROOT" ]; then
     echo "📁 Creating Android SDK directory..."
     sudo mkdir -p $ANDROID_SDK_ROOT
-    sudo chown -R codespace:codespace $ANDROID_SDK_ROOT
+    sudo chown -R $(whoami):$(whoami) $ANDROID_SDK_ROOT
 fi
 
 # Download and setup Android command line tools if not already present
@@ -84,7 +135,7 @@ if [ ! -d "$ANDROID_SDK_ROOT/cmdline-tools/latest" ]; then
     
     sudo mkdir -p $ANDROID_SDK_ROOT/cmdline-tools
     sudo mv cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest
-    sudo chown -R codespace:codespace $ANDROID_SDK_ROOT
+    sudo chown -R $(whoami):$(whoami) $ANDROID_SDK_ROOT
     rm commandlinetools-linux-9477386_latest.zip
     
     echo "✅ Android command line tools installed"
@@ -127,8 +178,9 @@ if [ -d "android" ]; then
     chmod +x gradlew
     echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
 
-    # Create gradle.properties
+    # Create gradle.properties with correct Java path
     cat > gradle.properties << EOF
+# Android SDK and build settings
 org.gradle.java.home=$JAVA_HOME
 android.useAndroidX=true
 android.enableJetifier=true
@@ -137,6 +189,19 @@ org.gradle.parallel=true
 org.gradle.jvmargs=-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
 EOF
 
+    # Create a Java environment file for Gradle scripts
+    cat > setup-java-env.sh << EOF
+#!/bin/bash
+export JAVA_HOME="$JAVA_HOME"
+export PATH="\$JAVA_HOME/bin:\$PATH"
+EOF
+    chmod +x setup-java-env.sh
+    
+    # Modify gradlew to ensure it sources our Java environment
+    cp gradlew gradlew.original
+    sed -i '4i source "./setup-java-env.sh" || true' gradlew
+    chmod +x gradlew
+
     cd ..
     echo "✅ Android project configured"
 else
@@ -144,7 +209,7 @@ else
 fi
 
 # Make all scripts executable
-chmod +x build-apk.sh verify-licenses.sh detect-java.sh fresh-build.sh build-apk-fallback.sh
+chmod +x build-apk.sh verify-licenses.sh detect-java.sh fresh-build.sh build-apk-fallback.sh clean-build.sh
 
 # Add environment variables to bashrc
 echo "🌍 Setting up persistent environment variables..."

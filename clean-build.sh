@@ -7,11 +7,16 @@ set -e
 echo "🧹 Cleaning build artifacts and caches..."
 
 # Source Java detection utility
-source ./detect-java.sh
-
-# Setup Java
-if ! setup_java; then
-    echo "⚠️ Java setup failed, but continuing with cleanup..."
+if [ -f "./detect-java.sh" ]; then
+    source ./detect-java.sh
+    if ! setup_java; then
+        echo "⚠️ Java setup failed, but continuing with cleanup..."
+    fi
+    
+    # Display detailed Java info for debugging
+    display_java_info
+else
+    echo "⚠️ Java detection script not found, but continuing..."
 fi
 
 echo "☕ Using Java version:"
@@ -35,8 +40,28 @@ if [ -d "android" ]; then
     
     # Clean Gradle cache
     if [ -f "gradlew" ]; then
-        ./gradlew clean
-        ./gradlew --stop
+        # Create a temporary environment setup for gradlew
+        if [ -n "$JAVA_HOME" ] && [ -d "$JAVA_HOME" ]; then
+            echo "#!/bin/bash" > setup-java-env.sh
+            echo "export JAVA_HOME=\"$JAVA_HOME\"" >> setup-java-env.sh
+            echo "export PATH=\"\$JAVA_HOME/bin:\$PATH\"" >> setup-java-env.sh
+            chmod +x setup-java-env.sh
+            
+            # Source our Java environment and run gradle clean
+            source ./setup-java-env.sh
+            if ! ./gradlew clean; then
+                echo "⚠️ Gradle clean failed, using manual cleanup"
+                # Manual cleanup if gradlew fails
+                rm -rf app/build
+                rm -rf build
+            fi
+            ./gradlew --stop
+        else
+            echo "⚠️ JAVA_HOME not properly set, using manual cleanup"
+            # Manual cleanup
+            rm -rf app/build
+            rm -rf build
+        fi
     fi
     
     # Remove build directories
@@ -50,7 +75,7 @@ if [ -d "android" ]; then
     cd ..
     
     # Remove and re-add Android platform
-    echo "🔄 Removing and re-adding Android platform..."
+    echo "🔄 Removing Android platform..."
     npx cap remove android || true
 fi
 
