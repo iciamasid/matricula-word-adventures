@@ -1,16 +1,30 @@
-{
-    "name": "Capacitor Android Build Environment",
-    "image": "mcr.microsoft.com/devcontainers/universal:latest",
-    
-    "features": {
-        "ghcr.io/devcontainers/features/node:1": {
-            "version": "20"
+// .devcontainer/devcontainer.json
+    {
+        "name": "Capacitor Android Build Environment",
+        "image": "mcr.microsoft.com/devcontainers/universal:latest",
+        
+        "features": {
+            "ghcr.io/devcontainers/features/node:1": {
+                "version": "20"
+            },
+            "ghcr.io/devcontainers/features/java:1": {
+                "version": "17" 
+            }
         },
-        "ghcr.io/devcontainers/features/java:1": {
-            "version": "17" 
+        
+        // El postCreateCommand ahora solo ejecuta el script
+        "postCreateCommand": "bash .devcontainer/setup_codespace_android.sh",
+        
+        // Extensiones de VS Code útiles para el desarrollo web/móvil
+        "customizations": {
+            "vscode": {
+                "extensions": [
+                    "esbenp.prettier-vscode",
+                    "dbaeumer.vscode-eslint",
+                    "ms-vscode.vscode-typescript-next",
+                    "formulahendry.auto-rename-tag"
+                ]
+            }
         }
-    },
+    }
     
-    // Comandos que se ejecutarán automáticamente al crear/reconstruir el Codespace
-    "postCreateCommand": "bash -c \\\"set -e && echo 'Iniciando la configuración del entorno...' && export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk && mkdir -p \\$ANDROID_SDK_ROOT && export PATH=\\$PATH:\\$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:\\$ANDROID_SDK_ROOT/platform-tools && yes | sdkmanager --install 'platforms;android-34' 'build-tools;34.0.0' 'cmdline-tools;latest' 'platform-tools' 'patcher;v4' || true && yes | sdkmanager --licenses && JAVAHOME_PATH=\\$(readlink -f \\$(dirname \\$(dirname \\$(which java)))) && echo \\\\\\\"org.gradle.java.home=\\$JAVAHOME_PATH\\\\\\\" > android/gradle.properties && cp variables.gradle android/variables.gradle && echo \\\\\\\"\\\\\\\" > android/build.gradle && cat > android/build.gradle << EOF\\\\n// Top-level build file where you can add configuration options common to all sub-projects/modules.\\\\nbuildscript {\\\\n    ext {\\\\n        kotlin_version = '1.9.0'\\\\n        gradlePluginVersion = '8.1.4'\\\\n    }\\\\n    repositories {\\\\n        google()\\\\n        mavenCentral()\\\\n    }\\\\n    dependencies {\\\\n        classpath \\\\\\\"com.android.tools.build:gradle:\\\\\\\$gradlePluginVersion\\\\\\\"\\\\n        classpath \\\\\\\"org.jetbrains.kotlin:kotlin-gradle-plugin:\\\\\\\$kotlin_version\\\\\\\"\\\\n    }\\\\n}\\\\n\\\\napply from: 'variables.gradle'\\\\n\\\\nallprojects {\\\\n    repositories {\\\\n        google()\\\\n        mavenCentral()\\\\n        flatDir {\\\\n            dirs 'libs'\\\\n        }\\\\n    }\\\\n}\\\\n\\\\ntask clean(type: Delete) {\\\\n    delete rootProject.buildDir\\\\n}\\\\nEOF\\\\n && npm install --legacy-peer-deps && npm run build && rm -rf android/app && rm -rf android/capacitor-cordova-android-plugins && rm -rf android/node_modules && npx cap add android && npx cap sync android && cd android && chmod +x gradlew && echo 'sdk.dir=/usr/local/lib/android/sdk' > local.properties && sed -i 's|sourceCompatibility JavaVersion.VERSION_1_8|sourceCompatibility JavaVersion.VERSION_17|g' node_modules/@capacitor/android/capacitor/build.gradle && sed -i 's|targetCompatibility JavaVersion.VERSION_1_8|targetCompatibility JavaVersion.VERSION_17|g' node_modules/@capacitor/android/capacitor/build.gradle && sed -i '/kotlinOptions {/,/}/d' node_modules/@capacitor/android/capacitor/build.gradle || true && if ! grep -q \\\"tasks.withType(JavaCompile).configureEach\\\" node_modules/@capacitor/android/capacitor/build.gradle; then sed -i '/buildFeatures {/a \\\\\\\\n        tasks.withType(JavaCompile).configureEach { options.release.set(17) }' node_modules/@capacitor/android/capacitor/build.gradle; fi && sed -i 's|sourceCompatibility JavaVersion.VERSION_1_8|sourceCompatibility JavaVersion.VERSION_17|g' node_modules/@capacitor-community/admob/android/build.gradle && sed -i 's|targetCompatibility JavaVersion.VERSION_1_8|targetCompatibility JavaVersion.VERSION_17|g' node_modules/@capacitor-community/admob/android/build.gradle && sed -i '/npm install/d' node_modules/@capacitor-community/admob/android/build.gradle || true && if ! grep -q \\\"tasks.withType(JavaCompile).configureEach\\\" node_modules/@capacitor-community/admob/android/build.gradle; then sed -i '/buildFeatures {/a \\\\\\\\n        tasks.withType(JavaCompile).configureEach { options.release.set(17) }' node_modules/@capacitor-community/admob/android/build.gradle; fi && ./gradlew clean && ./gradlew assembleDebug\\\""
-}
