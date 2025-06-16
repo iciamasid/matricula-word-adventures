@@ -1,4 +1,4 @@
-
+// .devcontainer/devcontainer.json
 {
     "name": "Capacitor Android Build Environment",
     "image": "mcr.microsoft.com/devcontainers/universal:latest",
@@ -8,43 +8,138 @@
             "version": "20"
         },
         "ghcr.io/devcontainers/features/java:1": {
-            "version": "17",
-            "jdkDistro": "ms"
+            // Aseguramos Java 17
+            "version": "17" 
         }
     },
     
-    "onCreateCommand": "sudo apt-get update && sudo apt-get install -y gradle",
+    // Comandos que se ejecutarán automáticamente al crear/reconstruir el Codespace
+    "postCreateCommand": "bash -c \" \
+        set -e && \
+        echo 'Iniciando la configuración del entorno...' && \
+        
+        # *** PASOS CRÍTICOS DE CONFIGURACIÓN DE NATIVE ANDROID EN CODESPACES ***
+        # ---------------------------------------------------------------------
+
+        # 1. Configurar ANDROID_SDK_ROOT y PATH para las herramientas de línea de comandos
+        export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk && \
+        mkdir -p $ANDROID_SDK_ROOT && \
+        export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools && \
+        
+        # 2. Forzar la instalación de cmdline-tools, platform-tools, y platform 34 (o 35 si se necesita)
+        # Usamos 34 para coincidir con AGP 8.1.4 y evitar VANILLA_ICE_CREAM si es posible,
+        # aunque el código de Capacitor 7 a veces requiere 35. Si vuelve a fallar con el símbolo VANILLA, subimos a 35.
+        yes | sdkmanager --install 'platforms;android-34' 'build-tools;34.0.0' 'cmdline-tools;latest' 'platform-tools' 'patcher;v4' || true && \
+        
+        # 3. Aceptar las licencias del SDK de Android
+        yes | sdkmanager --licenses && \
+
+        # 4. Obtener la ruta REAL de JAVA_HOME y escribirla en un gradle.properties a nivel raíz de Android
+        JAVAHOME_PATH=$(readlink -f $(dirname $(dirname $(which java)))) && \
+        echo \"org.gradle.java.home=$JAVAHOME_PATH\" > android/gradle.properties && \
+        
+        # 5. Asegurar que las variables.gradle estén en el lugar correcto (raíz del proyecto Android)
+        # Esto es vital para compileSdk, targetSdk, etc.
+        cp variables.gradle android/variables.gradle && \
+
+        # 6. Parchear android/build.gradle si es necesario (el de la raíz) - restaurar a estado limpio
+        # Esto evita problemas de sintaxis con bloques 'java {}' o 'afterEvaluate' mal colocados
+        echo \"\" > android/build.gradle && \
+        cat > android/build.gradle << EOF
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+buildscript {
+    ext {
+        kotlin_version = '1.9.0' // O la versión que tengas
+        gradlePluginVersion = '8.1.4' // O la versión que tengas (soporta API 34)
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath \"com.android.tools.build:gradle:\$gradlePluginVersion\"
+        classpath \"org.jetbrains.kotlin:kotlin-gradle-plugin:\$kotlin_version\"
+    }
+}
+
+// Cargar variables.gradle aquí para que las variables estén en rootProject.ext
+apply from: 'variables.gradle'
+
+allprojects {
+    repositories {
+        google()
+        mavenCenter()
+        flatDir {
+            dirs 'libs'
+        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+EOF
+        && \
+
+        # 7. Ejecutar npm install y npm run build (la parte web de tu app)
+        npm install --legacy-peer-deps && \
+        npm run build && \
+
+        # 8. Eliminar y re-añadir la plataforma Android para una limpieza total
+        rm -rf android/app && \
+        rm -rf android/capacitor-cordova-android-plugins && \
+        rm -rf android/node_modules && \
+        npx cap add android && \
+        npx cap sync android && \
+
+        # 9. Navegar al directorio Android para los parches y comandos de Gradle
+        cd android && \
+        chmod +x gradlew && \
+        
+        # 10. Asegurar local.properties apunte al SDK de Android
+        echo 'sdk.dir=/usr/local/lib/android/sdk' > local.properties && \
+
+        # 11. *** PARCHES CRÍTICOS EN node_modules PARA JAVA 17 y DEPENDENCIAS ***
+        # Estos se aplican DESPUÉS de 'cap add android' y 'cap sync android'
+        # para que no sean sobrescritos inmediatamente.
+
+        # PARCHE 1: capacitor-android/capacitor/build.gradle
+        # Forzar Java 17 y eliminar kotlinOptions si causa conflictos
+        # Usamos 'sed' para reemplazar texto en el archivo
+        sed -i 's|sourceCompatibility JavaVersion.VERSION_1_8|sourceCompatibility JavaVersion.VERSION_17|g' node_modules/@capacitor/android/capacitor/build.gradle && \
+        sed -i 's|targetCompatibility JavaVersion.VERSION_1_8|targetCompatibility JavaVersion.VERSION_17|g' node_modules/@capacitor/android/capacitor/build.gradle && \
+        sed -i '/kotlinOptions {/,/}/d' node_modules/@capacitor/android/capacitor/build.gradle || true && \
+        # Insertar la tarea de forzado de JavaCompile si no existe (la forma más robusta)
+        if ! grep -q "tasks.withType(JavaCompile).configureEach" node_modules/@capacitor/android/capacitor/build.gradle; then
+          sed -i '/buildFeatures {/a \\n        tasks.withType(JavaCompile).configureEach { options.release.set(17) }' node_modules/@capacitor/android/capacitor/build.gradle
+        fi && \
+
+        # PARCHE 2: capacitor-community-admob/android/build.gradle
+        # Forzar Java 17 y eliminar la línea npm install si reaparece
+        sed -i 's|sourceCompatibility JavaVersion.VERSION_1_8|sourceCompatibility JavaVersion.VERSION_17|g' node_modules/@capacitor-community/admob/android/build.gradle && \
+        sed -i 's|targetCompatibility JavaVersion.VERSION_1_8|targetCompatibility JavaVersion.VERSION_17|g' node_modules/@capacitor-community/admob/android/build.gradle && \
+        sed -i '/npm install/d' node_modules/@capacitor-community/admob/android/build.gradle || true && \
+        if ! grep -q "tasks.withType(JavaCompile).configureEach" node_modules/@capacitor-community/admob/android/build.gradle; then
+          sed -i '/buildFeatures {/a \\n        tasks.withType(JavaCompile).configureEach { options.release.set(17) }' node_modules/@capacitor-community/admob/android/build.gradle
+        fi && \
+
+        # 12. Limpiar Gradle (esto ahora debería funcionar)
+        ./gradlew clean && \
+        
+        # 13. Generar el APK de depuración
+        ./gradlew assembleDebug \
+        
+    \"",
     
-    "postCreateCommand": [
-        "bash",
-        "-c",
-        "set -e && echo '📋 Environment setup started...' && echo '☕ Detecting Java installation...' && export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java)))) && echo \"Java Home: $JAVA_HOME\" && export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk && export ANDROID_HOME=/usr/local/lib/android/sdk && export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$JAVA_HOME/bin && echo '📦 Installing npm dependencies...' && npm install --legacy-peer-deps && echo '🔨 Building project...' && npm run build && echo '📱 Setting up Android SDK...' && sudo mkdir -p $ANDROID_SDK_ROOT && sudo chown -R $(whoami):$(whoami) $ANDROID_SDK_ROOT && if [ ! -d \"$ANDROID_SDK_ROOT/cmdline-tools/latest\" ]; then echo '⬇️ Downloading Android command line tools...' && wget -q https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip && unzip -q commandlinetools-linux-9477386_latest.zip && sudo mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && sudo mv cmdline-tools $ANDROID_SDK_ROOT/cmdline-tools/latest && sudo chown -R $(whoami):$(whoami) $ANDROID_SDK_ROOT && rm commandlinetools-linux-9477386_latest.zip; fi && echo '📋 Accepting licenses...' && yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses || echo 'License acceptance failed but continuing' && echo '⬇️ Installing SDK components...' && $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install 'platforms;android-34' 'build-tools;34.0.0' 'platform-tools' || echo 'SDK installation failed but continuing' && echo '📱 Adding Android platform...' && (npx cap remove android || true) && (rm -rf android || true) && npx cap add android && npx cap sync android && echo '⚙️ Configuring Android project...' && if [ -d 'android' ]; then cd android && chmod +x gradlew && echo \"sdk.dir=$ANDROID_SDK_ROOT\" > local.properties && echo \"org.gradle.java.home=$JAVA_HOME\" > gradle.properties && echo 'android.useAndroidX=true' >> gradle.properties && echo 'android.enableJetifier=true' >> gradle.properties && echo 'org.gradle.daemon=true' >> gradle.properties && echo 'org.gradle.parallel=true' >> gradle.properties && echo 'org.gradle.jvmargs=-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8' >> gradle.properties && cd ..; fi && echo '✅ Setup completed successfully!' && echo '📋 Environment ready for Android development'"
-    ],
-    
+    // Extensiones de VS Code útiles para el desarrollo web/móvil
     "customizations": {
         "vscode": {
             "extensions": [
                 "esbenp.prettier-vscode",
                 "dbaeumer.vscode-eslint",
                 "ms-vscode.vscode-typescript-next",
-                "formulahendry.auto-rename-tag",
-                "vscjava.vscode-java-pack"
-            ],
-            "settings": {
-                "java.configuration.runtimes": [
-                    {
-                        "name": "JavaSE-17",
-                        "path": "/usr/lib/jvm/msopenjdk-17",
-                        "default": true
-                    }
-                ],
-                "java.home": "/usr/lib/jvm/msopenjdk-17"
-            }
+                "formulahendry.auto-rename-tag"
+            ]
         }
-    },
-    
-    "remoteEnv": {
-        "ANDROID_SDK_ROOT": "/usr/local/lib/android/sdk",
-        "ANDROID_HOME": "/usr/local/lib/android/sdk"
     }
 }
